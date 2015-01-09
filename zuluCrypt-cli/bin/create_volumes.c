@@ -84,6 +84,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	const char * key_source = opts->key_source ;
 	const char * pass    = opts->key ;
 	const char * rng     = opts->rng ;
+	const char * const * tcrypt_keyfiles = opts->tcrypt_multiple_keyfiles ;
 
 	/*
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
@@ -100,12 +101,14 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	string_t * pass_3  = &stringArray[ 4 ] ;
 	string_t * pass_4  = &stringArray[ 5 ] ;
 
-	string_t p = StringVoid ;
-	string_t q = StringVoid ;
+	stringList_t stz = StringListVoid ;
+	stringList_t stk = StringListVoid ;
 
-	const char * volkey ;
-	size_t       volkeysize ;
-	const char * volkey_h = NULL ;
+	string_t p = StringVoid ;
+
+	const char * volkey = "" ;
+	size_t       volkeysize = 0 ;
+	const char * volkey_h = "" ;
 	size_t       volkeysize_h = 0 ;
 
 	int tcrypt_source   = TCRYPT_PASSPHRASE ;
@@ -123,12 +126,10 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 
 	create_tcrypt_t tcrypt ;
 
-	const char * keyFile ;
-	const char * keyFile_1 ;
-
 	const char * tcrypt_hidden_volume_size     = opts->tcrypt_hidden_volume_size ;
-	const char * tcrypt_hidden_volume_key_file = opts->tcrypt_hidden_volume_key_file ;
 	const char * tcrypt_hidden_volume_key      = opts->tcrypt_hidden_volume_key ;
+	const char * tcrypt_hidden_volume_key_file = opts->existing_key ;
+	const char * const * tcrypt_hidden_volume_keyFiles = opts->tcrypt_hidden_volume_multiple_keyfiles ;
 
 	/*
 	 * zulucryptFileSystemIsNotSupported() is defined in ../lib/mount_fs_options.c
@@ -328,8 +329,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	volkey     = StringContent( *pass_1 ) ;
 	volkeysize = StringLength( *pass_1 ) ;
 
-	zuluCryptSecurityGainElevatedPrivileges() ;
-
 	if( truecrypt_volume ){
 
 		memset( &tcrypt,'\0',sizeof( create_tcrypt_t ) ) ;
@@ -340,16 +339,23 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		tcrypt.encryption_options = rng ;
 		tcrypt.hidden_volume_size = hidden_volume_size ;
 
+		if( tcrypt_keyfiles[ 0 ] != NULL ){
+			/*
+			 * zuluCryptCreateKeyFiles() is defined in create_volume.c
+			 */
+			stz = zuluCryptCreateKeyFiles( tcrypt_keyfiles,100 ) ;
+		}
+
 		if( tcrypt_source == TCRYPT_KEYFILE ){
+
+			zuluCryptSecurityGainElevatedPrivileges() ;
 			/*
 			 * zuluCryptCreateKeyFile() is defined in ../lib/open_tcrypt.c
 			 */
 			p = zuluCryptCreateKeyFile( volkey,volkeysize,"create-key-" ) ;
 
-			keyFile = StringContent( p ) ;
-			tcrypt.keyfiles = &keyFile ;
-
-			tcrypt.keyfiles_number = 1 ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
+			stz = StringListAppendString_1( stz,&p ) ;
 
 			tcrypt.passphrase       = "" ;
 			tcrypt.passphrase_size  = 0 ;
@@ -358,15 +364,27 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			tcrypt.passphrase_size  = volkeysize ;
 		}
 
+		tcrypt.keyfiles = StringListStringArray( stz ) ;
+		tcrypt.keyfiles_number = StringListSize( stz ) ;
+
 		if( tcrypt.hidden_volume_size > 0 ){
+
+			if( tcrypt_hidden_volume_keyFiles[ 0 ] != NULL ){
+				/*
+				 * zuluCryptCreateKeyFiles() is defined in open_volume.c
+				 */
+				stk = zuluCryptCreateKeyFiles( tcrypt_hidden_volume_keyFiles,200 ) ;
+			}
 
 			if( tcrypt_source_h == TCRYPT_KEYFILE ){
 
-				q = zuluCryptCreateKeyFile( volkey_h,volkeysize_h,"create-key_h-" ) ;
-				keyFile_1 = StringContent( q ) ;
+				zuluCryptSecurityGainElevatedPrivileges() ;
 
-				tcrypt.keyfiles_h = &keyFile_1 ;
-				tcrypt.keyfiles_h_number = 1 ;
+				p = zuluCryptCreateKeyFile( volkey_h,volkeysize_h,"create-key_h-" ) ;
+
+				zuluCryptSecurityDropElevatedPrivileges() ;
+
+				stk = StringListAppendString_1( stk,&p ) ;
 
 				tcrypt.passphrase_h      = "" ;
 				tcrypt.passphrase_h_size = 0 ;
@@ -374,29 +392,37 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				tcrypt.passphrase_h      = volkey_h ;
 				tcrypt.passphrase_h_size = volkeysize_h ;
 			}
+
+			tcrypt.keyfiles_h        = StringListStringArray( stk ) ;
+			tcrypt.keyfiles_h_number = StringListSize( stk ) ;
 		}
+
+		zuluCryptSecurityGainElevatedPrivileges() ;
 
 		/*
 		 * zuluCryptCreateTCryptVolume() is defined in ../lib/create_tcrypt.c
 		 */
 		st = zuluCryptCreateTCryptVolume( &tcrypt ) ;
 
-		/*
-		 * zuluCryptDeleteFile_1() is defined in ../lib/file_path_security.c
-		 */
-		zuluCryptDeleteFile_1( p ) ;
-		zuluCryptDeleteFile_1( q ) ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
 
-		StringDelete( &p ) ;
-		StringDelete( &q ) ;
+		/*
+		 * zuluCryptDeleteKeyFiles() is defined in open_volume.c
+		 */
+		zuluCryptDeleteKeyFiles( stz ) ;
+		zuluCryptDeleteKeyFiles( stk ) ;
+
+		StringListMultipleDelete( &stz,&stk,NULL ) ;
 	}else{
+		zuluCryptSecurityGainElevatedPrivileges() ;
+
 		/*
 		 * zuluCryptCreateVolume() is defined in ../lib/create_volume.c
 		 */
 		st = zuluCryptCreateVolume( device,fs,type,volkey,volkeysize,rng ) ;
-	}
 
-	zuluCryptSecurityDropElevatedPrivileges() ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
+	}
 
 	if( st == 0 ){
 		return zuluExit_1( type,stl ) ;

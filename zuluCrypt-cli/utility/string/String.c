@@ -71,12 +71,12 @@ void StringExitOnMemoryExaustion( void ( *f )( void ) )
 	_fcn_ = f ;
 }
 
-static string_t _StringError( void )
+static void * _StringError( void )
 {
 	if( _fcn_ != NULL ){
 		( *_fcn_ )() ;
 	}
-	return StringVoid ;
+	return NULL ;
 }
 
 int StringOwned( string_t st )
@@ -93,9 +93,9 @@ static inline char * __StringExpandMemory( string_t st,size_t new_size )
 	char * p ;
 	if( new_size >= st->length ) {
 		st->length = new_size * FACTOR ;
-		p = ( char * ) realloc( st->string,st->length ) ;
+		p = realloc( st->string,st->length ) ;
 		if( p == NULL ){
-			return ( char * ) _StringError() ;
+			return _StringError() ;
 		}else{
 			return p ;
 		}
@@ -118,7 +118,7 @@ void StringGetIterators( string_t st,StringIterator * begin,StringIterator * end
 int StringLock( string_t st )
 {
 	if( st != StringVoid ){
-		return mlock( ( const void * )st->string,st->size ) ;
+		return mlock( st->string,st->size ) ;
 	}else{
 		return  -1 ;
 	}
@@ -127,7 +127,7 @@ int StringLock( string_t st )
 int StringUnlock( string_t st )
 {
 	if( st != StringVoid ){
-		return munlock( ( const void * )st->string,st->size ) ;
+		return munlock( st->string,st->size ) ;
 	}else{
 		return  -1 ;
 	}
@@ -220,10 +220,9 @@ char * StringDeleteHandle( string_t * xt )
 		c = st->string ;
 		free( st ) ;
 	}else{
-		c = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
+		c = malloc( sizeof( char ) * ( st->size + 1 ) ) ;
 		if( c == NULL ){
-			_StringError() ;
-			return NULL ;
+			return _StringError() ;
 		}else{
 			memcpy( c,st->string,st->size + 1 ) ;
 		}
@@ -241,13 +240,13 @@ string_t StringCopy( string_t st )
 		return StringVoid ;
 	}
 
-	c = ( char * ) malloc( sizeof( char ) * ( st->size + 1 ) ) ;
+	c = malloc( sizeof( char ) * ( st->size + 1 ) ) ;
 
 	if( c == NULL ){
 		return _StringError() ;
 	}
 
-	xt = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
+	xt = malloc( sizeof( struct StringType ) ) ;
 
 	if( xt == NULL ){
 		free( c ) ;
@@ -270,7 +269,7 @@ string_t StringEmpty()
 	if( st == NULL ){
 		return _StringError() ;
 	}else{
-		st->string = ( char * ) malloc( sizeof( char ) ) ;
+		st->string = malloc( sizeof( char ) ) ;
 		if( st->string == NULL ){
 			free( st ) ;
 			return _StringError() ;
@@ -295,14 +294,14 @@ string_t String( const char * cstring )
 
 	size = strlen( cstring ) ;
 
-	st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
+	st = malloc( sizeof( struct StringType ) ) ;
 
 	if( st == NULL ){
 		return _StringError() ;
 	}
 	if( size < STRING_INIT_SIZE / 2 ){
 
-		st->string = ( char * ) malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
+		st->string = malloc( sizeof( char ) * STRING_INIT_SIZE ) ;
 		if( st->string == NULL ){
 			free( st ) ;
 			return _StringError() ;
@@ -314,7 +313,7 @@ string_t String( const char * cstring )
 			return st ;
 		}
 	}else{
-		st->string = ( char * ) malloc( sizeof( char ) * ( size + 1 ) );
+		st->string = malloc( sizeof( char ) * ( size + 1 ) );
 
 		if( st->string == NULL ){
 			free( st ) ;
@@ -406,7 +405,7 @@ string_t StringInheritWithSize( char ** data,size_t size,size_t length )
 		return StringVoid ;
 	}
 
-	st = ( string_t ) malloc ( sizeof( struct StringType ) ) ;
+	st = malloc( sizeof( struct StringType ) ) ;
 
 	if( st == NULL ){
 		return _StringError() ;
@@ -425,7 +424,7 @@ string_t StringWithSize( const char * s,size_t len )
 	if( s == NULL ){
 		return StringVoid ;
 	}
-	c = ( char * ) malloc( sizeof( char ) * ( len + 1 ) ) ;
+	c = malloc( sizeof( char ) * ( len + 1 ) ) ;
 	if( c == NULL ){
 		return _StringError() ;
 	}
@@ -696,18 +695,18 @@ char * StringCopy_2( const char * str )
 	char * c ;
 	size_t len ;
 	if( str == NULL ){
-		c = ( char * )malloc( sizeof( char ) ) ;
+		c = malloc( sizeof( char ) ) ;
 		if( c == NULL ){
-			return ( char * ) _StringError() ;
+			return _StringError() ;
 		}else{
-			c[ 0 ] = '\0' ;
+			*c = '\0' ;
 			return c ;
 		}
 	}else{
 		len = strlen( str ) ;
-		c = ( char * )malloc( sizeof( char ) * ( len + 1 ) ) ;
+		c = malloc( sizeof( char ) * ( len + 1 ) ) ;
 		if( c == NULL ){
-			return ( char * ) _StringError() ;
+			return _StringError() ;
 		}else{
 			memcpy( c,str,len + 1 ) ;
 			return c ;
@@ -719,17 +718,17 @@ char * StringCopy_3( string_t st,size_t l )
 {
 	char * c ;
 	if( st == StringVoid ){
-		c = ( char * )malloc( sizeof( char ) ) ;
+		c = malloc( sizeof( char ) ) ;
 		if( c == NULL ){
-			return ( char * ) _StringError() ;
+			return _StringError() ;
 		}else{
 			*c = '\0' ;
 			return c ;
 		}
 	}else{
-		c = ( char * )malloc( sizeof( char ) * ( l + 1 ) ) ;
+		c = malloc( sizeof( char ) * ( l + 1 ) ) ;
 		if( c == NULL ){
-			return ( char * ) _StringError() ;
+			return _StringError() ;
 		}else{
 			memcpy( c,st->string,l ) ;
 			*( c + l ) = '\0' ;
@@ -785,7 +784,7 @@ char StringCharAt( string_t st,size_t p )
 	if( p >= st->size ){
 		return '\0' ;
 	}
-	return * ( st->string + p )  ;
+	return *( st->string + p ) ;
 }
 
 char StringCharAtLast( string_t st )
@@ -846,8 +845,8 @@ static void Stringsrcs__( string_t st,char x,const char * y,size_t p )
 
 	for( j = p ; j < l ; j++ ){
 		for( i = 0 ; i < k ; i++ ){
-			if( * ( c + j ) == * ( y + i ) ){
-				* ( c + j ) = x ;
+			if( *( c + j ) == * ( y + i ) ){
+				*( c + j ) = x ;
 				break ;
 			}
 		}
@@ -1141,7 +1140,7 @@ string_t StringMidString( string_t st,size_t x,size_t y )
 {
 	char * c ;
 
-	c = ( char * ) malloc ( sizeof( char ) * ( y + 1 ) ) ;
+	c = malloc( sizeof( char ) * ( y + 1 ) ) ;
 	if( c == NULL ){
 		return _StringError() ;
 	}
@@ -1666,7 +1665,7 @@ string_t StringRandomString( size_t size )
 		return s ;
 	}
 
-	e = ( char * ) malloc( sizeof( char ) * ( size + 1 ) ) ;
+	e = malloc( sizeof( char ) * ( size + 1 ) ) ;
 
 	if( e == NULL ){
 		return s ;
@@ -1774,7 +1773,7 @@ int StringGetFromFile_3( string_t * str,const char * path,size_t offset,size_t l
 		return 2 ;
 	}
 
-	c = ( char * ) malloc( sizeof( char ) * ( length + 1 ) ) ;
+	c = malloc( sizeof( char ) * ( length + 1 ) ) ;
 
 	if( c == NULL ) {
 		close( fd ) ;
@@ -1844,7 +1843,7 @@ int StringGetFromFileMemoryLocked( string_t * str,const char * path,size_t offse
 		reserve_memory_size = file_size ;
 	}
 
-	c = ( char * ) malloc( sizeof( char ) * ( reserve_memory_size + 1 ) ) ;
+	c = malloc( sizeof( char ) * ( reserve_memory_size + 1 ) ) ;
 
 	if( c == NULL ) {
 		close( fd ) ;
@@ -1948,7 +1947,7 @@ string_t StringGetFromVirtualFile( const char * path )
 
 	int fd = open( path,O_RDONLY ) ;
 	if( fd == -1 ){
-		buffer = ( char * )malloc( sizeof( char ) ) ;
+		buffer = malloc( sizeof( char ) ) ;
 		if( buffer == NULL ){
 			return _StringError() ;
 		}else{
@@ -1958,7 +1957,7 @@ string_t StringGetFromVirtualFile( const char * path )
 	}
 
 	while( 1 ){
-		e = ( char * )realloc( buffer,size ) ;
+		e = realloc( buffer,size ) ;
 		if( e == NULL ){
 			return _freeBuffer( buffer,fd ) ;
 		}else{

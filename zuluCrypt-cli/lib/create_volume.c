@@ -87,18 +87,18 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 		ProcessGetOutPut( p,&e,ProcessStdError ) ;
 		if( e ){
 			puts( e ) ;
-			free( e ) ;
+			StringFree( e ) ;
 		}
 	}
 
-	ProcessDelete( &p ) ;
+	ProcessCleanUp( &p ) ;
 	return status ;
 }
 
 static int _create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
 {
 	int r ;
-	
+
 	const char * mapper ;
 
 	string_t m = String( "/zuluCrypt-create-volume-" ) ;

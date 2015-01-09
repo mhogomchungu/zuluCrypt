@@ -139,13 +139,13 @@ void keyDialog::tcryptGui()
 	m_ui->lineEditKey->setText( "" ) ;
 
 	tcrypt * t = new tcrypt( this ) ;
-	connect( t,SIGNAL( Keys( QString,QString ) ),this,SLOT( keys( QString,QString ) ) ) ;
+	connect( t,SIGNAL( Keys( QString,QStringList ) ),this,SLOT( keys( QString,QStringList ) ) ) ;
 	connect( t,SIGNAL( cancelled() ),this,SLOT( tcryptCancelled() ) ) ;
 
 	t->ShowUI() ;
 }
 
-void keyDialog::keys( QString key,QString keyFiles )
+void keyDialog::keys( QString key,QStringList keyFiles )
 {
 	m_key = key ;
 	m_keyFiles = keyFiles ;
@@ -482,8 +482,13 @@ void keyDialog::openVolume()
 
 	if( !m_keyFiles.isEmpty() ){
 
-		m_keyFiles.replace( "\"","\"\"\"" ) ;
-		exe += " -F \"" + m_keyFiles + "\"" ;
+		for( const auto& it : m_keyFiles ){
+
+			QString e = it ;
+			e.replace( "\"","\"\"\"" ) ;
+
+			exe += " -F " + e ;
+		}
 	}
 
 	exe += " " + m ;

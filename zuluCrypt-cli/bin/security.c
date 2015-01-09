@@ -49,8 +49,7 @@ static int create_group( const char * groupname )
 	p = Process( ZULUCRYPTgroupadd ) ;
 	ProcessSetArgumentList( p,"-f",groupname,NULL ) ;
 	ProcessStart( p ) ;
-	st = ProcessExitStatus( p ) ;
-	ProcessDelete( &p ) ;
+	st = ProcessWaitUntilFinished( &p ) ;
 	zuluCryptSecurityDropElevatedPrivileges();
 	return st == 0 ;
 }

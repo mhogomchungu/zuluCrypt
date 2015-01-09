@@ -66,7 +66,7 @@ static int _create_file_system( const create_tcrypt_t * e )
 	opts.key_len = e->passphrase_size ;
 
 	if( e->keyfiles != NULL ){
-		opts.tcrypt_keyfiles       = e->keyfiles ;
+		opts.tcrypt_keyfiles       = ( const char **) e->keyfiles ;
 		opts.tcrypt_keyfiles_count = e->keyfiles_number ;
 	}
 
@@ -233,7 +233,7 @@ static int _modify_tcrypt_header( const char * device,const info_t * info )
 			}
 
 			r = tc_api_task_do( task ) ;
-			
+
 			tc_api_task_uninit( task ) ;
 		}
 		tc_api_uninit() ;
@@ -362,7 +362,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 	int r = !TC_OK ;
 	size_t i ;
 	size_t k ;
-	const char ** z ;
+	const char * const * z ;
 
 	const char * cipher_chain ;
 	const char * hash ;

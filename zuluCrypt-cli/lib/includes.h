@@ -75,7 +75,7 @@ typedef struct{
 	int          key_source ;
 	int luks_detached_header ;
 	int tcrypt_keyfiles_count ;
-	const char ** tcrypt_keyfiles ;
+	const char * const * tcrypt_keyfiles ;
 	unsigned long m_flags ;
 }open_struct_t ;
 
@@ -83,12 +83,12 @@ typedef struct{
 	const char * device ;
 	const char * passphrase ;
 	size_t       passphrase_size ;
-	const char ** keyfiles ;
-	size_t        keyfiles_number ;
+	const char * const * keyfiles ;
+	size_t       keyfiles_number ;
 	const char * passphrase_h ;
 	size_t       passphrase_h_size ;
-	const char ** keyfiles_h ;
-	size_t        keyfiles_h_number ;
+	const char * const * keyfiles_h ;
+	size_t       keyfiles_h_number ;
 	const char *  encryption_options ;
 	u_int64_t    hidden_volume_size ;
 	const char * fs ;

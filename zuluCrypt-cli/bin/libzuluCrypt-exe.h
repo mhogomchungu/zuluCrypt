@@ -26,6 +26,8 @@ extern "C" {
 
 #include <sys/types.h>
 
+#define TRUECRYPT_MAX_KEYFILES 16
+
 /*
  * this structure holds command line arguments. *
  * It is instantiated in main.c *
@@ -47,9 +49,9 @@ typedef struct struct_opts_1{
 	const char * new_key_source ;
 	const char * argv ;
 	const char * tcrypt_hidden_volume_size ;
-	const char * tcrypt_hidden_volume_key  ;
-	const char * tcrypt_hidden_volume_key_file ;
-	const char * tcrypt_multiple_keyfiles ;
+	const char * tcrypt_hidden_volume_key ;
+	const char * tcrypt_hidden_volume_multiple_keyfiles[ TRUECRYPT_MAX_KEYFILES + 1 ] ;
+	const char * tcrypt_multiple_keyfiles[ TRUECRYPT_MAX_KEYFILES + 1 ] ;
 	const char * back_up_file_path ;
 	const char * offset ;
 	const char * const * env ;

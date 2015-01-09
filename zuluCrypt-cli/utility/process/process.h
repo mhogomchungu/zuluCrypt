@@ -101,11 +101,6 @@ size_t ProcessWrite( process_t p,const char * data,size_t len ) ;
 void ProcessCloseStdWrite( process_t p ) ;
 
 /*
- * remember to clean after yourself
- */
-void ProcessDelete( process_t * ) ;
-
-/*
  * send a forked process sigterm to terminate it.
  */
 int ProcessTerminate( process_t ) ;
@@ -160,19 +155,25 @@ ProcessStatus ProcessState( process_t p ) ;
 void ProcessSetOptionTimeout( process_t p,int timeout,int signal ) ;
 
 /*
- * waitpid() for forked process to exit and get its exit status.
- * If the exit status is not waiter for,waitpid() with WNOHANG argument will be called when calling ProcessDelete
- * to make sure the forked process doesnt turn to a zombie.
+ * block waiting for the forked process to exit and then get its exit status.
  */
 int ProcessExitStatus( process_t ) ;
 
 /*
- * block until the forked process exits
+ * block waiting for the forked process to exit and then get its exit status and then clean up
+ * used resources.
+ *
+ * Use this function if you have to wait for the forked process to finish so that you can
+ * get its exit status.
  */
-static inline void ProcessWaitUntilFinished( process_t p )
-{
-	ProcessExitStatus( p ) ;
-}
+int ProcessWaitUntilFinished( process_t * ) ;
+
+/*
+ * clean up used resources and dont wait for the forked process.
+ * Use this function if you dont want to wait for the exit status or if the forked
+ * process is meant to live past the life of the parent process.
+ */
+void ProcessCleanUp( process_t * ) ;
 
 /*
  * get contents of std out/std error from the process.
@@ -226,8 +227,7 @@ int main( void )
 			break ;
 		}
 	}
-	ProcessWaitUntilFinished( p ) ;
-	ProcessDelete( &p ) ;
+	ProcessWaitUntilFinished( &p ) ;
 	return 0 ;
 }
 
@@ -262,8 +262,7 @@ int main( void )
 			break ;
 		}
 	}
-	ProcessWaitUntilFinished( p ) ;
-	ProcessDelete( &p ) ;
+	ProcessWaitUntilFinished( &p ) ;
 	return 0 ;
 }
 
@@ -300,8 +299,7 @@ int main( void )
 			break ;
 		}
 	}
-	ProcessWaitUntilFinished( p ) ;
-	ProcessDelete( &p ) ;
+	ProcessWaitUntilFinished( &p ) ;
 	return 0 ;
 }
 

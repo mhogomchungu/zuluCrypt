@@ -114,7 +114,7 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 	for( i = 0 ; i < 10 ; i++ ){
 		client = SocketLocal( sockpath ) ;
 		if( SocketConnect( &client ) ){
-			return ( void * ) client ;
+			return client ;
 		}else{
 			sleep( 1 ) ;
 		}
@@ -127,13 +127,13 @@ ssize_t zuluCryptPluginManagerSendKey( void * client,const char * key,size_t len
 	if( client == NULL ){
 		return -1 ;
 	}else{
-		return SocketSendData( ( socket_t )client,key,length ) ;
+		return SocketSendData( client,key,length ) ;
 	}
 }
 
 void zuluCryptPluginManagerCloseConnection( void * p )
 {
-	socket_t client = ( socket_t ) p ;
+	socket_t client = p ;
 	if( p != NULL ){
 		SocketClose( &client ) ;
 	}
@@ -209,9 +209,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 		_debug( p ) ;
 
-		*r = ProcessExitStatus( p ) ;
-
-		ProcessDelete( &p ) ;
+		*r = ProcessWaitUntilFinished( &p ) ;
 	}else{
 		*r = 1 ;
 	}

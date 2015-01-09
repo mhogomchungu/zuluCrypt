@@ -34,7 +34,7 @@ typedef struct{
 	const char * fs_opts    ;
 	const char * uuid       ;
 	const char * offset     ;
-	const char * tcrypt_multiple_keyfiles ;
+	const char * tcrypt_multiple_keyfiles[ TRUECRYPT_MAX_KEYFILES + 1 ] ;
 	stringList_t env        ;
 	int          mpo        ;
 	uid_t        uid        ;

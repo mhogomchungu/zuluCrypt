@@ -163,9 +163,7 @@ void __ProcessGetResult( process_t p )
 
 	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
 
-	st = ProcessExitStatus( p ) ;
-
-	ProcessDelete( &p ) ;
+	st = ProcessWaitUntilFinished( &p ) ;
 
 	if( st ){
 		puts( "FAILED" ) ;
@@ -184,9 +182,7 @@ void __ProcessGetResultANDPrint( process_t p )
 	int st ;
 
 	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
-	st = ProcessExitStatus( p ) ;
-
-	ProcessDelete( &p ) ;
+	st = ProcessWaitUntilFinished( &p ) ;
 
 	if( st ){
 		puts( "FAILED" ) ;
@@ -373,8 +369,7 @@ void checkIfDeviceIsLuks( const char * device )
 	process_t p = Process( zuluCryptExe ) ;
 	ProcessSetArgumentList( p,"-i","-d",device,NULL ) ;
 	ProcessStart( p ) ;
-	st = ProcessExitStatus( p ) ;
-	ProcessDelete( &p ) ;
+	st = ProcessWaitUntilFinished( &p ) ;
 
 	if( st ){
 		__print( "check if a luks volume is a luks volume: PASSED\n" ) ;
@@ -400,7 +395,7 @@ int _loop_device_module_is_not_present( void )
 		}
 		free( output ) ;
 	}
-	ProcessDelete( &p ) ;
+	ProcessWaitUntilFinished( &p ) ;
 	return st ;
 }
 

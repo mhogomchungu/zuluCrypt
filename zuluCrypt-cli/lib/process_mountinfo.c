@@ -37,21 +37,21 @@ static int _valid_entry( const vInfo * e )
 		 */
 		return 0 ;
 	}
-	
+
 	if( StringsAreEqual( e->rootPath,"/" ) || StringsAreEqual( e->fileSystem,"btrfs" ) ){
 		/*
 		 * we only take bind mount points on btrfs only.
 		 */
 		return 1 ;
 	}
-	
+
 	return 0 ;
 }
 
 static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 {
 	vInfo volumeInfo ;
-	
+
 	char * const * entry = NULL ;
 
 	size_t entry_len = 0 ;
@@ -83,17 +83,17 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 		if( index != -1 ){
 
 			StringListStringArray_1( &entry,&entry_len,tmp ) ;
-			
+
 			volumeInfo.device       = *( entry + index + 2 ) ;
 			volumeInfo.mountPoint   = *( entry + 4 ) ;
 			volumeInfo.fileSystem   = *( entry + index + 1 ) ;
 			volumeInfo.mountOptions = *( entry + 5 ) ;
 			volumeInfo.rootPath     = *( entry + 3 ) ;
-			
+
 			if( _valid_entry( &volumeInfo ) ){
-				
+
 				st = function( &volumeInfo ) ;
-				stx = StringListAppendString_1( stx,&st ) ;				
+				stx = StringListAppendString_1( stx,&st ) ;
 			}
 		}
 
@@ -115,6 +115,11 @@ static string_t _resolve_path_1( const vInfo * e )
 	return st ;
 }
 
+stringList_t zuluCryptGetMoutedListFromMountInfo( void )
+{
+	return _volumeList( _resolve_path_1 ) ;
+}
+
 static string_t _resolve_path_2( const vInfo * e )
 {
 	/*
@@ -125,19 +130,14 @@ static string_t _resolve_path_2( const vInfo * e )
 	return st ;
 }
 
-static string_t _get_mounted_device_list( const vInfo * e )
-{
-	return zuluCryptResolvePath_1( e->device ) ;
-}
-
-stringList_t zuluCryptGetMoutedListFromMountInfo( void )
-{
-	return _volumeList( _resolve_path_1 ) ;
-}
-
 stringList_t zuluCryptGetMoutedListFromMountInfo_1( void )
 {
 	return _volumeList( _resolve_path_2 ) ;
+}
+
+static string_t _get_mounted_device_list( const vInfo * e )
+{
+	return zuluCryptResolvePath_1( e->device ) ;
 }
 
 stringList_t zuluCryptGetAListOfMountedVolumes( void )
@@ -174,11 +174,11 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	/*
 	 * zuluCryptMapperPrefix() is defined in create_mapper_name.c
 	 */
-	j = String( zuluCryptMapperPrefix() ) ;
+	j = String_1( zuluCryptMapperPrefix(),"/zuluCrypt-",NULL ) ;
 	/*
 	 * t will probably contain "/dev/mapper/zuluCrypt-"
 	 */
-	t = StringAppend( j,"/zuluCrypt-" ) ;
+	t = StringContent( j ) ;
 
 	StringListGetIterators( stl,&it,&end ) ;
 

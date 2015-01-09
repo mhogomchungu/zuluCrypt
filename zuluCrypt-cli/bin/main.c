@@ -443,18 +443,27 @@ int main( int argc,char * argv[] )
 		q = StringListAssignString( stl,String( clargs.existing_key ) ) ;
 		hide( clargs.existing_key ) ;
 		clargs.existing_key = StringContent( q ) ;
-		clargs.tcrypt_hidden_volume_key_file = clargs.existing_key ;
 	}
 	if( clargs.device != NULL ){
 		q = StringListAssignString( stl,String( clargs.device ) ) ;
 		hide( clargs.device ) ;
 		clargs.device = StringContent( q ) ;
 	}
-	if( clargs.tcrypt_multiple_keyfiles != NULL ){
-		q = StringListAssignString( stl,String( clargs.tcrypt_multiple_keyfiles ) ) ;
-		hide( clargs.tcrypt_multiple_keyfiles ) ;
-		clargs.tcrypt_multiple_keyfiles = StringContent( q ) ;
+
+	for( i = 0 ; clargs.tcrypt_multiple_keyfiles[ i ] != NULL ; i++ ){
+
+		q = StringListAssignString( stl,String( clargs.tcrypt_multiple_keyfiles[ i ] ) ) ;
+		hide( clargs.tcrypt_multiple_keyfiles[ i ] ) ;
+		clargs.tcrypt_multiple_keyfiles[ i ] = StringContent( q ) ;
 	}
+
+	for( i = 0 ; clargs.tcrypt_hidden_volume_multiple_keyfiles[ i ] != NULL ; i++ ){
+
+		q = StringListAssignString( stl,String( clargs.tcrypt_hidden_volume_multiple_keyfiles[ i ] ) ) ;
+		hide( clargs.tcrypt_hidden_volume_multiple_keyfiles[ i ] ) ;
+		clargs.tcrypt_hidden_volume_multiple_keyfiles[ i ] = StringContent( q ) ;
+	}
+
 	zuluCryptSecurityLockMemory( stl ) ;
 
 	action = clargs.action ;

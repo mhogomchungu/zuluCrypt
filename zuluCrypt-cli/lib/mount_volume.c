@@ -336,9 +336,8 @@ static int mount_FUSEfs_0( m_struct * mst )
 
 	ProcessStart( p ) ;
 
-	status = ProcessExitStatus( p ) ;
+	status = ProcessWaitUntilFinished( &p ) ;
 
-	ProcessDelete( &p ) ;
 	StringDelete( &st ) ;
 
 	return status ;

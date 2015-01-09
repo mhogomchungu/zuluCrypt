@@ -37,9 +37,12 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 {
 	int c ;
 
+	int k = 0 ;
+	int n = 0 ;
+
 	zuluCryptEXEGetOptsSetDefault( stopts ) ;
 
-	while ( ( c = getopt( argc,argv,"MHZCUWTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:Y:i:z:g:y:u:l:n:j:t:G:F:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"MHZCUWTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:Y:i:z:g:y:u:l:n:j:t:G:F:V:" ) ) != -1 ) {
 		switch( c ){
 			case( 'H' ) : stopts->action = 'H' 	; break ;
 			case( 'C' ) : stopts->action = 'C' 	; break ;
@@ -105,13 +108,20 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			stopts->key = optarg ;
 			break ;
 			case( 'F' ) :
-			stopts->tcrypt_multiple_keyfiles = optarg ;
+				if( k < TRUECRYPT_MAX_KEYFILES ){
+					/*
+					* TRUECRYPT_MAX_KEYFILES is set at libzuluCrypt-exe.h
+					*/
+					stopts->tcrypt_multiple_keyfiles[ k ] = optarg ;
+					k++ ;
+				}
 			break ;
 			case( 'f' ) : stopts->key_source = "-f" ;
 			stopts->key = optarg ;
 			break ;
-			case( 'e' ) : stopts->m_opts = optarg ;
-			stopts->tcrypt_hidden_volume_size = optarg ;
+			case( 'e' ) :
+				stopts->m_opts = optarg ;
+				stopts->tcrypt_hidden_volume_size = optarg ;
 			break ;
 			case( 'Y' ) : stopts->fs_opts = optarg ;
 			break ;
@@ -123,9 +133,18 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			case( 'y' ) : stopts->existing_key_source = "-p" ;
 			stopts->existing_key = optarg ;
 			break ;
-			case( 'u' ) : stopts->existing_key_source = "-f" ;
-			stopts->existing_key = optarg ;
-			stopts->tcrypt_hidden_volume_key_file = optarg ;
+			case( 'u' ) :
+				stopts->existing_key_source = "-f" ;
+				stopts->existing_key = optarg ;
+			break ;
+			case( 'V' ) :
+				if( n < TRUECRYPT_MAX_KEYFILES ){
+					/*
+					* TRUECRYPT_MAX_KEYFILES is set at libzuluCrypt-exe.h
+					*/
+					stopts->tcrypt_hidden_volume_multiple_keyfiles[ n ] = optarg ;
+					n++ ;
+				}
 			break ;
 			case( 'l' ) : stopts->new_key_source = "-p" ;
 			stopts->new_key = optarg ;
@@ -138,4 +157,3 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 		}
 	}
 }
-

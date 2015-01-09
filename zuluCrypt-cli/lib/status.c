@@ -78,7 +78,7 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 char * zuluCryptGetUUIDFromMapper( const char * mapper )
 {
 	string_t uuid ;
-	struct crypt_device * cd;
+	struct crypt_device * cd ;
 	const char * id ;
 	const char * type ;
 	const char * e = " UUID:   \t\"Nil\"" ;
@@ -374,7 +374,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	path = zuluCryptGetMountPointFromPath( mapper ) ;
 	if( path != NULL ){
 		zuluCryptFileSystemProperties( p,mapper,path ) ;
-		free( path ) ;
+		StringFree( path ) ;
 	}
 
 	return zuluExit( p,cd ) ;

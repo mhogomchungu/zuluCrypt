@@ -204,13 +204,13 @@ void passwordDialog::tcryptGui()
 	m_ui->PassPhraseField->setText( "" ) ;
 
 	tcrypt * t = new tcrypt( this ) ;
-	connect( t,SIGNAL( Keys( QString,QString ) ),this,SLOT( keys( QString,QString ) ) ) ;
+	connect( t,SIGNAL( Keys( QString,QStringList ) ),this,SLOT( keys( QString,QStringList ) ) ) ;
 	connect( t,SIGNAL( cancelled() ),this,SLOT( tcryptCancelled() ) ) ;
 
 	t->ShowUI() ;
 }
 
-void passwordDialog::keys( QString key,QString keyFiles )
+void passwordDialog::keys( QString key,QStringList keyFiles )
 {
 	m_key = key ;
 	m_keyFiles = keyFiles ;
@@ -589,13 +589,17 @@ void passwordDialog::openVolume()
 	const QString& e = passtype ;
 	const QString& f = keyPath ;
 
-	QString exe ;
+	QString exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a,b,c,d,e,f ) ;
 
-	if( m_keyFiles.isEmpty() ){
-		exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a,b,c,d,e,f ) ;
-	}else{
-		m_keyFiles.replace( "\"","\"\"\"" ) ;
-		exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\" -F \"%7\"" ).arg( a,b,c,d,e,f,m_keyFiles ) ;
+	if( !m_keyFiles.isEmpty() ){
+
+		for( const auto& it : m_keyFiles ){
+
+			QString e = it ;
+			e.replace( "\"","\"\"\"" ) ;
+
+			exe += " -F " + e ;
+		}
 	}
 
 	this->disableAll() ;

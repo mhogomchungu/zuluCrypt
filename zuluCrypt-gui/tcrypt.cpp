@@ -114,19 +114,12 @@ void tcrypt::pbSend()
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "at least one keyfile is required" ) ) ;
 	}else{
-		QString keyFiles = l.first() ;
-		l.removeFirst() ;
-
-		for( const auto& it : l ){
-			keyFiles += "\t" + it ;
-		}
-
 		/*
 		 * we call hide() because the GUI doesnt seem to hide when called later on in HideUI()
 		 */
 		this->hide() ;
 
-		emit Keys( m_ui->lineEdit->text(),keyFiles ) ;
+		emit Keys( m_ui->lineEdit->text(),l ) ;
 		this->HideUI() ;
 	}
 }

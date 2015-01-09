@@ -39,6 +39,8 @@
 static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 {
 	int c ;
+	int k = 0 ;
+
 	while( ( c = getopt( argc,argv,"cEMLntASNshlPmuDd:z:e:Y:p:f:G:o:F:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
@@ -67,7 +69,15 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 				   args->key_source = "-f"; break ;
 			case 'G' : args->key     = optarg ;
 				   args->key_source = "-G"; break ;
-			case 'F' : args->tcrypt_multiple_keyfiles = optarg ; break ;
+			case 'F' :
+				   if( k < TRUECRYPT_MAX_KEYFILES ){
+					   /*
+					    * TRUECRYPT_MAX_KEYFILES is set at ../zuluCrypt-cli/bin/libzuluCrypt-exe.h
+					    */
+					args->tcrypt_multiple_keyfiles[ k ] = optarg ;
+					k++ ;
+				   }
+				   break ;
 			default  : return -1 ;
 		}
 	}
@@ -447,6 +457,8 @@ int main( int argc,char * argv[] )
 	stringList_t stx ;
 	int status ;
 
+	int i ;
+
 	uid_t uid = getuid() ;
 	gid_t gid = getgid() ;
 
@@ -541,11 +553,13 @@ int main( int argc,char * argv[] )
 		strncpy( ( char * ) args.key,"x",StringLength( *k ) ) ;
 		args.key = StringContent( *k ) ;
 	}
-	if( args.tcrypt_multiple_keyfiles != NULL ){
+
+	for( i = 0 ; args.tcrypt_multiple_keyfiles[ i ] != NULL ; i++ ){
+
 		k = StringListAssign( stl ) ;
-		*k = String( args.tcrypt_multiple_keyfiles ) ;
-		strncpy( ( char * ) args.tcrypt_multiple_keyfiles,"x",StringLength( *k ) ) ;
-		args.tcrypt_multiple_keyfiles = StringContent( *k ) ;
+		*k = String( args.tcrypt_multiple_keyfiles[ i ] ) ;
+		strncpy( ( char * ) args.tcrypt_multiple_keyfiles[ i ],"x",StringLength( *k ) ) ;
+		args.tcrypt_multiple_keyfiles[ i ] = StringContent( *k ) ;
 	}
 
 	zuluCryptSecurityLockMemory( stl ) ;

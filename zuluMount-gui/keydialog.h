@@ -22,6 +22,8 @@
 
 #include <QDialog>
 #include <QString>
+#include <QStringList>
+
 #include <QMenu>
 
 class QCloseEvent ;
@@ -67,7 +69,7 @@ private slots:
 	void doAction( QAction * ) ;
 	void showOffSetWindowOption( void ) ;
 	void showFileSystemOptionWindow( void ) ;
-	void keys( QString key,QString keyFiles ) ;
+	void keys( QString key,QStringList keyFiles ) ;
 	void tcryptCancelled( void ) ;
 private :
 	void tcryptGui( void ) ;
@@ -80,7 +82,7 @@ private :
 	QString m_path ;
 	QString m_point ;
 	QString m_key ;
-	QString m_keyFiles ;
+	QStringList m_keyFiles ;
 	QString m_deviceOffSet ;
 	QString m_options ;
 	QMenu * m_menu ;

@@ -28,6 +28,7 @@ class QTableWidgetItem ;
 #include <QDropEvent>
 #include <QDragEnterEvent>
 #include <QString>
+#include <QStringList>
 
 namespace Ui {
 class tcrypt;
@@ -42,7 +43,7 @@ public:
 	void HideUI( void ) ;
 	~tcrypt();
 signals:
-	void Keys( QString passphrase,QString keyfiles ) ;
+	void Keys( QString passphrase,QStringList keyfiles ) ;
 	void cancelled( void ) ;
 private slots:
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;

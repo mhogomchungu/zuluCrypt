@@ -59,11 +59,14 @@ static inline int _unmount_volume_1( const char * m_dir )
 	 * Trying to unmount more than once seem to be necessary sometimes
 	 */
 	for( i = 0 ; i < 5 ; i++ ){
+
 		p = Process( ZULUCRYPTumount ) ;
+
 		ProcessSetArgumentList( p,m_dir,NULL ) ;
 		ProcessStart( p ) ;
-		h = ProcessExitStatus( p ) ;
-		ProcessDelete( &p ) ;
+
+		h = ProcessWaitUntilFinished( &p ) ;
+
 		if( h == 0 ){
 			break ;
 		}else{

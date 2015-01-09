@@ -65,7 +65,7 @@ private slots :
 	void file_path( void  ) ;
 	void mountPointPath( QString ) ;
 	void cbStateChanged( int ) ;
-	void keys( QString key,QString keyFiles ) ;
+	void keys( QString key,QStringList keyFiles ) ;
 	void tcryptCancelled( void ) ;
 private :
 	void tcryptGui( void ) ;
@@ -87,7 +87,7 @@ private :
 	QMenu * m_pluginMenu ;
 	QWidget * m_parent ;
 	QString m_key ;
-	QString m_keyFiles ;
+	QStringList m_keyFiles ;
 	QString m_device ;
 	QString m_point ;
 

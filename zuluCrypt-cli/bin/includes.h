@@ -62,6 +62,16 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 int zuluCryptVolumeIsInSystemVolumeList( const char * device ) ;
 
 /*
+ * this function is defined in open_volume.c
+ */
+stringList_t zuluCryptCreateKeyFiles( const char * const * list,int s ) ;
+
+/*
+ * this function is defined in open_volume.c
+ */
+void zuluCryptDeleteKeyFiles( stringList_t stl ) ;
+
+/*
  * this function is defined in module_system.c
  * It gets a passphrase from a .so file as a plugin.
  */
