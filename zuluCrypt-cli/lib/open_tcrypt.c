@@ -131,7 +131,7 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 		memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
 
 		params.keyfiles_count   = opts->tcrypt_keyfiles_count ;
-		params.keyfiles         = ( const char **)opts->tcrypt_keyfiles ;
+		params.keyfiles         = ( const char ** )opts->tcrypt_keyfiles ;
 
 		params.passphrase       = opts->key ;
 		params.passphrase_size  = opts->key_len ;

@@ -343,7 +343,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			/*
 			 * zuluCryptCreateKeyFiles() is defined in create_volume.c
 			 */
-			stz = zuluCryptCreateKeyFiles( tcrypt_keyfiles,100 ) ;
+			stz = zuluCryptCreateKeyFiles( tcrypt_keyfiles,0 ) ;
 		}
 
 		if( tcrypt_source == TCRYPT_KEYFILE ){
@@ -373,7 +373,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				/*
 				 * zuluCryptCreateKeyFiles() is defined in open_volume.c
 				 */
-				stk = zuluCryptCreateKeyFiles( tcrypt_hidden_volume_keyFiles,200 ) ;
+				stk = zuluCryptCreateKeyFiles( tcrypt_hidden_volume_keyFiles,1000 ) ;
 			}
 
 			if( tcrypt_source_h == TCRYPT_KEYFILE ){
@@ -411,6 +411,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		 */
 		zuluCryptDeleteKeyFiles( stz ) ;
 		zuluCryptDeleteKeyFiles( stk ) ;
+
+		StringFree( tcrypt.keyfiles_h ) ;
+		StringFree( tcrypt.keyfiles ) ;
 
 		StringListMultipleDelete( &stz,&stk,NULL ) ;
 	}else{
