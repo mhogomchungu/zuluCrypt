@@ -71,6 +71,7 @@ private slots:
 	void showFileSystemOptionWindow( void ) ;
 	void keys( QString key,QStringList keyFiles ) ;
 	void tcryptCancelled( void ) ;
+	void encfsMount( void ) ;
 private :
 	void tcryptGui( void ) ;
 	void openVolume( void ) ;
@@ -89,6 +90,7 @@ private :
 	QMenu * m_menu_1 ;
 	QTableWidget * m_table ;
 	bool m_working ;
+	bool m_volumeIsEncFs = false ;
 	enum{ Key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
 };
 

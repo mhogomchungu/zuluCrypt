@@ -48,6 +48,17 @@ static int _valid_entry( const vInfo * e )
 	return 0 ;
 }
 
+static const char * _encfs_volume_name( int * e )
+{
+	static char buffer[ 64 ] ;
+
+	snprintf( buffer,sizeof( buffer ),"encfs-%d",*e ) ;
+
+	*e += 1 ;
+
+	return buffer ;
+}
+
 static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 {
 	vInfo volumeInfo ;
@@ -56,6 +67,8 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 
 	size_t entry_len = 0 ;
 	int index ;
+
+	int r = 1 ;
 
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid ;
@@ -80,21 +93,25 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 
 		index = StringListContains( tmp,"-" ) ;
 
-		if( index != -1 ){
+		st = StringListStringAt( tmp,index + 2 ) ;
 
-			StringListStringArray_1( &entry,&entry_len,tmp ) ;
+		if( StringEqual( st,"encfs" ) ){
 
-			volumeInfo.device       = *( entry + index + 2 ) ;
-			volumeInfo.mountPoint   = *( entry + 4 ) ;
-			volumeInfo.fileSystem   = *( entry + index + 1 ) ;
-			volumeInfo.mountOptions = *( entry + 5 ) ;
-			volumeInfo.rootPath     = *( entry + 3 ) ;
+			StringReplace( st,_encfs_volume_name( &r ) ) ;
+		}
 
-			if( _valid_entry( &volumeInfo ) ){
+		StringListStringArray_1( &entry,&entry_len,tmp ) ;
 
-				st = function( &volumeInfo ) ;
-				stx = StringListAppendString_1( stx,&st ) ;
-			}
+		volumeInfo.device       = *( entry + index + 2 ) ;
+		volumeInfo.mountPoint   = *( entry + 4 ) ;
+		volumeInfo.fileSystem   = *( entry + index + 1 ) ;
+		volumeInfo.mountOptions = *( entry + 5 ) ;
+		volumeInfo.rootPath     = *( entry + 3 ) ;
+
+		if( _valid_entry( &volumeInfo ) ){
+
+			st = function( &volumeInfo ) ;
+			stx = StringListAppendString_1( stx,&st ) ;
 		}
 
 		StringListDelete( &tmp ) ;

@@ -120,7 +120,7 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 			return zuluExit( 2,m ) ;
 		}
 
-	}else if( StringsAreEqual( type,"plain") ){
+	}else if( StringsAreEqual( type,"plain" ) ){
 
 		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) != 0 ){
 

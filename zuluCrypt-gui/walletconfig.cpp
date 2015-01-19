@@ -82,9 +82,9 @@ void walletconfig::itemClicked( QTableWidgetItem * item )
 
 	m_row = item->row() ;
 
-	QString volumeID = m_ui->tableWidget->item( m_row,0 )->text() ;
+	m_volumeID = m_ui->tableWidget->item( m_row,0 )->text() ;
 
-	int r = msg.ShowUIYesNo( tr( "warning" ),tr( "are you sure you want to delete a volume with an id of \"%1\"?" ).arg( volumeID ) ) ;
+	int r = msg.ShowUIYesNo( tr( "warning" ),tr( "are you sure you want to delete a volume with an id of \"%1\"?" ).arg( m_volumeID ) ) ;
 
 	if( r == QMessageBox::Yes ){
 

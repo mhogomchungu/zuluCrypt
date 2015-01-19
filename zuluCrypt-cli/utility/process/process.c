@@ -136,7 +136,7 @@ void ProcessSetArgumentList( process_t p,... )
 
 static void * __timer( void * x )
 {
-	process_t  p = ( process_t ) x ;
+	process_t p = x ;
 
 	sleep( p->str.timeout ) ;
 
@@ -149,12 +149,12 @@ static void * __timer( void * x )
 
 static void __ProcessStartTimer( process_t p )
 {
-	p->thread = ( pthread_t * ) malloc( sizeof( pthread_t ) ) ;
+	p->thread = malloc( sizeof( pthread_t ) ) ;
 
 	if( p->thread == NULL ){
 		_ProcessError()  ;
 	}else{
-		pthread_create( p->thread,NULL,__timer,( void * )p );
+		pthread_create( p->thread,NULL,__timer,p ) ;
 	}
 }
 

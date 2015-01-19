@@ -37,7 +37,7 @@ walletconfiginput::walletconfiginput( QWidget * parent ) : QDialog( parent ),m_u
 		this->setFont( parent->font() ) ;
 	}
 
-	m_ui->lineEditVolumeID->setEnabled( false ) ;
+	m_ui->lineEditVolumeID->setEnabled( true ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 	m_ui->lineEditRepeatKey->setEchoMode( QLineEdit::Password ) ;
 

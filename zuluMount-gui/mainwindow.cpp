@@ -520,20 +520,37 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	m.setFont( this->font() ) ;
 
-	QString mt = m_ui->tableWidget->item( item->row(),1 )->text() ;
+	int row = item->row() ;
+
+	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
+
+	QString device = m_ui->tableWidget->item( row,0 )->text() ;
 
 	if( mt == "Nil" ){
+
 		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( slotMount() ) ) ;
 	}else{
 		QString mp = QString( "/run/media/private/%1/" ).arg( utility::userName() ) ;
 		QString mp_1 = QString( "/home/%1/" ).arg( utility::userName() ) ;
+
 		if( mt.startsWith( mp ) || mt.startsWith( mp_1 ) ){
+
 			connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
+
 			m.addSeparator() ;
-			connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
-			m.addSeparator() ;
+
+			QString fs = m_ui->tableWidget->item( row,2 )->text() ;
+
+			if( fs != "encfs" ){
+
+				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+				m.addSeparator() ;				
+			}
+
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
+
 			if( m_sharedFolderPath.isEmpty() ){
+
 				connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenFolder() ) ) ;
 			}else{
@@ -544,8 +561,11 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 			}
 		}else{
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
+
 			if( m_sharedFolderPath.isEmpty() ){
+
 				if( utility::pathIsReadable( mt ) ){
+
 					connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 					m.addSeparator() ;
 					connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),
@@ -555,7 +575,9 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 				}
 			}else{
 				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+
 				m.addSeparator() ;
+
 				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenSharedFolder() ) ) ;
 			}
@@ -734,12 +756,7 @@ void MainWindow::dropEvent( QDropEvent * e )
 
 	for( const auto& it : l ){
 
-		const QString& p = it.path() ;
-
-		if( utility::pathPointsToAFile( p ) ){
-
-			this->showMoungDialog( p ) ;
-		}
+		this->showMoungDialog( it.path() ) ;
 	}
 }
 
@@ -792,7 +809,25 @@ void MainWindow::showMoungDialog( const QString& volume )
 {
 	if( !volume.isEmpty() ){
 
-		this->showMoungDialog( zuluMountTask::getVolumeProperties( volume ).await() ) ;
+		if( utility::pathPointsToAFile( volume ) ){
+
+			this->showMoungDialog( zuluMountTask::getVolumeProperties( volume ).await() ) ;
+
+		}else if( utility::pathPointsToAFolder( volume ) ){
+
+			QStringList l ;
+
+			l.append( volume ) ;
+			l.append( "Nil" ) ;
+			l.append( "encfs" ) ;
+			l.append( "Nil" ) ;
+			l.append( "Nil" ) ;
+			l.append( "Nil" ) ;
+
+			volumeEntryProperties v( l ) ;
+
+			this->mount( v ) ;
+		}
 	}
 }
 
@@ -881,15 +916,28 @@ void MainWindow::pbUmount()
 	int row = m_ui->tableWidget->currentRow() ;
 
 	QString path = m_ui->tableWidget->item( row,0 )->text() ;
-	QString type = m_ui->tableWidget->item( row,2 )->text() ;
 
-	auto r = zuluMountTask::unmountVolume( path,type ).await() ;
+	if( path.startsWith( "encfs" ) ){
 
-	if( r.failed() ){
+		QString m = m_ui->tableWidget->item( row,1 )->text() ;
 
-		DialogMsg m( this ) ;
-		m.ShowUIOK( tr( "ERROR" ),r.output() ) ;
-		this->enableAll() ;
+		if( !zuluMountTask::encfsUnmount( m ).await() ){
+
+			DialogMsg m( this ) ;
+			m.ShowUIOK( tr( "ERROR" ),tr( "failed to unmount encfs volume" ) ) ;
+			this->enableAll() ;
+		}
+	}else{
+		QString type = m_ui->tableWidget->item( row,2 )->text() ;
+
+		auto r = zuluMountTask::unmountVolume( path,type ).await() ;
+
+		if( r.failed() ){
+
+			DialogMsg m( this ) ;
+			m.ShowUIOK( tr( "ERROR" ),r.output() ) ;
+			this->enableAll() ;
+		}
 	}
 }
 
@@ -905,17 +953,23 @@ void MainWindow::unMountAll()
 
 	QStringList p ;
 	QStringList q ;
+	QStringList n ;
 
 	QString a = utility::userName() ;
 	QString b = utility::mountPath( QString() ) ;
+	QString c = utility::homeMountPath( QString() ) ;
 
 	int k = x.size() ;
 
 	for( int i = 0 ; i < k ; i++ ){
+
 		const QString& e = x.at( i ) ;
-		if( e.startsWith( b ) ){
+
+		if( e.startsWith( b ) || e.startsWith( c ) ){
+
 			p.append( y.at( i ) ) ;
 			q.append( z.at( i ) ) ;
+			n.append( e ) ;
 		}
 	}
 
@@ -931,9 +985,18 @@ void MainWindow::unMountAll()
 
 			for( int i = 0 ; i < r ; i++ ){
 
-				zuluMountTask::volumeUnmount( p.at( i ),q.at( i ) ) ;
+				const QString& e = q.at( i ) ;
+
+				if( e == "encfs" ){
+
+					zuluMountTask::encfsUnmount( n.at( i ) ).get() ;
+				}else{
+					zuluMountTask::volumeUnmount( p.at( i ),e ) ;
+				}
+
 				utility::Task::waitForOneSecond() ;
 			}
+
 			utility::Task::waitForTwoSeconds() ;
 		}
 	} ) ;
@@ -990,8 +1053,15 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	auto _hasNoEntry = [&]( const QString& volume ){
 
 		for( const auto& it : entries ){
+
 			if( it.volumeName() == volume ){
+
+				if( volume.startsWith( "encfs" ) ){
+
+					return false ;
+				}
 				if( it.volumeSize() == "Nil" ){
+
 					return true ;
 				}else{
 					return false ;
@@ -1003,8 +1073,11 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	} ;
 
 	QStringList z ;
+	
 	for( const auto& it : l ){
+
 		if( _hasNoEntry( it ) ){
+
 			z.append( it ) ;
 		}
 	}

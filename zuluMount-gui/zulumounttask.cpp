@@ -424,3 +424,111 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 		default                       : return _shouldNotGetHere() ;
 	}
 }
+
+Task::future<bool>& zuluMountTask::encfsUnmount( const QString& m )
+{
+	return ::Task::run< bool >( [ m ](){
+
+		auto _umount = [ & ](){
+
+			if( utility::Task( "/usr/bin/fusermount -u " + m ).exitCode() == 0 ){
+
+				QDir d ;
+				d.rmdir( m ) ;
+
+				return true ;
+			}else{
+				return false ;
+			}
+		} ;
+
+		for( int i = 0 ; i < 5 ; i++ ){
+
+			if( _umount() ){
+
+				return true ;
+			}else{
+				utility::Task::waitForOneSecond() ;
+			}
+		}
+
+		return false ;
+	} ) ;
+}
+
+Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m,const QString& k,bool ro )
+{
+	return Task::run< bool >( [ p,m,k,ro ](){
+
+		auto _encfsMount = [ & ](){
+
+			auto _mount = [ & ](){
+
+				QString exe ;
+
+				if( ro ){
+
+					exe = QString( "/usr/bin/encfs -S %1 %2 -o ro" ).arg( p ).arg( m ) ;
+				}else{
+					exe = QString( "/usr/bin/encfs -S %1 %2" ).arg( p ).arg( m ) ;
+				}
+
+				QProcess e ;
+
+				e.start( exe ) ;
+				e.waitForStarted() ;
+				e.write( k.toLatin1() + '\n' ) ;
+
+				e.closeWriteChannel() ;
+
+				if( e.waitForFinished( 10000 ) ){
+					return e.exitCode() == 0 ;
+				}else{
+					return false ;
+				}
+			} ;
+
+			if( utility::pathExists( m ) ){
+
+				return _mount() ;
+			}else{
+				QDir d ;
+
+				if( d.mkpath( m ) ){
+
+					if( _mount() ){
+
+						return true ;
+					}else{
+						d.rmdir( m ) ;
+
+						return false ;
+					}
+				}else{
+					return false ;
+				}
+			}
+		} ;
+
+		QDir d( p ) ;
+
+		QStringList l = d.entryList( QDir::Hidden | QDir::Files ) ;
+
+		for( const auto& it : l ){
+
+			if( it.startsWith( ".encfs" ) ){
+
+				/*
+				 * encfs folders usually have a config hidden file name named ".encfs6.xml"
+				 * and we assume the folder contains encfs files only if this file
+				 * is present.
+				 */
+
+				return _encfsMount() ;
+			}
+		}
+
+		return false ;
+	} ) ;
+}
+

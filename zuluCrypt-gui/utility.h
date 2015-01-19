@@ -76,13 +76,15 @@ namespace utility
 	bool userIsRoot( void ) ;
 	bool mapperPathExists( const QString& path ) ;
 	QString mountPath( const QString& ) ;
-	QString mountPathPostFix( const QString& ) ;
+	QString homeMountPath( const QString& ) ;
+	QString mountPathPostFix( const QString&,bool encfs = false ) ;
 	QString userName( void ) ;
 	void help( const QString& app ) ;
 	QString shareMountPointToolTip( void ) ;
 	QString shareMountPointToolTip( const QString& ) ;
 	QString sharedMountPointPath( const QString& ) ;
 	bool pathPointsToAFile( const QString& ) ;
+	bool pathPointsToAFolder( const QString& ) ;
 	QString localizationLanguage( const QString& ) ;
 	QString localizationLanguagePath( const QString& ) ;
 	void setLocalizationLanguage( const QString&,const QString& ) ;

@@ -30,7 +30,6 @@
 
 stringList_t zuluCryptPartitionList( void ) ;
 
-
 void zuluMountPartitionProperties( const char * dev,const char * UUID,const char * mapper,const char * m_point )
 {
 	#define SIZE 64
@@ -52,6 +51,17 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,const char
 
 	const char * device = NULL ;
 	char * device_1 = NULL ;
+
+	if( StringPrefixEqual( dev,"encfs" ) ){
+
+		if( m_point != NULL ){
+
+			printf( "%s\t%s\tencfs\tNil\tNil\tNil\n",dev,m_point ) ;
+		}else{
+			printf( "%s\tNil\tencfs\tNil\tNil\tNil\n",dev ) ;
+		}
+		return ;
+	}
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
@@ -248,7 +258,7 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 			 */
 			f = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 			zuluMountPartitionProperties( x,e,q,f ) ;
-			free( x ) ;
+			StringFree( x ) ;
 			StringDelete( &st ) ;
 		}else{
 			StringReplaceChar_1( entry,0,' ','\0' ) ;
@@ -268,9 +278,16 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 
 static int _normal_mounted_volume( string_t st )
 {
-	return StringStartsWith( st,"/" )
-	&& !StringEqual( st,"/dev" )
-	&& !StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ;
+	if( StringStartsWithAtLeastOne( st,"/proc","/sys","/dev ",NULL ) ){
+		return 0 ;
+	}
+	if( StringEqual( st,"/dev" ) ){
+		return 0 ;
+	}
+	if( StringStartsWithAtLeastOne( st,"/","encfs",NULL ) ){
+		return 1 ;
+	}
+	return 0 ;
 }
 
 int zuluMountPrintVolumesProperties( uid_t uid )

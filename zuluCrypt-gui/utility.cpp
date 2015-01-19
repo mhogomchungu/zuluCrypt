@@ -438,6 +438,17 @@ bool utility::pathPointsToAFile( const QString& path )
 	}
 }
 
+bool utility::pathPointsToAFolder( const QString& path )
+{
+	struct stat st ;
+	QByteArray b = path.toLatin1() ;
+	if( stat( b.constData(),&st ) == 0 ){
+		return S_ISDIR( st.st_mode ) != 0 ;
+	}else{
+		return false ;
+	}
+}
+
 QString utility::localizationLanguage( const QString& program )
 {
 	QString langPath = utility::localizationLanguagePath( program ) ;
@@ -657,7 +668,12 @@ QString utility::mountPath( const QString& path )
 #endif
 }
 
-QString utility::mountPathPostFix( const QString& path )
+QString utility::homeMountPath( const QString& path )
+{
+	return QString( "%1/%2" ).arg( getpwuid( getuid() )->pw_dir ).arg( path ) ;
+}
+
+QString utility::mountPathPostFix( const QString& path,bool encfs )
 {
 	if( path.isEmpty() ){
 
@@ -665,7 +681,13 @@ QString utility::mountPathPostFix( const QString& path )
 	}else{
 		auto _path_not_found = []( const QString& e ){ return !utility::pathExists( e ) ; } ;
 
-		QString e = utility::mountPath( path ) ;
+		QString e ;
+
+		if( encfs ){
+			e = utility::homeMountPath( path ) ;
+		}else{
+			e = utility::mountPath( path ) ;
+		}
 
 		if( _path_not_found( e ) ){
 

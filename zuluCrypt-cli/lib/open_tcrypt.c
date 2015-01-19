@@ -105,7 +105,7 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 		return 0 ;
 	}else{
 		params.passphrase      = key ;
-		params.passphrase_size = StringSize( key );
+		params.passphrase_size = StringSize( key ) ;
 		params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
 
 		if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
@@ -122,7 +122,7 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 	int r ;
 
-	struct crypt_device * cd = NULL;
+	struct crypt_device * cd = NULL ;
 	struct crypt_params_tcrypt params ;
 
 	if( crypt_init( &cd,device ) < 0 ){

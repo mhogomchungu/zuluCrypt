@@ -74,6 +74,9 @@ public:
 		if( m_volume.isEmpty() ){
 			return false ;
 		}
+		if( m_volume.startsWith( "encfs" ) ){
+			return true ;
+		}
 		if( m_volumeSize == "1.0 KB" || m_volumeSize == "Nil" ){
 			return false ;
 		}
@@ -84,7 +87,7 @@ public:
 	}
 	bool encryptedVolume() const
 	{
-		return m_fileSystem.startsWith( "crypto" ) || m_fileSystem == "Nil" ;
+		return m_fileSystem.startsWith( "crypto" ) || m_fileSystem == "Nil" || m_fileSystem == "encfs" ;
 	}
 	QStringList entryList() const
 	{

@@ -588,6 +588,16 @@ int StringEqualString( string_t x,string_t y ) ;
 int StringEqual( string_t x,const char * y ) ;
 
 /*
+ * Compare a string handled by handle x to a string pointer to by y.
+ * return 0 if they are equal
+ * return 1 if they are not equal
+ */
+static __inline__ int StringNotEqual( string_t x,const char * y )
+{
+	return !StringEqual( x,y ) ;
+}
+
+/*
  * compare string managed by x with a series of cstrings and return true if atleast one of them match
  * NOTE:the series of strings must be NULL terminated
  * eg.

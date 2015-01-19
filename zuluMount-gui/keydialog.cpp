@@ -58,6 +58,11 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_table = table ;
 	m_path = e.volumeName() ;
 	m_working = false ;
+	m_volumeIsEncFs = e.fileSystem() == "encfs" ;
+
+	if( m_volumeIsEncFs ){
+		m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
+	}
 
 	QString msg ;
 	if( e.fileSystem() == "crypto_LUKS" ){
@@ -94,7 +99,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->pbOpenMountPoint->setVisible( false ) ;
 
-	m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+	m_point = utility::mountPathPostFix( m_path.split( "/" ).last(),m_volumeIsEncFs ) ;
 
 	m_ui->lineEditMountPoint->setText( m_point ) ;
 
@@ -383,8 +388,49 @@ void keyDialog::pbOpen()
 	}
 }
 
+void keyDialog::encfsMount()
+{
+	QString m = utility::homeMountPath( m_point ) ;
+	QString key ;
+
+	int keyType = m_ui->cbKeyType->currentIndex() ;
+
+	if( keyType == keyDialog::Key ){
+
+		key = m_ui->lineEditKey->text() ;
+
+	}else if( keyType == keyDialog::plugin ){
+
+		key =  m_key ;
+	}else{
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "invalid key source for this volume type" ) ) ;
+		m_ui->lineEditKey->setFocus() ;
+		return this->enableAll() ;
+	}
+
+	bool ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
+
+	if( zuluMountTask::encfsMount( m_path,m,key,ro ).await() ){
+
+		emit openMountPoint( m ) ;
+
+		this->HideUI() ;
+	}else{
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "failed to unlock an encfs volume.\nwrong password or not an encfs volume" ) ) ;
+		m_ui->lineEditKey->setFocus() ;
+		return this->enableAll() ;
+	}
+}
+
 void keyDialog::openVolume()
 {
+	if( m_volumeIsEncFs ){
+
+		return this->encfsMount() ;
+	}
+
 	int keyType = m_ui->cbKeyType->currentIndex() ;
 
 	if( m_ui->lineEditKey->text().isEmpty() ){
