@@ -637,9 +637,9 @@ void createvolume::taskFinished( int st )
 {
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
-	QString x = tr( "volume created successfully" ) ;
+	QString x = tr( "volume created successfully." ) ;
 	if( m_volumeType.contains( "luks" ) || m_volumeType.contains( "truecrypt" ) ){
-		x += tr( "\n\ncreating a backup of the \"%1\" volume header is strongly advised.\nPlease read documentation on why this is important." ).arg( m_volumeType ) ;
+		x += tr( "\ncreating a backup of the \"%1\" volume header is strongly advised.\nPlease read documentation on why this is important." ).arg( m_volumeType ) ;
 	}
 	switch ( st ){
 		case 0 : msg.ShowUIOK( tr( "SUCCESS!" ),x ) ;

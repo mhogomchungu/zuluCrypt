@@ -367,7 +367,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		key_len = StringLength( *passphrase ) ;
 		key = StringContent( *passphrase ) ;
 		zuluCryptSecurityLockMemory_1( *passphrase ) ;
-	}else if( source == NULL && tcrypt_keyfiles == NULL ){
+	}else if( source == NULL && tcrypt_keyfiles[ 0 ] == NULL ){
 		printf( gettext( "Enter passphrase: " ) ) ;
 		/*
 		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
