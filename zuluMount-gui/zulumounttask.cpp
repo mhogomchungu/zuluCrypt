@@ -468,9 +468,9 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 
 				if( ro ){
 
-					exe = QString( "/usr/bin/encfs -S %1 %2 -o ro" ).arg( p ).arg( m ) ;
+					exe = QString( "/usr/bin/encfs -S %1 %2 -o ro" ).arg( p,m ) ;
 				}else{
-					exe = QString( "/usr/bin/encfs -S %1 %2" ).arg( p ).arg( m ) ;
+					exe = QString( "/usr/bin/encfs -S %1 %2" ).arg( p,m ) ;
 				}
 
 				QProcess e ;
@@ -516,7 +516,7 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 
 		for( const auto& it : l ){
 
-			if( it.startsWith( ".encfs" ) ){
+			if( it.startsWith( ".encfs" ) && it.endsWith( ".xml" ) ){
 
 				/*
 				 * encfs folders usually have a config hidden file name named ".encfs6.xml"
@@ -531,4 +531,3 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 		return false ;
 	} ) ;
 }
-
