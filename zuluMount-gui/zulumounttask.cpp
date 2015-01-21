@@ -427,7 +427,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 
 Task::future<bool>& zuluMountTask::encfsUnmount( const QString& m )
 {
-	return ::Task::run< bool >( [ m ](){
+	return Task::run< bool >( [ m ](){
 
 		auto _umount = [ & ](){
 
