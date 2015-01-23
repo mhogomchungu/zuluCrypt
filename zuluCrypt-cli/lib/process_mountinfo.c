@@ -48,17 +48,6 @@ static int _valid_entry( const vInfo * e )
 	return 0 ;
 }
 
-#define SIZE 64
-
-static const char * _encfs_volume_name( char * buffer,int * e )
-{
-	snprintf( buffer,SIZE,"encfs-%d",*e ) ;
-
-	*e += 1 ;
-
-	return buffer ;
-}
-
 static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 {
 	vInfo volumeInfo ;
@@ -69,8 +58,6 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 	int index ;
 
 	int r = 1 ;
-
-	char buffer[ SIZE ] ;
 
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid ;
@@ -99,7 +86,9 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 
 		if( StringEqual( st,"encfs" ) ){
 
-			StringReplace( st,_encfs_volume_name( buffer,&r ) ) ;
+			StringAppend( st,"-" ) ;
+			StringAppendInt( st,r ) ;
+			r++ ;
 		}
 
 		StringListStringArray_1( &entry,&entry_len,tmp ) ;
