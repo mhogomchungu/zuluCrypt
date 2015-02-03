@@ -74,6 +74,9 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 
 	m_ui->lineEditDestinationPath->setText( QString() ) ;
 
+	m_ui->lineEditDestinationPath->setEnabled( false ) ;
+	m_ui->lineEditSourcePath->setEnabled( false ) ;
+
 	this->installEventFilter( this ) ;
 }
 
@@ -130,7 +133,7 @@ QString cryptfiles::destinationPath( const QString& e )
 			x.truncate( r ) ;
 			return x + "/" ;
 		}
-		return QString() ;
+		return QDir::homePath() + "/" ;
 	}
 }
 
