@@ -68,10 +68,11 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 
 	m_OperationInProgress = false ;
 
-	m_ui->lineEditDestinationPath->setText( QDir::homePath() + QString( "/" ) ) ;
 	m_ui->lineEditPass_2->setEchoMode( QLineEdit::Password ) ;
 
 	m_ui->lineEditSourcePath->setFocus() ;
+
+	m_ui->lineEditDestinationPath->setText( QString() ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -114,6 +115,25 @@ void cryptfiles::sourceTextChanged( QString source )
 	m_ui->lineEditDestinationPath->setText( path ) ;
 }
 
+QString cryptfiles::destinationPath( const QString& e )
+{
+	if( e.isEmpty() ){
+
+		return QDir::homePath() + "/" ;
+	}else{
+		int r = e.lastIndexOf( '/' ) ;
+
+		if( r == -1 ){
+			return QDir::homePath() + "/" ;
+		}else{
+			QString x = e ;
+			x.truncate( r ) ;
+			return x + "/" ;
+		}
+		return QString() ;
+	}
+}
+
 void cryptfiles::encrypt()
 {
 	m_operation = QString( "-E" ) ;
@@ -136,6 +156,7 @@ void cryptfiles::decrypt( const QString& e )
 	m_operation = QString( "-D" ) ;
 	m_ui->labelKey2->setEnabled( false ) ;
 	m_ui->lineEditPass_2->setEnabled( false ) ;
+	m_ui->lineEditDestinationPath->setText( this->destinationPath( e )  ) ;
 	this->sourceTextChanged( e ) ;
 	this->setWindowTitle( tr( "create decrypted version of an encrypted file" ) ) ;
 	this->show() ;
@@ -429,6 +450,8 @@ void cryptfiles::pbOpenFile()
 		Z = QFileDialog::getOpenFileName( this,tr( "select a file you want to decrypt" ),QDir::homePath(),x ) ;
 	}
 	m_ui->lineEditSourcePath->setText( Z ) ;
+	m_ui->lineEditDestinationPath->setText( this->destinationPath( Z ) ) ;
+	this->sourceTextChanged( Z ) ;
 	m_ui->lineEditPass_1->setFocus() ;
 }
 

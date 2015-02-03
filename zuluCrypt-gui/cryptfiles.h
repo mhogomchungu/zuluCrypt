@@ -67,6 +67,7 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void disableAll( void ) ;
 	void enableAll( void ) ;
+	QString destinationPath( const QString& e = QString() ) ;
 	Ui::cryptfiles * m_ui ;
 
 	QString m_path ;
