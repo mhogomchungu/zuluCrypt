@@ -44,6 +44,7 @@ signals:
 public slots:
 	void encrypt( void ) ;
 	void decrypt( void ) ;
+	void decrypt( const QString& ) ;
 	void enableCancel( void ) ;
 	void disableCancel( void ) ;
 private slots:

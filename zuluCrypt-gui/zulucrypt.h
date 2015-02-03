@@ -163,6 +163,7 @@ private:
 	void setUpApp( const QString& ) ;
 	void setFolderOpener( void ) ;
 	void processArgumentList( void ) ;
+	void decryptFile( const QString& ) ;
 	Ui::zuluCrypt * m_ui ;
 	QSystemTrayIcon * m_trayIcon ;
 	QString m_folderOpener ;

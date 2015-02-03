@@ -1063,7 +1063,11 @@ void zuluCrypt::ShowPasswordDialog()
 
 void zuluCrypt::ShowPasswordDialog( QString x,QString y )
 {
-	setUpPasswordDialog()->ShowUI( x,y ) ;
+	if( x.endsWith( ".zc" ) || x.endsWith( ".zC" ) ){
+		this->decryptFile( x ) ;
+	}else{
+		setUpPasswordDialog()->ShowUI( x,y ) ;
+	}
 }
 
 void zuluCrypt::partitionClicked( QString partition )
@@ -1090,9 +1094,14 @@ void zuluCrypt::encryptFile()
 	setUpCryptFiles()->encrypt() ;
 }
 
-void zuluCrypt::decryptFile()
+void zuluCrypt::decryptFile( void )
 {
 	setUpCryptFiles()->decrypt() ;
+}
+
+void zuluCrypt::decryptFile( const QString& e )
+{
+	setUpCryptFiles()->decrypt( e ) ;
 }
 
 zuluCrypt::~zuluCrypt()

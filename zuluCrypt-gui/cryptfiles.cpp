@@ -130,6 +130,17 @@ void cryptfiles::decrypt()
 	this->show() ;
 }
 
+void cryptfiles::decrypt( const QString& e )
+{
+	m_ui->lineEditSourcePath->setText( e ) ;
+	m_operation = QString( "-D" ) ;
+	m_ui->labelKey2->setEnabled( false ) ;
+	m_ui->lineEditPass_2->setEnabled( false ) ;
+	this->sourceTextChanged( e ) ;
+	this->setWindowTitle( tr( "create decrypted version of an encrypted file" ) ) ;
+	this->show() ;
+}
+
 void cryptfiles::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
