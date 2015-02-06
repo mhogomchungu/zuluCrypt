@@ -24,6 +24,18 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+static void _add_entry( string_t xt,ssize_t r,char * e )
+{
+	StringSubChar( xt,r,' ' ) ;
+
+	if( e != NULL ){
+
+		StringRemoveLeft( xt,r ) ;
+		StringPrepend( xt,e ) ;
+		StringFree( e ) ;
+	}
+}
+
 stringList_t zuluCryptGetFstabList( uid_t uid )
 {
 	string_t xt = StringGetFromFile( "/etc/fstab" ) ;
@@ -35,7 +47,6 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 
 	ssize_t index ;
 
-	char * ac ;
 	const char * entry ;
 
 	if( uid ){;}
@@ -55,46 +66,55 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end  ){
+
 		xt = *it ;
 		it++ ;
+
 		index = StringIndexOfChar( xt,0,' ' ) ;
+
 		if( index != -1 ){
+
 			entry = StringSubChar( xt,index,'\0' ) ;
+
 			if( StringPrefixEqual( entry,"/dev/" ) ){
+
 				/*
 				 * zuluCryptResolvePath() is defined in resolve_paths.c
 				 */
-				ac = zuluCryptResolvePath( entry ) ;
-				StringSubChar( xt,index,' ' ) ;
-				if( ac != NULL ){
-					StringRemoveLeft( xt,index ) ;
-					StringPrepend( xt,ac ) ;
-					free( ac ) ;
-				}
+				_add_entry( xt,index,zuluCryptResolvePath( entry ) ) ;
+
 			}else if( StringAtLeastOnePrefixMatch( entry,"UUID=","uuid=",NULL ) ){
+
 				entry = StringRemoveString( xt,"\"" ) ;
 				/*
 				 * zuluCryptDeviceFromUUID() is defined in blkid_evaluate_tag.c
 				 */
-				ac = zuluCryptDeviceFromUUID( entry + 5 ) ;
-				StringSubChar( xt,index,' ' ) ;
-				if( ac != NULL ){
-					StringRemoveLeft( xt,index ) ;
-					StringPrepend( xt,ac ) ;
-					free( ac ) ;
-				}
+				_add_entry( xt,index,zuluCryptDeviceFromUUID( entry + 5 ) ) ;
+
 			}else if( StringAtLeastOnePrefixMatch( entry,"LABEL=","label=",NULL ) ){
+
 				entry = StringRemoveString( xt,"\"" ) ;
 				/*
 				 * zuluCryptDeviceFromLabel() is defined in blkid_evaluate_tag.c
 				 */
-				ac = zuluCryptDeviceFromLabel( entry + 6 ) ;
-				StringSubChar( xt,index,' ' ) ;
-				if( ac != NULL ){
-					StringRemoveLeft( xt,index ) ;
-					StringPrepend( xt,ac ) ;
-					free( ac ) ;
-				}
+				_add_entry( xt,index,zuluCryptDeviceFromLabel( entry + 6 ) ) ;
+
+			}else if( StringAtLeastOnePrefixMatch( entry,"PARTUUID=","partuuid=",NULL ) ){
+
+				entry = StringRemoveString( xt,"\"" ) ;
+				/*
+				 * zuluCryptDeviceFromPARTUUID() is defined in blkid_evaluate_tag.c
+				 */
+				_add_entry( xt,index,zuluCryptDeviceFromPARTUUID( entry + 9 ) ) ;
+
+			}else if( StringAtLeastOnePrefixMatch( entry,"PARTLABEL=","partlabel=",NULL ) ){
+
+				entry = StringRemoveString( xt,"\"" ) ;
+				/*
+				 * zuluCryptDeviceFromPARTLABEL() is defined in blkid_evaluate_tag.c
+				 */
+				_add_entry( xt,index,zuluCryptDeviceFromPARTLABEL( entry + 10 ) ) ;
+
 			}else{
 				entry = StringSubChar( xt,index,' ' ) ;
 			}

@@ -40,10 +40,19 @@ char * zuluCryptDeviceFromUUID( const char * uuid )
 	return _resolve_path( blkid_evaluate_tag( "UUID",uuid,NULL) ) ;
 }
 
-
 char * zuluCryptDeviceFromLabel( const char * label )
 {
 	return _resolve_path( blkid_evaluate_tag( "LABEL",label,NULL ) ) ;
+}
+
+char * zuluCryptDeviceFromPARTUUID( const char * PARTUUID )
+{
+	return _resolve_path( blkid_evaluate_tag( "PARTUUID",PARTUUID,NULL ) ) ;
+}
+
+char * zuluCryptDeviceFromPARTLABEL( const char * PARTLABEL )
+{
+	return _resolve_path( blkid_evaluate_tag( "PARTLABEL",PARTLABEL,NULL ) ) ;
 }
 
 char * zuluCryptUUIDFromPath_1( const char * device )

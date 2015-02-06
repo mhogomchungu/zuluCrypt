@@ -61,20 +61,6 @@ static inline int fs_family( const char * fs )
 	}
 }
 
-static char * _get_uuid_from_device( const char * device )
-{
-	char * r = NULL ;
-	const char * e = NULL ;
-	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
-	if( blkid != NULL ){
-		blkid_do_probe( blkid ) ;
-		blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) ;
-		r = StringCopy_2( e ) ;
-		blkid_free_probe( blkid ) ;
-	}
-	return r ;
-}
-
 /*
  * custom options per file system
  */
@@ -130,7 +116,10 @@ static void _get_file_system_options_from_config_file( const char * device,strin
 
 	StringDelete( &xt ) ;
 
-	f = _get_uuid_from_device( device ) ;
+	/*
+	 * zuluCryptUUIDFromPath_1() is defined in resolve_paths.c
+	 */
+	f = zuluCryptUUIDFromPath_1( device ) ;
 
 	StringListGetIterators( stl,&it,&end ) ;
 

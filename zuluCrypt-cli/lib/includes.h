@@ -295,6 +295,16 @@ char * zuluCryptDeviceFromLabel( const char * label ) ;
 /*
  * this function is defined in blkid_evaluate_tag.c
  */
+char * zuluCryptDeviceFromPARTUUID( const char * p_uuid ) ;
+
+/*
+ * this function is defined in blkid_evaluate_tag.c
+ */
+char * zuluCryptDeviceFromPARTLABEL( const char * p_label ) ;
+
+/*
+ * this function is defined in blkid_evaluate_tag.c
+ */
 char * zuluCryptUUIDFromPath_1( const char * device ) ;
 
 /*
