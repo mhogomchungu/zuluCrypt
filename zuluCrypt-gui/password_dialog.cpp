@@ -222,13 +222,13 @@ void passwordDialog::keys( QString key,QStringList keyFiles )
 void passwordDialog::cbStateChanged( int state )
 {
 	m_ui->checkBoxReadOnly->setEnabled( false ) ;
-	m_ui->checkBoxReadOnly->setChecked( utility::setOpenVolumeReadOnly( this,state == Qt::Checked,QString( "zuluCrypt-gui" ) ) ) ;
+	m_ui->checkBoxReadOnly->setChecked( utility::setOpenVolumeReadOnly( this,state == Qt::Checked,"zuluCrypt-gui" ) ) ;
 	m_ui->checkBoxReadOnly->setEnabled( true ) ;
 }
 
 void passwordDialog::setDefaultOpenMode()
 {
-	m_ui->checkBoxReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( QString( "zuluCrypt-gui" ) ) ) ;
+	m_ui->checkBoxReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( "zuluCrypt-gui" ) ) ;
 }
 
 void passwordDialog::closeEvent( QCloseEvent * e )
@@ -302,8 +302,8 @@ void passwordDialog::pluginOption()
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 	m_ui->labelPassphrase->setText( tr( "plugin name" ) ) ;
-	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
-	m_ui->pbKeyOption->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
+	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
+	m_ui->pbKeyOption->setIcon( QIcon( ":/module.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->pushButtonPlugin->setToolTip( tr( "select a key module" ) ) ;
 	m_ui->pbKeyOption->setEnabled( true ) ;
@@ -320,7 +320,7 @@ void passwordDialog::passphraseOption()
 	m_ui->labelPassphrase->setText( tr( "key" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
-	m_ui->pbKeyOption->setIcon( QIcon( QString( "" ) ) ) ;
+	m_ui->pbKeyOption->setIcon( QIcon( QString() ) ) ;
 	m_ui->pbKeyOption->setEnabled( false ) ;
 	m_ui->PassPhraseField->setEnabled( true ) ;
 }

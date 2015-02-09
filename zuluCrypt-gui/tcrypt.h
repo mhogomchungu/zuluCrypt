@@ -40,6 +40,7 @@ class tcrypt : public QDialog
 public:
 	explicit tcrypt( QWidget * parent = 0 ) ;
 	void ShowUI( void ) ;
+	void ShowUI_1( void ) ;
 	void HideUI( void ) ;
 	~tcrypt();
 signals:

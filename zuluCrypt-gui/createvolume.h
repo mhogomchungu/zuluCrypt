@@ -71,6 +71,9 @@ private slots:
 	void volumeType( int ) ;
 	void dialogResult( int ) ;
 	void setOptions( int ) ;
+	void tcryptGui( bool ) ;
+	void tcryptCancelled( void ) ;
+	void keys( QString,QStringList ) ;
 private:
 	void keyChanged( bool,const QString& ) ;
 	void eraseDataPartition( void ) ;
@@ -86,6 +89,11 @@ private:
 	keystrength m_keyStrength ;
 	QString m_volumeType ;
 	bool m_warned ;
+	QString m_key ;
+	QStringList m_keyFiles ;
+	QString m_hiddenKey ;
+	QStringList m_hiddenKeyFiles ;
+	bool m_normalVolume ;
 };
 
 #endif // CREATEPARTITION_H

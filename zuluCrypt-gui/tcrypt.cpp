@@ -74,6 +74,12 @@ void tcrypt::ShowUI()
 	this->show() ;
 }
 
+void tcrypt::ShowUI_1()
+{
+	m_ui->pbSend->setText( tr( "set" ) ) ;
+	this->show() ;
+}
+
 void tcrypt::HideUI()
 {
 	this->hide() ;
