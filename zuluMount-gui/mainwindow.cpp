@@ -452,7 +452,7 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 		}
 		z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 
-	}else if( m_point == QString( "Nil" ) ){
+	}else if( m_point == "Nil" ){
 		/*
 		 * volume is not mounted,cant know its LABEL value
 		 */
@@ -544,7 +544,7 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 			if( fs != "encfs" ){
 
 				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
-				m.addSeparator() ;				
+				m.addSeparator() ;
 			}
 
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
@@ -1073,7 +1073,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	} ;
 
 	QStringList z ;
-	
+
 	for( const auto& it : l ){
 
 		if( _hasNoEntry( it ) ){
