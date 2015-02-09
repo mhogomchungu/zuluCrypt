@@ -73,7 +73,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	this->setWindowTitle( msg ) ;
 
 	m_ui->lineEditMountPoint->setText( m_path ) ;
-	m_ui->pbOpenMountPoint->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
+	m_ui->pbOpenMountPoint->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	m_menu = new QMenu( this ) ;
 
@@ -83,7 +83,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->lineEditKey->setFocus() ;
 
-	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( QString( "zuluMount-gui" ) ) ) ;
+	m_ui->checkBoxOpenReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( "zuluMount-gui" ) ) ;
 
 	m_ui->pbkeyOption->setEnabled( false ) ;
 
@@ -213,7 +213,7 @@ void keyDialog::pbMountPointPath()
 	QString Z = QFileDialog::getExistingDirectory( this,msg,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
-		Z = Z + QString( "/" ) + m_ui->lineEditMountPoint->text().split( "/" ).last() ;
+		Z = Z + "/" + m_ui->lineEditMountPoint->text().split( "/" ).last() ;
 		m_ui->lineEditMountPoint->setText( Z ) ;
 	}
 }
@@ -285,9 +285,9 @@ void keyDialog::Plugin()
 		list = dir.entryList() ;
 	}
 
-	list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
-	list.removeOne( QString( "." ) ) ;
-	list.removeOne( QString( ".." ) ) ;
+	list.removeOne( "zuluCrypt-testKey" ) ;
+	list.removeOne( "." ) ;
+	list.removeOne( ".." ) ;
 	list.removeOne( "keyring" ) ;
 	list.removeOne( "kwallet" ) ;
 

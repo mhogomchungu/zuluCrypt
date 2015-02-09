@@ -77,8 +77,8 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( false ) ;
 
-	m_ui->pushButtonOpenPartition->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
-	m_ui->pushButtonOpenFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
+	m_ui->pushButtonOpenPartition->setIcon( QIcon( ":/partition.png" ) ) ;
+	m_ui->pushButtonOpenFile->setIcon( QIcon( ":/file.png" ) ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -197,7 +197,7 @@ void luksaddkey::rbExistingPassphrase( void )
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
 	m_ui->labelExistingPassphrase->setText( tr( "key" ) ) ;
 	m_ui->textEditExistingPassphrase->clear() ;
-	m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+	m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->textEditExistingPassphrase->setFocus() ;
 }
 
@@ -208,7 +208,7 @@ void luksaddkey::rbExistingPassphraseFromFile( void )
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( true ) ;
 	m_ui->labelExistingPassphrase->setText( tr( "keyfile path" ) ) ;
 	m_ui->textEditExistingPassphrase->clear() ;
-	m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->textEditExistingPassphrase->setFocus() ;
 }
 
@@ -221,7 +221,7 @@ void luksaddkey::rbNewPassphrase( void )
 	m_ui->textEditPassphraseToAdd->clear() ;
 	m_ui->lineEditReEnterPassphrase->setEnabled( true ) ;
 	m_ui->labelReEnterPassphrase->setEnabled( true ) ;
-	m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+	m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->textEditPassphraseToAdd->setFocus() ;
 }
 
@@ -234,7 +234,7 @@ void luksaddkey::rbNewPassphraseFromFile()
 	m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
 	m_ui->lineEditReEnterPassphrase->clear() ;
 	m_ui->labelReEnterPassphrase->setEnabled( false ) ;
-	m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->textEditPassphraseToAdd->setFocus() ;
 }
 
@@ -278,10 +278,10 @@ void luksaddkey::pbAdd( void )
 
 	if( m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ){
 		ExistingKey = utility::resolvePath( ExistingKey ).replace( "\"","\"\"\"" ) ;
-		existingPassType = QString( "-u" ) ;
+		existingPassType = "-u" ;
 	}else{
-		existingPassType = QString( "-u" ) ;
-		ExistingKey = utility::keyPath() + QString( "-existingKey" ) ;
+		existingPassType = "-u" ;
+		ExistingKey = utility::keyPath() + "-existingKey" ;
 
 		QString k = m_ui->textEditExistingPassphrase->text() ;
 
@@ -291,11 +291,11 @@ void luksaddkey::pbAdd( void )
 	QString newPassType ;
 	if( m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
 		NewKey = utility::resolvePath( NewKey ).replace( "\"","\"\"\"" ) ;
-		newPassType = QString( "-n" ) ;
+		newPassType = "-n" ;
 	}else{
-		newPassType = QString( "-n" ) ;
+		newPassType = "-n" ;
 
-		NewKey = utility::keyPath() + QString( "-newKey" ) ;
+		NewKey = utility::keyPath() + "-newKey" ;
 
 		QString k = m_ui->textEditPassphraseToAdd->text() ;
 

@@ -74,11 +74,9 @@ void monitor_mountinfo::run()
 	connect( this,SIGNAL( volumeRemoved( QString ) ),
 		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 
-	int fd = open( "/proc/self/mountinfo",O_RDONLY ) ;
+	utility::fileHandle f ;
 
-	utility_fd_raii_1( &fd ) ;
-
-	if( fd == -1 ){
+	if( !f.open( "/proc/self/mountinfo" ) ){
 		return this->failedToStart() ;
 	}else{
 		m_running = true ;
@@ -86,7 +84,7 @@ void monitor_mountinfo::run()
 
 	struct pollfd monitor ;
 
-	monitor.fd     = fd ;
+	monitor.fd     = f.handle() ;
 	monitor.events = POLLPRI ;
 
 	auto _loop = [&](){

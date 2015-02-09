@@ -78,7 +78,7 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	this->setFont( parent->font() ) ;
 	this->setDefaultOpenMode() ;
 
-	m_ui->PushButtonMountPointPath->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
+	m_ui->PushButtonMountPointPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	m_isWindowClosable = true ;
 
@@ -89,7 +89,7 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	m_pluginMenu = new QMenu( this ) ;
 	m_pluginMenu->setFont( this->font() ) ;
 
-	m_ui->pushButtonPlugin->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
+	m_ui->pushButtonPlugin->setIcon( QIcon( ":/module.png" ) ) ;
 
 	connect( m_ui->PushButtonCancel,SIGNAL( clicked() ),this,SLOT( HideUI() ) ) ;
 	connect( m_ui->PushButtonOpen,SIGNAL( clicked() ),this,SLOT( buttonOpenClicked() ) ) ;
@@ -134,11 +134,11 @@ void passwordDialog::pbPlugin()
 	if( dir.exists() ){
 		list = dir.entryList() ;
 
-		list.removeOne( QString( "zuluCrypt-testKey" ) ) ;
-		list.removeOne( QString( "." ) ) ;
-		list.removeOne( QString( ".." ) ) ;
-		list.removeOne( QString( "keyring" ) ) ;
-		list.removeOne( QString( "kwallet" ) ) ;
+		list.removeOne( "zuluCrypt-testKey" ) ;
+		list.removeOne( "." ) ;
+		list.removeOne( ".." ) ;
+		list.removeOne( "keyring" ) ;
+		list.removeOne( "kwallet" ) ;
 
 		list.insert( 0,tr( INTERNAL_WALLET ) ) ;
 
@@ -255,10 +255,10 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 	m_ui->MountPointPath->setText( m_point ) ;
 	m_ui->PassPhraseField->setFocus() ;
 	QString vp = volumePath.mid( 0,5 ) ;
-	if( vp == QString( "/dev/" ) || vp == QString( "UUID=" ) ){
-		m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
+	if( vp == "/dev/" || vp == "UUID=" ){
+		m_ui->PushButtonVolumePath->setIcon( QIcon( ":/partition.png" ) ) ;
 	}else{
-		m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
+		m_ui->PushButtonVolumePath->setIcon( QIcon( ":/file.png" ) ) ;
 	}
 	this->show() ;
 }
@@ -267,7 +267,7 @@ void passwordDialog::ShowUI()
 {
 	this->passphraseOption() ;
 	m_ui->OpenVolumePath->setFocus() ;
-	m_ui->PushButtonVolumePath->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
+	m_ui->PushButtonVolumePath->setIcon( QIcon( ":/file.png" ) ) ;
 	this->show() ;
 }
 
@@ -318,7 +318,7 @@ void passwordDialog::passphraseOption()
 	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 	m_ui->labelPassphrase->setText( tr( "key" ) ) ;
-	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->pbKeyOption->setIcon( QIcon( QString( "" ) ) ) ;
 	m_ui->pbKeyOption->setEnabled( false ) ;
@@ -333,9 +333,9 @@ void passwordDialog::passphraseFromFileOption()
 	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
 	m_ui->labelPassphrase->setText( tr( "keyfile path" ) ) ;
-	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
-	m_ui->pbKeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->pbKeyOption->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->pbKeyOption->setEnabled( true ) ;
 	m_ui->PassPhraseField->setEnabled( true ) ;
@@ -358,7 +358,7 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 
 void passwordDialog::clickedPartitionOption( QString dev )
 {
-	QString m_point = QDir::homePath() + QString( "/" ) + dev.split( "/" ).last() ;
+	QString m_point = QDir::homePath() + "/" + dev.split( "/" ).last() ;
 	this->ShowUI( dev,m_point ) ;
 }
 
@@ -368,7 +368,7 @@ void passwordDialog::mount_point( void )
 	QString Z = QFileDialog::getExistingDirectory( this,p,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
-		Z = Z + QString( "/" ) + m_ui->OpenVolumePath->text().split( "/" ).last() ;
+		Z = Z + "/" + m_ui->OpenVolumePath->text().split( "/" ).last() ;
 		m_ui->MountPointPath->setText( Z ) ;
 	}
 
@@ -384,7 +384,7 @@ void passwordDialog::file_path( void )
 	QString Z = QFileDialog::getOpenFileName( this,tr( "Select encrypted volume" ),QDir::homePath(),0 ) ;
 	m_ui->OpenVolumePath->setText( Z ) ;
 	if( !Z.isEmpty() ){
-		m_ui->MountPointPath->setText( utility::mountPathPostFix( Z.split( QString( "/" ) ).last() ) ) ;
+		m_ui->MountPointPath->setText( utility::mountPathPostFix( Z.split( "/" ).last() ) ) ;
 	}
 }
 

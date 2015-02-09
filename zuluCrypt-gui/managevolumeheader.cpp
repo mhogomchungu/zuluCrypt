@@ -46,8 +46,8 @@ managevolumeheader::managevolumeheader( QWidget * parent ) :
 	this->setFixedSize( this->size() ) ;
 
 	//m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
-	m_ui->pushButtonPartition->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
-	m_ui->pushButtonFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
+	m_ui->pushButtonPartition->setIcon( QIcon( ":/partition.png" ) ) ;
+	m_ui->pushButtonFile->setIcon( QIcon( ":/file.png" ) ) ;
 
 	m_ui->lineEditDevicePath->setFocus() ;
 
@@ -156,20 +156,20 @@ void managevolumeheader::ShowUI()
 
 void managevolumeheader::restoreHeader()
 {
-	m_operation = QString( "restore" ) ;
+	m_operation = "restore" ;
 	m_ui->label->setText( tr( "enter an existing key in the back up header file" ) ) ;
 	this->setWindowTitle( tr( "restore volume header" ) ) ;
-	m_ui->labelBackUpHeader->setText( QString( "backup path" ) ) ;
+	m_ui->labelBackUpHeader->setText( "backup path" ) ;
 	m_ui->pbCreate->setText( tr( "&restore" ) ) ;
 	this->ShowUI() ;
 }
 
 void managevolumeheader::headerBackUp()
 {
-	m_operation = QString( "backup" ) ;
+	m_operation = "backup" ;
 	m_ui->label->setText( tr( "enter an existing key in the volume" ) ) ;
 	this->setWindowTitle( tr( "back up volume header" ) ) ;
-	m_ui->labelBackUpHeader->setText( QString( "backup path" ) ) ;
+	m_ui->labelBackUpHeader->setText( "backup path" ) ;
 	m_ui->pbCreate->setText( tr( "&backup" ) ) ;
 	this->ShowUI() ;
 }
@@ -239,13 +239,13 @@ void managevolumeheader::pbOpenLuksHeaderBackUp()
 		if( !p.isEmpty() ){
 			QString q = m_ui->lineEditBackUpName->text() ;
 			if( q.isEmpty() ){
-				Z += QString( "/" ) + p + QString( ".volumeHeaderBackUp" ) ;
+				Z += "/" + p + ".volumeHeaderBackUp" ;
 			}else{
 				q = q.split( "/" ).last() ;
 				if( q.isEmpty() ){
-					Z += QString( "/" ) + p + QString( ".volumeHeaderBackUp" ) ;
+					Z += "/" + p + ".volumeHeaderBackUp" ;
 				}else{
-					Z += QString( "/" ) + q ;
+					Z += "/" + q ;
 				}
 			}
 		}
@@ -345,7 +345,7 @@ void managevolumeheader::pbCreate()
 	QString backUp = m_ui->lineEditBackUpName->text().replace( "\"","\"\"\"" ) ;
 
 	QString exe ;
-	if(  m_operation == QString( "backup" ) ){
+	if(  m_operation == "backup" ){
 		m_saveHeader = 1 ;
 
 		if( m_ui->rbTrueCryptHeader->isChecked() ){
@@ -397,9 +397,9 @@ void managevolumeheader::pbCreate()
 	 * default to /dev/random as source of random data when managing a truecrypt header
 	 */
 	if( m_ui->rbFDETrueCrypt->isChecked() ){
-		exe += QString( " -g /dev/random -e fde" ) ;
+		exe += " -g /dev/random -e fde" ;
 	}else if( m_ui->rbSystemTrueCrypt->isChecked() ){
-		exe += QString( " -g /dev/random -e sys" ) ;
+		exe += " -g /dev/random -e sys" ;
 	}
 
 	this->disableAll() ;

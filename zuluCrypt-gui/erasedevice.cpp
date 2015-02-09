@@ -51,8 +51,8 @@ erasedevice::erasedevice( QWidget * parent ) :
 
 	connect( this,SIGNAL( sendProgress( int ) ),this,SLOT( setProgress( int ) ) ) ;
 
-	m_ui->pushButtonFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
-	m_ui->pushButtonPartition->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
+	m_ui->pushButtonFile->setIcon( QIcon( ":/file.png" ) ) ;
+	m_ui->pushButtonPartition->setIcon( QIcon( ":/partition.png" ) ) ;
 
 	m_ui->lineEdit->setFocus() ;
 
@@ -248,7 +248,7 @@ void erasedevice::pbPartition()
 	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( setPath( QString ) ) ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	op->partitionList( tr( "select a non system partition to erase its contents" ),QString( " -N" ) ) ;
+	op->partitionList( tr( "select a non system partition to erase its contents" )," -N" ) ;
 }
 
 void erasedevice::setPath( QString p )

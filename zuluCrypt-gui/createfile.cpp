@@ -42,7 +42,7 @@ createfile::createfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::cre
 	m_ui->progressBar->setMaximum( 100 ) ;
 	m_ui->progressBar->setValue( 0 ) ;
 
-	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
+	m_ui->pbOpenFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) )  ;
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT(pbOpenFolder() ) ) ;
@@ -73,7 +73,7 @@ void createfile::fileTextChange( QString txt )
 	QString p = m_ui->lineEditFilePath->text() ;
 
 	if( p.isEmpty() ){
-		QString x = QDir::homePath() + QString( "/" ) + txt.split( "/" ).last() ;
+		QString x = QDir::homePath() + "/" + txt.split( "/" ).last() ;
 		m_ui->lineEditFilePath->setText( x ) ;
 		return ;
 	}
@@ -82,7 +82,7 @@ void createfile::fileTextChange( QString txt )
 	if( i == -1 ){
 		return ;
 	}
-	p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last() ;
+	p = p.mid( 0,i ) + "/" + txt.split( "/" ).last() ;
 
 	m_ui->lineEditFilePath->setText( p ) ;
 }

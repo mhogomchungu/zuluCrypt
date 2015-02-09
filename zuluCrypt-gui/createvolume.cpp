@@ -230,7 +230,7 @@ void createvolume::eraseDataPartition()
 {
 	QString path = m_ui->lineEditVolumePath->text() ;
 
-	if( path.startsWith( QString( "/dev/" ) ) ){
+	if( path.startsWith( "/dev/" ) ){
 		CreateVolumeDialog * cpd = new CreateVolumeDialog( path,this ) ;
 		connect( cpd,SIGNAL( dialogResult( int ) ),this,SLOT( dialogResult( int ) ) ) ;
 		cpd->ShowUI() ;
@@ -371,7 +371,7 @@ void createvolume::pbCancelClicked()
 {
 	if( m_created == false ){
 		QString s = m_ui->lineEditVolumePath->text() ;
-		if( s.left( 5 ) != QString( "/dev/" ) ){
+		if( s.left( 5 ) != "/dev/" ){
 			QFile::remove( s ) ;
 		}
 	}
@@ -390,7 +390,7 @@ void createvolume::cbNormalVolume( int r )
 		m_ui->lineEditPassPhrase2->setEchoMode( QLineEdit::Password ) ;
 		m_ui->labelPassPhrase->setText( tr( "key" ) ) ;
 		m_ui->labelRepeatPassPhrase->setEnabled( true ) ;
-		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+		m_ui->pbOpenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 		this->setWindowTitle( tr( "create a new volume" ) ) ;
 	}else{
 		m_ui->pbOpenKeyFile->setEnabled( true ) ;
@@ -400,7 +400,7 @@ void createvolume::cbNormalVolume( int r )
 		m_ui->lineEditPassPhrase2->setEnabled( false ) ;
 		m_ui->labelPassPhrase->setText( tr( "keyfile" ) ) ;
 		m_ui->labelRepeatPassPhrase->setEnabled( false ) ;
-		m_ui->pbOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+		m_ui->pbOpenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 		this->setWindowTitle( tr( "create a new volume" ) ) ;
 	}
 }
@@ -417,7 +417,7 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Password ) ;
 		m_ui->lineEditHiddenKey1->setEchoMode( QLineEdit::Password ) ;
 		m_ui->labelHidden->setText( tr( "key" ) ) ;
-		m_ui->pbHiddenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 		this->setWindowTitle( tr( "create a new volume" ) ) ;
 	}else{
 		m_ui->pbHiddenKeyFile->setEnabled( true ) ;
@@ -426,7 +426,7 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
 		m_ui->labelHidden->setText( tr( "keyfile" ) ) ;
-		m_ui->pbHiddenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 		this->setWindowTitle( tr( "create a new volume" ) ) ;
 	}
 }

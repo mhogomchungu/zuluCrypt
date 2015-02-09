@@ -39,6 +39,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <array>
+
 createkeyfile::createkeyfile( QWidget * parent ) :
     QDialog( parent ),
     m_ui( new Ui::createkeyfile )
@@ -47,7 +49,7 @@ createkeyfile::createkeyfile( QWidget * parent ) :
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
-	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
+	m_ui->pbOpenFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT( pbOpenFolder() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
@@ -73,12 +75,12 @@ void createkeyfile::keyTextChange( QString txt )
 	QString p = m_ui->lineEditPath->text() ;
 
 	if( p.isEmpty() ){
-		QString x = QDir::homePath() + QString( "/" ) + txt.split( "/" ).last() ;
+		QString x = QDir::homePath() + "/" + txt.split( "/" ).last() ;
 		m_ui->lineEditPath->setText( x ) ;
 	}else{
 		int i = p.lastIndexOf( "/" ) ;
 		if( i != -1 ){
-			p = p.mid( 0,i ) + QString( "/" ) + txt.split( "/" ).last() ;
+			p = p.mid( 0,i ) + "/" + txt.split( "/" ).last() ;
 			m_ui->lineEditPath->setText( p ) ;
 		}
 	}
@@ -99,7 +101,7 @@ void createkeyfile::closeEvent( QCloseEvent * e )
 void createkeyfile::ShowUI()
 {
 	m_ui->lineEditFileName->clear() ;
-	m_ui->lineEditPath->setText( QDir::homePath() + QString( "/" ) ) ;
+	m_ui->lineEditPath->setText( QDir::homePath() + "/" ) ;
 	m_ui->comboBoxRNG->setCurrentIndex( 0 ) ;
 	this->show() ;
 }
@@ -161,45 +163,40 @@ void createkeyfile::pbCreate()
 
 	this->disableAll() ;
 
-	int rng = m_ui->comboBoxRNG->currentIndex() ;
-
 	m_stop = false ;
 	m_running = true ;
 
+	auto _getRNGSource = [ this ](){
+
+		if( m_ui->comboBoxRNG->currentIndex() == 0 ){
+
+			return "/dev/urandom" ;
+		}else{
+			return "/dev/random" ;
+		}
+	} ;
+
 	Task::await( [ & ](){
 
-		char data ;
+		utility::fileHandle source ;
 
-		int r = -1 ;
-		int e = -1 ;
+		if( !source.open( _getRNGSource() ) ){
 
-		utility_fd_raii_2( &r,&e ) ;
-
-		if( rng == 0 ){
-			r = ::open( "/dev/urandom",O_RDONLY ) ;
-		}else{
-			r = ::open( "/dev/random",O_RDONLY ) ;
-		}
-
-		if( r == -1 ){
 			m_stop = true ;
 		}else{
-			#define opts O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH
-			e = ::open( path.toLatin1().constData(),opts ) ;
+			utility::fileHandle sink ;
 
-			if( e == -1 ){
+			if( !sink.open( path,false ) ){
+
 				m_stop = true ;
 			}else{
 				for( int i = 0 ; i < 64 ; i++ ){
 
 					if( m_stop ){
+
 						break ;
 					}else{
-						do{
-							::read( r,&data,1 ) ;
-						}while( data < 32 || data > 126 ) ;
-
-						::write( e,&data,1 ) ;
+						sink.writeChar( source.getChar() ) ;
 					}
 				}
 			}
@@ -224,7 +221,7 @@ void createkeyfile::pbOpenFolder()
 	QString Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
-		Z = Z + QString( "/" ) + m_ui->lineEditPath->text().split( "/" ).last() ;
+		Z = Z + "/" + m_ui->lineEditPath->text().split( "/" ).last() ;
 		m_ui->lineEditPath->setText( Z ) ;
 	}
 }

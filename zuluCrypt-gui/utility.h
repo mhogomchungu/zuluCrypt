@@ -35,6 +35,9 @@
 #include <functional>
 #include <utility>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 #include "task.h"
@@ -111,55 +114,67 @@ namespace utility
 
 namespace utility
 {
-	template< typename T,int size >
-	class manageResourse
+	class fileHandle
 	{
 	public:
-		template< typename... All >
-		manageResourse( All... r )
+		fileHandle()
 		{
-			this->add( r... ) ;
 		}
-		void setCleaner( std::function< void( T ) > function )
+		fileHandle( int r )
 		{
-			m_release = std::move( function ) ;
+			m_fd = r ;
 		}
-		~manageResourse()
+		bool open( const char * filePath,bool ro = true )
 		{
-			for( int i = 0 ; i < m_count ; i++ ){
-				m_release( *( m_descriptors + i ) ) ;
+			if( ro ){
+				m_fd = ::open( filePath,O_RDONLY ) ;
+			}else{
+				m_fd = ::open( filePath,O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
+			}
+			return m_fd != -1 ;
+		}
+		int open( const QString& filePath,bool ro = true )
+		{
+			return this->open( filePath.toLatin1().constData(),ro ) ;
+		}
+		int handle()
+		{
+			return m_fd ;
+		}
+		char getChar()
+		{
+			char z ;
+
+			while( true ){
+
+				::read( m_fd,&z,1 ) ;
+
+				if( z > ' ' && z < '~' ){
+
+					/*
+					 * we are creating a keyfile that is made up
+					 * of only printable characters
+					 */
+					break ;
+				}
+			}
+
+			return z ;
+		}
+		void writeChar( char r )
+		{
+			::write( m_fd,&r,1 ) ;
+		}
+		~fileHandle()
+		{
+			if( m_fd != -1 ){
+				::close( m_fd ) ;
 			}
 		}
 	private:
-		void add()
-		{
-		}
-		template< typename First,typename... Rest >
-		void add( First f,Rest... r )
-		{
-			*( m_descriptors + m_count ) = f ;
-			m_count++ ;
-			this->add( r... ) ;
-		}
-		int m_count = 0 ;
-		T m_descriptors[ size ] ;
-		std::function< void( T ) > m_release = []( T t ){ Q_UNUSED( t ) ; } ;
+		int m_fd = -1 ;
 	};
-
-	auto closeFileDescriptor = []( int * r )
-	{
-		int k = *r ;
-		if( k != -1 ){
-			::close( k ) ;
-		}
-	} ;
 }
-
-#define utility_fd_raii_2( x,y ) utility::manageResourse< int *,2 > raii_x_y( x,y ) ;\
-raii_x_y.setCleaner( utility::closeFileDescriptor )
-
-#define utility_fd_raii_1( x ) utility::manageResourse< int *,1 > raii_x( x ) ;\
-raii_x.setCleaner( utility::closeFileDescriptor )
 
 namespace utility
 {

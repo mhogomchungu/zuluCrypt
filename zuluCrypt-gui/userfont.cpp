@@ -47,14 +47,14 @@ QFont userfont::getFont()
 		QFont F ;
 		F.setFamily( xs.at( 0 ) ) ;
 		F.setPointSize( xs.at( 1 ).toInt() ) ;
-		if( xs.at( 2 ) == QString( "normal" ) ){
+		if( xs.at( 2 ) == "normal" ){
 			F.setStyle( QFont::StyleNormal ) ;
-		}else if( xs.at( 2 ) == QString( "italic" ) ){
+		}else if( xs.at( 2 ) == "italic" ){
 			F.setStyle( QFont::StyleItalic ) ;
 		}else{
 			F.setStyle( QFont::StyleOblique ) ;
 		}
-		if( xs.at( 3 ) == QString( "normal" ) ){
+		if( xs.at( 3 ) == "normal" ){
 			F.setWeight( QFont::Normal ) ;
 		}else{
 			F.setWeight( QFont::Bold ) ;
@@ -69,18 +69,18 @@ void userfont::saveFont( const QFont& Font )
 	QString s = QString( "%1\n%2\n" ).arg( Font.family() ).arg( QString::number( k ) ) ;
 
 	if( Font.style() == QFont::StyleNormal ){
-		s = s + QString( "normal\n" ) ;
+		s = s + "normal\n" ;
 	}else if( Font.style() == QFont::StyleItalic ){
-		s = s + QString( "italic\n" ) ;
+		s = s + "italic\n" ;
 	}else{
-		s = s + QString( "oblique\n" ) ;
+		s = s + "oblique\n" ;
 	}
 	if( Font.weight() == QFont::Normal ){
-		s = s + QString( "normal\n" ) ;
+		s = s + "normal\n" ;
 	}else{
-		s = s + QString( "bold" ) ;
+		s = s + "bold" ;
 	}
-	QFile f( QDir::homePath() + QString( "/.zuluCrypt/font" ) ) ;
+	QFile f( QDir::homePath() + "/.zuluCrypt/font" ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 	f.write( s.toLatin1() ) ;
 	f.close() ;

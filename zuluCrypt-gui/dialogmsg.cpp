@@ -110,8 +110,8 @@ Alternatively,you can add yourself to group \"zulucrypt\" and \"zulumount\" and 
 void DialogMsg::ShowPermissionProblem( const QString& msg,const QString& device )
 {
 	QString msg1 ;
-	if( device.startsWith( QString( "/dev/" ) ) ){
-		if( msg == QString( "reading" ) ){
+	if( device.startsWith( "/dev/" ) ){
+		if( msg == "reading" ){
 			msg1 = tr( "insufficient privilege to access a system device,\nonly root user or members of group zulucrypt can do that" ) ;
 		}else{
 			msg1 = tr( "insufficient privilege to access a system device in read/write mode,\nonly root user or members of group zulucrypt-write can do that" ) ;

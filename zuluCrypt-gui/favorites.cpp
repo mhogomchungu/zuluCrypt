@@ -51,8 +51,8 @@ favorites::favorites( QWidget * parent ) :
 		SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->lineEditDeviceAddress,SIGNAL( textChanged( QString ) ),this,SLOT( devicePathTextChange( QString ) ) ) ;
 
-	m_ui->pbFileAddress->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
-	m_ui->pbDeviceAddress->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
+	m_ui->pbFileAddress->setIcon( QIcon( ":/keyfile.png" ) ) ;
+	m_ui->pbDeviceAddress->setIcon( QIcon( ":/partition.png" ) ) ;
 
 	m_ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;

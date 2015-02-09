@@ -77,7 +77,7 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 void zuluCrypt::setLocalizationLanguage()
 {
 	QTranslator * translator = new QTranslator( this ) ;
-	QString program  = QString( "zuluCrypt-gui" ) ;
+	QString program  = "zuluCrypt-gui" ;
 	QString lang     = utility::localizationLanguage( program ) ;
 	QString langPath = utility::localizationLanguagePath( program ) ;
 
@@ -99,7 +99,7 @@ void zuluCrypt::setFolderOpener()
 	//currently not used
 	QStringList argv = QCoreApplication::arguments() ;
 	if( argv.size() < 2 ){
-		m_folderOpener = QString( "xdg-open" ) ;
+		m_folderOpener = "xdg-open" ;
 	}else{
 		m_folderOpener = argv.at( 1 ) ;
 	}
@@ -251,12 +251,12 @@ void zuluCrypt::start()
 
 void zuluCrypt::initTray()
 {
-	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
+	QString home = QDir::homePath() + "/.zuluCrypt/" ;
 	QDir d( home ) ;
 	if( !d.exists() ){
 		d.mkdir( home ) ;
 	}
-	QFile f( QDir::homePath() + QString( "/.zuluCrypt/tray" ) ) ;
+	QFile f( QDir::homePath() + "/.zuluCrypt/tray" ) ;
 	if( !f.exists() ){
 		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 		f.write( "1" ) ;
@@ -283,10 +283,10 @@ void zuluCrypt::setupUIElements()
 	m_ui->setupUi( this ) ;
 
 	this->setFixedSize( this->size() ) ;
-	this->setWindowIcon( QIcon( QString( ":/zuluCrypt.png" ) ) ) ;
+	this->setWindowIcon( QIcon( ":/zuluCrypt.png" ) ) ;
 
 	m_trayIcon = new QSystemTrayIcon( this ) ;
-	m_trayIcon->setIcon( QIcon( QString( ":/zuluCrypt.png" ) ) ) ;
+	m_trayIcon->setIcon( QIcon( ":/zuluCrypt.png" ) ) ;
 
 	QMenu * trayMenu = new QMenu( this ) ;
 
@@ -440,11 +440,11 @@ void zuluCrypt::ShowManageSystemPartitions()
 	 * move config files to /etc/zuluCrypt/
 	 */
 	d.mkdir( "/etc/zuluCrypt" ) ;
-	f.rename( QString( "/etc/zuluCrypt-system" ),QString( "/etc/zuluCrypt/system_volumes.list" ) ) ;
+	f.rename( "/etc/zuluCrypt-system","/etc/zuluCrypt/system_volumes.list" ) ;
 
-	f.rename( QString( "/etc/zuluCrypt-nonsystem" ),QString( "/etc/zuluCrypt/nonsystem_volumes.list" ) ) ;
+	f.rename( "/etc/zuluCrypt-nonsystem","/etc/zuluCrypt/nonsystem_volumes.list" ) ;
 
-	msv->ShowUI( QString( "/etc/zuluCrypt/system_volumes.list" ) ) ;
+	msv->ShowUI( "/etc/zuluCrypt/system_volumes.list" ) ;
 }
 
 void zuluCrypt::ShowManageNonSystemPartitions()
@@ -460,11 +460,11 @@ void zuluCrypt::ShowManageNonSystemPartitions()
 	 */
 
 	d.mkdir( "/etc/zuluCrypt" ) ;
-	f.rename( QString( "/etc/zuluCrypt-system" ),QString( "/etc/zuluCrypt/system_volumes.list" ) ) ;
+	f.rename( "/etc/zuluCrypt-system","/etc/zuluCrypt/system_volumes.list" ) ;
 
-	f.rename( QString( "/etc/zuluCrypt-nonsystem" ),QString( "/etc/zuluCrypt/nonsystem_volumes.list" ) ) ;
+	f.rename( "/etc/zuluCrypt-nonsystem","/etc/zuluCrypt/nonsystem_volumes.list" ) ;
 
-	msv->ShowUI( QString( "/etc/zuluCrypt/nonsystem_volumes.list" ) ) ;
+	msv->ShowUI( "/etc/zuluCrypt/nonsystem_volumes.list" ) ;
 }
 
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
@@ -828,7 +828,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	QString volume_id = m_ui->tableWidget->item( item->row(),0 )->text() + QString( "\t" ) ;
 
-	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
+	QFile f( QDir::homePath() + "/.zuluCrypt/favorites" ) ;
 
 	f.open( QIODevice::ReadOnly ) ;
 

@@ -261,7 +261,7 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 	QTableWidget * tw = m_ui->tableWidget ;
 
 	if( m_diableNonLUKS ){
-		if( tw->item( item->row(),3 )->text() != QString( "crypto_LUKS" ) ){
+		if( tw->item( item->row(),3 )->text() != "crypto_LUKS" ){
 			DialogMsg m( this ) ;
 
 			return m.ShowUIOK( tr( "ERROR" ),tr( "only cryto_LUKS volumes can be selected" ) ) ;

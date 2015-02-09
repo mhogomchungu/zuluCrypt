@@ -94,8 +94,8 @@ void cryptfiles::sourceTextChanged( QString source )
 {
 	QString dest ;
 
-	if( m_operation == QString( "-E" ) ){
-		dest = source.split( "/" ).last() + QString( ".zC" ) ;
+	if( m_operation == "-E" ){
+		dest = source.split( "/" ).last() + ".zC" ;
 	}else{
 		dest = source.split( "/" ).last() ;
 	}
@@ -103,14 +103,14 @@ void cryptfiles::sourceTextChanged( QString source )
 	QStringList p = m_ui->lineEditDestinationPath->text().split( "/" ) ;
 
 	int size = p.size() ;
-	QString path = QString( "" ) ;
+	QString path ;
 	for( int i = 0 ; i < size - 1 ; i++ ){
-		path += p.at( i ) + QString( "/" ) ;
+		path += p.at( i ) + "/" ;
 	}
 	path += dest ;
 
-	if( m_operation == QString( "-D" ) ){
-		if( path.endsWith( QString( ".zc" ) ) || path.endsWith( QString( ".zC" ) ) ){
+	if( m_operation == "-D" ){
+		if( path.endsWith( ".zc" ) || path.endsWith( ".zC" ) ){
 			path = path.mid( 0,path.size() - 3 ) ;
 		}
 	}
@@ -139,14 +139,14 @@ QString cryptfiles::destinationPath( const QString& e )
 
 void cryptfiles::encrypt()
 {
-	m_operation = QString( "-E" ) ;
+	m_operation = "-E" ;
 	this->setWindowTitle( tr( "create encrypted version of a file" ) ) ;
 	this->show() ;
 }
 
 void cryptfiles::decrypt()
 {
-	m_operation = QString( "-D" ) ;
+	m_operation = "-D" ;
 	m_ui->labelKey2->setEnabled( false ) ;
 	m_ui->lineEditPass_2->setEnabled( false ) ;
 	this->setWindowTitle( tr( "create decrypted version of an encrypted file" ) ) ;
@@ -156,7 +156,7 @@ void cryptfiles::decrypt()
 void cryptfiles::decrypt( const QString& e )
 {
 	m_ui->lineEditSourcePath->setText( e ) ;
-	m_operation = QString( "-D" ) ;
+	m_operation = "-D" ;
 	m_ui->labelKey2->setEnabled( false ) ;
 	m_ui->lineEditPass_2->setEnabled( false ) ;
 	m_ui->lineEditDestinationPath->setText( this->destinationPath( e )  ) ;
@@ -188,7 +188,7 @@ void cryptfiles::HideUI()
 
 void cryptfiles::enableAll()
 {
-	if( m_operation == QString( "-E" ) ){
+	if( m_operation == "-E" ){
 		m_ui->labelKey2->setEnabled( true ) ;
 		m_ui->lineEditPass_2->setEnabled( true ) ;
 	}
@@ -309,7 +309,7 @@ void cryptfiles::cryptFile( const char * s,const char * d,const char * key,unsig
 
 	auto f = reinterpret_cast< void * >( &progress ) ;
 
-	auto _update = []( int e,void * f )
+	auto u = []( int e,void * f )
 	{
 		auto r = reinterpret_cast< _progress * >( f ) ;
 		return r->update( e ) ;
@@ -321,9 +321,9 @@ void cryptfiles::cryptFile( const char * s,const char * d,const char * key,unsig
 
 		if( encrypt ){
 
-			return lxqt_wallet_create_encrypted_file( key,r,s,d,_update,f ) ;
+			return lxqt_wallet_create_encrypted_file( key,r,s,d,u,f ) ;
 		}else{
-			return lxqt_wallet_create_decrypted_file( key,r,s,d,_update,f ) ;
+			return lxqt_wallet_create_decrypted_file( key,r,s,d,u,f ) ;
 		}
 	} ) ;
 
@@ -395,10 +395,10 @@ void cryptfiles::pbOpenFolder( void )
 		Z = QDir::homePath() ;
 	}
 	QString path ;
-	if( m_operation == QString( "-E" ) ){
-		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last() + QString( ".zC" ) ;
+	if( m_operation == "-E" ){
+		path = Z + "/" + m_ui->lineEditSourcePath->text().split( "/" ).last() + ".zC" ;
 	}else{
-		path = Z + QString( "/" ) + m_ui->lineEditSourcePath->text().split( "/" ).last() ;
+		path = Z + "/" + m_ui->lineEditSourcePath->text().split( "/" ).last() ;
 		path.chop( 3 ) ;
 	}
 
@@ -415,7 +415,7 @@ void cryptfiles::cbChanged( int r )
 	if( r == 0 ){
 
 		m_ui->lineEditPass_1->setToolTip( tr( "enter a key" ) ) ;
-		m_ui->pushButtonKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+		m_ui->pushButtonKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 		m_ui->pushButtonKeyFile->setEnabled( false ) ;
 		m_ui->lineEditPass_1->clear() ;
 		m_ui->lineEditPass_2->clear() ;
@@ -424,7 +424,7 @@ void cryptfiles::cbChanged( int r )
 		m_ui->labelKey->setText( tr( "key" ) ) ;
 		m_ui->labelKey2->setText( tr( "repeat key" ) ) ;
 
-		if( m_operation == QString( "-E" ) ){
+		if( m_operation == "-E" ){
 			m_ui->labelKey2->setEnabled( true ) ;
 			m_ui->lineEditPass_2->setEnabled( true ) ;
 		}
@@ -432,7 +432,7 @@ void cryptfiles::cbChanged( int r )
 
 		m_ui->lineEditPass_1->setToolTip( tr( "enter a path to a keyfile location" ) ) ;
 		m_ui->labelKey->setText( tr( "keyfile path" ) ) ;
-		m_ui->pushButtonKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+		m_ui->pushButtonKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 		m_ui->lineEditPass_2->setEnabled( false ) ;
 		m_ui->pushButtonKeyFile->setEnabled( true ) ;
 		m_ui->labelKey2->setEnabled( false ) ;

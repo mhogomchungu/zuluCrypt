@@ -95,9 +95,8 @@ void events::run()
 	connect( this,SIGNAL( volumeRemoved( QString ) ),
 		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 
-	int fd = inotify_init() ;
-
-	utility_fd_raii_1( &fd ) ;
+	utility::fileHandle f( inotify_init() ) ;
+	int fd = f.handle() ;
 
 	if( fd == -1 ){
 		return this->failedToStart() ;

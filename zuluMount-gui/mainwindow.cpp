@@ -103,7 +103,7 @@ void MainWindow::setUpApp( const QString& volume )
 	m_ui->tableWidget->verticalHeader()->setMinimumSectionSize( 30 ) ;
 
 	this->setAcceptDrops( true ) ;
-	this->setWindowIcon( QIcon( QString( ":/zuluMount.png" ) ) ) ;
+	this->setWindowIcon( QIcon( ":/zuluMount.png" ) ) ;
 
 	m_ui->tableWidget->setMouseTracking( true ) ;
 
@@ -122,7 +122,7 @@ void MainWindow::setUpApp( const QString& volume )
 	this->setUpFont() ;
 
 	m_trayIcon = new QSystemTrayIcon( this ) ;
-	m_trayIcon->setIcon( QIcon( QString( ":/zuluMount.png" ) ) ) ;
+	m_trayIcon->setIcon( QIcon( ":/zuluMount.png" ) ) ;
 
 	auto trayMenu = new QMenu( this ) ;
 
@@ -183,7 +183,7 @@ void MainWindow::setUpApp( const QString& volume )
 
 	m_trayIcon->show() ;
 
-	QString dirPath = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
+	QString dirPath = QDir::homePath() + "/.zuluCrypt/" ;
 	QDir dir( dirPath ) ;
 
 	if( !dir.exists() ){
@@ -303,7 +303,7 @@ void MainWindow::showFavorites()
 void MainWindow::setLocalizationLanguage()
 {
 	auto translator  = new QTranslator( this ) ;
-	QString pgr      = QString( "zuluMount-gui" ) ;
+	QString pgr      = "zuluMount-gui" ;
 	QString lang     = utility::localizationLanguage( pgr ) ;
 	QString langPath = utility::localizationLanguagePath( pgr ) ;
 
@@ -505,7 +505,7 @@ void MainWindow::start()
 
 	QString volume = utility::cmdArgumentValue( l,"-d" ) ;
 
-	QString sockpath = QString( "zuluMount-gui.socket" ) ;
+	QString sockpath = "zuluMount-gui.socket" ;
 	auto instance = new oneinstance( this,sockpath,"startGUI",volume ) ;
 	if( !instance->instanceExist() ){
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;

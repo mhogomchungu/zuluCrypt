@@ -87,7 +87,7 @@ void luksdeletekey::rbPassphrase()
 	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Password ) ;
 	m_ui->lineEditPassphrase->clear() ;
 	m_ui->pushButtonOpenKeyFile->setEnabled( false ) ;
-	m_ui->pushButtonOpenKeyFile->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+	m_ui->pushButtonOpenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->lineEditPassphrase->setFocus() ;
 }
 
@@ -98,7 +98,7 @@ void luksdeletekey::rbPassphraseFromFile()
 	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->lineEditPassphrase->clear() ;
 	m_ui->pushButtonOpenKeyFile->setEnabled( true ) ;
-	m_ui->pushButtonOpenKeyFile->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->pushButtonOpenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 }
 
 void luksdeletekey::pbOpenKeyFile()
@@ -124,8 +124,8 @@ void luksdeletekey::ShowUI()
 	}else{
 		m_ui->lineEditPassphrase->setFocus() ;
 	}
-	m_ui->pushButtonOpenPartition->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
-	m_ui->pushButtonOpenVolume->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
+	m_ui->pushButtonOpenPartition->setIcon( QIcon( ":/partition.png" ) ) ;
+	m_ui->pushButtonOpenVolume->setIcon( QIcon( ":/file.png" ) ) ;
 	this->show() ;
 }
 

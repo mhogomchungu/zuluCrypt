@@ -126,7 +126,7 @@ void utility::keySend( const QString& path,const QString& key )
 
 		QByteArray key ;
 
-		if( volumeID.startsWith( QString( "UUID=" ) ) ){
+		if( volumeID.startsWith( "UUID=" ) ){
 			key = wallet->readValue( volumeID ) ;
 		}else{
 			QString uuid = utility::getUUIDFromPath( volumeID ).get() ;
@@ -149,7 +149,7 @@ void utility::keySend( const QString& path,const QString& key )
 	return ::Task::run<QString>( [ dev ](){
 
 		QString device = dev ;
-		device = device.replace( QString( "\"" ),QString( "\"\"\"" ) ) ;
+		device = device.replace( "\"", "\"\"\"" ) ;
 		QString exe = QString( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
 
 		auto r = utility::Task( exe ) ;
@@ -453,9 +453,9 @@ QString utility::localizationLanguage( const QString& program )
 {
 	QString langPath = utility::localizationLanguagePath( program ) ;
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment() ;
-	QString value = env.value( QString( "LANG" ) ) ;
+	QString value = env.value( "LANG" ) ;
 
-	QString ext = QString( ".qm" ) ;
+	QString ext( ".qm" ) ;
 	QString s ;
 	int index ;
 	if( !value.isEmpty() ){
@@ -464,8 +464,8 @@ QString utility::localizationLanguage( const QString& program )
 		QDir dir( langPath ) ;
 
 		QStringList dirList = dir.entryList() ;
-		dirList.removeOne( QString( "." ) ) ;
-		dirList.removeOne( QString( ".." ) ) ;
+		dirList.removeOne( "." ) ;
+		dirList.removeOne( ".." ) ;
 
 		for( const auto& it : values ){
 			s = it ;
@@ -480,7 +480,7 @@ QString utility::localizationLanguage( const QString& program )
 		}
 	}
 
-	value = env.value( QString( "LANGUAGE" ) ) ;
+	value = env.value( "LANGUAGE" ) ;
 
 	if( !value.isEmpty() ){
 		QStringList values = value.split( ":" ) ;
@@ -488,8 +488,8 @@ QString utility::localizationLanguage( const QString& program )
 		QDir dir( langPath ) ;
 
 		QStringList dirList = dir.entryList() ;
-		dirList.removeOne( QString( "." ) ) ;
-		dirList.removeOne( QString( ".." ) ) ;
+		dirList.removeOne( "." ) ;
+		dirList.removeOne( ".." ) ;
 
 		for( const auto& it : values){
 			s = it ;
@@ -540,8 +540,8 @@ bool utility::pathIsReadable( const QString& path )
 
 bool utility::setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app )
 {
-	QString Path = QDir::homePath() + QString( "/.zuluCrypt/" ) + app ;
-	QFile f( Path + QString( "-openMode" ) ) ;
+	QString Path = QDir::homePath() + "/.zuluCrypt/" + app ;
+	QFile f( Path + "-openMode" ) ;
 
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 	if( check ){
@@ -555,7 +555,7 @@ bool utility::setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& 
 	DialogMsg msg( parent ) ;
 	QString m = QObject::tr( "setting this option will cause the volume to open in read only mode" ) ;
 
-	QString path = Path + QString( "-readOnlyOption" ) ;
+	QString path = Path + "-readOnlyOption" ;
 
 	f.setFileName( path ) ;
 
@@ -595,14 +595,14 @@ bool utility::setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& 
 
 bool utility::getOpenVolumeReadOnlyOption( const QString& app )
 {
-	QString home = QDir::homePath() + QString( "/.zuluCrypt/" ) ;
+	QString home = QDir::homePath() + "/.zuluCrypt/" ;
 	QDir d( home ) ;
 
 	if( !d.exists() ){
 		d.mkdir( home ) ;
 	}
 
-	QFile f( home + app + QString( "-openMode" ) ) ;
+	QFile f( home + app + "-openMode" ) ;
 
 	if( !f.exists() ){
 		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
@@ -716,12 +716,12 @@ QString utility::mapperPath( const QString& r )
 
 	QString path = utility::cryptMapperPath() + QString( "zuluCrypt-" ) + QString::number( getuid() ) ;
 
-	if( rpath.startsWith( QString( "UUID=" ) ) ){
+	if( rpath.startsWith( "UUID=" ) ){
 		rpath.remove( QChar( '\"' ) ) ;
-		rpath.replace( QString( "UUID=" ),QString( "UUID-" ) ) ;
+		rpath.replace( "UUID=","UUID-" ) ;
 		path += QString( "-" ) + rpath + utility::hashPath( rpath.toLatin1() ) ;
 	}else{
-		path += QString( "-NAAN-" ) + rpath.split( "/" ).last() + utility::hashPath( rpath.toLatin1() ) ;
+		path += "-NAAN-" + rpath.split( "/" ).last() + utility::hashPath( rpath.toLatin1() ) ;
 	}
 
 	QString z = QString( BASH_SPECIAL_CHARS ) ;
@@ -821,7 +821,7 @@ void utility::addToFavorite( const QString& dev,const QString& m_point )
 
 QStringList utility::readFavorites()
 {
-	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
+	QFile f( QDir::homePath() + "/.zuluCrypt/favorites" ) ;
 	QStringList list ;
 	if( f.open( QIODevice::ReadOnly ) ){
 		QString data( f.readAll() ) ;
@@ -835,7 +835,7 @@ QStringList utility::readFavorites()
 
 void utility::removeFavoriteEntry( const QString& entry )
 {
-	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
+	QFile f( QDir::homePath() + "/.zuluCrypt/favorites" ) ;
 	f.open( QIODevice::ReadOnly ) ;
 	QByteArray b = f.readAll() ;
 	f.close() ;
@@ -847,11 +847,11 @@ void utility::removeFavoriteEntry( const QString& entry )
 
 QString utility::getVolumeID( const QString& id )
 {
-	if( id.startsWith( QString( "/dev/" ) ) ){
-		QDir d( QString( "/dev/disk/by-id" ) ) ;
+	if( id.startsWith( "/dev/" ) ){
+		QDir d( "/dev/disk/by-id" ) ;
 		QStringList l = d.entryList() ;
-		l.removeOne( QString( "." ) ) ;
-		l.removeOne( QString( ".." ) ) ;
+		l.removeOne( "." ) ;
+		l.removeOne( ".." ) ;
 		QDir r ;
 		for( const auto& it : l ){
 			const QString& e = it ;

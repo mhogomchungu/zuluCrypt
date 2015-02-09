@@ -131,7 +131,7 @@ void walletconfiginput::pbVolumePath()
 
 void walletconfiginput::setvolumeID( QString id )
 {
-	if( id.startsWith( QString( "UUID=") ) ){
+	if( id.startsWith( "UUID=" ) ){
 		m_ui->lineEditVolumeID->setText( id ) ;
 	}else{
 		QString z = Task::await<QString>( utility::getUUIDFromPath( id ) ) ;

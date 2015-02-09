@@ -65,7 +65,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 
 	StringListGetIterators( stl,&it,&end ) ;
 
-	while( it != end  ){
+	while( it != end ){
 
 		xt = *it ;
 		it++ ;

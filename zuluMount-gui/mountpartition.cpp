@@ -57,7 +57,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) : QWidge
 
 	m_ui->pbMount->setFocus() ;
 
-	m_ui->checkBoxMountReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( QString( "zuluMount-gui" ) ) ) ;
+	m_ui->checkBoxMountReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( "zuluMount-gui" ) ) ;
 
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbMount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
@@ -66,7 +66,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) : QWidge
 	connect( m_ui->checkBox,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
 	connect( m_ui->checkBoxMountReadOnly,SIGNAL( stateChanged(int) ),this,SLOT( checkBoxReadOnlyStateChanged( int ) ) ) ;
 
-	m_ui->pbMountFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
+	m_ui->pbMountFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	userfont F( this ) ;
 	this->setFont( F.getFont() ) ;
