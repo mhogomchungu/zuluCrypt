@@ -102,7 +102,7 @@ bool mountPartition::eventFilter( QObject * watched,QEvent * event )
 void mountPartition::checkBoxReadOnlyStateChanged( int state )
 {
 	m_ui->checkBoxMountReadOnly->setEnabled( false ) ;
-	m_ui->checkBoxMountReadOnly->setChecked( utility::setOpenVolumeReadOnly( this,state == Qt::Checked,QString( "zuluMount-gui" ) ) ) ;
+	m_ui->checkBoxMountReadOnly->setChecked( utility::setOpenVolumeReadOnly( this,state == Qt::Checked,"zuluMount-gui" ) ) ;
 
 	m_ui->checkBoxMountReadOnly->setEnabled( true ) ;
 	if( m_ui->lineEdit->text().isEmpty() ){
@@ -114,7 +114,7 @@ void mountPartition::checkBoxReadOnlyStateChanged( int state )
 
 void mountPartition::enableAll()
 {
-	if( m_label != QString( "Nil" ) ){
+	if( m_label != "Nil" ){
 		m_ui->checkBox->setEnabled( true ) ;
 	}
 	m_ui->checkBoxMountReadOnly->setEnabled( true ) ;
@@ -150,7 +150,7 @@ void mountPartition::pbMount()
 {
 	QString test_mount = m_ui->lineEdit->text() ;
 
-	if( test_mount.contains( QString( "/" ) ) ){
+	if( test_mount.contains( "/" ) ){
 		if( this->isVisible() ){
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
