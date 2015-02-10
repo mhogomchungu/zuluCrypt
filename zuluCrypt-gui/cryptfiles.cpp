@@ -295,9 +295,9 @@ void cryptfiles::pbCreate()
 
 void cryptfiles::cryptFile( const char * s,const char * d,const char * key,unsigned long l,bool encrypt )
 {
-	struct _progress
+	struct foo
 	{
-		_progress( std::function< int( int ) > function )
+		foo( std::function< int( int ) > function )
 		{
 			update = std::move( function ) ;
 		}
@@ -305,13 +305,13 @@ void cryptfiles::cryptFile( const char * s,const char * d,const char * key,unsig
 		std::function< int( int ) > update ;
 	} ;
 
-	_progress progress( [ this ]( int e ){ emit progressUpdate( e ) ; return 0 ; } ) ;
+	foo bar( [ this ]( int e ){ emit progressUpdate( e ) ; return 0 ; } ) ;
 
-	auto f = reinterpret_cast< void * >( &progress ) ;
+	auto f = reinterpret_cast< void * >( &bar ) ;
 
 	auto u = []( int e,void * f )
 	{
-		auto r = reinterpret_cast< _progress * >( f ) ;
+		auto r = reinterpret_cast< foo * >( f ) ;
 		return r->update( e ) ;
 	} ;
 
