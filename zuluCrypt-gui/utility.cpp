@@ -268,15 +268,17 @@ static int _openVolume( const QString& e )
 	return open( e.toLatin1().constData(),O_RDWR ) ;
 }
 
-static std::function< void( int ) > _closeFunction()
+static std::function< void( int ) > _closeFunction( const QString& e )
 {
-	return []( int fd ){
+	return [ e ]( int fd ){
 
 		if( fd != -1 ){
 
 			for( int i = 0 ; i < 5 ; i++ ){
 
 				if( close( fd ) == 0 ){
+
+					utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,e ) ) ;
 
 					break ;
 				}
@@ -305,7 +307,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 		}else{
 			QString volumeMapperPath = utility::mapperPath( volume ) ;
 
-			utility::fileHandle f( _openVolume( volumeMapperPath ),_closeFunction() ) ;
+			utility::fileHandle f( _openVolume( volumeMapperPath ),_closeFunction( volumePath) ) ;
 
 			int fd = f.handle() ;
 
