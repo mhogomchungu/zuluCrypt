@@ -124,6 +124,11 @@ namespace utility
 		{
 			m_fd = r ;
 		}
+		fileHandle( int r,std::function< void( int ) > cmd )
+		{
+			m_fd = r ;
+			m_releaseResource = std::move( cmd ) ;
+		}
 		bool open( const char * filePath,bool ro = true )
 		{
 			if( ro ){
@@ -167,13 +172,18 @@ namespace utility
 		}
 		~fileHandle()
 		{
-			if( m_fd != -1 ){
-				::close( m_fd ) ;
-			}
+			m_releaseResource( m_fd ) ;
 		}
 	private:
 		int m_fd = -1 ;
-	};
+
+		std::function< void( int ) > m_releaseResource = []( int fd ){
+
+			if( fd != -1 ){
+				::close( fd ) ;
+			}
+		} ;
+	} ;
 }
 
 namespace utility

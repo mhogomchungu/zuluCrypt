@@ -268,16 +268,21 @@ static int _openVolume( const QString& e )
 	return open( e.toLatin1().constData(),O_RDWR ) ;
 }
 
-static void _closeVolume( int fd )
+static std::function< void( int ) > _closeFunction()
 {
-	if( fd != -1 ){
-		for( int i = 0 ; i < 5 ; i++ ){
+	return []( int fd ){
 
-			if( close( fd ) == 0 ){
-				break ;
+		if( fd != -1 ){
+
+			for( int i = 0 ; i < 5 ; i++ ){
+
+				if( close( fd ) == 0 ){
+
+					break ;
+				}
 			}
 		}
-	}
+	} ;
 }
 
 static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
@@ -288,12 +293,6 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 ::Task::future< int >& utility::clearVolume( const QString& volume,bool * exit,std::function< void( int ) > function )
 {
 	return ::Task::run<int>( [ volume,exit,function ](){
-
-		struct _raii
-		{
-			std::function< void( void ) > cmd ;
-			~_raii(){ this->cmd() ; }
-		};
 
 		QString volumePath = volume ;
 
@@ -306,15 +305,9 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 		}else{
 			QString volumeMapperPath = utility::mapperPath( volume ) ;
 
-			int fd = _openVolume( volumeMapperPath ) ;
+			utility::fileHandle f( _openVolume( volumeMapperPath ),_closeFunction() ) ;
 
-			_raii raii ;
-
-			raii.cmd = [ fd,volumePath ](){
-
-				_closeVolume( fd ) ;
-				utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
-			} ;
+			int fd = f.handle() ;
 
 			if( fd == -1 ){
 
