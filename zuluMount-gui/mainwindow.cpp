@@ -916,8 +916,9 @@ void MainWindow::pbUmount()
 	int row = m_ui->tableWidget->currentRow() ;
 
 	QString path = m_ui->tableWidget->item( row,0 )->text() ;
+	QString type = m_ui->tableWidget->item( row,2 )->text() ;
 
-	if( path.startsWith( "encfs" ) ){
+	if( type == "encfs" ){
 
 		QString m = m_ui->tableWidget->item( row,1 )->text() ;
 
@@ -928,8 +929,6 @@ void MainWindow::pbUmount()
 			this->enableAll() ;
 		}
 	}else{
-		QString type = m_ui->tableWidget->item( row,2 )->text() ;
-
 		auto r = zuluMountTask::unmountVolume( path,type ).await() ;
 
 		if( r.failed() ){

@@ -53,11 +53,10 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 	vInfo volumeInfo ;
 
 	char * const * entry = NULL ;
+	const char * e ;
 
 	size_t entry_len = 0 ;
 	int index ;
-
-	int r = 1 ;
 
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid ;
@@ -87,8 +86,8 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 		if( StringEqual( st,"encfs" ) ){
 
 			StringAppend( st,"-" ) ;
-			StringAppendInt( st,r ) ;
-			r++ ;
+			e = StringListContentAt( tmp,4 ) ;
+			StringAppendInt( st,StringJenkinsOneAtATimeHash( e ) ) ;
 		}
 
 		StringListStringArray_1( &entry,&entry_len,tmp ) ;
