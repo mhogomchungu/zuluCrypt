@@ -203,7 +203,7 @@ version 4.7.4
 version 4.7.5
 -- add abilities in zuluMount-gui to hide useless entries like windows recovery partitions from view.
    These entries can be set to show/hide through tray icon context menu.
--- add ability to mount and unmount encrypt-fs volumes in zuluMount-gui.A folder with encrypted files can be unlocked by dragging
+-- add ability to mount and unmount encfs volumes in zuluMount-gui.A folder with encrypted files can be unlocked by dragging
    it and then dropping it on zuluMount-gui main window.
 -- add ablity to create TrueCrypt volumes using a passphrase together with one or more keyfiles.Previous versions allowed
    creation of volumes using either a passphrase or a single keyfile.

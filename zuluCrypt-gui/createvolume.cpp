@@ -145,46 +145,32 @@ bool createvolume::eventFilter( QObject * watched,QEvent * event )
 
 void createvolume::findInstalledFs()
 {
-	DialogMsg msg( this ) ;
+	QStringList l ;
 
-	QStringList mkfsList =  QDir( QString( ZULUCRYPTmkfs_dir ) ).entryList().filter( "mkfs." ) ;
+	l << "ext4" << "vfat" << "ntfs" << "ext2" << "ext3" ;
 
-	if( mkfsList.size() == 0 ){
-		disableAll() ;
-		QString x = tr( "this tool expects to find file system creation tools at \"%1/\" " ).arg( ZULUCRYPTmkfs_dir ) ;
-		x += tr( "and it can not find them.\nIt is therefore not possible to create volumes using this tool." ) ;
-		msg.ShowUIOK( tr( "ERROR!" ),x ) ;
-		return ;
+	QFile f( "/proc/filesystems" ) ;
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		QStringList r = QString( f.readAll() ).split('\n',QString::SkipEmptyParts ) ;
+
+		for( const auto& it : r ){
+
+			if( !it.startsWith( "nodev" ) ){
+
+				QString e = it ;
+				e.remove( '\t' ) ;
+
+				if( !l.contains( e ) && e != "fuseblk" ){
+
+					l.append( e ) ;
+				}
+			}
+		}
 	}
 
-	int index = mkfsList.indexOf( QString( "mkfs.ext2" ) ) ;
-	if( index != -1 ){
-		mkfsList.move( index,0 ) ;
-	}
-	index = mkfsList.indexOf( QString( "mkfs.ntfs" ) ) ;
-	if( index != -1 ){
-		mkfsList.move( index,0 ) ;
-	}
-	index = mkfsList.indexOf( QString( "mkfs.vfat" ) ) ;
-	if( index != -1 ){
-		mkfsList.move( index,0 ) ;
-	}
-	index = mkfsList.indexOf( QString( "mkfs.ext3" ) ) ;
-	if( index != -1 ){
-		mkfsList.move( index,0 ) ;
-	}
-	index = mkfsList.indexOf( QString( "mkfs.ext4" ) ) ;
-	if( index != -1 ){
-		mkfsList.move( index,0 ) ;
-	}
-	int j = mkfsList.size() ;
-	QStringList mkfs ;
-	QString entry ;
-	for( int i = 0 ; i < j ; i++ ) {
-		entry = mkfsList.at( i ) ;
-		mkfs.append( entry.mid( entry.indexOf( "." ) + 1 ) ) ;
-	}
-	m_ui->comboBoxFS->addItems( mkfs ) ;
+	m_ui->comboBoxFS->addItems( l ) ;
 }
 
 void createvolume::volumeType( int s )
@@ -687,7 +673,7 @@ void createvolume::pbCreateClicked()
 
 	QString g ;
 
-	switch( m_ui->comboBoxFS->currentIndex() ){
+	switch( m_ui->comboBoxRNG->currentIndex() ){
 		case 0 : g = "/dev/urandom" ; break ;
 		case 1 : g = "/dev/random"  ; break ;
 		default: g = "/dev/urandom" ;
