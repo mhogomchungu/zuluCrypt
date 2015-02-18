@@ -40,7 +40,5 @@ version 4.3.1
 -- just maintainig  the tool,all features are in.
 
 X.Y
--- add ability to change TrueCrypt volume key
--- add ability to create TrueCrypt volume with a key together with one or more keyfiles
 -- add a plugin to retrieve keys from smart cards
 -- add mtp based devices support to zuluMount

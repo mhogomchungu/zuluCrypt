@@ -34,6 +34,7 @@ The precise names of the above packages in debian are:
 15.libudev-dev
 16.chrpath
 17.bzip2
+18.debhelper
 
 The project is made up of two components,the command line "pure C" based backend components and GUI Qt/C++ based front end components.
 
