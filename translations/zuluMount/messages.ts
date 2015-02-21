@@ -304,9 +304,9 @@ only root user or members of group zulucrypt-write can do that</source>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="664"/>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="671"/>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="800"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="927"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="938"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="1023"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="928"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="937"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="1022"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
@@ -336,12 +336,12 @@ the volume is not supported
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="927"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="928"/>
         <source>failed to unmount encfs volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="1024"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="1023"/>
         <source>reading partition properties took longer than expected and operation was terminated,click refresh to try again</source>
         <translation type="unfinished"></translation>
     </message>
@@ -349,7 +349,7 @@ the volume is not supported
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="380"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="375"/>
         <source>
 options:
 	-d   path to where a volume to be auto unlocked/mounted is located
@@ -359,23 +359,23 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="556"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="551"/>
         <source>setting this option will cause the volume to open in read only mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="569"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="580"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="564"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="575"/>
         <source>info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="897"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="892"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="393"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="388"/>
         <source>if the option is checked,a primary private mount point will be created in &quot;/run/media/private/$USER/&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;/run/media/public/&quot;</source>
         <translation type="unfinished"></translation>

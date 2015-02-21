@@ -99,9 +99,9 @@ void luksaddkey::keyChanged( QString key )
 	if( checkQuality ){
 		int st = m_keystrength.quality( key ) ;
 		if( st < 0 ){
-			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
+			this->setWindowTitle( tr( "passphrase quality: 0%" ) ) ;
 		}else{
-			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( QString::number( st ) ) ) ;
+			this->setWindowTitle( tr( "passphrase quality: %1%" ).arg( QString::number( st ) ) ) ;
 		}
 	}else{
 		this->setWindowTitle( tr( "add a key to a volume" ) ) ;

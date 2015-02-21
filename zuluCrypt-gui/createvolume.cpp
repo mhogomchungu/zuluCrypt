@@ -124,9 +124,9 @@ void createvolume::keyChanged( bool check,const QString& key )
 	if( check ){
 		int st = m_keyStrength.quality( key ) ;
 		if( st < 0 ){
-			this->setWindowTitle( tr( "passphrase quality: 0/100" ) ) ;
+			this->setWindowTitle( tr( "passphrase quality: 0%" ) ) ;
 		}else{
-			this->setWindowTitle( tr( "passphrase quality: %1/100" ).arg( QString::number( st ) ) ) ;
+			this->setWindowTitle( tr( "passphrase quality: %1%" ).arg( QString::number( st ) ) ) ;
 		}
 	}else{
 		this->setWindowTitle( tr( "create a new volume" ) ) ;
