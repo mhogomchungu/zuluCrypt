@@ -269,7 +269,7 @@ string_t StringEmpty()
 	if( st == NULL ){
 		return _StringError() ;
 	}else{
-		st->string = malloc( sizeof( char ) ) ;
+		st->string = malloc( 8 * sizeof( char ) ) ;
 		if( st->string == NULL ){
 			free( st ) ;
 			return _StringError() ;
@@ -277,7 +277,7 @@ string_t StringEmpty()
 			st->string[ 0 ] = '\0' ;
 			st->size = 0 ;
 			st->owned = 0 ;
-			st->length = 1 ;
+			st->length = 8 ;
 			return st ;
 		}
 	}

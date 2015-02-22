@@ -88,14 +88,19 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 	DIR * dir = opendir( "/dev/mapper/" ) ;
 
 	if( dir != NULL ){
+
 		st = String( "/dev/mapper/" ) ;
+
 		while( ( entry = readdir( dir ) ) != NULL ){
+
 			if( !StringAtLeastOneMatch_1( entry->d_name,".","..","control",NULL ) ){
 				/*
 				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/resolve_paths.c
 				 */
 				xt = zuluCryptConvertIfPathIsLVM( StringAppendAt( st,12,entry->d_name ) ) ;
+
 				if( StringStartsWith( xt,"/dev/mapper/" ) ){
+
 					StringDelete( &xt ) ;
 				}else{
 					stl = StringListAppendString_1( stl,&xt ) ;
@@ -118,15 +123,22 @@ static stringList_t _zuluCryptAddMDRAIDVolumes( stringList_t stl )
 	string_t st = StringVoid ;
 
 	if( dir != NULL ){
+
 		while( ( entry = readdir( dir ) ) != NULL ){
+
 			f = entry->d_name ;
+
 			if( !StringAtLeastOneMatch_1( f,".","..","md-device-map",NULL ) ){
+
 				st = String( "/dev/md/" ) ;
 				e = zuluCryptRealPath( StringAppend( st,f ) ) ;
+
 				if( e != NULL ){
+
 					StringListRemoveString( stl,e ) ;
-					free( e ) ;
+					StringFree( e ) ;
 				}
+				
 				stl = StringListAppendString_1( stl,&st ) ;
 			}
 		}
@@ -150,7 +162,7 @@ static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
 
 	string_t st ;
 
-	const char * e = NULL ;
+	const char * e ;
 
 	blkid_probe blkid ;
 
@@ -159,14 +171,23 @@ static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	while( it != end ){
+
 		st = *it ;
 		it++ ;
+
 		blkid = blkid_new_probe_from_filename( StringContent( st ) ) ;
+
 		if( blkid != NULL ){
+
+			e = NULL ;
 			blkid_do_probe( blkid ) ;
 			blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
+
 			if( StringsAreEqual( e,"btrfs" ) ){
+
+				e = NULL ;
 				blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) ;
+
 				if( StringListHasNoEntry( stx,e ) ){
 					/*
 					 * we got a btrfs volume with UUID we do not know about,
@@ -621,7 +642,7 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 
 	string_t xt ;
 
-	const char * e = NULL ;
+	const char * e ;
 
 	u_int64_t r = 0 ;
 
@@ -630,6 +651,8 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 	if( blkid == NULL ){
 		return 0 ;
 	}
+
+	e = NULL ;
 	blkid_do_probe( blkid ) ;
 	blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
 
@@ -643,6 +666,8 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 		 * iterate through all known devices and add their sizes to this device if they are a part of the same
 		 * btrfs volume.
 		 */
+		e = NULL ;
+
 		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
 			xt = String( e ) ;
 		}else{
@@ -667,6 +692,7 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 				it++ ;
 				if( blkid != NULL ){
 					blkid_do_probe( blkid ) ;
+					e = NULL ;
 					if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
 						if( StringEqual( xt,e ) ){
 							r += blkid_probe_get_size( blkid ) ;
