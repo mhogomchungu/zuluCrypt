@@ -126,20 +126,15 @@ static uint32_t _tcrypt_flags( int flags )
 	}
 }
 
-static uint32_t _vera_flags( int flags )
-{
-	if( flags == TCRYPT_HIDDEN ){
-		return CRYPT_TCRYPT_VERA_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
-	}else{
-		return CRYPT_TCRYPT_VERA_MODES ;
-	}
-}
-
 static uint32_t _set_flags( int flags,int veraCrypt_volume )
 {
-#if CRYPT_TCRYPT_VERA_MODES
+#if VERACRYPT_SUPPORT
 	if( veraCrypt_volume ){
-		return _vera_flags( flags ) ;
+		if( flags == TCRYPT_HIDDEN ){
+			return CRYPT_TCRYPT_VERA_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+		}else{
+			return CRYPT_TCRYPT_VERA_MODES ;
+		}
 	}else{
 		return _tcrypt_flags( flags ) ;
 	}
@@ -150,7 +145,7 @@ static uint32_t _set_flags( int flags,int veraCrypt_volume )
 
 static int _has_no_veraCrypt_support()
 {
-#if CRYPT_TCRYPT_VERA_MODES
+#if VERACRYPT_SUPPORT
 	return 0 ;
 #else
 	return 1 ;
