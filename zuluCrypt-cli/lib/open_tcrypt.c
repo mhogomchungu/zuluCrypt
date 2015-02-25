@@ -27,9 +27,10 @@
 #include <sys/stat.h>
 
 /*
- * this header is created at config time
+ * these headers are created at config time
  */
 #include "truecrypt_support.h"
+#include "veracrypt_support.h"
 
 /*
  * TRIM support for truecrypt volume is off due to recommendation from the following wiki page:
@@ -116,6 +117,46 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 	}
 }
 
+static uint32_t _tcrypt_flags( int flags )
+{
+	if( flags == TCRYPT_HIDDEN ){
+		return CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+	}else{
+		return CRYPT_TCRYPT_LEGACY_MODES ;
+	}
+}
+
+static uint32_t _vera_flags( int flags )
+{
+	if( flags == TCRYPT_HIDDEN ){
+		return CRYPT_TCRYPT_VERA_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+	}else{
+		return CRYPT_TCRYPT_VERA_MODES ;
+	}
+}
+
+static uint32_t _set_flags( int flags,int veraCrypt_volume )
+{
+#if CRYPT_TCRYPT_VERA_MODES
+	if( veraCrypt_volume ){
+		return _vera_flags( flags ) ;
+	}else{
+		return _tcrypt_flags( flags ) ;
+	}
+#else
+	return _tcrypt_flags( flags ) ;
+#endif
+}
+
+static int _has_no_veraCrypt_support()
+{
+#if CRYPT_TCRYPT_VERA_MODES
+	return 0 ;
+#else
+	return 1 ;
+#endif
+}
+
 static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 {
 	uint32_t flags ;
@@ -124,6 +165,10 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 	struct crypt_device * cd = NULL ;
 	struct crypt_params_tcrypt params ;
+
+	if( opts->veraCrypt_volume && _has_no_veraCrypt_support() ){
+		return 1 ;
+	}
 
 	if( crypt_init( &cd,device ) < 0 ){
 		return 1 ;
@@ -142,11 +187,9 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 			 */
 			params.passphrase_size = 64 ;
 		}
-		if( opts->volume_type == TCRYPT_HIDDEN ){
-			params.flags = CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
-		}else{
-			params.flags = CRYPT_TCRYPT_LEGACY_MODES ;
-		}
+
+		params.flags = _set_flags( opts->volume_type,opts->veraCrypt_volume ) ;
+
 		if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
 
 			params.flags |= CRYPT_TCRYPT_SYSTEM_HEADER ;

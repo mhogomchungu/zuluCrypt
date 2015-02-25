@@ -23,6 +23,7 @@
 #include <QDialog>
 #include <QString>
 #include <QByteArray>
+#include <QTimer>
 
 #include "utility.h"
 
@@ -50,7 +51,9 @@ public slots:
 	void HideUI( void ) ;
 	void ShowUI( void ) ;
 	void ShowUI( const QString& volumePath,const QString& mount_point ) ;
-	void clickedPartitionOption( QString ) ;
+	void ShowUI( QString ) ;
+	void ShowVeraUI( void ) ;
+	void ShowVeraUI( QString ) ;
 private slots :
 	void cbActicated( int ) ;
 	void pbKeyOption( void ) ;
@@ -67,6 +70,7 @@ private slots :
 	void cbStateChanged( int ) ;
 	void keys( QString key,QStringList keyFiles ) ;
 	void tcryptCancelled( void ) ;
+	void setVeraCryptWarning( void ) ;
 private :
 	void tcryptGui( void ) ;
 	void openVolume( void ) ;
@@ -81,7 +85,6 @@ private :
 	void failed( int ) ;
 	void failed( void ) ;
 	Ui::PasswordDialog * m_ui ;
-	bool m_isWindowClosable ;
 	QTableWidget * m_table ;
 	bool m_open_with_path ;
 	QMenu * m_pluginMenu ;
@@ -90,7 +93,10 @@ private :
 	QStringList m_keyFiles ;
 	QString m_device ;
 	QString m_point ;
-
+	bool m_veraCryptVolume = false ;
+	QTimer m_timer ;
+	float m_time = 0 ;
+	bool m_working = false ;
 	enum{ key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
 };
 

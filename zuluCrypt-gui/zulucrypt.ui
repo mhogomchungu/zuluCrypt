@@ -98,7 +98,7 @@
      <x>0</x>
      <y>0</y>
      <width>782</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">
@@ -108,6 +108,8 @@
     <addaction name="actionFileOpen"/>
     <addaction name="actionPartitionOpen"/>
     <addaction name="separator"/>
+    <addaction name="actionVeracrypt_container_in_a_file"/>
+    <addaction name="actionVeracrypt_container_in_a_partition"/>
    </widget>
    <widget class="QMenu" name="menuCreate">
     <property name="title">
@@ -182,7 +184,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionFileOpen">
    <property name="text">
-    <string>encrypted container in a file</string>
+    <string>plain,luks,truecrypt container in a file</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -190,7 +192,7 @@
   </action>
   <action name="actionPartitionOpen">
    <property name="text">
-    <string>encrypted container in a partition</string>
+    <string>plain,luks,truecrypt container in a partition</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -466,6 +468,16 @@
   <action name="actionTcrypt_restore_header">
    <property name="text">
     <string>tcrypt restore header</string>
+   </property>
+  </action>
+  <action name="actionVeracrypt_container_in_a_file">
+   <property name="text">
+    <string>veracrypt container in a file</string>
+   </property>
+  </action>
+  <action name="actionVeracrypt_container_in_a_partition">
+   <property name="text">
+    <string>veracrypt container in a partition</string>
    </property>
   </action>
  </widget>

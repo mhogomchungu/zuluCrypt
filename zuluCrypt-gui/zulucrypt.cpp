@@ -68,6 +68,8 @@
 #include "task.h"
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
+#include "veracrypt_support.h"
+
 zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 {
 	this->setLocalizationLanguage() ;
@@ -318,6 +320,8 @@ void zuluCrypt::setupConnections()
 	connect( this,SIGNAL( favClickedVolume( QString,QString ) ),this,SLOT( ShowPasswordDialog( QString,QString ) ) ) ;
 	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( ShowOpenPartition() ) ) ;
 	connect( m_ui->actionFileOpen,SIGNAL( triggered() ),this,SLOT( ShowPasswordDialog() ) ) ;
+	connect( m_ui->actionVeracrypt_container_in_a_file,SIGNAL( triggered() ),this,SLOT( ShowVeraPasswordDialog() ) ) ;
+	connect( m_ui->actionVeracrypt_container_in_a_partition,SIGNAL( triggered() ),this,SLOT( ShowVeraOpenPartition() ) ) ;
 	connect( m_ui->actionFileCreate,SIGNAL( triggered() ),this,SLOT( ShowCreateFile() ) ) ;
 	connect( m_ui->actionManage_names,SIGNAL( triggered() ),this,SLOT( ShowFavoritesEntries() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
@@ -366,6 +370,16 @@ void zuluCrypt::setupConnections()
 
 	m_ui->actionManage_system_partitions->setEnabled( utility::userIsRoot() ) ;
 	m_ui->actionManage_non_system_partitions->setEnabled( utility::userIsRoot() ) ;
+
+#if VERACRYPT_SUPPORT
+
+	m_ui->actionVeracrypt_container_in_a_file->setEnabled( true ) ;
+	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( true ) ;
+#else
+	m_ui->actionVeracrypt_container_in_a_file->setEnabled( false ) ;
+	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( false ) ;
+#endif
+
 
 	this->setAcceptDrops( true ) ;
 }
@@ -920,7 +934,7 @@ void zuluCrypt::close()
 		utility::Task::waitForOneSecond() ; //for UI effect
 		return utility::Task( exe ).exitCode() ;
 
-	} ).then( [ this ]( const int& r ){
+	} ).then( [ this ]( int r ){
 
 		this->closeStatus( r ) ;
 		m_ui->tableWidget->setEnabled( true ) ;
@@ -960,12 +974,12 @@ luksaddkey * zuluCrypt::setUpluksaddkey()
 
 void zuluCrypt::ShowAddKeyContextMenu( QString key )
 {
-	setUpluksaddkey()->ShowUI( key ) ;
+	this->setUpluksaddkey()->ShowUI( key ) ;
 }
 
 void zuluCrypt::ShowAddKey()
 {
-	setUpluksaddkey()->ShowUI() ;
+	this->setUpluksaddkey()->ShowUI() ;
 }
 
 luksdeletekey * zuluCrypt::setUpluksdeletekey()
@@ -977,12 +991,12 @@ luksdeletekey * zuluCrypt::setUpluksdeletekey()
 
 void zuluCrypt::ShowDeleteKeyContextMenu( QString key )
 {
-	setUpluksdeletekey()->ShowUI( key ) ;
+	this->setUpluksdeletekey()->ShowUI( key ) ;
 }
 
 void zuluCrypt::ShowDeleteKey()
 {
-	setUpluksdeletekey()->ShowUI() ;
+	this->setUpluksdeletekey()->ShowUI() ;
 }
 
 void zuluCrypt::ShowCreateKeyFile()
@@ -1016,13 +1030,13 @@ createvolume * zuluCrypt::setUpCreatepartition()
 
 void zuluCrypt::createPartition( QString partition )
 {
-	setUpCreatepartition()->ShowPartition( partition ) ;
+	this->setUpCreatepartition()->ShowPartition( partition ) ;
 }
 
 void zuluCrypt::FileCreated( QString file )
 {
 	if( utility::pathExists( file ) ){
-		setUpCreatepartition()->ShowFile( file ) ;
+		this->setUpCreatepartition()->ShowFile( file ) ;
 	}
 }
 
@@ -1048,6 +1062,19 @@ void zuluCrypt::ShowOpenPartition()
 	ap->ShowAllPartitions() ;
 }
 
+void zuluCrypt::ShowVeraPasswordDialog()
+{
+	this->setUpPasswordDialog()->ShowVeraUI() ;
+}
+
+void zuluCrypt::ShowVeraOpenPartition()
+{
+	openvolume * ap = setUpOpenpartition() ;
+	ap->showEncryptedOnly() ;
+	connect( ap,SIGNAL( clickedPartition( QString ) ),this,SLOT( veraPartitionClicked( QString ) ) ) ;
+	ap->ShowAllPartitions() ;
+}
+
 passwordDialog * zuluCrypt::setUpPasswordDialog()
 {
 	passwordDialog * pd = new passwordDialog( m_ui->tableWidget,this ) ;
@@ -1058,7 +1085,7 @@ passwordDialog * zuluCrypt::setUpPasswordDialog()
 
 void zuluCrypt::ShowPasswordDialog()
 {
-	setUpPasswordDialog()->ShowUI() ;
+	this->setUpPasswordDialog()->ShowUI() ;
 }
 
 void zuluCrypt::ShowPasswordDialog( QString x,QString y )
@@ -1066,13 +1093,18 @@ void zuluCrypt::ShowPasswordDialog( QString x,QString y )
 	if( x.endsWith( ".zc" ) || x.endsWith( ".zC" ) ){
 		this->decryptFile( x ) ;
 	}else{
-		setUpPasswordDialog()->ShowUI( x,y ) ;
+		this->setUpPasswordDialog()->ShowUI( x,y ) ;
 	}
 }
 
 void zuluCrypt::partitionClicked( QString partition )
 {
-	setUpPasswordDialog()->clickedPartitionOption( partition ) ;
+	this->setUpPasswordDialog()->ShowUI( partition ) ;
+}
+
+void zuluCrypt::veraPartitionClicked( QString partition )
+{
+	this->setUpPasswordDialog()->ShowVeraUI( partition ) ;
 }
 
 void zuluCrypt::ShowEraseDataDialog()
@@ -1091,17 +1123,17 @@ cryptfiles * zuluCrypt::setUpCryptFiles()
 
 void zuluCrypt::encryptFile()
 {
-	setUpCryptFiles()->encrypt() ;
+	this->setUpCryptFiles()->encrypt() ;
 }
 
 void zuluCrypt::decryptFile( void )
 {
-	setUpCryptFiles()->decrypt() ;
+	this->setUpCryptFiles()->decrypt() ;
 }
 
 void zuluCrypt::decryptFile( const QString& e )
 {
-	setUpCryptFiles()->decrypt( e ) ;
+	this->setUpCryptFiles()->decrypt( e ) ;
 }
 
 zuluCrypt::~zuluCrypt()

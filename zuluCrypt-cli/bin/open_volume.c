@@ -426,7 +426,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.uid         = uid ;
 	volume.m_opts      = m_opts ;
 	volume.m_flags     = m_flags ;
-
+	volume.veraCrypt_volume = StringsAreEqual( opts->type,"vera" ) ;
+	
 	plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
 
 	volume.luks_detached_header = StringHasComponent( plugin_path,"luks" ) ;

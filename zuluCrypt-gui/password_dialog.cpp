@@ -80,8 +80,6 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 
 	m_ui->PushButtonMountPointPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
-	m_isWindowClosable = true ;
-
 	m_open_with_path = false ;
 
 	m_table = table ;
@@ -102,10 +100,13 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
 	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
 
+	connect( &m_timer,SIGNAL( timeout() ),this,SLOT( setVeraCryptWarning() ) ) ;
+
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
 	m_ui->pushButtonPlugin->setVisible( false ) ;
 
+	m_ui->veraCryptWarning->setVisible( false ) ;
 	this->installEventFilter( this ) ;
 
 #if TRUECRYPT_CRYPTSETUP
@@ -234,9 +235,7 @@ void passwordDialog::setDefaultOpenMode()
 void passwordDialog::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	if( m_isWindowClosable ){
-		this->HideUI() ;
-	}
+	this->HideUI() ;
 }
 
 void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_point )
@@ -263,12 +262,30 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 	this->show() ;
 }
 
+void passwordDialog::ShowUI( QString dev )
+{
+	QString m_point = QDir::homePath() + "/" + dev.split( "/" ).last() ;
+	this->ShowUI( dev,m_point ) ;
+}
+
 void passwordDialog::ShowUI()
 {
 	this->passphraseOption() ;
 	m_ui->OpenVolumePath->setFocus() ;
 	m_ui->PushButtonVolumePath->setIcon( QIcon( ":/file.png" ) ) ;
 	this->show() ;
+}
+
+void passwordDialog::ShowVeraUI()
+{
+	m_veraCryptVolume = true ;
+	this->ShowUI() ;
+}
+
+void passwordDialog::ShowVeraUI( QString dev )
+{
+	m_veraCryptVolume = true ;
+	this->ShowUI( dev ) ;
 }
 
 void passwordDialog::mountPointPath( QString path )
@@ -356,12 +373,6 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 	}
 }
 
-void passwordDialog::clickedPartitionOption( QString dev )
-{
-	QString m_point = QDir::homePath() + "/" + dev.split( "/" ).last() ;
-	this->ShowUI( dev,m_point ) ;
-}
-
 void passwordDialog::mount_point( void )
 {
 	QString p = tr( "Select Path to mount point folder" ) ;
@@ -390,8 +401,10 @@ void passwordDialog::file_path( void )
 
 void passwordDialog::HideUI()
 {
-	this->hide() ;
-	emit HideUISignal() ;
+	if( !m_working ){
+		this->hide() ;
+		emit HideUISignal() ;
+	}
 }
 
 void passwordDialog::buttonOpenClicked( void )
@@ -602,15 +615,52 @@ void passwordDialog::openVolume()
 		}
 	}
 
+	if( m_veraCryptVolume ){
+
+		m_time = 0 ;
+		m_timer.stop() ;
+
+		m_ui->veraCryptWarning->setVisible( true ) ;
+
+		this->setVeraCryptWarning() ;
+
+		m_timer.start( 1000 * 1 ) ;
+
+		exe += " -t vera" ;
+	}
+
 	this->disableAll() ;
+
+	m_working = true ;
 
 	auto r = utility::Task::run( exe ).await() ;
 
+	m_working = false ;
+
 	if( r.success() ){
+
 		this->success( r.output() ) ;
 	}else{
 		this->failed( r.exitCode() ) ;
+
+		m_ui->veraCryptWarning->setVisible( false ) ;
 	}
+}
+
+void passwordDialog::setVeraCryptWarning()
+{
+	QString e = tr( "please be patient as unlocking a VeraCrypt volume may take a very long time.\n\n" ) ;
+
+	if( m_time >= 60 ){
+
+		e += tr( "Elapsed time: %0 minutes" ).arg( QString::number( m_time / 60,'f',2 ) ) ;
+	}else{
+		e += tr( "Elapsed time: %0 seconds" ).arg( QString::number( m_time ) ) ;
+	}
+
+	m_time++ ;
+
+	m_ui->veraCryptWarning->setText( e ) ;
 }
 
 void passwordDialog::success( const QByteArray& r )
@@ -653,8 +703,6 @@ void passwordDialog::success( const QByteArray& r )
 
 void passwordDialog::failed( int r )
 {
-	m_isWindowClosable = true ;
-
 	if( r == 12 && m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
 		/*
 		 * A user cancelled the plugin
