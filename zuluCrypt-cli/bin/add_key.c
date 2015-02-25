@@ -70,7 +70,7 @@ static int _zuluCryptCheckEmptySlots( const char * device )
 					break ;
 				}
 			}
-			free( c ) ;
+			StringFree( c ) ;
 		}
 	}else{
 		/*
@@ -284,13 +284,13 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			case 2 : return zuluExit( 8,stl ) ;
 		}
 
-		if( !StringEqualString( *newKey_1,*newKey_2 ) ){
-			status = 9 ;
-		}else{
+		if( StringEqualString( *newKey_1,*newKey_2 ) ){
 			key1 = StringContent( *presentKey ) ;
 			len1 = StringLength ( *presentKey ) ;
 			key2 = StringContent( *newKey_1   ) ;
 			len2 = StringLength ( *newKey_1   ) ;
+		}else{
+			return zuluExit( 9,stl ) ;
 		}
 	}else{
 		if( newKey == NULL || existingKey == NULL ){

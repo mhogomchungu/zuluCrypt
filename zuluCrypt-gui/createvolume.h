@@ -77,7 +77,6 @@ private slots:
 private:
 	void keyChanged( bool,const QString& ) ;
 	void eraseDataPartition( void ) ;
-	void findInstalledFs( void ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;

@@ -86,6 +86,15 @@ createvolume::createvolume( QWidget * parent ) :
 	m_ui->cbHiddenVolume->addItem( tr( "key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "keyfile" ) ) ;
 
+	QStringList l ;
+
+	/*
+	 * for simplicity's sake,lets only show most popular file systems.
+	 */
+	l << "ext4" << "vfat" << "ntfs" << "ext2" << "ext3" ;
+
+	m_ui->comboBoxFS->addItems( l ) ;
+
 #if TRUECRYPT_CREATE
 	m_ui->comboBoxVolumeType->addItem( tr( "normal truecrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "normal+hidden truecrypt" ) ) ;
@@ -141,36 +150,6 @@ bool createvolume::eventFilter( QObject * watched,QEvent * event )
 	}else{
 		return false ;
 	}
-}
-
-void createvolume::findInstalledFs()
-{
-	QStringList l ;
-
-	l << "ext4" << "vfat" << "ntfs" << "ext2" << "ext3" ;
-
-	QFile f( "/proc/filesystems" ) ;
-
-	if( f.open( QIODevice::ReadOnly ) ){
-
-		QStringList r = QString( f.readAll() ).split('\n',QString::SkipEmptyParts ) ;
-
-		for( const auto& it : r ){
-
-			if( !it.startsWith( "nodev" ) ){
-
-				QString e = it ;
-				e.remove( '\t' ) ;
-
-				if( !l.contains( e ) && e != "fuseblk" ){
-
-					l.append( e ) ;
-				}
-			}
-		}
-	}
-
-	m_ui->comboBoxFS->addItems( l ) ;
 }
 
 void createvolume::volumeType( int s )
@@ -352,7 +331,6 @@ void createvolume::ShowUI( const QString& l,const QString& v )
 	m_created = false ;
 	this->show() ;
 	this->eraseDataPartition() ;
-	this->findInstalledFs() ;
 }
 
 void createvolume::pbOpenKeyFile()

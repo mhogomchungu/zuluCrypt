@@ -213,7 +213,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		if( *confirm == StringVoid ){
 			return zuluExit( 9,stl ) ;
 		}else{
-			if( !StringEqual( *confirm,gettext( "YES" ) ) ){
+			if( StringNotEqual( *confirm,gettext( "YES" ) ) ){
 				return zuluExit( 10,stl ) ;
 			}
 		}

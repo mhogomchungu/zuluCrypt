@@ -133,7 +133,6 @@ QString cryptfiles::destinationPath( const QString& e )
 			x.truncate( r ) ;
 			return x + "/" ;
 		}
-		return QDir::homePath() + "/" ;
 	}
 }
 

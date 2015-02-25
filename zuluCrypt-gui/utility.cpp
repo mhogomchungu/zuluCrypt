@@ -307,7 +307,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 		}else{
 			QString volumeMapperPath = utility::mapperPath( volume ) ;
 
-			utility::fileHandle f( _openVolume( volumeMapperPath ),_closeFunction( volumePath) ) ;
+			utility::fileHandle f( _openVolume( volumeMapperPath ),_closeFunction( volumePath ) ) ;
 
 			int fd = f.handle() ;
 
