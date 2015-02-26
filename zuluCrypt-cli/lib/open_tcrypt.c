@@ -117,30 +117,41 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 	}
 }
 
-static uint32_t _tcrypt_flags( int flags )
+static uint32_t _tcrypt_flags( int volume_type )
 {
-	if( flags == TCRYPT_HIDDEN ){
+	if( volume_type == TCRYPT_HIDDEN ){
+
 		return CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
 	}else{
 		return CRYPT_TCRYPT_LEGACY_MODES ;
 	}
 }
 
-static uint32_t _set_flags( int flags,int veraCrypt_volume )
+static uint32_t _set_flags( const open_struct_t * opts )
 {
+	uint32_t r ;
+
 #if VERACRYPT_SUPPORT
-	if( veraCrypt_volume ){
-		if( flags == TCRYPT_HIDDEN ){
-			return CRYPT_TCRYPT_VERA_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
+	if( opts->veraCrypt_volume ){
+
+		if( opts->volume_type == TCRYPT_HIDDEN ){
+
+			r = CRYPT_TCRYPT_VERA_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
 		}else{
-			return CRYPT_TCRYPT_VERA_MODES ;
+			r = CRYPT_TCRYPT_VERA_MODES ;
 		}
 	}else{
-		return _tcrypt_flags( flags ) ;
+		r = _tcrypt_flags( opts->volume_type ) ;
 	}
 #else
-	return _tcrypt_flags( flags ) ;
+	r = _tcrypt_flags( opts->volume_type ) ;
 #endif
+	if( opts->tcrypt_system ){
+
+		r |= CRYPT_TCRYPT_SYSTEM_HEADER ;
+	}
+
+	return r ;
 }
 
 static int _has_no_veraCrypt_support()
@@ -183,17 +194,14 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 			params.passphrase_size = 64 ;
 		}
 
-		params.flags = _set_flags( opts->volume_type,opts->veraCrypt_volume ) ;
+		params.flags = _set_flags( opts ) ;
 
 		if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
 
-			params.flags |= CRYPT_TCRYPT_SYSTEM_HEADER ;
-
-			if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
-				return zuluExit( 1,cd ) ;
-			}
+			return zuluExit( 1,cd ) ;
 		}
 		if( StringHasComponent( opts->m_opts,"ro" ) ){
+			
 			flags = CRYPT_ACTIVATE_READONLY ;
 		}else{
 			flags = 0 ;

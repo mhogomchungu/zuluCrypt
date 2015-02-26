@@ -76,6 +76,7 @@ typedef struct{
 	int luks_detached_header ;
 	int tcrypt_keyfiles_count ;
 	int veraCrypt_volume ;
+	int tcrypt_system ;
 	const char * const * tcrypt_keyfiles ;
 	unsigned long m_flags ;
 }open_struct_t ;
