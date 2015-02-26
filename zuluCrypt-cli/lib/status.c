@@ -190,14 +190,14 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	struct crypt_device * cd ;
 	const char * type ;
 	char * r ;
-	const char * nil = "Nil" ;
+	string_t st ;
 
 	if( StringPrefixNotEqual( mapper,crypt_get_dir() ) ){
-		return StringCopy_2( nil ) ;
+		return StringCopy_2( "Nil" ) ;
 	}
 
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
-		return StringCopy_2( nil ) ;
+		return StringCopy_2( "Nil" ) ;
 	}
 
 	type = crypt_get_type( cd ) ;
@@ -208,17 +208,10 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 		 * it is a LUKS volume opened with a detached header.We dont know what volume we got
 		 * but assume its a LUKS volume.
 		 */
-		r = StringCopy_2( "crypto_LUKS" ) ;
+		r = StringCopy_2( "crypto_LUKS1" ) ;
 	}else{
-		if( StringHasComponent( type,"LUKS" ) ){
-			r = StringCopy_2( "crypto_LUKS" ) ;
-		}else if( StringHasComponent( type,"PLAIN" ) ){
-			r = StringCopy_2( "crypto_PLAIN" ) ;
-		}else if( StringHasComponent( type,"TCRYPT" ) ){
-			r = StringCopy_2( "crypto_TCRYPT" ) ;
-		}else{
-			r = StringCopy_2( nil ) ;
-		}
+		st = String_1( "crypto_",type,NULL ) ;
+		r = StringDeleteHandle( &st ) ;
 	}
 
 	crypt_free( cd ) ;
@@ -247,6 +240,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	struct crypt_active_device cad ;
 
 	string_t p = StringVoid ;
+	string_t q ;
 
 	if( crypt_init_by_name( &cd,mapper ) != 0 ){
 		return NULL ;
@@ -290,15 +284,9 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		 */
 		StringAppend( p,"luks1" ) ;
 	}else{
-		if( StringPrefixMatch( type,"LUKS",4 ) ){
-			StringMultipleAppend( p,"luks",type + 4,NULL ) ;
-		}else if( StringsAreEqual( type,"PLAIN" ) ){
-			StringAppend( p,"plain" ) ;
-		}else if( StringsAreEqual( type,"TCRYPT" ) ){
-			StringAppend( p,"tcrypt" ) ;
-		}else{
-			StringAppend( p,"Nil" ) ;
-		}
+		q = String( type ) ;
+		StringAppend( p,StringToLowerCase( q ) ) ;
+		StringDelete( &q ) ;
 	}
 
 	z = crypt_get_cipher( cd ) ;

@@ -145,7 +145,7 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 
 					const QString& fs = z.at( 2 ) ;
 
-					if( fs == "crypto_LUKS" ){
+					if( fs.startsWith( "crypto_LUKS" ) ){
 						z.replace( 2,"luks" ) ;
 					}else if( fs == "crypto_PLAIN" ){
 						z.replace( 2,"plain" ) ;

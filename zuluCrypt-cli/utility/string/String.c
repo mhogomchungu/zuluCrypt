@@ -88,6 +88,28 @@ int StringOwned( string_t st )
 	}
 }
 
+const char * StringToLowerCase( string_t st )
+{
+	char * it ;
+	const char * end ;
+
+	if( st == StringVoid ){
+		return NULL ;
+	}else{
+		end = st->string + st->size ;
+
+		for( it = st->string ; it != end ; it++ ){
+
+			if( *it >= 'A' && *it <= 'Z' ){
+
+				*it += 32 ;
+			}
+		}
+
+		return st->string ;
+	}
+}
+
 static inline char * __StringExpandMemory( string_t st,size_t new_size )
 {
 	char * p ;

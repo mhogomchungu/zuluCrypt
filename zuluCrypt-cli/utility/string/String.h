@@ -253,6 +253,11 @@ void StringReadToBuffer( string_t st,char * buffer,size_t size ) ;
 void StringDelete( string_t * st );
 
 /*
+ * convert all upper case characters to lower case
+ */
+const char * StringToLowerCase( string_t ) ;
+
+/*
  * clear the string before StringDelete() it
  */
 void StringClearDelete( string_t * st ) ;
