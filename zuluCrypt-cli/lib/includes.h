@@ -235,9 +235,14 @@ int zuluCryptVolumeIsNotLuks( const char * dev ) ;
 int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * fd,string_t * loop_device ) ;
 
 /*
- * this function is defined in ./mount_volume.c
+ * this function is defined in ./blkid_evaluate_tag.c
  */
 string_t zuluCryptGetFileSystemFromDevice( const char * device ) ;
+
+/*
+ * this function is defined in ./blkid_evaluate_tag.c
+ */
+int zuluCryptDeviceHasAgivenFileSystem( const char * device,const char * fs ) ;
 
 /*
  * this function is defined in ./create_loop_device.c
@@ -415,7 +420,7 @@ void zuluCryptDeleteFile( const char * file ) ;
 void zuluCryptDeleteFile_1( string_t file ) ;
 
 /*
- * this function is defined in mount_volume.c
+ * this function is defined in blkid_evaluate_tag.c
  */
 int zuluCryptFileSystemIsFUSEbased( const char * device ) ;
 

@@ -361,40 +361,6 @@ static int mount_volume( const m_struct * mst )
 	return h ;
 }
 
-int zuluCryptFileSystemIsFUSEbased( const char * device )
-{
-	const char * cf = NULL ;
-	int st ;
-	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
-	if( blkid != NULL ){
-		blkid_do_probe( blkid ) ;
-		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
-#if 1
-		st = StringAtLeastOneMatch_1( cf,"ntfs","exfat",NULL ) ;
-#else
-		st = StringAtLeastOneMatch_1( cf,"ntfs",NULL ) ;
-#endif
-		blkid_free_probe( blkid ) ;
-		return st ;
-	}else{
-		return 0 ;
-	}
-}
-
-string_t zuluCryptGetFileSystemFromDevice( const char * device )
-{
-	string_t st = StringVoid ;
-	const char * cf = NULL ;
-	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
-	if( blkid != NULL ){
-		blkid_do_probe( blkid ) ;
-		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
-		st = String( cf ) ;
-		blkid_free_probe( blkid ) ;
-	}
-	return st ;
-}
-
 const char * zuluCryptDecodeMountEntry( string_t st )
 {
 	StringReplaceString( st,"\\012","\n" ) ;
@@ -428,7 +394,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	mst.m_flags = mount_opts ;
 
 	/*
-	 * zuluCryptGetFileSystemFromDevice() is defined in this source file
+	 * zuluCryptGetFileSystemFromDevice() is defined in blkid_evaluate_tag.c
 	 */
 	fs = zuluCryptGetFileSystemFromDevice( path ) ;
 
@@ -469,6 +435,9 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		}
 	}
 
+	/*
+	 * zuluCryptFileSystemIsFUSEbased() is defined in blkid_evaluate_tag.c
+	 */
 	if( zuluCryptFileSystemIsFUSEbased( path ) ){
 		/*
 		 * These file systems dont see to work with mount() command for some reason.

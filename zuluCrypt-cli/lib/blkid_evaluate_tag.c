@@ -71,3 +71,53 @@ char * zuluCryptUUIDFromPath_1( const char * device )
 
 	return r ;
 }
+
+int zuluCryptFileSystemIsFUSEbased( const char * device )
+{
+	const char * cf = NULL ;
+	int st ;
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+	if( blkid != NULL ){
+		blkid_do_probe( blkid ) ;
+		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
+#if 1
+		st = StringAtLeastOneMatch_1( cf,"ntfs","exfat",NULL ) ;
+#else
+		st = StringAtLeastOneMatch_1( cf,"ntfs",NULL ) ;
+#endif
+		blkid_free_probe( blkid ) ;
+		return st ;
+	}else{
+		return 0 ;
+	}
+}
+
+string_t zuluCryptGetFileSystemFromDevice( const char * device )
+{
+	string_t st = StringVoid ;
+	const char * cf = NULL ;
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+	if( blkid != NULL ){
+		blkid_do_probe( blkid ) ;
+		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
+		st = String( cf ) ;
+		blkid_free_probe( blkid ) ;
+	}
+	return st ;
+}
+
+int zuluCryptDeviceHasAgivenFileSystem( const char * device,const char * fs )
+{
+	const char * cf = NULL ;
+	int r = 0 ;
+
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+
+	if( blkid != NULL ){
+		blkid_do_probe( blkid ) ;
+		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
+		r = StringsAreEqual( cf,fs ) ;
+		blkid_free_probe( blkid ) ;
+	}
+	return r ;
+}

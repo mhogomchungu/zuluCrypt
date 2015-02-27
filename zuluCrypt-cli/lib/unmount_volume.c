@@ -108,7 +108,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 
 	if( m != NULL ){
 		/*
-		 * zuluCryptFileSystemIsFUSEbased() is defined in mount_volume.c
+		 * zuluCryptFileSystemIsFUSEbased() is defined in blkid_evaluate_tag.c
 		 */
 		if( zuluCryptFileSystemIsFUSEbased( device ) ){
 			/*

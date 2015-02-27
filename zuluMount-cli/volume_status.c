@@ -133,7 +133,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,const char
 		blkid_free_probe( blkid ) ;
 
 		/*
-		 * zuluCryptGetVolumeSize() is defined in ../zuluCrypt-cli/volumes.c
+		 * zuluCryptGetVolumeSize() is defined in ../zuluCrypt-cli/lib/blkid_evaluate_tag.c
 		 */
 		if( m_point == NULL ){
 			volume_size = zuluCryptGetVolumeSize( device ) ;
