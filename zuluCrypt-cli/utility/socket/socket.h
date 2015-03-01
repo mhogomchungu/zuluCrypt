@@ -304,7 +304,7 @@ int main( int argc,char * argv[] )
 	//socket_t client = SocketLocal( "/tmpt/socketLocal" ) ;
 	socket_t client = SocketNetByName( "localhost",4000 ) ;
 
-	SocketConnect( client ) ;
+	SocketConnect( &client ) ;
 
 	SocketSendData( client,data,strlen( data ) ) ;
 

@@ -22,9 +22,7 @@
 
 string_t zuluCryptGetUserHomePath( uid_t uid )
 {
-	string_t p = StringEmpty() ;
-	StringMultipleAppend( p,getpwuid( uid )->pw_dir,"/",NULL ) ;
-	return p ;
+	return String_1( getpwuid( uid )->pw_dir,"/",NULL ) ;
 }
 
 string_t zuluCryptGetUserName( uid_t uid )
