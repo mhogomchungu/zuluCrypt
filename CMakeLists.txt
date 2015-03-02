@@ -270,9 +270,9 @@ endif( BUILD_TCPLAY )
 
 #overdide the above for now
 if( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 1\n#define TRUECRYPT_TCPLAY 0" )
+	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 1\n#define TRUECRYPT_TCPLAY 0\n" )
 else( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 0\n#define TRUECRYPT_TCPLAY 0" )
+	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 0\n#define TRUECRYPT_TCPLAY 0\n" )
 endif( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
 
 if( CRYPTSETUP_VERSION VERSION_GREATER "1.4.0" )
