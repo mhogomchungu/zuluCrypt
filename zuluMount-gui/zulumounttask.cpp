@@ -315,7 +315,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 					dev_1 = QString( "/dev/md/" ) + it ;
 					f.setPath( dev_1 ) ;
 					if( f.canonicalPath() == dev ){
-						return dev_1 ;
+						return (const QString) dev_1 ;
 					}
 				}
 			}
@@ -366,7 +366,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 						z = z.replace( "--","-" ) ;
 					}
 
-					return z ;
+					return (const QString) z ;
 				}
 			}
 

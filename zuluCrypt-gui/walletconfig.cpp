@@ -186,7 +186,7 @@ void walletconfig::walletIsOpen( bool opened )
 							return it.getValue() ;
 						}
 					}
-					static QByteArray ShouldNotGetHere ;
+					static const QByteArray ShouldNotGetHere ;
 					return ShouldNotGetHere ;
 				} ;
 
