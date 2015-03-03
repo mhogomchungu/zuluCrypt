@@ -1,0 +1,4 @@
+
+This plugin takes a path to a keyfile and a password and then
+generates a key by calculating hmac-sha256 of the contents of the keyfile using the
+provided password.
