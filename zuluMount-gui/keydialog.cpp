@@ -577,7 +577,10 @@ void keyDialog::openVolume()
 			DialogMsg msg( this ) ;
 
 			msg.ShowUIOK( tr( "ERROR" ),z ) ;
-			m_ui->lineEditKey->clear() ;
+
+			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+				m_ui->lineEditKey->clear() ;
+			}
 			this->enableAll() ;
 			m_ui->lineEditKey->setFocus() ;
 		}
