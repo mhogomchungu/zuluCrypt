@@ -38,6 +38,7 @@ signals:
 	void stopped( void ) ;
 	void volumeRemoved( QString ) ;
 	void volumeMiniProperties( volumeEntryProperties * ) ;
+	void volumeMiniProperties_0( volumeEntryProperties * ) ;
 private slots:
 	void threadStopped( void ) ;
 	void stop( void ) ;

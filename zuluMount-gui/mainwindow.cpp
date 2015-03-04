@@ -883,6 +883,7 @@ void MainWindow::volumeMiniProperties( volumeEntryProperties * volumeInfo )
 	this->disableAll() ;
 
 	if( volumeInfo ){
+
 		this->updateList( *volumeInfo ) ;
 		this->enableAll() ;
 	}else{
@@ -890,6 +891,21 @@ void MainWindow::volumeMiniProperties( volumeEntryProperties * volumeInfo )
 	}
 }
 
+void MainWindow::volumeMiniProperties_0( volumeEntryProperties * volumeInfo )
+{
+	Object_raii( volumeInfo ) ;
+
+	this->disableAll() ;
+
+	if( volumeInfo && volumeInfo->mounted() ){
+
+		this->updateList( *volumeInfo ) ;
+		this->enableAll() ;
+	}else{
+		this->pbUpdate() ;
+	}
+
+}
 void MainWindow::updateList( const volumeEntryProperties& entry )
 {
 	if( entry.notEmpty() ){

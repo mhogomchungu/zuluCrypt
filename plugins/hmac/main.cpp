@@ -18,12 +18,9 @@
  */
 
 #include <QApplication>
-#include "../mainwindow.h"
 #include <QByteArray>
 #include <QFile>
-#include <QDebug>
-
-#include <functional>
+#include "../mainwindow.h"
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gcrypt.h>
@@ -62,7 +59,7 @@ static QByteArray _getKey( gcry_md_hd_t handle,const QString& keyFile )
 	}
 }
 
-QByteArray hmac( const QVector<QString>& exe,const QString& keyFile,const QString& password )
+static QByteArray hmac( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {
 	Q_UNUSED( exe ) ;
 
@@ -91,7 +88,7 @@ int main( int argc,char * argv[] )
 	QApplication a( argc,argv ) ;
 
 	if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
-		gcry_check_version( NULL ) ;
+		gcry_check_version( nullptr ) ;
 		gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
 	}
 

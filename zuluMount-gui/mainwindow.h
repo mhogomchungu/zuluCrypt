@@ -58,6 +58,7 @@ private slots:
 	void removeVolumeFromVisibleVolumeList( QAction * ) ;
 	void startGUI( void ) ;
 	void volumeMiniProperties( volumeEntryProperties * ) ;
+	void volumeMiniProperties_0( volumeEntryProperties * ) ;
 	void showMoungDialog( const volumeEntryProperties& ) ;
 	void showMoungDialog( const QString& ) ;
 	void autoMountVolume( volumeEntryProperties * ) ;

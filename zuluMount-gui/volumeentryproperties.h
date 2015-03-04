@@ -89,6 +89,10 @@ public:
 	{
 		return m_fileSystem.startsWith( "crypto" ) || m_fileSystem == "Nil" || m_fileSystem == "encfs" ;
 	}
+	bool mounted() const
+	{
+		return m_mountPoint != "Nil" ;
+	}
 	QStringList entryList() const
 	{
 		QStringList l ;

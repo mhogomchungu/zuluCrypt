@@ -71,6 +71,10 @@ void monitor_mountinfo::run()
 
 	connect( this,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
 		 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
+
+	connect( this,SIGNAL( volumeMiniProperties_0( volumeEntryProperties * ) ),
+		 m_babu,SLOT( volumeMiniProperties_0( volumeEntryProperties * ) ) ) ;
+
 	connect( this,SIGNAL( volumeRemoved( QString ) ),
 		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 
@@ -110,7 +114,7 @@ void monitor_mountinfo::run()
 
 		Task::exec( [ &,volume ](){
 
-			emit volumeMiniProperties( zuluMountTask::volumeMiniProperties( volume ).entry ) ;
+			emit volumeMiniProperties_0( zuluMountTask::volumeMiniProperties( volume ).entry ) ;
 		} ) ;
 	} ;
 

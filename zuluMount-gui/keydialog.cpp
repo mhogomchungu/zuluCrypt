@@ -61,7 +61,14 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_volumeIsEncFs = e.fileSystem() == "encfs" ;
 
 	if( m_volumeIsEncFs ){
+
 		m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
+
+		int s = m_ui->cbKeyType->count() - 1 ;
+
+		for( int i = s ; i > 0 ; i-- ){
+			m_ui->cbKeyType->removeItem( i ) ;
+		}
 	}
 
 	QString msg ;
@@ -393,21 +400,7 @@ void keyDialog::encfsMount()
 	QString m = utility::homeMountPath( m_point ) ;
 	QString key ;
 
-	int keyType = m_ui->cbKeyType->currentIndex() ;
-
-	if( keyType == keyDialog::Key ){
-
-		key = m_ui->lineEditKey->text() ;
-
-	}else if( keyType == keyDialog::plugin ){
-
-		key =  m_key ;
-	}else{
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "invalid key source for this volume type" ) ) ;
-		m_ui->lineEditKey->setFocus() ;
-		return this->enableAll() ;
-	}
+	key = m_ui->lineEditKey->text() ;
 
 	bool ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
@@ -419,6 +412,9 @@ void keyDialog::encfsMount()
 	}else{
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "failed to unlock an encfs volume.\nwrong password or not an encfs volume" ) ) ;
+		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+			m_ui->lineEditKey->clear() ;
+		}
 		m_ui->lineEditKey->setFocus() ;
 		return this->enableAll() ;
 	}
