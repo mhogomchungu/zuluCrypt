@@ -163,7 +163,7 @@ static int _zuluPartitionHasCryptoFs( const char * device )
 	*/
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
-	 * zuluCryptGetFileSystemFromDevice() is defined in ../zuluCrypt-cli/lib/mount_volume.c
+	 * zuluCryptGetFileSystemFromDevice() is defined in ../zuluCrypt-cli/lib/blkid_evaluate_tag.c
 	 */
 	fs = zuluCryptGetFileSystemFromDevice( device ) ;
 	/*

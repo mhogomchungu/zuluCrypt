@@ -145,12 +145,12 @@ void openvolume::pbCancel()
 
 void openvolume::EnterKeyPressed()
 {
-	QTableWidget *tw = m_ui->tableWidget ;
-	QTableWidgetItem *it = tw->currentItem() ;
-	if( it == NULL ){
-		return ;
+	auto tw = m_ui->tableWidget ;
+	auto it = tw->currentItem() ;
+
+	if( it != nullptr ){
+		tableEntryDoubleClicked( tw->item( it->row(),0 ) ) ;
 	}
-	tableEntryDoubleClicked( tw->item( it->row(),0 ) ) ;
 }
 
 void openvolume::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
@@ -181,7 +181,7 @@ void openvolume::allowLUKSOnly()
 	this->ShowAllPartitions() ;
 }
 
-void openvolume::partitionList( QString title,QString type )
+void openvolume::partitionList( QString title,QString volumeType )
 {
 	this->setWindowTitle( title ) ;
 
@@ -192,9 +192,8 @@ void openvolume::partitionList( QString title,QString type )
 	m_ui->tableWidget->setEnabled( false ) ;
 	this->show() ;
 
-	QStringList l = Task::await<QStringList>( [ type ](){
+	QStringList l = Task::await<QStringList>( [ & ](){
 
-		QString volumeType = type ;
 		/*
 		 * Root user can create encrypted volumes in all partitions including system partitions.
 		 * Show all partitions, not only non system.

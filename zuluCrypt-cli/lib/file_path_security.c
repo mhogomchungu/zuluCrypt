@@ -79,7 +79,7 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 	if( st == 0 ){
 		seteuid( 0 ) ;
 		/*
-		* zuluCryptGetFileSystemFromDevice() is defined in mount_volume.c
+		* zuluCryptGetFileSystemFromDevice() is defined in blkid_evaluate_tag.c
 		*/
 		fs = zuluCryptGetFileSystemFromDevice( *dev ) ;
 		seteuid( uid ) ;

@@ -52,8 +52,10 @@ volumeEntryProperties _getVolumeProperties( const QString& e )
 	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath,device ) ) ;
 
 	if( r.success() ) {
+
 		volumeEntryProperties v( r.splitOutput( '\t' ) ) ;
 		v.setisSystem( _volumeIsSystemVolume( device ) ) ;
+
 		return v ;
 	}else{
 		return volumeEntryProperties() ;
@@ -70,6 +72,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 	return Task::run< QString >( [ = ](){
 
 		if( v.isEmpty() ){
+
 			return QString() ;
 		}
 
@@ -78,14 +81,19 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 		auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
 		if( r.ok() ){
+
 			return QString( r.output() ) ;
 		}else{
 			if( volumeType.contains( "crypto_PLAIN\n" ) ){
+
 				/*
 				* this could be a plain volume opened with an offset
 				*/
+
 				r = utility::Task( QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
+
 				if( r.ok() ){
+
 					return QString( r.output() ) ;
 				}else{
 					return QString() ;
@@ -115,6 +123,7 @@ utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QStr
 	auto r = _run( QString( "%1 -u -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
 	if( r.failed() ){
+
 		if( volumeType.contains( "crypto_PLAIN\n" ) ){
 			/*
 			 * we could be trying to unmount a volume with an offset
@@ -192,9 +201,11 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 		auto _validEntry = [ & ]( const QString& e ){
 
 			if( e.startsWith( "/dev/md/md-device-map" ) ){
+
 				return false ;
 			}
 			if( e.contains( "\tswap\t") || e.contains( "member\t" ) || e.contains( "\t/run/media/public" ) ){
+
 				return false ;
 			}
 			if( !l.isEmpty() ){
@@ -202,6 +213,7 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 				for( const auto& it : l ){
 
 					if( e.startsWith( it + '\t' ) ){
+
 						return false ;
 					}
 				}
@@ -225,6 +237,7 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 				for( const auto& it : a ){
 
 					if( _validEntry( it ) ){
+
 						volumeEntryProperties v( utility::split( it,'\t' ) ) ;
 						v.setisSystem( s.contains( v.volumeName() ) ) ;
 						list.append( v ) ;
@@ -245,20 +258,26 @@ void zuluMountTask::checkUnMount( const QString& volume )
 volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QString& volume )
 {
 	auto _loopDeviceIsGone =[]( const QString& device ){
+
 		QDir d( "/sys/block" ) ;
 		QStringList l = d.entryList() ;
 		QString e ;
 		QString dev = QString( "%1\n" ).arg( device ) ;
 		QByteArray s ;
 		QFile f ;
+
 		for( const auto& it : l ){
+
 			if( it.startsWith( "loop" ) ){
+
 				e = QString( "/sys/block/%1/loop/backing_file" ).arg( it ) ;
 				f.setFileName( e ) ;
 				f.open( QIODevice::ReadOnly ) ;
 				s = f.readAll() ;
 				f.close() ;
+
 				if( s == dev ){
+
 					return false ;
 				}
 			}
@@ -269,16 +288,21 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 	volumeMiniPropertiesTaskResult s = { volume,false,nullptr } ;
 
 	if( !volume.startsWith( "UUID" ) && !volume.startsWith( "/dev/" ) ){
+
 		/*
 		 * There is some sort of a race condition here and things do not always work as expected
 		 * try to sleep for a second to see if it will help
 		 */
+
 		utility::Task::waitForOneSecond() ;
+
 		if( _loopDeviceIsGone( volume ) ){
+
 			/*
 			 * we were just asked to find properties of a loop device
 			 * that no longer exists,remove it from the list in the GUI window
 			 */
+
 			s.volumeRemoved = true ;
 			return s ;
 		}
@@ -287,6 +311,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
 	if( r.success() ){
+
 		s.entry = new volumeEntryProperties( r.splitOutput( '\t' ) ) ;
 		s.entry->setisSystem( _volumeIsSystemVolume( volume ) ) ;
 	}
@@ -299,6 +324,9 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 	auto _mdRaidDevice = [&]( const QString& device ){
 
 		auto _mdRaidPath = []( const QString& dev ){
+
+			QString volume = dev ;
+
 			QString dev_1 ;
 			QDir d( "/dev/md/" ) ;
 			QDir f ;
@@ -309,17 +337,24 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 			utility::Task::wait( 4 ) ;
 
 			if( d.exists() ){
+
 				QStringList l = d.entryList() ;
-				QString e ;
+
 				for( const auto& it : l ){
+
 					dev_1 = QString( "/dev/md/" ) + it ;
 					f.setPath( dev_1 ) ;
+
 					if( f.canonicalPath() == dev ){
-						return (const QString) dev_1 ;
+
+						volume = dev_1 ;
+
+						break ;
 					}
 				}
 			}
-			return dev ;
+
+			return volume ;
 		} ;
 
 		QString d = _mdRaidPath( device ) ;
@@ -327,6 +362,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 		volumeMiniPropertiesTaskResult s = { d,false,nullptr } ;
 
 		if( deviceProperty.added ){
+
 			s.entry = new volumeEntryProperties( _getVolumeProperties( d ) ) ;
 		}else{
 			s.volumeRemoved = true ;
@@ -337,36 +373,36 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 
 	auto _dmDevice = [&]( const QString& device ){
 
-		auto _convertLVM = []( const QString& volume ){
+		auto _convertLVM = []( const QString& dev ){
 
-			QByteArray e = volume.toLatin1() ;
+			QString volume = dev ;
+			QByteArray e = dev.toLatin1() ;
 
 			char * begin = e.data() ;
 			char * end = begin + e.size() ;
-
-			char * it = begin + 3 ;
 
 			char * k ;
 			char * c ;
 			char * d ;
 
-			QString z ;
-
-			while( it < end ){
+			for( auto it = begin + 3 ; it < end ; it++ ){
 
 				k = it - 2 ;
 				c = it - 1 ;
 				d = it ;
-				it++ ;
 
 				if( *k != '-' && *c == '-' && *d != '-' ){
+
 					*c = '/' ;
-					z = e ;
-					while( z.contains( "--" ) ){
-						z = z.replace( "--","-" ) ;
+
+					volume = e ;
+
+					while( volume.contains( "--" ) ){
+
+						volume.replace( "--","-" ) ;
 					}
 
-					return (const QString) z ;
+					break ;
 				}
 			}
 
@@ -378,6 +414,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 		volumeMiniPropertiesTaskResult s = { d,false,nullptr } ;
 
 		if( deviceProperty.added ){
+
 			s.entry = new volumeEntryProperties( _getVolumeProperties( d ) ) ;
 		}else{
 			s.volumeRemoved = true ;
@@ -400,7 +437,9 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 		if( _allowed_device( device ) ){
 
 			s.volumeName = device ;
+
 			if( deviceProperty.added ){
+
 				s.entry = new volumeEntryProperties( _getVolumeProperties( device ) ) ;
 			}else{
 				s.volumeRemoved = true ;
@@ -411,6 +450,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 	} ;
 
 	auto _shouldNotGetHere = [](){
+
 		volumeMiniPropertiesTaskResult s = { "",false,nullptr } ;
 		return s ;
 	} ;
@@ -431,7 +471,7 @@ Task::future<bool>& zuluMountTask::encfsUnmount( const QString& m )
 
 		auto _umount = [ & ](){
 
-			if( utility::Task( "/usr/bin/fusermount -u " + m ).exitCode() == 0 ){
+			if( utility::Task( "/usr/bin/fusermount -u " + m ).success() ){
 
 				QDir d ;
 				d.rmdir( m ) ;

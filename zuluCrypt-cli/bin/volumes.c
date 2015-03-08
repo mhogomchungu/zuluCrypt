@@ -120,7 +120,7 @@ static stringList_t _zuluCryptAddMDRAIDVolumes( stringList_t stl )
 	struct dirent * entry ;
 	char * e ;
 	const char * f ;
-	string_t st = StringVoid ;
+	string_t st ;
 
 	if( dir != NULL ){
 

@@ -180,13 +180,17 @@ void walletconfig::walletIsOpen( bool opened )
 
 			if( !keys.empty() ){
 
-				auto _getEntry = [&]( const QString& acc ){
+				auto _getEntry = [&]( const QString& acc )-> const QByteArray& {
+
 					for( const auto& it : keys ){
+
 						if( it.getKey() == acc ){
+
 							return it.getValue() ;
 						}
 					}
-					static const QByteArray ShouldNotGetHere ;
+
+					static QByteArray ShouldNotGetHere ;
 					return ShouldNotGetHere ;
 				} ;
 
@@ -201,14 +205,17 @@ void walletconfig::walletIsOpen( bool opened )
 				 */
 
 				QStringList s ;
-				QTableWidget * table = m_ui->tableWidget ;
+				auto table = m_ui->tableWidget ;
 
 				for( const auto& it : keys ){
+
 					const QString& acc = it.getKey() ;
+
 					if( !acc.endsWith( COMMENT ) ){
+
 						s.clear() ;
 						s.append( acc ) ;
-						s.append( _getEntry( acc + QString( COMMENT ) ) ) ;
+						s.append( _getEntry( acc + COMMENT ) ) ;
 						tablewidget::addRowToTable( table,s ) ;
 					}
 				}

@@ -203,6 +203,8 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 
 	char buffer[ SIZE ] ;
 
+	char r = '\0' ;
+
 	int f_in ;
 	int f_out ;
 
@@ -271,7 +273,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	 *
 	 */
 	write( f_out,StringContent( q ),StringLength( q ) ) ;
-	write( f_out,'\0',StringLength( q ) + 1 ) ;
+	write( f_out,&r,1 ) ;
 
 	/*
 	 * write the same 100 byte random data in two locations to be used to check the decrypting key during decryption.	 *

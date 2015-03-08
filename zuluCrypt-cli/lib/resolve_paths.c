@@ -57,20 +57,32 @@ static char * _zuluCryptResolveDevRoot( void )
  */
 string_t zuluCryptResolveMDPath_1( const char * path )
 {
-	const char * f = "/dev/md/" ;
-	DIR * dir = opendir( f ) ;
-	string_t st = String( f ) ;
 	struct dirent * entry ;
+
 	char * e ;
 	int r = 0 ;
+
+	const char * f = "/dev/md/" ;
+
+	DIR * dir = opendir( f ) ;
+
+	string_t st = String( f ) ;
+
 	if( dir != NULL ){
+
 		while( ( entry = readdir( dir ) ) != NULL ){
+
 			f = entry->d_name ;
+
 			if( !StringAtLeastOneMatch_1( f,".","..",NULL ) ){
+
 				e = zuluCryptRealPath( StringAppendAt( st,8,f ) ) ;
 				r = StringsAreEqual( path,e ) ;
+
 				StringFree( e ) ;
+
 				if( r == 1 ){
+
 					break ;
 				}
 			}
@@ -90,55 +102,6 @@ char * zuluCryptResolveMDPath( const char * path )
 {
 	string_t st = zuluCryptResolveMDPath_1( path ) ;
 	return StringDeleteHandle( &st ) ;
-}
-
-/*
- * dm path is a path like "/dev/dm-5".
- * There is usually a soft link in "/dev/mapper" that points to them and this
- * routine converts the "/dev/dm-x" path to its equivalent in "/dev/mapper"
- */
-char * zuluCryptResolveDMPath( const char * path )
-{
-	char dm_path[ PATH_MAX + 1 ] ;
-	DIR * dir = opendir( "/dev/mapper/" ) ;
-	string_t st ;
-	string_t xt ;
-	struct dirent * entry ;
-	const char * e ;
-	const char * z ;
-	ssize_t index ;
-	char * dev = NULL ;
-	if( dir != NULL ){
-		st = String( "/dev/mapper/" ) ;
-		while( ( entry = readdir( dir ) ) != NULL ){
-			e = entry->d_name ;
-			z = StringAppendAt( st,12,e ) ;
-			index = readlink( z,dm_path,PATH_MAX ) ;
-			if( index != -1 ){
-				dm_path[ index ] = '\0' ;
-				/*
-				 * path will have something like "/dev/dm-5",skip forward to only "dm-5"
-				 * dm_path will have something like "../dm-5",skip forward to only "dm-5"
-				 */
-				if( StringsAreEqual( path + 5,dm_path + 3 ) ){
-					xt = zuluCryptConvertIfPathIsLVM( z ) ;
-					dev = StringDeleteHandle( &xt ) ;
-					break ;
-				}
-			}
-		}
-		StringDelete( &st ) ;
-		closedir( dir ) ;
-	}
-
-	if( dev == NULL ){
-		/*
-		 * failed to resolve the path,just return original path
-		 */
-		return StringCopy_2( path ) ;
-	}else{
-		return dev ;
-	}
 }
 
 /*
@@ -165,13 +128,12 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 
 	StringGetIterators( q,&it,&end ) ;
 
-	it = it + 3 ;
+	for( it = it + 3 ; it < end ; it++ ){
 
-	while( it < end ){
 		d = it ;
-		it++ ;
-		c = d - 1 ;
-		k = d - 2 ;
+		c = it - 1 ;
+		k = it - 2 ;
+
 		if( *k != '-' && *c == '-' && *d != '-' ){
 			/*
 			 * found a place with a single dash,replace the dash with a slash
@@ -181,7 +143,9 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 			 * replace double dashes if present.
 			 */
 			z = StringPointer( q ) ;
+
 			while( StringHasComponent( *z,"--" ) ){
+
 				StringReplaceString( q,"--","-" ) ;
 			}
 
@@ -205,14 +169,39 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 	return q ;
 }
 
+static char * _convert_if_path_is_lvm( const char * path )
+{
+	string_t st = zuluCryptConvertIfPathIsLVM( path ) ;
+	return StringDeleteHandle( &st ) ;
+}
+
+/*
+ * dm path is a path like "/dev/dm-5".
+ * this routine will transform the path to /dev/abc/def if the path is
+ * an lvm path or to /dev/mapper/xyz if the volume is any other device manager volume.
+ */
+char * zuluCryptResolveDMPath( const char * path )
+{
+	char * e = zuluCryptRealPath( path ) ;
+
+	char * f = _convert_if_path_is_lvm( e ) ;
+
+	StringFree( e ) ;
+
+	return f ;
+}
+
 char * zuluCryptResolvePath( const char * path )
 {
 	char * e ;
-	string_t st ;
+	char * f ;
+
 	if( StringsAreEqual( path,"/dev/root" ) ){
 
 		e = _zuluCryptResolveDevRoot() ;
+
 		if( e == NULL ){
+
 			return StringCopy_2( path ) ;
 		}else{
 			return e ;
@@ -222,21 +211,24 @@ char * zuluCryptResolvePath( const char * path )
 		 * zuluCryptRealPath() is defined in real_path.c
 		 */
 		e = zuluCryptRealPath( path ) ;
+
 		if( e == NULL ){
+
 			return StringCopy_2( path ) ;
 		}else{
 			if( StringPrefixEqual( e,"/dev/mapper/" ) ){
-				st = zuluCryptConvertIfPathIsLVM( e ) ;
+
+				f = _convert_if_path_is_lvm( e ) ;
 				StringFree( e ) ;
-				return StringDeleteHandle( &st ) ;
+
+				return f ;
 			}else{
 				return e ;
 			}
 		}
 	}else if( StringPrefixEqual( path,"/dev/mapper/" ) ){
 
-		st = zuluCryptConvertIfPathIsLVM( path ) ;
-		return StringDeleteHandle( &st ) ;
+		return _convert_if_path_is_lvm( path ) ;
 
 	}else if( StringPrefixEqual( path,"/dev/md" ) ){
 
@@ -265,6 +257,7 @@ string_t zuluCryptResolvePath_1( const char * path )
 string_t zuluCryptResolvePath_2( const char * path )
 {
 	if( StringPrefixEqual( path,"/dev/loop" ) ){
+		
 		return String( path ) ;
 	}else{
 		return zuluCryptResolvePath_1( path ) ;
