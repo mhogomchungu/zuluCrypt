@@ -30,8 +30,6 @@ int zuluMountCryptoUMount( ARGS * args )
 
 	int st  ;
 
-	ssize_t s ;
-
 	string_t str = StringVoid ;
 
 	if( mount_point_option ){;}
@@ -49,12 +47,7 @@ int zuluMountCryptoUMount( ARGS * args )
 			}
 		}
 
-		s = StringLastIndexOfChar_1( device,'/' ) ;
-		if( s == -1 ){
-			mapping_name = device ;
-		}else{
-			mapping_name = device + s + 1 ;
-		}
+		mapping_name = device + StringLastIndexOfChar_1( device,'/' ) + 1 ;
 	}else{
 		str = String( UUID ) ;
 		StringRemoveString( str,"\"" ) ;

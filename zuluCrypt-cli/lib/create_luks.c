@@ -111,7 +111,7 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 		return 1 ;
 	}
 	if( StringsAreEqual( opts,"" ) ){
-		stl = StringListSplit( "/dev/urandom.aes.xts-plain64.256.sha1",'.' ) ;
+		stl = StringList( "/dev/urandom" ) ;
 	}else{
 		stl = StringListSplit( opts,'.' ) ;
 	}

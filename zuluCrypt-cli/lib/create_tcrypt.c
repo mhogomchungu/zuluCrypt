@@ -119,7 +119,6 @@ static int _create_file_system( const create_tcrypt_t * e )
 			 */
 			zuluCryptCloseMapper( device_mapper ) ;
 		}
-
 	}
 
 	StringDelete( &m ) ;
@@ -375,7 +374,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 
 	if( StringsAreEqual( e->encryption_options,"" ) ){
 
-		stl = StringListSplit( "/dev/urandom.aes.xts-plain64.256.ripemd160",'.' ) ;
+		stl = StringList( "/dev/urandom" ) ;
 	}else{
 		stl = StringListSplit( e->encryption_options,'.' ) ;
 	}

@@ -74,7 +74,7 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 
 			if( e != NULL ){
 				z = StringJenkinsOneAtATimeHash( e ) ;
-				free( e ) ;
+				StringFree( e ) ;
 			}else{
 				z = StringJenkinsOneAtATimeHash( device ) ;
 			}

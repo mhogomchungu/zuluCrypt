@@ -16,12 +16,13 @@ before_install:
 install:
   # g++4.8.1
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8"; fi
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq gcc-4.8; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8";export CC="gcc-4.8"; fi
 
   # clang 3.4
   - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.4; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4"; fi
+  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4";CC="clang-3.4"; fi
 
-install: sudo apt-get install libblkid-dev libqt4-dev gcc g++ libcryptsetup-dev cmake libgcrypt11-dev pkg-config libdevmapper-dev uuid-dev libudev-dev chrpath bzip2 debhelper 
+  - sudo apt-get install libblkid-dev libqt4-dev gcc g++ libcryptsetup-dev cmake libgcrypt11-dev pkg-config libdevmapper-dev uuid-dev libudev-dev chrpath bzip2 debhelper
 
-script: cmake -DCMAKE_INSTALL_PREFIX=/usr -DLIB_SUFFIX=lib/$(DEB_HOST_MULTIARCH) -DCMAKE_BUILD_TYPE=release . && make
+script: cmake -DCMAKE_INSTALL_PREFIX=/usr -DLIB_SUFFIX=lib -DCMAKE_BUILD_TYPE=release . && make

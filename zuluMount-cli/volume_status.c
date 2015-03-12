@@ -683,7 +683,7 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 	if( e != NULL ){
 		q = String( "" ) ;
 		StringReplaceString( p,"\"Nil\"",StringMultipleAppend( q,"\"",e,"\"",NULL ) ) ;
-		free( e ) ;
+		StringFree ( e ) ;
 		StringDelete( &q ) ;
 	}
 
