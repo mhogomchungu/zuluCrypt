@@ -165,7 +165,20 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
  */
 const char * zuluCryptMapperPrefix( void ) ;
 
+/*
+ * this function is defined in create_mapper_name.c
+ */
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i ) ;
+
+/*
+ * this function is defined in create_mapper_name.c
+ */
+string_t zuluCryptCreateMapperName_0( const char * device,const char * mapping_name,uid_t uid ) ;
+
+/*
+ * this function is defined in create_mapper_name.c
+ */
+string_t zuluCryptCreateMapperName_1( const char * device,const char * mapping_name,uid_t uid ) ;
 
 /*
  * this function checks if path exists or not.
@@ -180,6 +193,13 @@ int zuluCryptPathIsValid( const char * path ) ;
  * return 0 if the path exist
  */
 int zuluCryptPathIsNotValid( const char * path ) ;
+
+/*
+ * this function checks if a path exists or not
+ * return 1 if the path does not exists
+ * return 0 if the path exist
+ */
+int zuluCryptPathIsNotValid_0( string_t path ) ;
 
 /*
  * zuluCryptDecodeMountEntry() is defined in mount_volume.c

@@ -151,7 +151,10 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 						z.replace( 2,"plain" ) ;
 					}else if( fs == "crypto_TCRYPT" ){
 						z.replace( 2,"tcrypt" ) ;
+					}else if( fs == "crypto_VCRYPT" ){
+						z.replace( 2,"vcrypt" ) ;
 					}
+
 					tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
 				}
 			}
@@ -517,7 +520,7 @@ void zuluCrypt::closeAllVolumes()
 
 			for( QTableWidgetItem * it : tableItems ){
 				QString device = it->text().replace( "\"","\"\"\"" ) ;
-				auto r = utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ) ;
+				auto r = utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,device ) ) ;
 				emit closeVolume( it,r.exitCode() ) ;
 				utility::Task::waitForOneSecond() ; ; // for ui effect
 			}
@@ -601,7 +604,7 @@ void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )
 void zuluCrypt::trayProperty()
 {
 	m_ui->actionTray_icon->setEnabled( false ) ;
-	QFile f( QDir::homePath() + QString( "/.zuluCrypt/tray" ) ) ;
+	QFile f( QDir::homePath() + "/.zuluCrypt/tray" ) ;
 	f.open( QIODevice::ReadOnly ) ;
 	QByteArray c = f.readAll() ;
 	f.close() ;
@@ -727,7 +730,7 @@ void zuluCrypt::volume_property()
 
 	Task::run<QString>( [ x ](){
 
-		auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( x ) ) ;
+		auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,x ) ) ;
 
 		if( r.success() ){
 
@@ -830,7 +833,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m.addSeparator() ;
 
-	if( m_ui->tableWidget->item( item->row(),2 )->text() == QString( "luks" ) ){
+	if( m_ui->tableWidget->item( item->row(),2 )->text() == "luks" ){
 		m.addSeparator() ;
 		connect( m.addAction( tr( "add key" ) ),SIGNAL( triggered() ),this,SLOT( luksAddKeyContextMenu() ) ) ;
 		connect( m.addAction( tr( "remove key" ) ),SIGNAL( triggered() ),this,SLOT( luksDeleteKeyContextMenu() ) ) ;
@@ -840,7 +843,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m.addSeparator() ;
 
-	QString volume_id = m_ui->tableWidget->item( item->row(),0 )->text() + QString( "\t" ) ;
+	QString volume_id = m_ui->tableWidget->item( item->row(),0 )->text() + "\t" ;
 
 	QFile f( QDir::homePath() + "/.zuluCrypt/favorites" ) ;
 

@@ -74,7 +74,7 @@ namespace utility
 	QString resolvePath( const QString& ) ;
 	QString hashPath( const QByteArray& ) ;
 	QString cryptMapperPath( void ) ;
-	QString mapperPath( const QString& ) ;
+	QString mapperPath( const QString&,const QString& component = QString() ) ;
 	QString getVolumeID( const QString& ) ;
 	bool userIsRoot( void ) ;
 	bool mapperPathExists( const QString& path ) ;

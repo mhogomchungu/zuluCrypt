@@ -128,6 +128,8 @@ static void _printResult( const char * device,const char * m_point )
 		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"plain" ) ;
 	}else if( StringHasComponent( e,"TCRYPT" ) ){
 		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"tcrypt" ) ;
+	}else if( StringHasComponent( e,"VCRYPT" ) ){
+		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"vcrypt" ) ;
 	}else{
 		printf( gettext( "SUCCESS: volume opened successfully\n" ) ) ;
 	}
@@ -205,6 +207,7 @@ static int _open_volume( const open_struct_t * volume )
 
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
+	int veraCrypt_volume = StringsAreEqual( opts->type,"vera" ) ;
 	int share                = opts->share ;
 	int open_mount           = opts->open_mount ;
 	const char * device      = opts->device ;
@@ -330,10 +333,15 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 
 	/*
-	 * ZULUCRYPTshortMapperPath is set in ../constants.h
-	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
+	 * zuluCryptCreateMapperName_0() is defined at ../lib/create_mapper_name.c
+	 * zuluCryptCreateMapperName_1() is defined at ../lib/create_mapper_name.c
 	 */
-	*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
+	if( veraCrypt_volume ){
+
+		*m_name = zuluCryptCreateMapperName_0( device,mapping_name,uid ) ;
+	}else{
+		*m_name = zuluCryptCreateMapperName_1( device,mapping_name,uid ) ;
+	}
 
 	*mapper = StringCopy( *m_name ) ;
 	mapper_name = StringContent( *m_name ) ;
@@ -426,8 +434,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.uid         = uid ;
 	volume.m_opts      = m_opts ;
 	volume.m_flags     = m_flags ;
-	volume.veraCrypt_volume = StringsAreEqual( opts->type,"vera" ) ;
-	
+	volume.veraCrypt_volume = veraCrypt_volume ;
+
 	plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
 
 	volume.luks_detached_header = StringHasComponent( plugin_path,"luks" ) ;

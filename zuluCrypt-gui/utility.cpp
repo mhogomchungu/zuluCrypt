@@ -649,7 +649,11 @@ QStringList utility::split(const QByteArray& str,char token )
 
 bool utility::mapperPathExists( const QString& path )
 {
-	return utility::pathExists( utility::mapperPath( path ) ) ;
+	if( utility::pathExists( utility::mapperPath( path ) ) ){
+		return true ;
+	}else{
+		return utility::pathExists( utility::mapperPath( path,"-VERA-" ) ) ;
+	}
 }
 
 QString utility::mountPath( const QString& path )
@@ -705,23 +709,30 @@ QString utility::mountPathPostFix( const QString& path,bool encfs )
 	}
 }
 
-QString utility::mapperPath( const QString& r )
+QString utility::mapperPath( const QString& r,const QString& component )
 {
 	QString rpath = r ;
 
 	QString path = utility::cryptMapperPath() + QString( "zuluCrypt-" ) + QString::number( getuid() ) ;
 
 	if( rpath.startsWith( "UUID=" ) ){
+
 		rpath.remove( QChar( '\"' ) ) ;
 		rpath.replace( "UUID=","UUID-" ) ;
 		path += QString( "-" ) + rpath + utility::hashPath( rpath.toLatin1() ) ;
 	}else{
-		path += "-NAAN-" + rpath.split( "/" ).last() + utility::hashPath( rpath.toLatin1() ) ;
+		if( component.isEmpty() ){
+
+			path += "-NAAN-" + rpath.split( "/" ).last() + utility::hashPath( rpath.toLatin1() ) ;
+		}else{
+			path += component + rpath.split( "/" ).last() + utility::hashPath( rpath.toLatin1() ) ;
+		}
 	}
 
 	QString z = QString( BASH_SPECIAL_CHARS ) ;
 
 	for( const auto& it : z ){
+
 		path.replace( it,QChar( '_' ) ) ;
 	}
 	return path ;

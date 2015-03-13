@@ -683,7 +683,7 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 	if( e != NULL ){
 		q = String( "" ) ;
 		StringReplaceString( p,"\"Nil\"",StringMultipleAppend( q,"\"",e,"\"",NULL ) ) ;
-		StringFree ( e ) ;
+		StringFree( e ) ;
 		StringDelete( &q ) ;
 	}
 
@@ -732,7 +732,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 			dev = zuluCryptLoopDeviceAddress_1( device ) ;
 			if( dev != NULL ){
 				st = zuluCryptEXEVolumeInfo( e,dev,uid ) ;
-				free( dev ) ;
+				StringFree( dev ) ;
 			}else{
 				printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user" ) ) ;
 				st = 1 ;

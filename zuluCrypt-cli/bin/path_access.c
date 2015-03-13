@@ -127,7 +127,9 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 		/*
 		 * zuluCryptGetKeyFromSocket() is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
-		return zuluCryptGetKeyFromSocket( path,st,uid ) ;
+		zuluCryptGetKeyFromSocket( path,st,uid ) ;
+
+		return 0 ;
 	}else{
 		/*
 		 * 8192000 bytes is the default cryptsetup maximum keyfile size

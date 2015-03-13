@@ -33,13 +33,13 @@ typedef struct{
 	const char * key_source ;
 	const char * fs_opts    ;
 	const char * uuid       ;
+	const char * type       ;
 	const char * offset     ;
 	const char * tcrypt_multiple_keyfiles[ TRUECRYPT_MAX_KEYFILES + 1 ] ;
 	stringList_t env        ;
 	int          mpo        ;
 	uid_t        uid        ;
 	int          share      ;
-	int          tcrypt_hidden_volume ;
 }ARGS;
 
 int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid ) ;

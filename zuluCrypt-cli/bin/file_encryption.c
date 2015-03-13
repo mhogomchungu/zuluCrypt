@@ -94,7 +94,7 @@ static string_t crypt_mapper( const char * path,const char * key,u_int64_t key_l
 		StringMultiplePrepend( p,"/",crypt_get_dir(),NULL ) ;
 	}
 
-	free( mpath ) ;
+	StringFree( mpath ) ;
 	return p ;
 }
 

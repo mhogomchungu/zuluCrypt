@@ -2,26 +2,26 @@ language: cpp
 
 compiler:
   - gcc
-# - clang
+# - clang //disabled for now until i find clang >= 3.5
 
 before_install:
-  # g++4.8.1
+  # g++4.8
   - if [ "$CXX" == "g++" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
 
-  # clang 3.4
+  # clang 3.5
   - if [ "$CXX" == "clang++" ]; then sudo add-apt-repository -y ppa:h-rayflood/llvm; fi
 
   - sudo apt-get update -qq
 
 install:
-  # g++4.8.1
+  # g++4.8
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq gcc-4.8; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8";export CC="gcc-4.8"; fi
 
-  # clang 3.4
-  - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.4; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.4";CC="clang-3.4"; fi
+  # clang 3.5
+  - if [ "$CXX" == "clang++" ]; then sudo apt-get install --allow-unauthenticated -qq clang-3.5; fi
+  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.5";CC="clang-3.5"; fi
 
   - sudo apt-get install libblkid-dev libqt4-dev gcc g++ libcryptsetup-dev cmake libgcrypt11-dev pkg-config libdevmapper-dev uuid-dev libudev-dev chrpath bzip2 debhelper
 

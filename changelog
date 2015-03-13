@@ -212,3 +212,4 @@ version 4.7.5
 version 4.7.6
 -- add "hmac" plugin.This plugin produces a key as follows: key = hmac-sha256( passphrase,keyfile-contents ).
    this plugin can be used when unlocking a volume requires a passphrase and a keyfile.
+-- use "tcrypt" to refer to TrueCrypt volumes and "vcrypt" to refer to VeraCrypt volumes.

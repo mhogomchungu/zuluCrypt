@@ -90,7 +90,7 @@ void MainWindow::setUpApp( const QString& volume )
 
 	m_ui->tableWidget->setColumnWidth( 0,220 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,320 ) ;
-	m_ui->tableWidget->setColumnWidth( 2,115 ) ;
+	m_ui->tableWidget->setColumnWidth( 2,135 ) ;
 	m_ui->tableWidget->setColumnWidth( 4,87 ) ;
 	m_ui->tableWidget->setColumnWidth( 5,87 ) ;
 	m_ui->tableWidget->hideColumn( 3 ) ;

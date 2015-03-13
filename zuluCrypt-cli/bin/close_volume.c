@@ -53,14 +53,30 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 
 	 if( uid ){;}
 	 /*
-	  * ZULUCRYPTlongMapperPath is set in ../constants.h
-	  * zuluCryptCreateMapperName() defined in ../lib/create_mapper_name.c
+	  * zuluCryptCreateMapperName_1() defined in ../lib/create_mapper_name.c
+	  * zuluCryptMapperPrefix() defined in ../lib/create_mapper_name.c
 	  */
-	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
+	 p = zuluCryptCreateMapperName_1( dev,mapping_name,uid ) ;
 
-	 mapper = StringContent( p ) ;
+	 mapper = StringMultiplePrepend( p,"/",zuluCryptMapperPrefix(),NULL ) ;
+
 	 if( stat( mapper,&xt ) != 0 ){
-		 return zuluExit( 1,p ) ;
+
+		 /*
+		  * mapper path doesnt exist,check again assuming its veracrypt mapper path
+		  */
+		 StringDelete( &p ) ;
+		/*
+		* zuluCryptCreateMapperName_0() defined in ../lib/create_mapper_name.c
+		*/
+		 p = zuluCryptCreateMapperName_0( dev,mapping_name,uid ) ;
+
+		 mapper = StringMultiplePrepend( p,"/",zuluCryptMapperPrefix(),NULL ) ;
+
+		 if( stat( mapper,&xt ) != 0 ){
+
+			return zuluExit( 1,p ) ;
+		}
 	 }
 
 	 /*
@@ -83,7 +99,7 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	 if( st == 0 ){
 		if( m_point != NULL ){
 			remove( m_point ) ;
-			free( m_point ) ;
+			StringFree( m_point ) ;
 		}
 	 }
 

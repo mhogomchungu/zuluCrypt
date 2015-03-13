@@ -305,7 +305,7 @@ static const char * _mount_options( unsigned long flags,string_t st )
 
 static int mount_FUSEfs_0( m_struct * mst )
 {
-	int status ;
+	int r ;
 	const char * opts ;
 
 	process_t p = Process( ZULUCRYPTmount ) ;
@@ -325,11 +325,11 @@ static int mount_FUSEfs_0( m_struct * mst )
 
 	ProcessStart( p ) ;
 
-	status = ProcessWaitUntilFinished( &p ) ;
+	r = ProcessWaitUntilFinished( &p ) ;
 
 	StringDelete( &st ) ;
 
-	return status ;
+	return r ;
 }
 
 static int mount_FUSEfs( m_struct * mst )

@@ -31,3 +31,8 @@ int zuluCryptPathIsNotValid( const char * path )
 	struct stat st ;
 	return stat( path,&st ) != 0 ;
 }
+
+int zuluCryptPathIsNotValid_0( string_t path )
+{
+	return zuluCryptPathIsNotValid( StringContent( path ) ) ;
+}

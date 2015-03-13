@@ -190,8 +190,11 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
+
 		c = StringContent( *it ) ;
+
 		it++ ;
+
 		if( StringPrefixNotEqual( c,t ) ){
 			/*
 			 * we only care about zuluCrypt volumes and these volumes that we care about starts with
@@ -211,7 +214,9 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 		e = StringListContentAtFirstPlace( stx ) ;
 
 		k = StringHasComponent_1( e,"-UUID-" ) ;
-		if( k != -1 && StringHasNoComponent( e,"-NAAN-" ) ) {
+
+		if( k != -1 ) {
+
 			q = StringListStringAtFirstPlace( stx ) ;
 			/*
 			 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
@@ -231,7 +236,9 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			 * zuluCryptVolumeDeviceName() is defined in status.c
 			 */
 			g = zuluCryptVolumeDeviceName( e ) ;
+
 			if( g != NULL ){
+
 				d = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 				/*
 				 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
@@ -304,6 +311,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 int zuluCryptPartitionIsMounted( const char * path )
 {
 	char * p = zuluCryptGetMountPointFromPath( path ) ;
+	
 	if( p == NULL ){
 		return 0 ;
 	}else{

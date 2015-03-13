@@ -115,11 +115,21 @@ static int _open_mapper( const open_struct_t * opts )
 	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
 	 */
 	if( opts->luks_detached_header ){
+
 		/*
 		 * zuluCryptOpenLuks() is defined in open_luks.c
 		 */
 		r = zuluCryptOpenLuks_1( opts ) ;
+		
 	}else if( zuluCryptVolumeIsLuks( opts->device ) ){
+
+		if( opts->veraCrypt_volume ){
+			/*
+			 * an attempt was made to unlock a volume as a VeraCrypt volume
+			 * but the volume is a LUKS volume.
+			 */
+			return 1 ;
+		}
 		/*
 		 * zuluCryptOpenLuks_2() is defined in open_luks.c
 		 */

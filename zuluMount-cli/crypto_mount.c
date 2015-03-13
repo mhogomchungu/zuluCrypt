@@ -20,6 +20,7 @@
 
 int zuluMountCryptoMount( ARGS * args )
 {
+	const char * type       = args->type       ;
 	const char * offset     = args->offset     ;
 	const char * device     = args->device     ;
 	const char * UUID       = args->uuid       ;
@@ -81,6 +82,7 @@ int zuluMountCryptoMount( ARGS * args )
 	opts.fs_opts            = fs_opts ;
 	opts.env                = StringListStringArray( args->env ) ;
 	opts.offset             = offset ;
+	opts.type               = type ;
 
 	memcpy( opts.tcrypt_multiple_keyfiles,args->tcrypt_multiple_keyfiles,
 		sizeof( args->tcrypt_multiple_keyfiles ) ) ;

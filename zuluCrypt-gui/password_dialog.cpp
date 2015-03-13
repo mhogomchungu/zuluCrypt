@@ -681,6 +681,8 @@ void passwordDialog::success( const QByteArray& r )
 			list.append( "plain" ) ;
 		}else if( r.contains( "tcrypt" ) ){
 			list.append( "tcrypt" ) ;
+		}else if( r.contains( "vcrypt" ) ){
+			list.append( "vcrypt" ) ;
 		}else{
 			list.append( "Nil" ) ;
 		}

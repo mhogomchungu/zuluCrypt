@@ -32,6 +32,7 @@
 #include "libzuluCrypt-exe.h"
 #include "security.h"
 #include "locale_path.h"
+#include "../lib/includes.h"
 
 /*
  * these two defines are used in save_and_restore_volume_header.c
@@ -48,13 +49,6 @@
  * global_variable_user_uid global variable is defined in security.c
  */
 extern uid_t global_variable_user_uid ;
-
-/*
- * this function makes a unique mapper name based on user UID to make sure one user can not manage another user
- * opened volumes.
- * It is defined in create_mapper_name.c
- */
-string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int ) ;
 
 /*
  * this function is defined in volumes.c
@@ -80,7 +74,7 @@ string_t GetKeyFromModule( const char * path,uid_t ) ;
 /*
  * this function is defined in get_key_from_socket.c
  */
-size_t zuluCryptGetKeyFromSocket( const char * path,string_t *,uid_t uid ) ;
+void zuluCryptGetKeyFromSocket( const char * path,string_t *,uid_t uid ) ;
 
 /*
  * this function returns "$HOME/" and is defined in ../pluginManager/zuluCryptPluginManager.c

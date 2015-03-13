@@ -41,13 +41,12 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 	int c ;
 	int k = 0 ;
 
-	while( ( c = getopt( argc,argv,"cEMLntASNshlPmuDd:z:e:Y:p:f:G:o:F:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"cEMLnASNshlPmuDd:z:e:Y:p:f:G:o:F:t:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
 			case 'E' : args->action  = "-E"   ; break ;
 			case 'D' : args->action  = "-D"   ; break ;
-			case 't' : args->action  = "-t"   ; break ;
 			case 's' : args->action  = "-s"   ; break ;
 			case 'l' : args->action  = "-l"   ; break ;
 			case 'L' : args->action  = "-L"   ; break ;
@@ -58,6 +57,7 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 			case 'm' : args->action  = "-m"   ; break ;
 			case 'u' : args->action  = "-u"   ; break ;
 			case 'c' : args->action  = "-c"   ; break ;
+			case 't' : args->type    = optarg ; break ;
 			case 'o' : args->offset  = optarg ; break ;
 			case 'd' : args->device  = optarg ; break ;
 			case 'z' : args->m_point = optarg ; break ;
@@ -207,7 +207,7 @@ static int _zuluMountPrintVolumeDeviceName( const char * device )
 		return 1 ;
 	}else{
 		printf( "%s\n",c ) ;
-		free( c ) ;
+		StringFree( c ) ;
 		return 0 ;
 	}
 }
@@ -271,7 +271,7 @@ static int _checkUnmount( const char * device,uid_t uid )
 				if( zuluCryptUnmountVolume( device,&m_point ) == 0 ){
 					if( m_point != NULL ){
 						rmdir( m_point ) ;
-						free( m_point ) ;
+						StringFree( m_point ) ;
 					}
 				}
 				zuluCryptSecurityDropElevatedPrivileges() ;
@@ -371,11 +371,12 @@ options:\n\
 -A -- print a list of all volumes\n\
 -S -- print a list of system volumes\n\
 -N -- print a list of non system volumes\n\
--E -- print a list of mounted volumes\n" ) ;
+-E -- print a list of mounted volumes\n\
+-t -- to unlock a volume as VeraCrypt volume,use \"-t vera\"\n" ) ;
 
 	doc5= gettext( "\
--o -- offset in sectors on where the volume starts in the volume.The volume is assumed to be plain type with this option\n\
-      and the option must be given when -u or -s arguments are used with a volume opened with this option\n\
+-o -- offset in sectors on where the volume starts in the volume.The volume is assumed to be plain type with this option \
+and the option must be given when -u or -s arguments are used with a volume opened with this option\n\
 -F -- path to truecrypt multiple keyfiles.Keyfiles are separated by \":\" character\n\n" ) ;
 
 	doc6= gettext( "\
@@ -418,7 +419,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 				status = 224 ;
 			 }
 			 if( dev != NULL ){
-				 free( dev ) ;
+				 StringFree( dev ) ;
 			 }
 			 if( fd1 != -1 ){
 				 close( fd ) ;
@@ -609,7 +610,7 @@ int main( int argc,char * argv[] )
 			args.uuid = args.device ;
 			args.device = device ;
 			status = _zuluMountDoAction( &args ) ;
-			free( device ) ;
+			StringFree( device ) ;
 		}else{
 			printf( gettext( "could not resolve UUID\n" ) ) ;
 			status = 214 ;
@@ -619,7 +620,7 @@ int main( int argc,char * argv[] )
 		if( device != NULL ){
 			args.device = device ;
 			status = _zuluMountDoAction( &args ) ;
-			free( device ) ;
+			StringFree( device ) ;
 		}else{
 			printf( gettext( "could not resolve LABEL\n" ) ) ;
 			status = 215 ;

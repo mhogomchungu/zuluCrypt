@@ -196,6 +196,10 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 		return StringCopy_2( "Nil" ) ;
 	}
 
+	if( StringHasComponent( mapper,"-VERA-" ) ){
+		return StringCopy_2( "crypto_VCRYPT" ) ;
+	}
+
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
 		return StringCopy_2( "Nil" ) ;
 	}
@@ -224,7 +228,7 @@ static char * zuluExit( string_t st,struct crypt_device * cd )
 	return StringDeleteHandle( &st ) ;
 }
 
-char * zuluCryptVolumeStatus( const char * mapper )
+static char * _volume_status( const char * mapper )
 {
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
@@ -278,15 +282,20 @@ char * zuluCryptVolumeStatus( const char * mapper )
 
 	type = crypt_get_type( cd ) ;
 
-	if( type == NULL ){
-		/*
-		 * failed to get type,assume the volume is luks
-		 */
-		StringAppend( p,"luks1" ) ;
+	if( StringHasComponent( mapper,"-VERA-" ) ){
+
+		StringAppend( p,"vcrypt" ) ;
 	}else{
-		q = String( type ) ;
-		StringAppend( p,StringToLowerCase( q ) ) ;
-		StringDelete( &q ) ;
+		if( type == NULL ){
+			/*
+			* failed to get type,assume the volume is luks
+			*/
+			StringAppend( p,"luks1" ) ;
+		}else{
+			q = String( type ) ;
+			StringAppend( p,StringToLowerCase( q ) ) ;
+			StringDelete( &q ) ;
+		}
 	}
 
 	z = crypt_get_cipher( cd ) ;
@@ -368,6 +377,22 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	return zuluExit( p,cd ) ;
 }
 
+char * zuluCryptVolumeStatus( const char * mapper )
+{
+	string_t s ;
+
+	char * e = _volume_status( mapper ) ;
+
+	if( e == NULL ){
+
+		s = String( mapper ) ;
+		e = _volume_status( StringReplaceString( s,"-NAAN-","-VERA-" ) ) ;
+		StringDelete( &s ) ;
+	}
+
+	return e ;
+}
+
 char * zuluCryptVolumeDeviceName( const char * mapper )
 {
 	struct crypt_device * cd ;
@@ -375,7 +400,9 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 	char * f = NULL ;
 
 	if( StringPrefixEqual( mapper,e ) && crypt_init_by_name( &cd,mapper ) == 0 ){
+
 		e = crypt_get_device_name( cd ) ;
+
 		if( e != NULL ){
 			/*
 			 * zuluCryptResolvePath_3() is defined in resolve_path.c

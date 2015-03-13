@@ -74,7 +74,7 @@ static void _debug( process_t p )
 }
 #endif
 
-size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
+void zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 {
 	ssize_t dataLength = -1 ;
 	char * buffer = NULL ;
@@ -82,38 +82,45 @@ size_t zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid
 	socket_t client ;
 	socket_t server = SocketLocal( sockpath ) ;
 
-	if( server ){
-		if( SocketBind( server ) ){
-			chown( sockpath,uid,uid ) ;
-			chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
-			if( SocketListen( server ) ){
-				client = SocketAccept( server ) ;
-				if( client ){
-					/*
-					 * ZULUCRYPT_INT_MAX_KEYSIZE is set in ../constants.h
-					 */
-					dataLength = SocketGetData_1( client,&buffer,ZULUCRYPT_INT_MAX_KEYSIZE ) ;
-					if( dataLength != -1 ){
-						*key = StringInheritWithSize( &buffer,dataLength,dataLength + 1 ) ;
-					}else{
-						*key = StringEmpty() ;
-					}
-					SocketClose( &client ) ;
-				}
+	if( SocketBind( server ) ){
+
+		chown( sockpath,uid,uid ) ;
+		chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+
+		if( SocketListen( server ) ){
+
+			client = SocketAccept( server ) ;
+
+			/*
+			 * ZULUCRYPT_INT_MAX_KEYSIZE is set in ../constants.h
+			 */
+			dataLength = SocketGetData_1( client,&buffer,ZULUCRYPT_INT_MAX_KEYSIZE ) ;
+
+			if( dataLength != -1 ){
+
+				*key = StringInheritWithSize( &buffer,dataLength,dataLength + 1 ) ;
+			}else{
+				*key = StringEmpty() ;
 			}
+
+			SocketClose( &client ) ;
 		}
+
 		SocketClose( &server ) ;
 	}
-	return 0 ;
 }
 
 void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 {
 	int i ;
 	socket_t client ;
+
 	for( i = 0 ; i < 10 ; i++ ){
+
 		client = SocketLocal( sockpath ) ;
+
 		if( SocketConnect( &client ) ){
+
 			return client ;
 		}else{
 			sleep( 1 ) ;
@@ -124,19 +131,13 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 
 ssize_t zuluCryptPluginManagerSendKey( void * client,const char * key,size_t length )
 {
-	if( client == NULL ){
-		return -1 ;
-	}else{
-		return SocketSendData( client,key,length ) ;
-	}
+	return SocketSendData( client,key,length ) ;
 }
 
-void zuluCryptPluginManagerCloseConnection( void * p )
+void zuluCryptPluginManagerCloseConnection( void * e )
 {
-	socket_t client = p ;
-	if( p != NULL ){
-		SocketClose( &client ) ;
-	}
+	socket_t client = e ;
+	SocketClose( &client ) ;
 }
 
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * plugin,
@@ -171,6 +172,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 	plugin = StringAppend( plugin_path,plugin ) ;
 
 	if( stat( plugin,&st ) == 0 && S_ISREG( st.st_mode ) ) {
+
 		path = String( pass->pw_dir ) ;
 		sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 
