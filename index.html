@@ -35,6 +35,8 @@
 
 <p>zuluCrypt can manage encrypted volumes residing in regular files,LVM and mdraid devices as well as regular block devices and partitions. </p>
 
+<p>zuluCrypt can also encrypt stand alone files(zuluCrypt menu-&gt;zC-&gt;encrypt a file).</p>
+
 <h2>
 <a id="zulumount" class="anchor" href="#zulumount" aria-hidden="true"><span class="octicon octicon-link"></span></a>zuluMount</h2>
 
@@ -73,6 +75,66 @@
 <p>binary packages for some distributions are <a href="http://download.opensuse.org/repositories/home:/mhogomchungu/">here.</a></p>
 
 <p>ps: xUbuntu packages should work with debian and all flavors of ubuntu. </p>
+
+<h2>
+<a id="cryptsetup" class="anchor" href="#cryptsetup" aria-hidden="true"><span class="octicon octicon-link"></span></a>cryptsetup</h2>
+
+<p><a href="http://code.google.com/p/cryptsetup/">cryptsetup</a> is one of the most popular linux native solutions for block device encryption.</p>
+
+<p>Atleast version 1.6.0 of cryptsetup is required to be able to open TrueCrypt? volumes.</p>
+
+<p>Atleast version 1.7.0(not released yet) is required to be able to unlock VeraCrypt? volumes. </p>
+
+<h2>
+<a id="tcplay" class="anchor" href="#tcplay" aria-hidden="true"><span class="octicon octicon-link"></span></a>tcplay</h2>
+
+<p><a href="https://github.com/bwalex/tc-play">tcplay</a> is an independent,BSD licensed full implementation of truecrypt formatted encrypted volumes.</p>
+
+<p>At least version 1.2.0 of tcplay and version 1.6.0 of cryptsetup are required to be able to create TrueCrypt volumes. </p>
+
+<h2>
+<a id="veracrypt" class="anchor" href="#veracrypt" aria-hidden="true"><span class="octicon octicon-link"></span></a>VeraCrypt</h2>
+
+<p><a href="https://veracrypt.codeplex.com/">VeraCrypt</a> is a security enhanced fork of TrueCrypt. </p>
+
+<h2>
+<a id="key-sources" class="anchor" href="#key-sources" aria-hidden="true"><span class="octicon octicon-link"></span></a>key sources.</h2>
+
+<p>zuluCrypt has a plugin architecture that allows it to retrieve keys to unlock volume from difference source:</p>
+
+<ul>
+<li>from gnome's keyring.</li>
+<li>from kde's kwallet.</li>
+<li>from internal storage system powered by libgcrypt.</li>
+<li>from a keyfile where key = contents of a keyfile.</li>
+<li>from a combination of a passphrase and keyfile where key = passphrase + content of keyfile.</li>
+<li>from a combination of a passphrase and keyfile where key = gpg_symmetric_decrypt( passphrase,keyfile contents )</li>
+<li>from a combination of a passphrase and keyfile where key = hmac-sha256( passphrase,keyfile contents )</li>
+</ul>
+
+<h2>
+<a id="where-did-the-name-come-from" class="anchor" href="#where-did-the-name-come-from" aria-hidden="true"><span class="octicon octicon-link"></span></a>where did the name come from?</h2>
+
+<p>The "crypt" part is there to show core feature of the tool. The "zulu" part come from "zulu time", commonly known as "GMT"( Greenwich Mean Time ). The tv was on as i was thinking of what name to use for the project and somebody on tv kept mentioning "zulu time"( i think it was a military related show ) and the zulu part of the name got stuck.</p>
+
+<h2>
+<a id="various-components-of-the-tools" class="anchor" href="#various-components-of-the-tools" aria-hidden="true"><span class="octicon octicon-link"></span></a>various components of the tools</h2>
+
+<p>zuluCrypt is made up of two components: The back end,CLI interface is called "zuluCrypt-cli".it is build using C and has required dependencies on libblkid,libcryptsetup and an optional dependency on libtcplay. The front end is Qt GUI application called "zuluCrypt-gui",it is build using C++/Qt</p>
+
+<p>zuluMount is made up of two components: The back end,CLI interface is called "zuluMount-cli".It is build using C and has a dependency on zuluCrypt-cli libraries. The front end is a Qt GUI application called "zuluMount-gui".It is build using C++/Qt</p>
+
+<p>The GUI components are optional and the project can be build without them.They have a run-time optional dependency on <a href="http://linux.die.net/man/1/xdg-open">"xdg-open"</a>.If present and working properly,a default file manager will open a mount point folder automatically when a volume is opened/mounted.</p>
+
+<h2>
+<a id="zulucrypt-screenshot" class="anchor" href="#zulucrypt-screenshot" aria-hidden="true"><span class="octicon octicon-link"></span></a>zuluCrypt screenshot</h2>
+
+<p><a href="http://tinypic.com?ref=10shr8k" target="_blank"><img src="http://i59.tinypic.com/10shr8k.jpg" border="0" alt="Image and video hosting by TinyPic"></a></p>
+
+<h2>
+<a id="zulumount-screenshot" class="anchor" href="#zulumount-screenshot" aria-hidden="true"><span class="octicon octicon-link"></span></a>zuluMount screenshot</h2>
+
+<p><a href="http://tinypic.com?ref=2nss0he" target="_blank"><img src="http://i62.tinypic.com/2nss0he.jpg" border="0" alt="Image and video hosting by TinyPic"></a></p>
         </section>
 
         <aside id="sidebar">
