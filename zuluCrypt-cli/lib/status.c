@@ -84,14 +84,19 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	const char * e = " UUID:   \t\"Nil\"" ;
 
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
+
 		uuid = String( e ) ;
 	}else{
 		type = crypt_get_type( cd ) ;
+
 		if( StringHasNoComponent( type,"LUKS" ) ){
+
 			uuid = String( e ) ;
 		}else{
 			id = crypt_get_uuid( cd ) ;
+
 			if( id == NULL ){
+
 				uuid = String( e ) ;
 			}else{
 				uuid = String_1( " UUID:   \t\"",id,"\"",NULL ) ;
@@ -120,12 +125,14 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	blkid = blkid_new_probe_from_filename( mapper ) ;
 
 	if( blkid == NULL ){
+
 		return ;
 	}
 
 	blkid_do_probe( blkid ) ;
 
 	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
+
 		StringMultipleAppend( p,"\n file system:\t",e,NULL ) ;
 	}else{
 		StringAppend( p,"\n file system:\tNil" ) ;
@@ -153,8 +160,11 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	StringMultipleAppend( p,"\n free space:\t",buffer,NULL ) ;
 
 	if( used == total ){
+
 		StringAppend( p,"\n used%:   \t100%\n" ) ;
+
 	}else if( used == 0 ){
+
 		StringAppend( p,"\n used%:   \t0%\n" ) ;
 	}else{
 		snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
@@ -170,12 +180,16 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 	q = String( m_point ) ;
 	index = StringLastIndexOfChar( q,'/' ) ;
+
 	if( index == -1 ){
+
 		StringAppend( p,"\n mount point2:\tNil" ) ;
 	}else{
 		StringRemoveLeft( q,index ) ;
 		e = StringPrepend( q,"/run/media/public" ) ;
+
 		if( stat( e,&statstr ) == 0 ){
+
 			StringMultipleAppend( p,"\n mount point2:\t",e,NULL ) ;
 		}else{
 			StringAppend( p,"\n mount point2:\tNil" ) ;
@@ -183,6 +197,47 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	}
 
 	StringDelete( &q ) ;
+}
+
+/*
+ * This function needs an explanation.
+ * a VeraCrypt mapper will be in a format of: /dev/mapper/zuluCrypt-500-VERA-xxx-yyy.
+ * other mappers will be in a format of:      /dev/mapper/zuluCrypt-500-NAAN-xxx-yyy or
+ * in a format of:                            /dev/mapper/zuluCrypt-500-UUID-xxx-yyy
+ *
+ * the "500" is the UID of the user that unlocked the volume.
+ *
+ * to check if a volume is a VeraCrypt volume,we first strip the digits to end up with
+ * something like "/dev/mapper/zuluCrypt--VERA" and then we check if the volume is a
+ * VeraCrypt volume by comparing it with "/dev/mapper/zuluCrypt--VERA"
+ */
+static int _veraCrypt_volume( const char * mapper )
+{
+	int r ;
+
+	/*
+	 * st will hold a string like: /dev/mapper/zuluCrypt-500-VERA-xxx-yyy
+	 */
+	string_t st = String( mapper ) ;
+
+	/*
+	 * xt will hold a string like: /dev/mapper/zuluCrypt--VERA
+	 */
+	string_t xt = String_1( crypt_get_dir(),"/zuluCrypt--VERA-",NULL ) ;
+
+	/*
+	 * string the digits from st to end up with a string like: /dev/mapper/zuluCrypt--VERA-xxx-yyy
+	 */
+	StringRemoveDigits( st ) ;
+
+	/*
+	 * check if st(/dev/mapper/zuluCrypt--VERA-xxx-yyy) starts with xt(/dev/mapper/zuluCrypt--VERA)
+	 */
+	r = StringStartsWith_1( st,xt ) ;
+
+	StringMultipleDelete( &st,&xt,NULL ) ;
+
+	return r ;
 }
 
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
@@ -193,14 +248,17 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	string_t st ;
 
 	if( StringPrefixNotEqual( mapper,crypt_get_dir() ) ){
+
 		return StringCopy_2( "Nil" ) ;
 	}
 
-	if( StringHasComponent( mapper,"-VERA-" ) ){
+	if( _veraCrypt_volume( mapper ) ){
+
 		return StringCopy_2( "crypto_VCRYPT" ) ;
 	}
 
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
+
 		return StringCopy_2( "Nil" ) ;
 	}
 
@@ -247,14 +305,17 @@ static char * _volume_status( const char * mapper )
 	string_t q ;
 
 	if( crypt_init_by_name( &cd,mapper ) != 0 ){
+
 		return NULL ;
 	}
 	if( crypt_get_active_device( NULL,mapper,&cad ) != 0 ){
+
 		return zuluExit( p,cd ) ;
 	}
 
 	device_name = crypt_get_device_name( cd ) ;
 	if( device_name == NULL ){
+		
 		return zuluExit( p,cd ) ;
 	}
 
@@ -282,7 +343,7 @@ static char * _volume_status( const char * mapper )
 
 	type = crypt_get_type( cd ) ;
 
-	if( StringHasComponent( mapper,"-VERA-" ) ){
+	if( _veraCrypt_volume( mapper ) ){
 
 		StringAppend( p,"vcrypt" ) ;
 	}else{
@@ -301,6 +362,7 @@ static char * _volume_status( const char * mapper )
 	z = crypt_get_cipher( cd ) ;
 
 	if( z != NULL ){
+
 		StringMultipleAppend( p,"\n cipher:\t",z,"-",NULL ) ;
 	}else{
 		StringAppend( p,"\n cipher:\tNil-" ) ;
@@ -309,6 +371,7 @@ static char * _volume_status( const char * mapper )
 	z = crypt_get_cipher_mode( cd ) ;
 
 	if( z != NULL ){
+
 		StringAppend( p,z ) ;
 	}else{
 		StringAppend( p,"Nil" ) ;
@@ -318,9 +381,12 @@ static char * _volume_status( const char * mapper )
 	StringMultipleAppend( p,"\n keysize:\t",z," bits\n device:\t",NULL ) ;
 
 	if( StringPrefixEqual( device_name,"/dev/loop" ) ){
+
 		StringMultipleAppend( p,device_name,"\n loop:   \t",NULL ) ;
 		path = zuluCryptLoopDeviceAddress_1( device_name ) ;
+
 		if( path != NULL ){
+
 			StringAppend( p,path ) ;
 			StringFree( path ) ;
 		}else{
@@ -342,16 +408,22 @@ static char * _volume_status( const char * mapper )
 	StringMultipleAppend( p," / ",buffer,NULL ) ;
 
 	if( cad.flags == 1 ){
+
 		StringAppend( p,"\n mode:   \tread only" ) ;
 	}else{
 		StringAppend( p,"\n mode:   \tread and write" ) ;
 	}
 
 	k = crypt_keyslot_max( type ) ;
+
 	if( k > 0 ){
+
 		i = 0 ;
+
 		for( j = 0 ; j < k ; j++ ){
+
 			switch( crypt_keyslot_status( cd,j ) ){
+
 				case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
 				case CRYPT_SLOT_ACTIVE      : i++ ; break ;
 				default : ;
@@ -369,7 +441,9 @@ static char * _volume_status( const char * mapper )
 	 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
 	 */
 	path = zuluCryptGetMountPointFromPath( mapper ) ;
+
 	if( path != NULL ){
+
 		zuluCryptFileSystemProperties( p,mapper,path ) ;
 		StringFree( path ) ;
 	}
@@ -381,13 +455,33 @@ char * zuluCryptVolumeStatus( const char * mapper )
 {
 	string_t s ;
 
+	ssize_t r ;
+
 	char * e = _volume_status( mapper ) ;
 
 	if( e == NULL ){
 
-		s = String( mapper ) ;
-		e = _volume_status( StringReplaceString( s,"-NAAN-","-VERA-" ) ) ;
-		StringDelete( &s ) ;
+		/*
+		 * we failed,lets try again assuming its a VeraCrypt volume by just substituting
+		 * "NAAN" with "VERA"
+		 */
+		r = StringHasComponent_1( mapper,"-NAAN-" ) ;
+
+		if( r != -1 ){
+
+			s = String( mapper ) ;
+
+			e = ( char * )StringContent( s ) ;
+
+			*( e + r + 1 ) = 'V' ;
+			*( e + r + 2 ) = 'E' ;
+			*( e + r + 3 ) = 'R' ;
+			*( e + r + 4 ) = 'A' ;
+
+			e = _volume_status( e ) ;
+
+			StringDelete( &s ) ;
+		}
 	}
 
 	return e ;
