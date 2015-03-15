@@ -226,7 +226,7 @@ static int _veraCrypt_volume( const char * mapper )
 	string_t xt = String_1( crypt_get_dir(),"/zuluCrypt--VERA-",NULL ) ;
 
 	/*
-	 * string the digits from st to end up with a string like: /dev/mapper/zuluCrypt--VERA-xxx-yyy
+	 * strip the digits from st to end up with a string like: /dev/mapper/zuluCrypt--VERA-xxx-yyy
 	 */
 	StringRemoveDigits( st ) ;
 
@@ -315,7 +315,7 @@ static char * _volume_status( const char * mapper )
 
 	device_name = crypt_get_device_name( cd ) ;
 	if( device_name == NULL ){
-		
+
 		return zuluExit( p,cd ) ;
 	}
 
@@ -453,9 +453,9 @@ static char * _volume_status( const char * mapper )
 
 char * zuluCryptVolumeStatus( const char * mapper )
 {
-	string_t s ;
-
 	ssize_t r ;
+
+	char * s ;
 
 	char * e = _volume_status( mapper ) ;
 
@@ -469,18 +469,16 @@ char * zuluCryptVolumeStatus( const char * mapper )
 
 		if( r != -1 ){
 
-			s = String( mapper ) ;
+			s = StringCopy_2( mapper ) ;
 
-			e = ( char * )StringContent( s ) ;
+			*( s + r + 1 ) = 'V' ;
+			*( s + r + 2 ) = 'E' ;
+			*( s + r + 3 ) = 'R' ;
+			*( s + r + 4 ) = 'A' ;
 
-			*( e + r + 1 ) = 'V' ;
-			*( e + r + 2 ) = 'E' ;
-			*( e + r + 3 ) = 'R' ;
-			*( e + r + 4 ) = 'A' ;
+			e = _volume_status( s ) ;
 
-			e = _volume_status( e ) ;
-
-			StringDelete( &s ) ;
+			StringFree( s ) ;
 		}
 	}
 
