@@ -103,13 +103,13 @@
 <p>zuluCrypt has a plugin architecture that allows it to retrieve keys to unlock volume from difference source:</p>
 
 <ul>
-<li>from gnome's keyring.</li>
-<li>from kde's kwallet.</li>
-<li>from internal storage system powered by libgcrypt.</li>
-<li>from a keyfile where key = contents of a keyfile.</li>
-<li>from a combination of a passphrase and keyfile where key = passphrase + content of keyfile.</li>
-<li>from a combination of a passphrase and keyfile where key = gpg_symmetric_decrypt( passphrase,keyfile contents )</li>
-<li>from a combination of a passphrase and keyfile where key = hmac-sha256( passphrase,keyfile contents )</li>
+<li>gnome's keyring.</li>
+<li>kde's kwallet.</li>
+<li>an internal storage system powered by libgcrypt.</li>
+<li>a keyfile where key = contents of a keyfile.</li>
+<li>a combination of a passphrase and keyfile where key = passphrase + content of keyfile.</li>
+<li>a combination of a passphrase and keyfile where key = gpg_symmetric_decrypt( passphrase,keyfile )</li>
+<li>a combination of a passphrase and keyfile where key = hmac-sha256( passphrase,keyfile )</li>
 </ul>
 
 <h2>
