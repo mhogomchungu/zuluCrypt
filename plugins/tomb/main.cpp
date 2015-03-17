@@ -39,8 +39,8 @@ int main( int argc,char * argv[] )
 
 	MainWindow w ;
 
-	w.setToken( QString( argv[ 3 ] ) ) ;
-	w.setApplicationName( QString( "tomb" ) ) ;
+	w.setToken( argv[ 3 ] ) ;
+	w.setApplicationName( "tomb" ) ;
 	w.setkeyLabel( QObject::tr( "enter tomb/steghide key below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "enter a path to a tomb/steghide keyfile below" ) ) ;
 
@@ -48,7 +48,7 @@ int main( int argc,char * argv[] )
 		/*
 		 * TODO: look into passing the passphrase more securely
 		 */
-		QString arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe.first() ).arg( keyFile ).arg( password ) ;
+		QString arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe.first(),keyFile,password ) ;
 		QProcess p ;
 		p.start( arg ) ;
 		p.waitForFinished( -1 ) ;
@@ -59,7 +59,7 @@ int main( int argc,char * argv[] )
 		}else{
 			key = "\n-----BEGIN PGP MESSAGE-----\n\n" + key + "-----END PGP MESSAGE-----\n" ;
 
-			QString temp_path = QString( "%1/%2/" ).arg( QDir::homePath() ).arg( "/.zuluCrypt/" ) ;
+			QString temp_path = QString( "%1/%2/" ).arg( QDir::homePath(),"/.zuluCrypt/" ) ;
 
 			QDir d ;
 			d.mkpath( temp_path ) ;

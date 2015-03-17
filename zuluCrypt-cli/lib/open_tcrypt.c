@@ -201,7 +201,7 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 			return zuluExit( 1,cd ) ;
 		}
 		if( StringHasComponent( opts->m_opts,"ro" ) ){
-			
+
 			flags = CRYPT_ACTIVATE_READONLY ;
 		}else{
 			flags = 0 ;

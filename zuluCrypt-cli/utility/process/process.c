@@ -300,6 +300,7 @@ size_t ProcessGetOutPut( process_t p,char ** data,ProcessIO std_io )
 		buffer = __bufferExpandMemory( buffer,size + count,&buffer_size ) ;
 
 		if( buffer == NULL ){
+			_ProcessError() ;
 			return 0 ;
 		}else{
 			memcpy( buffer + size,buff,count ) ;

@@ -31,8 +31,8 @@ int main( int argc,char * argv[] )
 
 	MainWindow w ;
 
-	w.setToken( QString( argv[ 3 ] ) ) ;
-	w.setApplicationName( QString( "luks" ) ) ;
+	w.setToken( argv[ 3 ] ) ;
+	w.setApplicationName( "luks" ) ;
 	w.setkeyLabel( QObject::tr( " enter luks key below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "enter a path to a luks header below" ) ) ;
 

@@ -68,7 +68,7 @@ static int zuluExit_1( const char * type,stringList_t stl )
 
 	printf( gettext( "SUCCESS: volume created successfully\n" ) ) ;
 
-	if( StringAtLeastOneMatch_1( type,"luks","tcrypt","truecrypt",NULL ) ){
+	if( StringAtLeastOneMatch_1( type,"luks","tcrypt","truecrypt","veracrypt","vera","vcrypt",NULL ) ){
 		printf( gettext( "\ncreating a backup of the \"%s\" volume header is strongly adviced.\n" ),type ) ;
 		printf( gettext( "Please read documentation on why this is important\n\n" ) ) ;
 	}
@@ -120,6 +120,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int k ;
 
 	int truecrypt_volume = 0 ;
+	int veracrypt_volume = 0 ;
+
 	u_int64_t hidden_volume_size = 0 ;
 
 	u_int64_t size ;
@@ -220,6 +222,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	}
 
 	truecrypt_volume = StringAtLeastOneMatch_1( type,"tcrypt","truecrypt",NULL ) ;
+	veracrypt_volume = StringAtLeastOneMatch_1( type,"vcrypt","veracrypt","vera",NULL ) ;
 
 	if( key_source == NULL ){
 		printf( gettext( "Enter passphrase: " ) ) ;
@@ -271,7 +274,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 
 	if( tcrypt_hidden_volume_size != NULL ){
 
-		if( !truecrypt_volume ){
+		if( !( truecrypt_volume || veracrypt_volume ) ){
 			return zuluExit( 23,stl ) ;
 		}else{
 			hidden_volume_size = StringConvertToInt( tcrypt_hidden_volume_size ) ;
@@ -329,7 +332,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	volkey     = StringContent( *pass_1 ) ;
 	volkeysize = StringLength( *pass_1 ) ;
 
-	if( truecrypt_volume ){
+	if( truecrypt_volume || veracrypt_volume ){
 
 		memset( &tcrypt,'\0',sizeof( create_tcrypt_t ) ) ;
 
@@ -338,6 +341,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		tcrypt.fs_h               = fs ;
 		tcrypt.encryption_options = rng ;
 		tcrypt.hidden_volume_size = hidden_volume_size ;
+		tcrypt.veraCrypt_volume   = veracrypt_volume ;
 
 		if( tcrypt_keyfiles[ 0 ] != NULL ){
 			/*

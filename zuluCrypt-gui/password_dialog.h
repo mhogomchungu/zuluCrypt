@@ -72,6 +72,7 @@ private slots :
 	void tcryptCancelled( void ) ;
 	void setVeraCryptWarning( void ) ;
 private :
+	void addTcryptVcryptKeyOption( void ) ;
 	void tcryptGui( void ) ;
 	void openVolume( void ) ;
 	QString getUUIDFromPath( const QString& ) ;

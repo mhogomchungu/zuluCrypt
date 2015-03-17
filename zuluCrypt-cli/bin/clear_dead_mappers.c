@@ -50,7 +50,7 @@ static void _remove_mapper( const char * path,stringList_t stl,uid_t uid )
 	if( r == 0 ){
 		if( m_point != NULL ){
 			remove( m_point ) ;
-			free( m_point ) ;
+			StringFree( m_point ) ;
 		}
 	}
 }

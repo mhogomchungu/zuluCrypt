@@ -95,6 +95,7 @@ typedef struct{
 	u_int64_t    hidden_volume_size ;
 	const char * fs ;
 	const char * fs_h ;
+	int veraCrypt_volume ;
 }create_tcrypt_t ;
 
 /*

@@ -22,6 +22,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <QTimer>
 
 #include "utility.h"
 
@@ -46,7 +47,9 @@ public:
 		plain = 0,
 		luks = 1,
 		normal_truecrypt = 2,
-		normal_and_hidden_truecrypt = 3
+		normal_and_hidden_truecrypt = 3,
+		normal_veracrypt = 4,
+		normal_and_hidden_veracrypt = 5
 	}createVolumeType ;
 
 	explicit createvolume( QWidget * parent = 0 ) ;
@@ -59,6 +62,7 @@ public slots:
 	void ShowFile( QString volume ) ;
 	void HideUI( void ) ;
 private slots:
+	void setVeraCryptWarning( void ) ;
 	void keyChanged_0( QString ) ;
 	void keyChanged_1( QString ) ;
 	void pbCreateClicked( void ) ;
@@ -93,6 +97,8 @@ private:
 	QString m_hiddenKey ;
 	QStringList m_hiddenKeyFiles ;
 	bool m_normalVolume ;
+	QTimer m_timer ;
+	float m_time = 0 ;
 };
 
 #endif // CREATEPARTITION_H

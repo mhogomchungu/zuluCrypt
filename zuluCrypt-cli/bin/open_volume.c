@@ -207,7 +207,7 @@ static int _open_volume( const open_struct_t * volume )
 
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
-	int veraCrypt_volume = StringsAreEqual( opts->type,"vera" ) ;
+	int veraCrypt_volume = StringAtLeastOneMatch_1( opts->type,"vcrypt","veracrypt","vera",NULL ) ;
 	int share                = opts->share ;
 	int open_mount           = opts->open_mount ;
 	const char * device      = opts->device ;

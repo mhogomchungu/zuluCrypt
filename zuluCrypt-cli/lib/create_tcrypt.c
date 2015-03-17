@@ -70,6 +70,8 @@ static int _create_file_system( const create_tcrypt_t * e )
 		opts.tcrypt_keyfiles_count = e->keyfiles_number ;
 	}
 
+	opts.veraCrypt_volume = e->veraCrypt_volume ;
+
 	/*
 	 * zuluCryptOpenTcrypt_1 is defined in open_tcrypt.c
 	 */
@@ -225,11 +227,7 @@ static int _modify_tcrypt_header( const char * device,const info_t * info )
 				tc_api_task_set( task,info->header_new_key_source,info->header_new_key ) ;
 			}
 
-			if( StringsAreEqual( info->rng,"/dev/urandom" ) ){
-				tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
-			}else{
-				tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
-			}
+			tc_api_task_set( task,"weak_keys_and_salt",StringsAreEqual( info->rng,"/dev/urandom" ) ) ;
 
 			r = tc_api_task_do( task ) ;
 
@@ -384,8 +382,14 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 	if( options_count == 1 ){
 
 		cipher_chain = "AES-256-XTS" ;
-		hash         = "RIPEMD160" ;
 		rng          = *( options + 0 ) ;
+
+		if( e->veraCrypt_volume ){
+
+			hash = "SHA512" ;
+		}else{
+			hash = "RIPEMD160" ;
+		}
 
 	}else if( options_count == 5 ){
 
@@ -406,6 +410,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 
 		if( task != 0 ){
 
+			tc_api_task_set( task,"veracrypt_mode",e->veraCrypt_volume ) ;
 			tc_api_task_set( task,"dev",device ) ;
 			tc_api_task_set( task,"secure_erase",FALSE ) ;
 			tc_api_task_set( task,"prf_algo",hash ) ;
@@ -419,11 +424,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 				tc_api_task_set( task,"keyfiles",*( z + i ) ) ;
 			}
 
-			if( StringsAreEqual( rng,"/dev/urandom" ) ){
-				tc_api_task_set( task,"weak_keys_and_salt",TRUE ) ;
-			}else{
-				tc_api_task_set( task,"weak_keys_and_salt",FALSE ) ;
-			}
+			tc_api_task_set( task,"weak_keys_and_salt",StringsAreEqual( rng,"/dev/urandom" ) ) ;
 
 			if( e->hidden_volume_size > 0 ){
 

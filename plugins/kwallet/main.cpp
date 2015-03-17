@@ -27,7 +27,7 @@ int main( int argc,char * argv[] )
 
 	wallet w( argv[ 1 ],argv[ 2 ],argv[ 3 ] ) ;
 
-	QCoreApplication::setApplicationName( QString( "zuluCrypt kwallet plugin" ) ) ;
+	QCoreApplication::setApplicationName( "zuluCrypt kwallet plugin" ) ;
 
 	QMetaObject::invokeMethod( &w,"openWallet",Qt::QueuedConnection ) ;
 

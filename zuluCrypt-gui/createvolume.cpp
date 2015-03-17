@@ -65,6 +65,8 @@ createvolume::createvolume( QWidget * parent ) :
 	connect( m_ui->pbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenHiddenKeyFile() ) ) ;
 	connect( m_ui->comboBoxVolumeType,SIGNAL( activated( int ) ),this,SLOT( setOptions( int ) ) ) ;
 
+	connect( &m_timer,SIGNAL( timeout() ),this,SLOT( setVeraCryptWarning() ) ) ;
+
 	m_ui->groupBox->setEnabled( false ) ;
 
 	this->setOptions( 1 ) ;
@@ -86,6 +88,8 @@ createvolume::createvolume( QWidget * parent ) :
 	m_ui->cbHiddenVolume->addItem( tr( "key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "keyfile" ) ) ;
 
+	m_ui->veraCryptWarning->setVisible( false ) ;
+
 	QStringList l ;
 
 	/*
@@ -98,6 +102,10 @@ createvolume::createvolume( QWidget * parent ) :
 #if TRUECRYPT_CREATE
 	m_ui->comboBoxVolumeType->addItem( tr( "normal truecrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "normal+hidden truecrypt" ) ) ;
+#if VERACRYPT_CREATE
+	m_ui->comboBoxVolumeType->addItem( tr( "normal veracrypt" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "normal+hidden veracrypt" ) ) ;
+#endif
 #endif
 	m_ui->comboBoxVolumeType->setCurrentIndex( int( createvolume::luks ) ) ;
 }
@@ -162,31 +170,70 @@ void createvolume::volumeType( int s )
 	m_ui->cbHiddenVolume->addItem( tr( "key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "keyfile" ) ) ;
 
+	auto _enableHidden = [ this ](){
+
+		m_ui->lineEditHiddenKey->setEnabled( true ) ;
+		m_ui->lineEditHiddenKey1->setEnabled( true ) ;
+		m_ui->lineEditHiddenSize->setEnabled( true ) ;
+		m_ui->pbHiddenKeyFile->setEnabled( true ) ;
+		m_ui->comboBoxHiddenSize->setEnabled( true ) ;
+		m_ui->cbHiddenVolume->setEnabled( true ) ;
+	} ;
+
+	auto _disableHidden = [ this ](){
+
+		m_ui->lineEditHiddenKey->clear() ;
+		m_ui->lineEditHiddenKey1->clear() ;
+		m_ui->lineEditHiddenSize->clear() ;
+
+		m_ui->lineEditHiddenKey->setEnabled( false ) ;
+		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
+		m_ui->lineEditHiddenSize->setEnabled( false ) ;
+		m_ui->pbHiddenKeyFile->setEnabled( false ) ;
+		m_ui->comboBoxHiddenSize->setEnabled( false ) ;
+		m_ui->cbHiddenVolume->setEnabled( false ) ;
+	} ;
+
 	switch( createvolume::createVolumeType( s ) ){
 	case createvolume::luks :
-		m_volumeType = "luks" ;
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( false ) ;
+		_disableHidden() ;
 		break ;
 	case createvolume::plain :
-		m_volumeType = "plain"  ;
 		m_ui->comboBoxRNG->setEnabled( false ) ;
 		m_ui->groupBox->setEnabled( false ) ;
+		_disableHidden() ;
 		break ;
 	case createvolume::normal_truecrypt :
-		m_volumeType = "tcrypt" ;
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( false ) ;
 		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt keys" ) ) ;
+		_disableHidden() ;
+		break ;
+	case createvolume::normal_veracrypt :
+		m_ui->comboBoxRNG->setEnabled( true ) ;
+		m_ui->groupBox->setEnabled( false ) ;
+		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt keys" ) ) ;
+		_disableHidden() ;
 		break ;
 	case createvolume::normal_and_hidden_truecrypt :
-		m_volumeType = "tcrypt" ;
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( true ) ;
 		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
 		m_ui->cbHiddenVolume->addItem( tr( "TrueCrypt keys" ) ) ;
 		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt keys" ) ) ;
 		this->cbHiddenVolume( 0 ) ;
+		_enableHidden() ;
+		break ;
+	case createvolume::normal_and_hidden_veracrypt :
+		m_ui->comboBoxRNG->setEnabled( true ) ;
+		m_ui->groupBox->setEnabled( true ) ;
+		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
+		m_ui->cbHiddenVolume->addItem( tr( "VeraCrypt keys" ) ) ;
+		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt keys" ) ) ;		
+		this->cbHiddenVolume( 0 ) ;
+		_enableHidden() ;
 		break ;
 	}
 }
@@ -291,14 +338,28 @@ void createvolume::setOptions( int e )
 		_add_option( "aes" ) ;
 		_add_option( "serpent" ) ;
 		_add_option( "twofish" ) ;
+
 	}else{
 		/*
-		 * crypto options for TrueCrypt volumes
+		 * crypto options for TrueCrypt and VeraCrypt volumes
 		 */
+
+		auto _veraCryptVolume = [ this ](){
+
+			auto type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
+			return type == createvolume::normal_veracrypt || type == createvolume::normal_and_hidden_veracrypt ;
+		} ;
+
 		auto _add_option = [ & ]( const QString& algo ){
 
-			options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
-			options->addItem( algo + ".xts-plain64.256.sha512" ) ;
+			if( _veraCryptVolume() ){
+
+				options->addItem( algo + ".xts-plain64.256.sha512" ) ;
+				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
+			}else{
+				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
+				options->addItem( algo + ".xts-plain64.256.sha512" ) ;
+			}
 
 			if( supportWhirlpool ){
 				options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
@@ -365,7 +426,10 @@ void createvolume::tcryptCancelled()
 {
 	this->enableAll() ;
 
-	if( m_ui->cbNormalVolume->currentIndex() == createvolume::normal_truecrypt ){
+	bool x = m_ui->cbNormalVolume->currentIndex() == createvolume::normal_truecrypt ;
+	bool y = m_ui->cbNormalVolume->currentIndex() == createvolume::normal_veracrypt ;
+
+	if( x || y ){
 
 		m_ui->pbOpenKeyFile->setEnabled( false ) ;
 		m_ui->lineEditPassphrase1->setEnabled( false ) ;
@@ -401,6 +465,20 @@ void createvolume::keys( QString key,QStringList keyFiles )
 		m_keyFiles = keyFiles ;
 		m_ui->lineEditPassphrase1->setEnabled( false ) ;
 		m_ui->pbOpenKeyFile->setEnabled( false ) ;
+
+		auto type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
+
+		bool e = type == createvolume::normal_and_hidden_truecrypt || type == createvolume::normal_and_hidden_veracrypt ;
+
+		if( !e ){
+
+			m_ui->lineEditHiddenKey->setEnabled( false ) ;
+			m_ui->lineEditHiddenKey1->setEnabled( false ) ;
+			m_ui->lineEditHiddenSize->setEnabled( false ) ;
+			m_ui->pbHiddenKeyFile->setEnabled( false ) ;
+			m_ui->comboBoxHiddenSize->setEnabled( false ) ;
+			m_ui->cbHiddenVolume->setEnabled( false ) ;
+		}
 	}else{
 		m_ui->lineEditPassphrase1->setEnabled( false ) ;
 		m_hiddenKey = key ;
@@ -526,7 +604,7 @@ void createvolume::enableAll()
 	m_ui->comboBoxOptions->setEnabled( true ) ;
 
 #if TRUECRYPT_CREATE
-	if( m_ui->comboBoxVolumeType->currentIndex() == createvolume::normal_and_hidden_truecrypt ){
+	if( m_ui->comboBoxVolumeType->currentIndex() > createvolume::luks ){
 		m_ui->groupBox->setEnabled( true ) ;
 	}
 #endif
@@ -572,7 +650,7 @@ void createvolume::pbCreateClicked()
 		return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "volume path field is empty" ) ) ;
 	}
 
-	if( type == createvolume::normal_and_hidden_truecrypt ){
+	if( type == createvolume::normal_and_hidden_truecrypt || type == createvolume::normal_and_hidden_veracrypt ){
 
 		QString x = m_ui->lineEditHiddenSize->text() ;
 
@@ -646,6 +724,10 @@ void createvolume::pbCreateClicked()
 	case createvolume::normal_and_hidden_truecrypt :
 		m_volumeType = "truecrypt" ;
 		break ;
+	case createvolume::normal_veracrypt :
+	case createvolume::normal_and_hidden_veracrypt :
+		m_volumeType = "veracrypt" ;
+		break ;
 	default: m_volumeType = "luks" ;
 	}
 
@@ -664,12 +746,12 @@ void createvolume::pbCreateClicked()
 	QString a = QString( ZULUCRYPTzuluCrypt ) ;
 	QString b = volumePath ;
 	QString c = m_ui->comboBoxFS->currentText() ;
-	QString d = m_volumeType;
+	QString d = m_volumeType ;
 	QString e = source ;
 	QString f = passphrase_1 ;
 
 	QString exe ;
-	if( type == createvolume::normal_and_hidden_truecrypt ){
+	if( type == createvolume::normal_and_hidden_truecrypt || type == createvolume::normal_and_hidden_veracrypt ){
 
 		QString x = m_ui->lineEditHiddenKey->text() ;
 		QString y ;
@@ -721,6 +803,18 @@ void createvolume::pbCreateClicked()
 		exe += " -V \"" + e + "\"" ;
 	}
 
+	if( type == createvolume::normal_veracrypt || type == createvolume::normal_and_hidden_veracrypt ){
+
+		m_time = 0 ;
+		m_timer.stop() ;
+
+		this->setVeraCryptWarning() ;
+
+		m_ui->veraCryptWarning->setVisible( true ) ;
+
+		m_timer.start( 1000 * 1 ) ;
+	}
+
 	m_isWindowClosable = false ;
 
 	this->disableAll() ;
@@ -728,12 +822,30 @@ void createvolume::pbCreateClicked()
 	this->taskFinished( utility::exec( exe ).await() ) ;
 }
 
+void createvolume::setVeraCryptWarning()
+{
+	QString e = tr( "please be patient as creating a VeraCrypt volume may take a very long time.\n\n" ) ;
+
+	if( m_time >= 60 ){
+
+		e += tr( "Elapsed time: %0 minutes" ).arg( QString::number( m_time / 60,'f',2 ) ) ;
+	}else{
+		e += tr( "Elapsed time: %0 seconds" ).arg( QString::number( m_time ) ) ;
+	}
+
+	m_time++ ;
+
+	m_ui->veraCryptWarning->setText( e ) ;
+}
+
 void createvolume::taskFinished( int st )
 {
+	m_ui->veraCryptWarning->setVisible( false ) ;
+
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
 	QString x = tr( "volume created successfully." ) ;
-	if( m_volumeType.contains( "luks" ) || m_volumeType.contains( "truecrypt" ) ){
+	if( m_volumeType.contains( "luks" ) || m_volumeType.contains( "truecrypt" ) || m_volumeType.contains( "veracrypt" ) ){
 		x += tr( "\ncreating a backup of the \"%1\" volume header is strongly advised.\nPlease read documentation on why this is important." ).arg( m_volumeType ) ;
 	}
 	switch ( st ){
@@ -767,6 +879,7 @@ only root user or members of group zulucrypt-system can do that" ) ) ;									b
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
 	}
 
+	m_timer.stop() ;
 	this->enableAll() ;
 }
 

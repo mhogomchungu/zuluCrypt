@@ -27,10 +27,11 @@
 auto gpg = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 
 	QString arg ;
+	
 	if( password.isEmpty() ){
-		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose -d %2" ).arg( exe.first() ).arg( keyFile ) ;
+		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose -d %2" ).arg( exe.first(),keyFile ) ;
 	}else{
-		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d  %2" ).arg( exe.first() ).arg( keyFile ) ;
+		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d  %2" ).arg( exe.first(),keyFile ) ;
 	}
 
 	QProcess p ;
@@ -41,6 +42,6 @@ auto gpg = []( const QVector<QString>& exe,const QString& keyFile,const QString&
 
 	p.write( password.toLatin1() ) ;
 	p.closeWriteChannel() ;
-	p.waitForFinished( -1 ) ;
+	p.waitForFinished() ;
 	return p.readAllStandardOutput() ;
 } ;

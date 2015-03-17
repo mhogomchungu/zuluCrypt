@@ -31,8 +31,8 @@ int main( int argc,char * argv[] )
 
 	MainWindow w ;
 
-	w.setToken( QString( argv[ 3 ] ) ) ;
-	w.setApplicationName( QString( "steghide" ) ) ;
+	w.setToken( argv[ 3 ] ) ;
+	w.setApplicationName( "steghide" ) ;
 	w.setkeyLabel( QObject::tr( "enter steghide key below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "enter a path to a steghide keyfile below" ) ) ;
 
@@ -40,7 +40,7 @@ int main( int argc,char * argv[] )
 		/*
 		 * TODO: look into passing the passphrase more securely
 		 */
-		QString arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe.first() ).arg( keyFile ).arg( password ) ;
+		QString arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe.first(),keyFile,password ) ;
 		QProcess p ;
 		p.start( arg ) ;
 		p.waitForFinished( -1 ) ;
@@ -48,7 +48,7 @@ int main( int argc,char * argv[] )
 	} ;
 
 	QVector<QString> exe ;
-	exe.append( QString( "steghide" ) ) ;
+	exe.append( "steghide" ) ;
 
 	w.setExe( exe ) ;
 	w.setKeyFunction( steghide ) ;

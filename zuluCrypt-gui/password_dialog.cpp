@@ -108,10 +108,6 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 
 	m_ui->veraCryptWarning->setVisible( false ) ;
 	this->installEventFilter( this ) ;
-
-#if TRUECRYPT_CRYPTSETUP
-	m_ui->cbKeyType->addItem( tr( "TrueCrypt keys" ) ) ;
-#endif
 }
 
 bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
@@ -238,8 +234,21 @@ void passwordDialog::closeEvent( QCloseEvent * e )
 	this->HideUI() ;
 }
 
+void passwordDialog::addTcryptVcryptKeyOption()
+{
+	if( m_veraCryptVolume ){
+		m_ui->cbKeyType->addItem( tr( "VeraCrypt keys" ) ) ;
+	}else{
+		#if TRUECRYPT_CRYPTSETUP
+			m_ui->cbKeyType->addItem( tr( "TrueCrypt keys" ) ) ;
+		#endif
+	}
+}
+
 void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_point )
 {
+	this->addTcryptVcryptKeyOption() ;
+
 	if( mount_point.isEmpty() ){
 		m_point = utility::mountPathPostFix( volumePath.split( "/" ).last() ) ;
 	}else {
@@ -270,6 +279,8 @@ void passwordDialog::ShowUI( QString dev )
 
 void passwordDialog::ShowUI()
 {
+	this->addTcryptVcryptKeyOption() ;
+
 	this->passphraseOption() ;
 	m_ui->OpenVolumePath->setFocus() ;
 	m_ui->PushButtonVolumePath->setIcon( QIcon( ":/file.png" ) ) ;
@@ -644,6 +655,7 @@ void passwordDialog::openVolume()
 		this->failed( r.exitCode() ) ;
 
 		m_ui->veraCryptWarning->setVisible( false ) ;
+		m_timer.stop() ;
 	}
 }
 

@@ -43,7 +43,7 @@ void wallet::openWallet()
 		m_wallet->setFolder( utility::applicationName() ) ;
 		QString key ;
 		m_wallet->readPassword( m_keyID,key ) ;
-		if( key.isEmpty() && m_keyID.startsWith( QString( "UUID=" ) ) ){
+		if( key.isEmpty() && m_keyID.startsWith( "UUID=" ) ){
 			m_wallet->readPassword( m_keyID.replace( "\"","" ),key ) ;
 		}
 		if( key.isEmpty() ){
@@ -61,5 +61,4 @@ wallet::~wallet()
 {
 	::zuluCryptPluginManagerCloseConnection( m_handle ) ;
 	delete m_wallet ;
-
 }
