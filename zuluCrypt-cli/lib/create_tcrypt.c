@@ -33,6 +33,15 @@
  */
 #include "truecrypt_support_1.h"
 
+static int _can_not_create_veraCrypt_volume( void )
+{
+#if VERACRYPT_CREATE
+	return 0 ;
+#else
+	return 1 ;
+#endif
+}
+
 #if TRUECRYPT_CREATE
 
 static int _create_file_system( const create_tcrypt_t * e )
@@ -369,6 +378,11 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 	size_t options_count = 0 ;
 
 	stringList_t stl ;
+
+	if( e->veraCrypt_volume && _can_not_create_veraCrypt_volume() ){
+
+		return !TC_OK ;
+	}
 
 	if( StringsAreEqual( e->encryption_options,"" ) ){
 
