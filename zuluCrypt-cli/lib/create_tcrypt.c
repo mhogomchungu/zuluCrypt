@@ -430,6 +430,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 			tc_api_task_set( task,"prf_algo",hash ) ;
 			tc_api_task_set( task,"cipher_chain",cipher_chain ) ;
 			tc_api_task_set( task,"passphrase",e->passphrase ) ;
+			tc_api_task_set( task,"weak_keys_and_salt",StringsAreEqual( rng,"/dev/urandom" ) ) ;
 
 			z = e->keyfiles ;
 			k = e->keyfiles_number ;
@@ -437,8 +438,6 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 			for( i = 0 ; i < k ; i++ ){
 				tc_api_task_set( task,"keyfiles",*( z + i ) ) ;
 			}
-
-			tc_api_task_set( task,"weak_keys_and_salt",StringsAreEqual( rng,"/dev/urandom" ) ) ;
 
 			if( e->hidden_volume_size > 0 ){
 
@@ -581,6 +580,7 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 			   u_int64_t hidden_volume_size,const char * file_system_h,
 			   const char * key_h,size_t key_len_h,int key_source_h )
 {
+	_can_not_create_veraCrypt_volume() ;
 	if( 0 && device && file_system && rng && key_len && key_source && key
 		&& hidden_volume_size && key_len_h && key_h && key_source_h && file_system_h ){;}
 	return 3 ;

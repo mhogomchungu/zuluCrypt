@@ -120,7 +120,12 @@
  set_target_properties( zuluCrypt     PROPERTIES SOVERSION ${LIB_VERSION} )
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION ${LIB_VERSION} )
 
- TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${TCPLAY_LIB} ${TCPLAY_LIBRARIES} )
+ if( STATIC_TCPLAY )
+	TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} tcplay-static )
+ else()
+	TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${TCPLAY_LIB} ${TCPLAY_LIBRARIES} )
+ endif()
+
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager )
 
  #TARGET_LINK_LIBRARIES( zuluCrypt-static String StringList Process )

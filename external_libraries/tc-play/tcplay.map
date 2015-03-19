@@ -1,0 +1,15 @@
+{
+global:
+	tc_api_init;
+	tc_api_uninit;
+	tc_api_has;
+	tc_api_cipher_iterate;
+	tc_api_prf_iterate;
+	tc_api_task_init;
+	tc_api_task_uninit;
+	tc_api_task_set;
+	tc_api_task_do;
+	tc_api_task_info_get;
+local:
+	*;
+};
