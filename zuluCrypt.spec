@@ -1,8 +1,8 @@
 #
-# Spec file for package Dolphin Emulator
+# Spec file for package zuluCrypt
 #
 # Copyright © 2011-2015 Francis Banyikwa <mhogomchungu@gmail.com>
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 2 of the License, or
@@ -47,7 +47,7 @@ BuildRequires: libpwquality-devel
 BuildRequires: pkgconfig(QtCore)
 BuildRequires: pkgconfig(QtGui)
 
-%if 0%{?fedora} 
+%if 0%{?fedora}
 BuildRequires: cryptsetup-luks-devel
 %endif
 
@@ -74,7 +74,7 @@ Summary:        Library for %{name}
 Group:          Productivity/Security
 
 %description -n %{libname}
-This package contains libraries that provide higher level access to cryptsetup API and provide mounting/unmounting API 
+This package contains libraries that provide higher level access to cryptsetup API and provide mounting/unmounting API
 to easy opening and closing of volumes
 
 %prep
@@ -109,7 +109,7 @@ sbin/ldconfig
 rm -rf %{buildroot}
 rm -rf $RPM_BUILD_DIR/zuluCrypt
 
-%files 
+%files
 %defattr(0755,root,root)
 %{_bindir}/zuluMount-gui
 %{_bindir}/zuluMount-cli
