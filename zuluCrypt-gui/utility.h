@@ -120,14 +120,12 @@ namespace utility
 		fileHandle()
 		{
 		}
-		fileHandle( int r )
+		fileHandle( int r ) : m_fd( r )
 		{
-			m_fd = r ;
 		}
-		fileHandle( int r,std::function< void( int ) > cmd )
+		fileHandle( int r,std::function< void( int ) > cmd ) :
+			m_fd( r ),m_releaseResource( std::move( cmd ) )
 		{
-			m_fd = r ;
-			m_releaseResource = std::move( cmd ) ;
 		}
 		bool open( const char * filePath,bool ro = true )
 		{
@@ -209,13 +207,17 @@ namespace utility
 		}
 		static void suspendForOneSecond( void )
 		{
+			utility::Task::suspend( 1 ) ;
+		}
+		static void suspend( int s )
+		{
 			QTimer t ;
 
 			QEventLoop l ;
 
 			QObject::connect( &t,SIGNAL( timeout() ),&l,SLOT( quit() ) ) ;
 
-			t.start( 1000 ) ;
+			t.start( 1000 * s ) ;
 
 			l.exec() ;
 		}
