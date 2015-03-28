@@ -907,20 +907,20 @@ static __inline__ ssize_t StringLastIndexOfChar_1( const char * str,char s )
 	}
 }
 
-static __inline__ const char * StringContent( string_t st )
-{
-	const char ** e ;
-	if( st == StringVoid ){
-		return NULL ;
-	}else{
-		e = ( const char ** )st ;
-		return *e ;
-	}
-}
-
 static __inline__ const char ** StringPointer( string_t st )
 {
 	return ( const char ** ) st ;
+}
+
+static __inline__ const char * StringContent( string_t st )
+{
+	const char ** e = StringPointer( st ) ;
+
+	if( e == NULL ){
+		return NULL ;
+	}else{
+		return *e ;
+	}
 }
 
 #ifdef __cplusplus
