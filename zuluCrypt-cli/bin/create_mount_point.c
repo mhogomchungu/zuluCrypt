@@ -23,39 +23,39 @@
 #include <unistd.h>
 #include "mount_prefix_path.h"
 
+static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
+{
+	if( mkdir( m_point,S_IRWXU ) == 0 ){
+
+		chown( m_point,uid,uid ) ;
+	}else{
+		StringDelete( &path ) ;
+	}
+
+	return path ;
+}
+
 static string_t _create_path( uid_t uid,string_t path,int need_privileges )
 {
 	string_t st = StringVoid ;
 
 	const char * m_point = StringContent( path ) ;
 
-	if( m_point == NULL ){
+	if( m_point != NULL ){
 
-		return st ;
-	}else{
 		if( need_privileges ){
 
 			zuluCryptSecurityGainElevatedPrivileges() ;
 
-			if( mkdir( m_point,S_IRWXU ) == 0 ){
-				st = path ;
-				chown( m_point,uid,uid ) ;
-			}else{
-				StringDelete( &path ) ;
-			}
+			st = _create_path_0( m_point,uid,path ) ;
 
 			zuluCryptSecurityDropElevatedPrivileges() ;
 		}else{
-			if( mkdir( m_point,S_IRWXU ) == 0 ){
-				st = path ;
-				chown( m_point,uid,uid ) ;
-			}else{
-				StringDelete( &path ) ;
-			}
+			st = _create_path_0( m_point,uid,path ) ;
 		}
-
-		return st ;
 	}
+
+	return st ;
 }
 
 static string_t _create_mount_point_1( const char * device,uid_t uid,string_t path,int need_privileges )
@@ -249,7 +249,7 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	StringAppendChar( path,'/' ) ;
-	
+
 	if( label == NULL ){
 		return _create_default_mount_point( device,uid,path ) ;
 	}else{
