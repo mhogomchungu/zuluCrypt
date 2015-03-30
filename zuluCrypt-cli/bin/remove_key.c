@@ -62,7 +62,7 @@ static int zuluExit( int st,stringList_t stl )
 		case 2 : printf( gettext( "ERROR: there is no key in the volume that match the presented key\n" ) ) ;	break ;
 		case 3 : printf( gettext( "ERROR: could not open the volume\n" ) ) ;					break ;
 		case 4 : printf( gettext( "ERROR: insufficient privilege to open a system device,\
-only root user or members of group zulucrypt-system can do that\n" ) ) ;						break ;
+only root user or members of group zulucrypt can do that\n" ) ) ;						break ;
 		case 5 : printf( gettext( "ERROR: could not open the volume in write mode\n" ) ) ;			break ;
 		case 6 : printf( gettext( "ERROR: insufficient memory to hold your response\n" ) ) ;			break ;
 		case 7 : printf( gettext( "INFO: operation terminated per user request\n" ) ) ;				break ;

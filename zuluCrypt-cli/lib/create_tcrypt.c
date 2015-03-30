@@ -33,16 +33,10 @@
  */
 #include "truecrypt_support_1.h"
 
-static int _can_not_create_veraCrypt_volume( void )
-{
-#if VERACRYPT_CREATE
-	return 0 ;
-#else
-	return 1 ;
-#endif
-}
-
 #if TRUECRYPT_CREATE
+
+static const int TRUE  = 1 ;
+static const int FALSE = 0 ;
 
 static int _create_file_system( const create_tcrypt_t * e )
 {
@@ -135,9 +129,6 @@ static int _create_file_system( const create_tcrypt_t * e )
 	StringDelete( &m ) ;
 	return r ;
 }
-
-#define TRUE   ( int )1
-#define FALSE  ( int )0
 
 static string_t _root_device( const char * device,const char ** sys_device )
 {
@@ -379,7 +370,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 
 	stringList_t stl ;
 
-	if( e->veraCrypt_volume && _can_not_create_veraCrypt_volume() ){
+	if( e->veraCrypt_volume && !VERACRYPT_CREATE ){
 
 		return !TC_OK ;
 	}
@@ -580,7 +571,6 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 			   u_int64_t hidden_volume_size,const char * file_system_h,
 			   const char * key_h,size_t key_len_h,int key_source_h )
 {
-	_can_not_create_veraCrypt_volume() ;
 	if( 0 && device && file_system && rng && key_len && key_source && key
 		&& hidden_volume_size && key_len_h && key_h && key_source_h && file_system_h ){;}
 	return 3 ;

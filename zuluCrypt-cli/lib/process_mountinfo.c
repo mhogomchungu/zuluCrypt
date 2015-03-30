@@ -310,12 +310,15 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 
 int zuluCryptPartitionIsMounted( const char * path )
 {
-	char * p = zuluCryptGetMountPointFromPath( path ) ;
-	
-	if( p == NULL ){
-		return 0 ;
-	}else{
-		free( p ) ;
-		return 1 ;
-	}
+	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
+
+	string_t st = String( path ) ;
+
+	ssize_t e = StringListHasStartSequence( stl,StringAppend( st," " ) ) ;
+
+	StringListDelete( &stl ) ;
+
+	StringDelete( &st ) ;
+
+	return e != -1 ;
 }

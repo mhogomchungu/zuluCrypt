@@ -231,7 +231,7 @@ void createvolume::volumeType( int s )
 		m_ui->groupBox->setEnabled( true ) ;
 		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
 		m_ui->cbHiddenVolume->addItem( tr( "VeraCrypt keys" ) ) ;
-		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt keys" ) ) ;		
+		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt keys" ) ) ;
 		this->cbHiddenVolume( 0 ) ;
 		_enableHidden() ;
 		break ;
@@ -853,7 +853,7 @@ void createvolume::taskFinished( int st )
 		return this->HideUI() ;													break  ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented file system is not supported,see documentation for more information" ) ) ;	break  ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system device in read/write mode,\n\
-only root user or members of group zulucrypt-system can do that" ) ) ;									break  ;
+only root user or members of group zulucrypt can do that" ) ) ;									break  ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create an encrypted volume" ) ) ;					break  ;
 		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open volume for writing" ) ) ;					break  ;
 		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) ) ;		break  ;

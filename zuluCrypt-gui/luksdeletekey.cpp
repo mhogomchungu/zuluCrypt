@@ -255,7 +255,7 @@ void luksdeletekey::taskFinished( int r )
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there is no key in the volume that match the presented key" ) ) ;				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open the volume" ) ) ;								break ;
 		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system device,\
-only root user or members of group zulucrypt-system can do that" ) ) ;											break ;
+only root user or members of group zulucrypt can do that" ) ) ;											break ;
 		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open the volume in write mode" ) ) ;						break ;
 		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold your response" ) ) ;						break ;
 		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user request" ) ) ;							break ;
