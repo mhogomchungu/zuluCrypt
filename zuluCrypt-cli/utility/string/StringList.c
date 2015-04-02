@@ -45,18 +45,20 @@ struct StringType
 	int owned ;
 };
 
-static void ( *_fcn_ )( void )  = NULL ;
+static void _f( void )
+{
+}
+
+static void ( *_memory_error )( void )  = _f ;
 
 void StringListExitOnMemoryExaustion( void ( *f )( void ) )
 {
-	_fcn_ = f ;
+	_memory_error = f ;
 }
 
 static void * _StringListError( void )
 {
-	if( _fcn_ != NULL ){
-		(*_fcn_)() ;
-	}
+	_memory_error() ;
 	return NULL ;
 }
 
