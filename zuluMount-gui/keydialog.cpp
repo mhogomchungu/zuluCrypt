@@ -529,7 +529,7 @@ void keyDialog::openVolume()
 			QString e = it ;
 			e.replace( "\"","\"\"\"" ) ;
 
-			exe += " -F " + e ;
+			exe += " -F \"" + e + "\"" ;
 		}
 	}
 
