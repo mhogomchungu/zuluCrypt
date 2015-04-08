@@ -36,8 +36,11 @@ static inline int _unmount_volume( const char * m_dir )
 	 * Trying to unmount more than once seem to be necessary sometimes
 	 */
 	for( i = 0 ; i < 5 ; i++ ){
+
 		h = umount( m_dir ) ;
+
 		if( h == 0 ){
+
 			break ;
 		}else{
 			sleep( 1 ) ;
@@ -90,7 +93,9 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
 		 */
 		loop_path = zuluCryptLoopDeviceAddress( device ) ;
+
 		if( loop_path == NULL ){
+
 			return h ;
 		}else{
 			/*
@@ -120,7 +125,9 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 		}
 
 		if( h == 0 ){
+
 			if( m_point != NULL ){
+
 				*m_point = m ;
 			}else{
 				StringFree( m ) ;
@@ -131,6 +138,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	}
 
 	if( h != 0 && h != 3 && h != 4 ){
+		
 		h = 2 ;
 	}
 

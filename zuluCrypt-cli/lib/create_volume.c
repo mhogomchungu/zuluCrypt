@@ -145,7 +145,9 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 	}
 }
 
-int zuluCryptCreateVolume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
+int zuluCryptCreateVolume( const char * dev,const char * fs,
+			   const char * type,const char * pass,
+			   size_t pass_size,const char * rng )
 {
 	string_t st ;
 	int fd ;

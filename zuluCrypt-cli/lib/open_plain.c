@@ -103,7 +103,8 @@ static int _open_plain( const char * device,const open_struct_t * opt )
 	if( crypt_format( cd,CRYPT_PLAIN,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 ){
 		return zuluExit( 2,cd ) ;
 	}
-	if( crypt_activate_by_passphrase( cd,opt->mapper_name,CRYPT_ANY_SLOT,opt->key,opt->key_len,flags ) < 0 ){
+	if( crypt_activate_by_passphrase( cd,opt->mapper_name,CRYPT_ANY_SLOT,
+		opt->key,opt->key_len,flags ) < 0 ){
 		return zuluExit( 2,cd ) ;
 	}else{
 		return zuluExit( 0,cd ) ;
@@ -118,6 +119,7 @@ int zuluCryptOpenPlain_1( const open_struct_t * opt )
 	int r ;
 
 	if( StringPrefixEqual( opt->device,"/dev/" ) ){
+
 		return _open_plain( opt->device,opt ) ;
 	}else{
 		if( StringHasComponent( opt->m_opts,"ro" ) ){
@@ -129,9 +131,11 @@ int zuluCryptOpenPlain_1( const open_struct_t * opt )
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( opt->device,mode,&fd,&st ) ){
+
 			r = _open_plain( StringContent( st ),opt ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;
+
 			return r ;
 		}else{
 			return 2 ;
@@ -139,7 +143,8 @@ int zuluCryptOpenPlain_1( const open_struct_t * opt )
 	}
 }
 
-int zuluCryptOpenPlain( const char * device,const char * mapper,const char * mode,const char * key,size_t key_len )
+int zuluCryptOpenPlain( const char * device,const char * mapper,
+			const char * mode,const char * key,size_t key_len )
 {
 	open_struct_t opt ;
 

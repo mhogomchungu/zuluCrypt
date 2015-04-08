@@ -375,7 +375,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 		return !TC_OK ;
 	}
 
-	if( StringsAreEqual( e->encryption_options,"" ) ){
+	if( StringIsEmpty_1( e->encryption_options ) ){
 
 		stl = StringList( "/dev/urandom" ) ;
 	}else{

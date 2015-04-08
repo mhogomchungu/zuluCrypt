@@ -32,11 +32,14 @@ static char * _zuluCryptResolveDevRoot( void )
 	StringDelete( &st ) ;
 
 	st = StringListHasSequence_1( stl,"root=/dev/" ) ;
+
 	if( st != StringVoid ){
+
 		e = StringContent( st ) + 5 ;
 		dev = zuluCryptResolvePath( e ) ;
 	}else{
 		st = StringListHasSequence_1( stl,"root=UUID=" ) ;
+
 		if( st != StringVoid ){
 			/*
 			 * zuluCryptDeviceFromUUID() is defined in ./blkid_evaluate_tag.c
@@ -51,6 +54,16 @@ static char * _zuluCryptResolveDevRoot( void )
 	return dev ;
 }
 
+static string_t zuluExit( DIR * dir,string_t st )
+{
+	if( dir != NULL ){
+
+		closedir( dir ) ;
+	}
+
+	return st ;
+}
+
 /*
  * raid path can be in format /dev/mdX or /dev/md/X.
  * We prefer the latter and if given the former,convert it to the latter if possible
@@ -60,7 +73,6 @@ string_t zuluCryptResolveMDPath_1( const char * path )
 	struct dirent * entry ;
 
 	char * e ;
-	int r = 0 ;
 
 	const char * f = "/dev/md/" ;
 
@@ -77,25 +89,22 @@ string_t zuluCryptResolveMDPath_1( const char * path )
 			if( !StringAtLeastOneMatch_1( f,".","..",NULL ) ){
 
 				e = zuluCryptRealPath( StringAppendAt( st,8,f ) ) ;
-				r = StringsAreEqual( path,e ) ;
 
-				StringFree( e ) ;
+				if( StringsAreEqual( path,e ) ){
 
-				if( r == 1 ){
+					StringFree( e ) ;
 
-					break ;
+					return zuluExit( dir,st ) ;
+				}else{
+					StringFree( e ) ;
 				}
 			}
 		}
-		closedir( dir ) ;
 	}
 
-	if( r == 1 ){
-		return st ;
-	}else{
-		StringReplace( st,path ) ;
-		return st ;
-	}
+	StringReplace( st,path ) ;
+
+	return zuluExit( dir,st ) ;
 }
 
 char * zuluCryptResolveMDPath( const char * path )
@@ -153,7 +162,8 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 
 			if( stat( e,&st ) == 0 ){
 				/*
-				 * The path appear to be an LVM path since "/dev/mapper/ABC-DEF" input path has a corresponding
+				 * The path appear to be an LVM path since
+				 * "/dev/mapper/ABC-DEF" input path has a corresponding
 				 * "/dev/ABC/DEF" path
 				 */
 			}else{
@@ -257,7 +267,7 @@ string_t zuluCryptResolvePath_1( const char * path )
 string_t zuluCryptResolvePath_2( const char * path )
 {
 	if( StringPrefixEqual( path,"/dev/loop" ) ){
-		
+
 		return String( path ) ;
 	}else{
 		return zuluCryptResolvePath_1( path ) ;

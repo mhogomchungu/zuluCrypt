@@ -99,9 +99,13 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	while( ( entry = readdir( dir ) ) != NULL ){
+
 		if( StringPrefixMatch( entry->d_name,m,len ) ){
+
 			e = StringAppendAt( z,len1,entry->d_name ) ;
+
 			if( crypt_init_by_name( &cd,e ) == 0 ){
+				
 				if( crypt_get_device_name( cd ) == NULL ){
 					/*
 					 * we will get here if PLAIN or TRUECRYPT mapper is active but the underlying device is gone

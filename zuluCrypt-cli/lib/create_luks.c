@@ -91,11 +91,11 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 	struct crypt_device * cd = NULL ;
 	struct crypt_params_luks1 params ;
 
-	const char * rng    = "/dev/urandom" ;
-	const char * hash   = "sha1" ;
-	const char * cipher = "xts-plain64" ;
-	const char * algo   = "aes" ;
-	size_t keySize      = 32 ;
+	const char * rng    ;
+	const char * hash   ;
+	const char * cipher ;
+	const char * algo   ;
+	size_t keySize      ;
 
 	char * const * options = NULL ;
 	size_t options_count = 0 ;
@@ -110,7 +110,8 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 	if( crypt_init( &cd,dev ) != 0 ){
 		return 1 ;
 	}
-	if( StringsAreEqual( opts,"" ) ){
+	if( StringIsEmpty_1( opts ) ){
+
 		stl = StringList( "/dev/urandom" ) ;
 	}else{
 		stl = StringListSplit( opts,'.' ) ;
@@ -120,7 +121,11 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 
 	if( options_count == 1 ){
 
-		rng = *( options + 0 ) ;
+		hash    = "sha1" ;
+		cipher  = "xts-plain64" ;
+		algo    = "aes" ;
+		keySize = 32 ;
+		rng     = *( options + 0 ) ;
 
 	}else if( options_count >= 5 ){
 

@@ -304,11 +304,15 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 	string_t xt = StringVoid ;
 
 	if( StringsAreEqual( opts->key_source,"-p" ) ){
+
 		info->header_key            = opts->key ;
 		info->header_key_source     = "passphrase" ;
 		info->header_new_key_source = "new_passphrase" ;
+
 	}else if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
+
 		st = info->getKey( &r ) ;
+
 		if( r ){
 			info->key = StringContent( st ) ;
 			info->header_key            = info->key ;
@@ -326,9 +330,11 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		zuluCryptSecurityGainElevatedPrivileges() ;
 
 		if( st == StringVoid ){
+
 			return zuluExit_1( k,st,xt ) ;
 		}else{
 			if( StringHasComponent( opts->key,".zuluCrypt-socket" ) ){
+
 				info->key = StringContent( st ) ;
 				info->header_key            = info->key ;
 				info->header_key_source     = "passphrase" ;
@@ -338,7 +344,9 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 				 * zuluCryptCreateKeyFile_1 is defined in ../lib/open_tcrypt.c
 				 */
 				xt = zuluCryptCreateKeyFile_1( st,"tcrypt-bk-" ) ;
+
 				if( xt == StringVoid ){
+					
 					return zuluExit_1( k,st,xt ) ;
 				}else{
 					info->key = StringContent( xt ) ;

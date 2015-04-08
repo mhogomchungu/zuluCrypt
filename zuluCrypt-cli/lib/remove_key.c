@@ -62,12 +62,14 @@ int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size 
 	int r ;
 
 	if( StringPrefixEqual( device,"/dev/" ) ){
+
 		return _remove_key( device,pass,pass_size ) ;
 	}else{
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&st ) ){
+			
 			r = _remove_key( StringContent( st ),pass,pass_size ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;

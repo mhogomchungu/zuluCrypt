@@ -941,7 +941,10 @@ const char * StringReplace( string_t st,const char * s )
 	size_t len ;
 	char * c   ;
 
-	if( st == StringVoid || s == NULL ){
+	if( st == StringVoid ){
+		return s ;
+	}
+	if( s == NULL ){
 		return NULL ;
 	}else{
 		len = strlen( s ) ;

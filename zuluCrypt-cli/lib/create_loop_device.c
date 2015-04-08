@@ -46,16 +46,25 @@ string_t zuluCryptLoopDeviceAddress_2( const char * device )
 	int fd ;
 	char * path ;
 	struct loop_info64 l_info ;
-	string_t st = String( "" ) ;
-	const char * e = StringMultipleAppend( st,"/sys/block/",device + 5,"/loop/backing_file",NULL ) ;
-	string_t xt = StringGetFromVirtualFile( e ) ;
+
+	string_t st = String_1( "/sys/block/",device + 5,"/loop/backing_file",NULL ) ;
+
+	string_t xt = StringGetFromVirtualFile( StringContent( st ) ) ;
+
 	StringDelete( &st ) ;
+
 	if( xt == StringVoid ){
+
 		memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
+
 		fd = open( device,O_RDONLY ) ;
+
 		ioctl( fd,LOOP_GET_STATUS64,&l_info ) ;
+
 		path = zuluCryptRealPath( ( char * ) l_info.lo_file_name ) ;
+
 		close( fd ) ;
+
 		xt = StringInherit( &path ) ;
 	}else{
 		StringRemoveRight( xt,1 ) ;
@@ -78,15 +87,25 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 	int fd ;
 	char * path ;
 	struct loop_info64 l_info ;
-	string_t st = String( "/sys/block/" ) ;
-	string_t xt = StringGetFromVirtualFile( StringMultipleAppend( st,device + 5,"/loop/backing_file",NULL ) ) ;
+
+	string_t st = String_1( "/sys/block/",device + 5,"/loop/backing_file",NULL ) ;
+
+	string_t xt = StringGetFromVirtualFile( StringContent( st ) ) ;
+
 	StringDelete( &st ) ;
+
 	if( xt == StringVoid ){
+
 		memset( &l_info,'\0',sizeof( struct loop_info64 ) ) ;
+
 		fd = open( device,O_RDONLY ) ;
+
 		ioctl( fd,LOOP_GET_STATUS64,&l_info ) ;
+
 		path = zuluCryptRealPath( ( char * ) l_info.lo_file_name ) ;
+
 		close( fd ) ;
+
 		return path ;
 	}else{
 		StringRemoveRight( xt,1 ) ;
@@ -97,20 +116,28 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 char * zuluCryptGetALoopDeviceAssociatedWithAnImageFile( const char * path )
 {
 	int i ;
-	int k ;
 	string_t st = String( "" ) ;
 	const char * e ;
 	char * f ;
+
 	for( i = 0 ; i < 255 ; i++ ){
+
 		StringReplace( st,"/dev/loop" ) ;
+
 		e = StringAppendInt( st,i ) ;
+
 		f = zuluCryptLoopDeviceAddress_1( e ) ;
-		k = StringsAreEqual( path,f ) ;
-		StringFree( f ) ;
-		if( k == 1 ){
+
+		if( StringsAreEqual( path,f ) ){
+
+			StringFree( f ) ;
+
 			return StringDeleteHandle( &st ) ;
+		}else{
+			StringFree( f ) ;
 		}
 	}
+
 	StringDelete( &st ) ;
 	return NULL ;
 }
@@ -132,30 +159,37 @@ char * zuluCryptGetLoopDeviceAddress( const char * device )
 		return NULL ;
 	}else{
 		st = String( "" ) ;
+
 		for( i = 0 ; i < 255 ; i++ ){
-			StringAppendAt( st,0,"/sys/block/loop" ) ;
+
+			StringReplace( st,"/sys/block/loop" ) ;
 			StringAppendInt( st,i ) ;
-			e = StringAppend( st,"/loop/backing_file" ) ;
-			xt = StringGetFromVirtualFile( e ) ;
+
+			xt = StringGetFromVirtualFile( StringAppend( st,"/loop/backing_file" ) ) ;
+
 			e = StringRemoveRight( xt,1 ) ;
 			r = StringsAreEqual( e,z ) ;
+
 			StringDelete( &xt ) ;
+
 			if( r ){
-				StringAppendAt( st,0,"/dev/loop" ) ;
+
+				StringReplace( st,"/dev/loop" ) ;
 				e = StringAppendInt( st,i ) ;
-				if( StringsAreEqual( device,e ) ){
-					;
-				}else{
+
+				if( StringsAreNotEqual( device,e ) ){
+
 					break ;
 				}
 			}else{
-				StringAppendAt( st,0,"" ) ;
+				StringReset( st ) ;
 			}
 		}
 
 		StringFree( z ) ;
 
-		if( StringEqual( st,"" ) ){
+		if( StringIsEmpty( st ) ){
+
 			StringDelete( &st ) ;
 			return NULL ;
 		}else{
@@ -197,15 +231,19 @@ static int open_loop_device_1( string_t * loop_device )
 	const char * path ;
 	struct loop_info64 l_info ;
 	int r = 0 ;
+
 	for( i = 0 ; i < 255 ; i++ ){
+
 		StringReplace( st,"/dev/loop" ) ;
 		path = StringAppendInt( st,i ) ;
 		fd = open( path,O_RDONLY ) ;
+
 		if( fd == -1 ){
 			r = 0 ;
 			break ;
 		}
 		if( ioctl( fd,LOOP_GET_STATUS64,&l_info ) != 0 ){
+
 			if( errno == ENXIO) {
 				*loop_device = st ;
 				close( fd ) ;
@@ -227,11 +265,14 @@ static int open_loop_device( string_t * loop_device )
 	fd_loop = open( "/dev/loop-control",O_RDONLY ) ;
 
 	if( fd_loop == -1 ){
+
 		return open_loop_device_1( loop_device ) ;
 	}else{
 		devnr = ioctl( fd_loop,LOOP_CTL_GET_FREE ) ;
 		close( fd_loop ) ;
+
 		if( devnr < 0 ){
+
 			return open_loop_device_1( loop_device ) ;
 		}else{
 			*loop_device = String( "/dev/loop" ) ;
@@ -241,7 +282,8 @@ static int open_loop_device( string_t * loop_device )
 	}
 }
 
-static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device,int mode )
+static int attach_device_to_loop( int fd_path,int * fd_loop,
+				  string_t loop_device,int mode )
 {
 	char * path ;
 	size_t size ;
@@ -265,6 +307,7 @@ static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device
 	l_info.lo_flags |= LO_FLAGS_AUTOCLEAR;
 
 	path = zuluCryptGetFileNameFromFileDescriptor( fd_path ) ;
+
 	if( path == NULL ){
 		return 0 ;
 	}else{
@@ -281,7 +324,8 @@ static int attach_device_to_loop( int fd_path,int * fd_loop,string_t loop_device
 	}
 }
 
-static int _attach_loop_device_to_file( const char * path,int mode,int * loop_fd,string_t * loop_device )
+static int _attach_loop_device_to_file( const char * path,int mode,
+					int * loop_fd,string_t * loop_device )
 {
 	string_t loopd = StringVoid ;
 
@@ -312,7 +356,8 @@ static int _attach_loop_device_to_file( const char * path,int mode,int * loop_fd
 	}
 }
 
-int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,string_t * loop_device )
+int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,
+				     int * loop_fd,string_t * loop_device )
 {
 	int i ;
 	int j ;
@@ -330,7 +375,7 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,int * loop_fd,st
 	return i ;
 }
 
-static int _attach_loop_device_to_file_using_file_descriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device )
+static int _attach_loop_device( int fd_path,int * fd_loop,int mode,string_t * loop_device )
 {
 	string_t loopd = StringVoid ;
 
@@ -346,7 +391,10 @@ static int _attach_loop_device_to_file_using_file_descriptor( int fd_path,int * 
 	}
 }
 
-int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device )
+int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,
+							int * fd_loop,
+							int mode,
+							string_t * loop_device )
 {
 	int i ;
 	int j ;
@@ -354,7 +402,9 @@ int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loo
 	 * try to attach a loop device multiple times
 	 */
 	for( j = 0 ; j < 6 ; j++ ){
-		i = _attach_loop_device_to_file_using_file_descriptor( fd_path,fd_loop,mode,loop_device ) ;
+
+		i = _attach_loop_device( fd_path,fd_loop,mode,loop_device ) ;
+
 		if( i == 1 ){
 			break ;
 		}else{

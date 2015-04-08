@@ -227,7 +227,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 		if( d != NULL ){
 			chown( d,uid,0 ) ;
 			chmod( d,S_IRWXU ) ;
-			free( d ) ;
+			StringFree( d ) ;
 		}
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else{

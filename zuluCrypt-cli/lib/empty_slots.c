@@ -80,12 +80,14 @@ char * zuluCryptEmptySlots( const char * device )
 	int fd ;
 	char * r ;
 	if( StringPrefixEqual( device,"/dev/" ) ){
+
 		return _empty_slots( device ) ;
 	}else{
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( device,O_RDONLY,&fd,&st ) ){
+			
 			r = _empty_slots( StringContent( st ) ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;
