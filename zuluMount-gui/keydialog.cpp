@@ -129,7 +129,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_menu_1->addAction( tr( "set volume as VeraCrypt volume" ) ) ;
 
 	r = tr( "TrueCrypt/VeraCrypt keys" ) ;
-#elif
+#else
 	r = tr( "TrueCrypt keys" ) ;
 #endif
 
