@@ -41,6 +41,13 @@ static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
 	return result ;
 }
 
+static string_t _StringGetFromVirtualFile( string_t * st )
+{
+	string_t xt = StringGetFromVirtualFile( StringContent( *st ) ) ;
+	StringDelete( st ) ;
+	return xt ;
+}
+
 string_t zuluCryptLoopDeviceAddress_2( const char * device )
 {
 	int fd ;
@@ -49,9 +56,7 @@ string_t zuluCryptLoopDeviceAddress_2( const char * device )
 
 	string_t st = String_1( "/sys/block/",device + 5,"/loop/backing_file",NULL ) ;
 
-	string_t xt = StringGetFromVirtualFile( StringContent( st ) ) ;
-
-	StringDelete( &st ) ;
+	string_t xt = _StringGetFromVirtualFile( &st ) ;
 
 	if( xt == StringVoid ){
 
@@ -90,9 +95,7 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 
 	string_t st = String_1( "/sys/block/",device + 5,"/loop/backing_file",NULL ) ;
 
-	string_t xt = StringGetFromVirtualFile( StringContent( st ) ) ;
-
-	StringDelete( &st ) ;
+	string_t xt = _StringGetFromVirtualFile( &st ) ;
 
 	if( xt == StringVoid ){
 

@@ -30,7 +30,8 @@
 
 stringList_t zuluCryptPartitionList( void ) ;
 
-void zuluMountPartitionProperties( const char * dev,const char * UUID,const char * mapper,const char * m_point )
+void zuluMountPartitionProperties( const char * dev,const char * UUID,
+				   const char * mapper,const char * m_point,const char * fs )
 {
 	#define SIZE 64
 
@@ -52,7 +53,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,const char
 	const char * device = NULL ;
 	char * device_1 = NULL ;
 
-	if( StringPrefixEqual( dev,"encfs" ) ){
+	if( StringsAreEqual( fs,"fuse.encfs" ) ){
 
 		if( m_point != NULL ){
 
@@ -76,8 +77,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,const char
 		 * zuluCryptGetALoopDeviceAssociatedWithAnImageFile()
 		 * is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 		 */
-		device_1 = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( dev ) ;
-		device = device_1 ;
+		device = device_1 = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( dev ) ;
 	}
 
 	blkid = blkid_new_probe_from_filename( device ) ;
@@ -213,6 +213,8 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 	const char * e ;
 	const char * f ;
 
+	const char * fs ;
+
 	ssize_t index ;
 
 	string_t st = StringVoid ;
@@ -222,6 +224,8 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 	if( stx == StringListVoid ){
 		return ;
 	}
+
+	fs = StringListContentAt( stx,2 ) ;
 
 	q = StringListContentAtFirstPlace( stx ) ;
 
@@ -257,7 +261,7 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 			 * it decodes space,tab,new line and backslash characters since they are written differently in "/etc/mtab"
 			 */
 			f = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
-			zuluMountPartitionProperties( x,e,q,f ) ;
+			zuluMountPartitionProperties( x,e,q,f,fs ) ;
 			StringFree( x ) ;
 			StringDelete( &st ) ;
 		}else{
@@ -269,11 +273,39 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 		e = zuluCryptDecodeMountEntry( StringListStringAtFirstPlace( stx ) ) ;
 		f = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 
-		zuluMountPartitionProperties( e,NULL,e,f ) ;
+		zuluMountPartitionProperties( e,NULL,e,f,fs ) ;
 	}
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 	StringListDelete( &stx ) ;
+}
+
+static int _starts_with_digits_only( string_t st )
+{
+	StringIterator it  ;
+	StringIterator end ;
+
+	char e ;
+
+	StringGetIterators( st,&it,&end ) ;
+
+	while( it != end ){
+
+		e = *it ;
+
+		it++ ;
+
+		if( e == ' ' ){
+
+			return 1 ;
+		}
+		if( !( e >= '0' && e <= '9' ) ){
+			
+			return 0 ;
+		}
+	}
+
+	return 1 ;
 }
 
 static int _normal_mounted_volume( string_t st )
@@ -284,7 +316,11 @@ static int _normal_mounted_volume( string_t st )
 	if( StringEqual( st,"/dev" ) ){
 		return 0 ;
 	}
-	if( StringStartsWithAtLeastOne( st,"/","encfs",NULL ) ){
+	if( StringStartsWith( st,"/" ) ){
+		return 1 ;
+	}
+	if( _starts_with_digits_only( st ) )
+	{
 		return 1 ;
 	}
 	return 0 ;
@@ -359,7 +395,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 	while( it != end ){
 		e = StringContent( *it ) ;
 		it++ ;
-		zuluMountPartitionProperties( e,NULL,e,NULL ) ;
+		zuluMountPartitionProperties( e,NULL,e,NULL,NULL ) ;
 	}
 
 	StringListMultipleDelete( &stl,&stz,NULL ) ;
@@ -603,7 +639,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 				/*
 				 * volume is not mounted
 				 */
-				zuluMountPartitionProperties( device,NULL,device,NULL ) ;
+				zuluMountPartitionProperties( device,NULL,device,NULL,NULL ) ;
 			}
 		}
 	}

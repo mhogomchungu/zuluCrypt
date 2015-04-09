@@ -1071,7 +1071,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 
 			if( it.volumeName() == volume ){
 
-				if( volume.startsWith( "encfs" ) ){
+				if( it.fileSystem() == "encfs" ){
 
 					return false ;
 				}

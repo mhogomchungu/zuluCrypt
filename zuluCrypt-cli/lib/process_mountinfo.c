@@ -40,7 +40,7 @@ static int _valid_entry( const vInfo * e )
 
 	if( StringsAreEqual( e->rootPath,"/" ) || StringsAreEqual( e->fileSystem,"btrfs" ) ){
 		/*
-		 * we only take bind mount points on btrfs only.
+		 * we only support bind mount on btrfs.
 		 */
 		return 1 ;
 	}
@@ -53,10 +53,9 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 	vInfo volumeInfo ;
 
 	char * const * entry = NULL ;
-	const char * e ;
 
 	size_t entry_len = 0 ;
-	int index ;
+	u_int64_t e ;
 
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid ;
@@ -79,24 +78,21 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 
 		it++ ;
 
-		index = StringListContains( tmp,"-" ) ;
-
-		st = StringListStringAt( tmp,index + 2 ) ;
-
-		if( StringEqual( st,"encfs" ) ){
-
-			StringAppend( st,"-" ) ;
-			e = StringListContentAt( tmp,4 ) ;
-			StringAppendInt( st,StringJenkinsOneAtATimeHash( e ) ) ;
-		}
-
 		StringListStringArray_1( &entry,&entry_len,tmp ) ;
 
-		volumeInfo.device       = *( entry + index + 2 ) ;
+		volumeInfo.device       = *( entry + entry_len - 2 ) ;
 		volumeInfo.mountPoint   = *( entry + 4 ) ;
-		volumeInfo.fileSystem   = *( entry + index + 1 ) ;
+		volumeInfo.fileSystem   = *( entry + entry_len - 3 ) ;
 		volumeInfo.mountOptions = *( entry + 5 ) ;
 		volumeInfo.rootPath     = *( entry + 3 ) ;
+
+		if( StringsAreEqual( volumeInfo.fileSystem,"fuse.encfs" ) ){
+
+			st = StringListStringAt( tmp,entry_len - 2 ) ;
+			StringReset( st ) ;
+			e = StringJenkinsOneAtATimeHash( volumeInfo.mountPoint ) ;
+			volumeInfo.device = StringAppendInt( st,e ) ;
+		}
 
 		if( _valid_entry( &volumeInfo ) ){
 

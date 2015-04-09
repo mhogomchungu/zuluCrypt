@@ -74,7 +74,7 @@ public:
 		if( m_volume.isEmpty() ){
 			return false ;
 		}
-		if( m_volume.startsWith( "encfs" ) ){
+		if( m_fileSystem == "encfs" ){
 			return true ;
 		}
 		if( m_volumeSize == "1.0 KB" || m_volumeSize == "Nil" ){
