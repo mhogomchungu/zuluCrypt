@@ -132,6 +132,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_ui->cbKeyType->addItem( tr( "key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "keyfile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "plugin" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "TrueCrypt keys" ) ) ;
 #endif
 
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
