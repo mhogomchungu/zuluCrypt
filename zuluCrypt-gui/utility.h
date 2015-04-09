@@ -295,40 +295,46 @@ namespace utility
 			m_label = l ;
 			m_label->setVisible( false ) ;
 		}
+		void show( QString w )
+		{
+			m_warning = std::move( w ) ;
+			this->show( true ) ;
+		}
 		void show( bool show )
 		{
 			if( show ){
-				this->update() ;
-				m_time = 0 ;
 				m_label->setVisible( true ) ;
 				m_timer.start( 1000 * 1 ) ;
+				this->update() ;
 			}
 		}
 		void hide()
 		{
 			m_timer.stop() ;
+			m_time = 0 ;
 			m_label->setVisible( false ) ;
+			m_label->setText( m_warning + tr( "Elapsed time: 0 seconds" ) ) ;
 		}
 	private slots:
 		void update()
 		{
-			QString e = tr( "please be patient as unlocking a VeraCrypt volume may take a very long time.\n\n" ) ;
-
+			QString e ;
 			if( m_time >= 60 ){
 
-				e += tr( "Elapsed time: %0 minutes" ).arg( QString::number( m_time / 60,'f',2 ) ) ;
+				e = tr( "Elapsed time: %0 minutes" ).arg( QString::number( m_time / 60,'f',2 ) ) ;
 			}else{
-				e += tr( "Elapsed time: %0 seconds" ).arg( QString::number( m_time ) ) ;
+				e = tr( "Elapsed time: %0 seconds" ).arg( QString::number( m_time ) ) ;
 			}
 
 			m_time++ ;
 
-			m_label->setText( e ) ;
+			m_label->setText( m_warning + e ) ;
 		}
 	private:
 		QLabel * m_label ;
 		QTimer m_timer ;
-		float m_time ;
+		float m_time = 0 ;
+		QString m_warning = tr( "please be patient as unlocking a VeraCrypt volume may take a very long time.\n\n" ) ;
 	};
 }
 #endif // MISCFUNCTIONS_H

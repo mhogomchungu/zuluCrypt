@@ -65,8 +65,6 @@ createvolume::createvolume( QWidget * parent ) :
 	connect( m_ui->pbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenHiddenKeyFile() ) ) ;
 	connect( m_ui->comboBoxVolumeType,SIGNAL( activated( int ) ),this,SLOT( setOptions( int ) ) ) ;
 
-	connect( &m_timer,SIGNAL( timeout() ),this,SLOT( setVeraCryptWarning() ) ) ;
-
 	m_ui->groupBox->setEnabled( false ) ;
 
 	this->setOptions( 1 ) ;
@@ -88,7 +86,7 @@ createvolume::createvolume( QWidget * parent ) :
 	m_ui->cbHiddenVolume->addItem( tr( "key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "keyfile" ) ) ;
 
-	m_ui->veraCryptWarning->setVisible( false ) ;
+	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
 	QStringList l ;
 
@@ -805,15 +803,9 @@ void createvolume::pbCreateClicked()
 
 	if( type == createvolume::normal_veracrypt || type == createvolume::normal_and_hidden_veracrypt ){
 
-		m_time = 0 ;
-		m_timer.stop() ;
-
-		this->setVeraCryptWarning() ;
-
-		m_ui->veraCryptWarning->setVisible( true ) ;
-
-		m_timer.start( 1000 * 1 ) ;
+		m_veraCryptWarning.show( tr( "please be patient as creating a VeraCrypt volume may take a very long time.\n\n" ) ) ;
 	}
+
 
 	m_isWindowClosable = false ;
 
@@ -822,25 +814,9 @@ void createvolume::pbCreateClicked()
 	this->taskFinished( utility::exec( exe ).await() ) ;
 }
 
-void createvolume::setVeraCryptWarning()
-{
-	QString e = tr( "please be patient as creating a VeraCrypt volume may take a very long time.\n\n" ) ;
-
-	if( m_time >= 60 ){
-
-		e += tr( "Elapsed time: %0 minutes" ).arg( QString::number( m_time / 60,'f',2 ) ) ;
-	}else{
-		e += tr( "Elapsed time: %0 seconds" ).arg( QString::number( m_time ) ) ;
-	}
-
-	m_time++ ;
-
-	m_ui->veraCryptWarning->setText( e ) ;
-}
-
 void createvolume::taskFinished( int st )
 {
-	m_ui->veraCryptWarning->setVisible( false ) ;
+	m_veraCryptWarning.hide();
 
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
@@ -879,7 +855,6 @@ only root user or members of group zulucrypt can do that" ) ) ;									break  ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
 	}
 
-	m_timer.stop() ;
 	this->enableAll() ;
 }
 

@@ -62,7 +62,6 @@ public slots:
 	void ShowFile( QString volume ) ;
 	void HideUI( void ) ;
 private slots:
-	void setVeraCryptWarning( void ) ;
 	void keyChanged_0( QString ) ;
 	void keyChanged_1( QString ) ;
 	void pbCreateClicked( void ) ;
@@ -97,8 +96,7 @@ private:
 	QString m_hiddenKey ;
 	QStringList m_hiddenKeyFiles ;
 	bool m_normalVolume ;
-	QTimer m_timer ;
-	float m_time = 0 ;
+	utility::veraCryptWarning m_veraCryptWarning ;
 };
 
 #endif // CREATEPARTITION_H

@@ -40,6 +40,7 @@
 #include "zulumounttask.h"
 #include "../zuluCrypt-gui/task.h"
 #include "zulumounttask.h"
+#include "veracrypt_support.h"
 
 #define KWALLET         "kde wallet"
 #define INTERNAL_WALLET "internal wallet"
@@ -120,7 +121,18 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_menu_1->addAction( tr( "set file system options" ) ) ;
 	m_menu_1->addAction( tr( "set volume offset" ) ) ;
+
+#if VERACRYPT_SUPPORT
 	m_menu_1->addAction( tr( "set volume as VeraCrypt volume" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "key" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "keyfile" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "plugin" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt keys" ) ) ;
+#else
+	m_ui->cbKeyType->addItem( tr( "key" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "keyfile" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "plugin" ) ) ;
+#endif
 
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
 

@@ -177,26 +177,6 @@
      <height>31</height>
     </rect>
    </property>
-   <item>
-    <property name="text">
-     <string>key</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>keyfile</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>plugin</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>TrueCrypt/VeraCrypt keys</string>
-    </property>
-   </item>
   </widget>
   <widget class="QLabel" name="veraCryptWarning">
    <property name="geometry">
