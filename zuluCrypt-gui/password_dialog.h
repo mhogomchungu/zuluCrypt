@@ -70,7 +70,6 @@ private slots :
 	void cbStateChanged( int ) ;
 	void keys( QString key,QStringList keyFiles ) ;
 	void tcryptCancelled( void ) ;
-	void setVeraCryptWarning( void ) ;
 private :
 	void addTcryptVcryptKeyOption( void ) ;
 	void tcryptGui( void ) ;
@@ -95,8 +94,7 @@ private :
 	QString m_device ;
 	QString m_point ;
 	bool m_veraCryptVolume = false ;
-	QTimer m_timer ;
-	float m_time = 0 ;
+	utility::veraCryptWarning m_veraCryptWarning ;
 	bool m_working = false ;
 	enum{ key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
 };

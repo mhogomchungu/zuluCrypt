@@ -100,13 +100,12 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
 	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
 
-	connect( &m_timer,SIGNAL( timeout() ),this,SLOT( setVeraCryptWarning() ) ) ;
-
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
 	m_ui->pushButtonPlugin->setVisible( false ) ;
 
-	m_ui->veraCryptWarning->setVisible( false ) ;
+	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
+
 	this->installEventFilter( this ) ;
 }
 
@@ -604,7 +603,7 @@ void passwordDialog::openVolume()
 		qDebug() << "Error: uncaught condition" ;
 	}
 
-	QString a = QString( ZULUCRYPTzuluCrypt ) ;
+	QString a = ZULUCRYPTzuluCrypt ;
 	QString b = m_device ;
 	b.replace( "\"","\"\"\"" ) ;
 	QString c = m_point ;
@@ -628,19 +627,12 @@ void passwordDialog::openVolume()
 
 	if( m_veraCryptVolume ){
 
-		m_time = 0 ;
-		m_timer.stop() ;
-
-		m_ui->veraCryptWarning->setVisible( true ) ;
-
-		this->setVeraCryptWarning() ;
-
-		m_timer.start( 1000 * 1 ) ;
-
 		exe += " -t vera" ;
 	}
 
 	this->disableAll() ;
+
+	m_veraCryptWarning.show( m_veraCryptVolume ) ;
 
 	m_working = true ;
 
@@ -648,31 +640,14 @@ void passwordDialog::openVolume()
 
 	m_working = false ;
 
+	m_veraCryptWarning.hide() ;
+
 	if( r.success() ){
 
 		this->success( r.output() ) ;
 	}else{
 		this->failed( r.exitCode() ) ;
-
-		m_ui->veraCryptWarning->setVisible( false ) ;
-		m_timer.stop() ;
 	}
-}
-
-void passwordDialog::setVeraCryptWarning()
-{
-	QString e = tr( "please be patient as unlocking a VeraCrypt volume may take a very long time.\n\n" ) ;
-
-	if( m_time >= 60 ){
-
-		e += tr( "Elapsed time: %0 minutes" ).arg( QString::number( m_time / 60,'f',2 ) ) ;
-	}else{
-		e += tr( "Elapsed time: %0 seconds" ).arg( QString::number( m_time ) ) ;
-	}
-
-	m_time++ ;
-
-	m_ui->veraCryptWarning->setText( e ) ;
 }
 
 void passwordDialog::success( const QByteArray& r )

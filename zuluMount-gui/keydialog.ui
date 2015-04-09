@@ -194,9 +194,31 @@
    </item>
    <item>
     <property name="text">
-     <string>TrueCrypt keys</string>
+     <string>TrueCrypt/VeraCrypt keys</string>
     </property>
    </item>
+  </widget>
+  <widget class="QLabel" name="veraCryptWarning">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>451</width>
+     <height>171</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
   </widget>
  </widget>
  <tabstops>

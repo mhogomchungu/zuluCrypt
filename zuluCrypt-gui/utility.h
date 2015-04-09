@@ -43,6 +43,9 @@
 #include "task.h"
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
+#include <QObject>
+#include <QLabel>
+
 class QByteArray ;
 class QEvent ;
 
@@ -277,4 +280,55 @@ namespace utility
 	};
 }
 
+namespace utility
+{
+	class veraCryptWarning : public QObject
+	{
+		Q_OBJECT
+	public:
+		veraCryptWarning()
+		{
+			connect( &m_timer,SIGNAL( timeout() ),this,SLOT( update() ) ) ;
+		}
+		void setWarningLabel( QLabel * l )
+		{
+			m_label = l ;
+			m_label->setVisible( false ) ;
+		}
+		void show( bool show )
+		{
+			if( show ){
+				this->update() ;
+				m_time = 0 ;
+				m_label->setVisible( true ) ;
+				m_timer.start( 1000 * 1 ) ;
+			}
+		}
+		void hide()
+		{
+			m_timer.stop() ;
+			m_label->setVisible( false ) ;
+		}
+	private slots:
+		void update()
+		{
+			QString e = tr( "please be patient as unlocking a VeraCrypt volume may take a very long time.\n\n" ) ;
+
+			if( m_time >= 60 ){
+
+				e += tr( "Elapsed time: %0 minutes" ).arg( QString::number( m_time / 60,'f',2 ) ) ;
+			}else{
+				e += tr( "Elapsed time: %0 seconds" ).arg( QString::number( m_time ) ) ;
+			}
+
+			m_time++ ;
+
+			m_label->setText( e ) ;
+		}
+	private:
+		QLabel * m_label ;
+		QTimer m_timer ;
+		float m_time ;
+	};
+}
 #endif // MISCFUNCTIONS_H

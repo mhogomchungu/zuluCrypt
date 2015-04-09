@@ -24,6 +24,7 @@ set( UI_FILES createfile.ui
 )
 
 set( MOC_FILES
+		utility.h
 		tcrypt.h
 		createfile.h
 		luksaddkey.h

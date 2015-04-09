@@ -120,8 +120,11 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_menu_1->addAction( tr( "set file system options" ) ) ;
 	m_menu_1->addAction( tr( "set volume offset" ) ) ;
+	m_menu_1->addAction( tr( "set volume as VeraCrypt volume" ) ) ;
 
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
+
+	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -187,10 +190,14 @@ void keyDialog::showFileSystemOptionWindow()
 
 void keyDialog::doAction( QAction * ac )
 {
-	if( ac->text() == tr( "set file system options" ) ){
+	QString e = ac->text() ;
+
+	if( e == tr( "set file system options" ) ){
 		this->showFileSystemOptionWindow() ;
-	}else{
+	}else if( e == tr( "set volume offset" ) ){
 		this->showOffSetWindowOption() ;
+	}else{
+		m_veraCryptVolume = true ;
 	}
 }
 
@@ -466,13 +473,13 @@ void keyDialog::openVolume()
 	}else if( keyType == keyDialog::keyfile ){
 
 		QString e = m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
-		m = QString( "-f ") + utility::resolvePath( e ) ;
+		m = "-f \"" + utility::resolvePath( e ) + "\"" ;
 
 	}else if( keyType == keyDialog::plugin ){
 
 		if( m_key.isEmpty() ){
 
-			m = QString( "-G ") + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
+			m = "-G " + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 		}else{
 
 			QString addr = utility::keyPath() ;
@@ -533,13 +540,22 @@ void keyDialog::openVolume()
 		}
 	}
 
-	exe += " " + m ;
+	if( m_veraCryptVolume ){
+
+		exe += " -t vera " + m ;
+	}else{
+		exe += " " + m ;
+	}
+
+	m_veraCryptWarning.show( m_veraCryptVolume ) ;
 
 	m_working = true ;
 
 	auto s = utility::Task::run( exe ).await() ;
 
 	m_working = false ;
+
+	m_veraCryptWarning.hide() ;
 
 	if( s.success() ){
 

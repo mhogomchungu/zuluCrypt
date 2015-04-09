@@ -19,6 +19,7 @@ set(MOC_FILES 	mainwindow.h
 		deviceoffset.h
 		mountoptions.h
 		../zuluCrypt-gui/tcrypt.h
+		../zuluCrypt-gui/utility.h
  )
 
 set(SRC 	main.cpp

@@ -208,8 +208,8 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
  * the "500" is the UID of the user that unlocked the volume.
  *
  * to check if a volume is a VeraCrypt volume,we first strip the digits to end up with
- * something like "/dev/mapper/zuluCrypt--VERA" and then we check if the volume is a
- * VeraCrypt volume by comparing it with "/dev/mapper/zuluCrypt--VERA"
+ * something like "/dev/mapper/zuluCrypt--VERA-" and then we check if the volume is a
+ * VeraCrypt volume by comparing it with "/dev/mapper/zuluCrypt--VERA-"
  */
 static int _veraCrypt_volume( const char * mapper )
 {
@@ -221,7 +221,7 @@ static int _veraCrypt_volume( const char * mapper )
 	string_t st = String( mapper ) ;
 
 	/*
-	 * xt will hold a string like: /dev/mapper/zuluCrypt--VERA
+	 * xt will hold a string like: /dev/mapper/zuluCrypt--VERA-
 	 */
 	string_t xt = String_1( crypt_get_dir(),"/zuluCrypt--VERA-",NULL ) ;
 
@@ -231,7 +231,7 @@ static int _veraCrypt_volume( const char * mapper )
 	StringRemoveDigits( st ) ;
 
 	/*
-	 * check if st(/dev/mapper/zuluCrypt--VERA-xxx-yyy) starts with xt(/dev/mapper/zuluCrypt--VERA)
+	 * check if st(/dev/mapper/zuluCrypt--VERA-xxx-yyy) starts with xt(/dev/mapper/zuluCrypt--VERA-)
 	 */
 	r = StringStartsWith_1( st,xt ) ;
 

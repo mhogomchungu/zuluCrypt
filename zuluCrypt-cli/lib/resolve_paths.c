@@ -114,10 +114,11 @@ char * zuluCryptResolveMDPath( const char * path )
 }
 
 /*
- * An assumption is made here that the path is an LVM path if "path" is in /dev/mapper/abc-def format
- * and there exist a path at /dev/abc/def.
+ * An assumption is made here that the path is an LVM path if "path"
+ * is in /dev/mapper/abc-def format and there exist a path at /dev/abc/def.
  *
- * Info in lvm path structures can be found here: https://www.redhat.com/archives/linux-lvm/2014-January/msg00014.html
+ * Info in lvm path structures can be found here:
+ * https://www.redhat.com/archives/linux-lvm/2014-January/msg00014.html
  */
 string_t zuluCryptConvertIfPathIsLVM( const char * path )
 {

@@ -33,6 +33,7 @@ class QTableWidget ;
 
 #include "mainwindow.h"
 #include "volumeentryproperties.h"
+#include "../zuluCrypt-gui/utility.h"
 
 namespace Ui {
 class keyDialog;
@@ -89,6 +90,8 @@ private :
 	QMenu * m_menu ;
 	QMenu * m_menu_1 ;
 	QTableWidget * m_table ;
+	utility::veraCryptWarning m_veraCryptWarning ;
+	bool m_veraCryptVolume = false ;
 	bool m_working ;
 	bool m_volumeIsEncFs = false ;
 	enum{ Key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
