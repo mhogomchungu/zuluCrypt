@@ -36,6 +36,9 @@
  */
 #define SIZE 64
 
+#define TYPE 3
+
+#define UUID 4
 
 /*
  * zuluCryptLoopDeviceAddress() is moved to create_loop.c
@@ -75,7 +78,7 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 	}
 }
 
-static stringList_t zuluExit_1( stringList_t e,DIR * dir )
+static string_t zuluExit_1( string_t e,DIR * dir )
 {
 	if( dir != NULL ){
 
@@ -97,7 +100,7 @@ static stringList_t zuluExit_1( stringList_t e,DIR * dir )
  *
  */
 
-stringList_t _get_mapper_properties_from_udev( const char * mapper )
+string_t _get_mapper_property_from_udev( const char * mapper,size_t position )
 {
 	DIR * dir = opendir( "/dev/disk/by-id/" ) ;
 	struct dirent * e ;
@@ -107,9 +110,13 @@ stringList_t _get_mapper_properties_from_udev( const char * mapper )
 
 	const char * f = mapper + StringSize( crypt_get_dir() ) + 1 ;
 
+	stringList_t stl ;
+
+	string_t st ;
+
 	if( dir == NULL ){
 
-		return StringListVoid ;
+		return StringVoid ;
 	}else{
 		while( ( e = readdir( dir ) ) != NULL ){
 
@@ -117,58 +124,52 @@ stringList_t _get_mapper_properties_from_udev( const char * mapper )
 
 			if( StringPrefixEqual( q,p ) && StringEndsWith_1( q,f ) ){
 
-				return zuluExit_1( StringListSplit( q,'-' ),dir ) ;
+				stl = StringListSplit( q,'-' ) ;
+
+				st = StringListCopyStringAt( stl,position ) ;
+
+				StringListDelete( &stl ) ;
+
+				return zuluExit_1( st,dir ) ;
 			}
 		}
 	}
 
-	return zuluExit_1( StringListVoid,dir ) ;
+	return zuluExit_1( StringVoid,dir ) ;
+}
+
+static char * _get_uuid_from_udev( const char * mapper )
+{
+	string_t st = _get_mapper_property_from_udev( mapper,UUID ) ;
+	return StringDeleteHandle( &st ) ;
 }
 
 static char * _get_type_from_udev( const char * mapper )
 {
-	char * r ;
+	string_t st = _get_mapper_property_from_udev( mapper,TYPE ) ;
 
-	string_t st ;
-
-	stringList_t stl = _get_mapper_properties_from_udev( mapper ) ;
-
-	if( stl == StringListVoid ){
+	if( st == StringVoid ){
 
 		return StringCopy_2( "Nil" ) ;
 	}else{
-		st = StringListStringAt( stl,3 ) ;
-
 		StringPrepend( st,"crypto_" ) ;
 
-		r = StringCopy_1( st ) ;
-
-		StringListDelete( &stl ) ;
-
-		return r ;
+		return StringDeleteHandle( &st ) ;
 	}
 }
 
 static string_t _get_type_from_udev_1( const char * mapper )
 {
-	string_t st ;
+	string_t st = _get_mapper_property_from_udev( mapper,TYPE ) ;
 
-	stringList_t stl = _get_mapper_properties_from_udev( mapper ) ;
-
-	if( stl == StringListVoid ){
+	if( st == StringVoid ){
 
 		/*
 		 * failed to discover volume type,assume its luks1
 		 */
 		return String( "luks1" ) ;
 	}else{
-		st = StringListStringAt( stl,3 ) ;
-
 		StringToLowerCase( st ) ;
-
-		st = StringCopy( st ) ;
-
-		StringListDelete( &stl ) ;
 
 		return st ;
 	}
@@ -180,46 +181,40 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	struct crypt_device * cd ;
 
 	const char * id ;
-	const char * type ;
 	const char * e = " UUID:   \t\"Nil\"" ;
 
-	stringList_t stl ;
+	char * f ;
 
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
 
 		uuid = String( e ) ;
 	}else{
-		type = crypt_get_type( cd ) ;
+		id = crypt_get_uuid( cd ) ;
 
-		if( type == NULL || StringHasNoComponent( type,"LUKS" ) ){
+		if( id == NULL ){
 
 			/*
 			 * Either not a LUKS volume or a LUKS volume but with a detached header.
 			 * consult udev to see if it can sort this volume out.
 			 */
 
-			stl = _get_mapper_properties_from_udev( mapper ) ;
+			f = _get_uuid_from_udev( mapper ) ;
 
-			if( stl == StringListVoid ){
+			if( f == NULL ){
 
 				uuid = String( e ) ;
 			}else{
-				e = StringListContentAt( stl,4 ) ;
-				uuid = String_1( " UUID:   \t\"",e,"\"",NULL ) ;
-				StringListDelete( &stl ) ;
+				uuid = String_1( " UUID:   \t\"",f,"\"",NULL ) ;
+				StringFree( f ) ;
 			}
+
 		}else{
-			id = crypt_get_uuid( cd ) ;
-
-			if( id == NULL ){
-
-				uuid = String( e ) ;
-			}else{
-				uuid = String_1( " UUID:   \t\"",id,"\"",NULL ) ;
-			}
+			uuid = String_1( " UUID:   \t\"",id,"\"",NULL ) ;
 		}
+
 		crypt_free( cd ) ;
 	}
+	
 	return StringDeleteHandle( &uuid ) ;
 }
 
