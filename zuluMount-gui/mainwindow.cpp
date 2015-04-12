@@ -90,7 +90,7 @@ void MainWindow::setUpApp( const QString& volume )
 
 	m_ui->tableWidget->setColumnWidth( 0,220 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,320 ) ;
-	m_ui->tableWidget->setColumnWidth( 2,135 ) ;
+	m_ui->tableWidget->setColumnWidth( 2,145 ) ;
 	m_ui->tableWidget->setColumnWidth( 4,87 ) ;
 	m_ui->tableWidget->setColumnWidth( 5,87 ) ;
 	m_ui->tableWidget->hideColumn( 3 ) ;
@@ -114,6 +114,7 @@ void MainWindow::setUpApp( const QString& volume )
 	connect( m_ui->pbupdate,SIGNAL( clicked()),this,SLOT( pbUpdate() ) ) ;
 	connect( m_ui->pbclose,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
+	connect( m_ui->pbunlockencfs,SIGNAL( clicked() ),this,SLOT( unlockencfs() ) ) ;
 
 	connect( this,SIGNAL( unlistVolume( QString ) ),this,SLOT( removeVolume( QString ) ) ) ;
 
@@ -845,6 +846,20 @@ void MainWindow::pbMount()
 	}
 }
 
+void MainWindow::unlockencfs()
+{
+	this->disableAll() ;
+
+	QString path = QFileDialog::getExistingDirectory( this,tr( "select an encfs volume directory" ),QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
+
+	if( path.isEmpty() ){
+
+		this->enableAll() ;
+	}else{
+		this->showMoungDialog( path ) ;
+	}
+}
+
 QFont MainWindow::getSystemVolumeFont()
 {
 	QFont f = this->font() ;
@@ -1130,6 +1145,7 @@ void MainWindow::disableAll()
 	m_ui->pbmount->setEnabled( false ) ;
 	m_ui->pbupdate->setEnabled( false ) ;
 	m_ui->tableWidget->setEnabled( false ) ;
+	m_ui->pbunlockencfs->setEnabled( false ) ;
 }
 
 void MainWindow::enableAll()
@@ -1142,6 +1158,7 @@ void MainWindow::enableAll()
 	m_ui->tableWidget->setEnabled( true ) ;
 	m_ui->pbmount->setEnabled( true ) ;
 	m_ui->tableWidget->setFocus() ;
+	m_ui->pbunlockencfs->setEnabled( true ) ;
 }
 
 void MainWindow::enableAll_1()

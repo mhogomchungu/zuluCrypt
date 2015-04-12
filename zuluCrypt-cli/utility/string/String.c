@@ -761,30 +761,13 @@ char * StringCopy_3( string_t st,size_t l )
 	}
 }
 
-static int _stringEndsWith( const char * e,size_t ee,const char * s,size_t ss )
+static int _string_ends_with( const char * e,size_t ee,const char * s,size_t ss )
 {
 	if( ee >= ss ){
-
-		e += ee - ss ;
-
-		while( 1 ){
-
-			if( *e == '\0' ){
-
-				return 1 ;
-			}
-
-			if( *e != *s ){
-
-				return 0 ;
-			}
-
-			e++ ;
-			s++ ;
-		}
+		return memcmp( e + ee - ss,s,ss ) == 0 ;
+	}else{
+		return 0 ;
 	}
-
-	return 0 ;
 }
 
 int StringEndsWith( string_t st,const char * s )
@@ -792,7 +775,7 @@ int StringEndsWith( string_t st,const char * s )
 	if( st == StringVoid || s == NULL ){
 		return 0 ;
 	}else{
-		return _stringEndsWith( st->string,st->size,s,strlen( s ) ) ;
+		return _string_ends_with( st->string,st->size,s,strlen( s ) ) ;
 	}
 }
 
@@ -801,7 +784,29 @@ int StringEndsWith_1( const char * e,const char * s )
 	if( e == NULL || s == NULL ){
 		return 0 ;
 	}else{
-		return _stringEndsWith( e,strlen( e ),s,strlen( s ) ) ;
+		return _string_ends_with( e,strlen( e ),s,strlen( s ) ) ;
+	}
+}
+
+int StringEndsWith_2( string_t e,string_t s )
+{
+	if( e == StringVoid || s == StringVoid ){
+		return 0 ;
+	}else{
+		return _string_ends_with( e->string,e->size,s->string,s->size ) ;
+	}
+}
+
+int StringStartsAndEndsWith( const char * a,const char * b,const char * c )
+{
+	if( a == NULL || b == NULL || c == NULL ){
+		return 0 ;
+	}else{
+		if( strncmp( a,b,strlen( b ) ) == 0 ){
+			return _string_ends_with( a,strlen( a ),c,strlen( c ) ) ;
+		}else{
+			return 0 ;
+		}
 	}
 }
 
@@ -825,7 +830,7 @@ int StringStartsWith_1( string_t st,string_t xt )
 
 int StringEndsWithChar( string_t st,char s )
 {
-	if( st == StringVoid ){
+	if( st == StringVoid || st->size < 1 ){
 		return 0 ;
 	}else{
 		return st->string[ st->size - 1 ] == s ;

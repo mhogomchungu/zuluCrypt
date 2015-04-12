@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>901</width>
+    <width>910</width>
     <height>477</height>
    </rect>
   </property>
@@ -25,7 +25,7 @@
     <rect>
      <x>10</x>
      <y>0</y>
-     <width>881</width>
+     <width>891</width>
      <height>431</height>
     </rect>
    </property>
@@ -34,7 +34,7 @@
      <rect>
       <x>0</x>
       <y>10</y>
-      <width>881</width>
+      <width>891</width>
       <height>421</height>
      </rect>
     </property>
@@ -113,7 +113,7 @@
   <widget class="QPushButton" name="pbmount">
    <property name="geometry">
     <rect>
-     <x>280</x>
+     <x>340</x>
      <y>440</y>
      <width>111</width>
      <height>31</height>
@@ -132,7 +132,7 @@
   <widget class="QPushButton" name="pbupdate">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>450</x>
      <y>440</y>
      <width>121</width>
      <height>31</height>
@@ -145,14 +145,27 @@
   <widget class="QPushButton" name="pbclose">
    <property name="geometry">
     <rect>
-     <x>510</x>
+     <x>570</x>
      <y>440</y>
-     <width>111</width>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>&amp;close</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pbunlockencfs">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>440</y>
+     <width>121</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>unlock encfs</string>
    </property>
   </widget>
  </widget>

@@ -105,9 +105,6 @@ string_t _get_mapper_property_from_udev( const char * mapper,size_t position )
 	DIR * dir = opendir( "/dev/disk/by-id/" ) ;
 	struct dirent * e ;
 
-	const char * p = "dm-uuid-CRYPT-LUKS" ;
-	const char * q ;
-
 	const char * f = mapper + StringSize( crypt_get_dir() ) + 1 ;
 
 	stringList_t stl ;
@@ -120,11 +117,9 @@ string_t _get_mapper_property_from_udev( const char * mapper,size_t position )
 	}else{
 		while( ( e = readdir( dir ) ) != NULL ){
 
-			q = e->d_name ;
+			if( StringStartsAndEndsWith( e->d_name,"dm-uuid-CRYPT-LUKS",f ) ){
 
-			if( StringPrefixEqual( q,p ) && StringEndsWith_1( q,f ) ){
-
-				stl = StringListSplit( q,'-' ) ;
+				stl = StringListSplit( e->d_name,'-' ) ;
 
 				st = StringListCopyStringAt( stl,position ) ;
 
@@ -214,7 +209,7 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 
 		crypt_free( cd ) ;
 	}
-	
+
 	return StringDeleteHandle( &uuid ) ;
 }
 
