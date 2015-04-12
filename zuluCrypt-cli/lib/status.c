@@ -149,6 +149,31 @@ static char * _get_type_from_udev( const char * mapper )
 	}
 }
 
+static string_t _get_type_from_udev_1( const char * mapper )
+{
+	string_t st ;
+
+	stringList_t stl = _get_mapper_properties_from_udev( mapper ) ;
+
+	if( stl == StringListVoid ){
+
+		/*
+		 * failed to discover volume type,assume its luks1
+		 */
+		return String( "luks1" ) ;
+	}else{
+		st = StringListStringAt( stl,3 ) ;
+
+		StringToLowerCase( st ) ;
+
+		st = StringCopy( st ) ;
+
+		StringListDelete( &stl ) ;
+
+		return st ;
+	}
+}
+
 char * zuluCryptGetUUIDFromMapper( const char * mapper )
 {
 	string_t uuid ;
@@ -411,6 +436,7 @@ static char * _volume_status( const char * mapper )
 	}
 
 	device_name = crypt_get_device_name( cd ) ;
+
 	if( device_name == NULL ){
 
 		return zuluExit( p,cd ) ;
@@ -440,20 +466,22 @@ static char * _volume_status( const char * mapper )
 
 	type = crypt_get_type( cd ) ;
 
-	if( _veraCrypt_volume( mapper ) ){
+	if( type != NULL ){
+
+		q = String( type ) ;
+		StringAppend( p,StringToLowerCase( q ) ) ;
+		StringDelete( &q ) ;
+
+	}else if( _veraCrypt_volume( mapper ) ){
 
 		StringAppend( p,"vcrypt" ) ;
+
 	}else{
-		if( type == NULL ){
-			/*
-			* failed to get type,assume the volume is luks
-			*/
-			StringAppend( p,"luks1" ) ;
-		}else{
-			q = String( type ) ;
-			StringAppend( p,StringToLowerCase( q ) ) ;
-			StringDelete( &q ) ;
-		}
+		q = _get_type_from_udev_1( mapper ) ;
+
+		StringAppendString( p,q ) ;
+
+		StringDelete( &q ) ;
 	}
 
 	z = crypt_get_cipher( cd ) ;
