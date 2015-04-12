@@ -761,15 +761,47 @@ char * StringCopy_3( string_t st,size_t l )
 	}
 }
 
+static int _stringEndsWith( const char * e,size_t ee,const char * s,size_t ss )
+{
+	if( ee >= ss ){
+
+		e += ee - ss ;
+
+		while( 1 ){
+
+			if( *e == '\0' ){
+
+				return 1 ;
+			}
+
+			if( *e != *s ){
+
+				return 0 ;
+			}
+
+			e++ ;
+			s++ ;
+		}
+	}
+
+	return 0 ;
+}
+
 int StringEndsWith( string_t st,const char * s )
 {
-	size_t j ;
-
 	if( st == StringVoid || s == NULL ){
 		return 0 ;
 	}else{
-		j = strlen( s ) ;
-		return strncmp( st->string + st->size - j,s,j ) == 0 ;
+		return _stringEndsWith( st->string,st->size,s,strlen( s ) ) ;
+	}
+}
+
+int StringEndsWith_1( const char * e,const char * s )
+{
+	if( e == NULL || s == NULL ){
+		return 0 ;
+	}else{
+		return _stringEndsWith( e,strlen( e ),s,strlen( s ) ) ;
 	}
 }
 

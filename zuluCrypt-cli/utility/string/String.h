@@ -372,9 +372,18 @@ int StringUnlock( string_t ) ;
  *
  * return 1 is it does
  *
- * return 0 if it doesnt *
+ * return 0 if it doesnt
  */
 int StringEndsWith( string_t st,const char * s ) ;
+
+/*
+ *Check to see if a string e ends with string s.
+ *
+ * return 1 is it does
+ *
+ * return 0 if it doesnt
+ */
+int StringEndsWith_1( const char * e,const char * s ) ;
 
 /*
  * check to see if the string handled by handle st starts with a string s

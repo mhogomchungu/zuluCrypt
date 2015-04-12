@@ -75,13 +75,90 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 	}
 }
 
+static stringList_t zuluExit_1( stringList_t e,DIR * dir )
+{
+	if( dir != NULL ){
+
+		closedir( dir ) ;
+	}
+
+	return e ;
+}
+
+/*
+ * given a path of something like "/dev/mapper/zuluCrypt-500-NAAN-header-image-file.img-2244846319",
+ * this routine will look for its corresponding entry in "/dev/disk/by-id/" and we will find
+ * "/dev/disk/by-id/dm-uuid-CRYPT-LUKS1-242e782e593b4e3896e84ad294a0c501-zuluCrypt-500-NAAN-header-image-file.img-2244846319"
+ *
+ * and will return it as a stringlist broken up by dash character.
+ *
+ * we will call this routine to check if a volume is a LUKS volume and/or to get a LUKS volume UUID
+ * because crypt_get_type() and crypt_get_uuid() do not work with LUKS volumes that use a detach header.
+ *
+ */
+
+stringList_t _get_mapper_properties_from_udev( const char * mapper )
+{
+	DIR * dir = opendir( "/dev/disk/by-id/" ) ;
+	struct dirent * e ;
+
+	const char * p = "dm-uuid-CRYPT-LUKS" ;
+	const char * q ;
+
+	const char * f = mapper + StringSize( crypt_get_dir() ) + 1 ;
+
+	if( dir == NULL ){
+
+		return StringListVoid ;
+	}else{
+		while( ( e = readdir( dir ) ) != NULL ){
+
+			q = e->d_name ;
+
+			if( StringPrefixEqual( q,p ) && StringEndsWith_1( q,f ) ){
+
+				return zuluExit_1( StringListSplit( q,'-' ),dir ) ;
+			}
+		}
+	}
+
+	return zuluExit_1( StringListVoid,dir ) ;
+}
+
+static char * _get_type_from_udev( const char * mapper )
+{
+	char * r ;
+
+	string_t st ;
+
+	stringList_t stl = _get_mapper_properties_from_udev( mapper ) ;
+
+	if( stl == StringListVoid ){
+
+		return StringCopy_2( "Nil" ) ;
+	}else{
+		st = StringListStringAt( stl,3 ) ;
+
+		StringPrepend( st,"crypto_" ) ;
+
+		r = StringCopy_1( st ) ;
+
+		StringListDelete( &stl ) ;
+
+		return r ;
+	}
+}
+
 char * zuluCryptGetUUIDFromMapper( const char * mapper )
 {
 	string_t uuid ;
 	struct crypt_device * cd ;
+
 	const char * id ;
 	const char * type ;
 	const char * e = " UUID:   \t\"Nil\"" ;
+
+	stringList_t stl ;
 
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
 
@@ -89,9 +166,23 @@ char * zuluCryptGetUUIDFromMapper( const char * mapper )
 	}else{
 		type = crypt_get_type( cd ) ;
 
-		if( StringHasNoComponent( type,"LUKS" ) ){
+		if( type == NULL || StringHasNoComponent( type,"LUKS" ) ){
 
-			uuid = String( e ) ;
+			/*
+			 * Either not a LUKS volume or a LUKS volume but with a detached header.
+			 * consult udev to see if it can sort this volume out.
+			 */
+
+			stl = _get_mapper_properties_from_udev( mapper ) ;
+
+			if( stl == StringListVoid ){
+
+				uuid = String( e ) ;
+			}else{
+				e = StringListContentAt( stl,4 ) ;
+				uuid = String_1( " UUID:   \t\"",e,"\"",NULL ) ;
+				StringListDelete( &stl ) ;
+			}
 		}else{
 			id = crypt_get_uuid( cd ) ;
 
@@ -265,12 +356,18 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	type = crypt_get_type( cd ) ;
 
 	if( type == NULL ){
-		/*
-		 * failed to get volume type,the only scenario i know of that will bring us here is if
-		 * it is a LUKS volume opened with a detached header.We dont know what volume we got
-		 * but assume its a LUKS volume.
-		 */
-		r = StringCopy_2( "crypto_LUKS1" ) ;
+
+		if( StringHasComponent( mapper,"veracrypt" ) ){
+
+			r = StringCopy_2( "crypto_VCRYPT" ) ;
+
+		}else if( StringHasComponent( mapper,"truecrypt" ) ){
+
+			r = StringCopy_2( "crypto_TCRYPT" ) ;
+
+		}else{
+			r = _get_type_from_udev( mapper ) ;
+		}
 	}else{
 		st = String_1( "crypto_",type,NULL ) ;
 		r = StringDeleteHandle( &st ) ;
