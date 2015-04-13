@@ -165,7 +165,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>unlock encfs</string>
+    <string>mount encf&amp;s</string>
    </property>
   </widget>
  </widget>
