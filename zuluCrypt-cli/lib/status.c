@@ -454,13 +454,19 @@ static char * _volume_status( const char * mapper )
 
 	if( type != NULL ){
 
-		q = String( type ) ;
-		StringAppend( p,StringToLowerCase( q ) ) ;
-		StringDelete( &q ) ;
+		if( StringsAreEqual( type,"TCRYPT" ) ){
 
-	}else if( _veraCrypt_volume( mapper ) ){
+			if( _veraCrypt_volume( mapper ) ){
 
-		StringAppend( p,"vcrypt" ) ;
+				StringAppend( p,"vcrypt" ) ;
+			}else{
+				StringAppend( p,"tcrypt" ) ;
+			}
+		}else{
+			q = String( type ) ;
+			StringAppend( p,StringToLowerCase( q ) ) ;
+			StringDelete( &q ) ;
+		}
 
 	}else{
 		q = _get_type_from_udev_1( mapper ) ;
