@@ -91,12 +91,8 @@ static string_t zuluExit_1( string_t e,DIR * dir )
 /*
  * given a path of something like "/dev/mapper/zuluCrypt-500-NAAN-header-image-file.img-2244846319",
  * this routine will look for its corresponding entry in "/dev/disk/by-id/" and we will find
- * "/dev/disk/by-id/dm-uuid-CRYPT-LUKS1-242e782e593b4e3896e84ad294a0c501-zuluCrypt-500-NAAN-header-image-file.img-2244846319"
- *
- * and will return it as a stringlist broken up by dash character.
- *
- * we will call this routine to check if a volume is a LUKS volume and/or to get a LUKS volume UUID
- * because crypt_get_type() and crypt_get_uuid() do not work with LUKS volumes that use a detach header.
+ * "dm-uuid-CRYPT-LUKS1-LUKS_UUID-zuluCrypt-500-NAAN-header-image-file.img-2244846319" and will
+ * return desired component of the path when separated by "-" character.
  *
  */
 

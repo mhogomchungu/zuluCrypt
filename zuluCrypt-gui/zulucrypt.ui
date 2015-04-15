@@ -123,9 +123,8 @@
     <property name="title">
      <string>&amp;help</string>
     </property>
-    <addaction name="actionInfo"/>
-    <addaction name="actionPermission_problems"/>
     <addaction name="actionLuks_header_backup"/>
+    <addaction name="actionOpen_zuluCrypt_pdf"/>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuConfigure">
@@ -398,7 +397,7 @@
   </action>
   <action name="actionLuks_header_backup">
    <property name="text">
-    <string>luks header backup</string>
+    <string>header backup</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+J</string>
@@ -474,10 +473,24 @@
    <property name="text">
     <string>veracrypt container in a file</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
   </action>
   <action name="actionVeracrypt_container_in_a_partition">
    <property name="text">
     <string>veracrypt container in a partition</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionOpen_zuluCrypt_pdf">
+   <property name="text">
+    <string>open zuluCrypt.pdf</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+H</string>
    </property>
   </action>
  </widget>

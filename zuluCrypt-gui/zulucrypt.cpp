@@ -69,6 +69,7 @@
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 #include "veracrypt_support.h"
+#include "pdf_path.h"
 
 zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 {
@@ -101,9 +102,9 @@ void zuluCrypt::setFolderOpener()
 	//currently not used
 	QStringList argv = QCoreApplication::arguments() ;
 	if( argv.size() < 2 ){
-		m_folderOpener = "xdg-open" ;
+		m_openPath = "xdg-open" ;
 	}else{
-		m_folderOpener = argv.at( 1 ) ;
+		m_openPath = argv.at( 1 ) ;
 	}
 }
 
@@ -115,6 +116,7 @@ void zuluCrypt::setUpApp( const QString& volume )
 	this->initKeyCombo() ;
 	this->initTray() ;
 	this->updateVolumeList( volume ) ;
+	this->info() ;
 }
 
 void zuluCrypt::updateVolumeList( const QString& volume )
@@ -241,7 +243,7 @@ void zuluCrypt::start()
 	QStringList l = QCoreApplication::arguments() ;
 
 	QString e      = utility::cmdArgumentValue( l,"-d" ) ;
-	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+	m_openPath = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_startHidden  = l.contains( "-e" ) ;
 
 	QString sockpath = QString( "zuluCrypt-gui.socket" ) ;
@@ -335,7 +337,6 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionAddKey,SIGNAL( triggered() ),this,SLOT( ShowAddKey() ) ) ;
 	connect( m_ui->actionDeleteKey,SIGNAL( triggered() ),this,SLOT( ShowDeleteKey() ) ) ;
 	connect( m_ui->actionPartitionCreate,SIGNAL( triggered() ),this,SLOT( ShowNonSystemPartitions() ) ) ;
-	connect( m_ui->actionInfo,SIGNAL( triggered() ),this,SLOT( info() ) ) ;
 	connect( m_ui->actionFonts,SIGNAL( triggered() ),this,SLOT( fonts() ) ) ;
 	connect( m_ui->menuFavorites,SIGNAL( aboutToShow() ),this,SLOT( readFavorites() ) ) ;
 	connect( m_ui->menuFavorites,SIGNAL( aboutToHide() ),this,SLOT( favAboutToHide() ) ) ;
@@ -348,7 +349,6 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->action_update_volume_list,SIGNAL( triggered() ),this,SLOT( updateVolumeListAction() ) ) ;
 	connect( m_ui->actionMinimize_to_tray,SIGNAL( triggered() ),this,SLOT( minimizeToTray() ) ) ;
 	connect( m_ui->actionClose_all_opened_volumes,SIGNAL( triggered() ),this,SLOT( closeAllVolumes() ) ) ;
-	connect( m_ui->actionPermission_problems,SIGNAL( triggered() ),this,SLOT( permissionExplanation() ) ) ;
 	connect( m_ui->actionEncrypt_file,SIGNAL( triggered() ),this,SLOT( encryptFile() ) ) ;
 	connect( m_ui->actionDecrypt_file,SIGNAL( triggered() ),this,SLOT( decryptFile() ) ) ;
 	connect( m_ui->actionLuks_header_backup,SIGNAL( triggered() ),this,SLOT( HelpLuksHeaderBackUp() ) ) ;
@@ -358,6 +358,7 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionManage_volumes_in_kde_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInKDEWallet() ) ) ;
 	connect( m_ui->actionManage_volumes_in_gnome_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInGNOMEWallet() ) ) ;
 	connect( m_ui->actionManage_volumes_in_internal_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInInternalWallet() ) ) ;
+	connect( m_ui->actionOpen_zuluCrypt_pdf,SIGNAL( triggered() ),this,SLOT( openpdf() ) ) ;
 
 	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
 
@@ -366,6 +367,7 @@ void zuluCrypt::setupConnections()
 
 	connect( m_ui->actionBackup_header,SIGNAL( triggered() ),this,SLOT( volumeHeaderBackUp() ) ) ;
 	connect( m_ui->actionRestore_header,SIGNAL( triggered() ),this,SLOT( volumeRestoreHeader() ) ) ;
+
 	m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ) ;
 	m_ui->actionManage_volumes_in_kde_wallet->setEnabled( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ) ;
 
@@ -383,7 +385,6 @@ void zuluCrypt::setupConnections()
 	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( false ) ;
 #endif
 
-
 	this->setAcceptDrops( true ) ;
 }
 
@@ -391,6 +392,32 @@ void zuluCrypt::optionMenuAboutToShow()
 {
 	bool b = LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ;
 	m_ui->actionChange_internal_wallet_password->setEnabled( b ) ;
+}
+
+void zuluCrypt::openpdf()
+{
+	Task::run<bool>( [ this ](){
+
+		return utility::Task( m_openPath + PDF_PATH ).failed() ;
+
+	} ).then( [ this ]( bool failed ){
+
+		if( failed ){
+
+			DialogMsg msg( this ) ;
+
+			msg.ShowUIOK( tr( "WARNING" ),tr( "failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
+		}
+	} ) ;
+}
+
+void zuluCrypt::info()
+{
+	if( cryptoinfo::Show() ){
+
+		cryptoinfo * cinfo = new cryptoinfo( this ) ;
+		cinfo->show() ;
+	}
 }
 
 walletconfig * zuluCrypt::setUpWalletConfig()
@@ -682,13 +709,6 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionChange_internal_wallet_password->setFont( Font ) ;
 }
 
-void zuluCrypt::info()
-{
-	cryptoinfo * cinfo = new cryptoinfo( this ) ;
-	connect( cinfo,SIGNAL( closeUISignal() ),cinfo,SLOT( deleteLater() ) ) ;
-	cinfo->show() ;
-}
-
 void zuluCrypt::createEncryptedpartitionUI()
 {
 	emit SignalShowNonSystemPartitions() ;
@@ -701,17 +721,16 @@ void zuluCrypt::aboutMenuOption( void )
 
 void zuluCrypt::HelpLuksHeaderBackUp()
 {
-	QString msg = tr( "\nAll luks based encrypted volumes have what is called a \"luks header\".\n\n\
-A luks header is responsible for storing information necessary to open a luks based volume and any damage \
+	QString msg = tr( "\nLUKS,TrueCrypt and VeraCrypt based encrypted volumes have what is called a \"volume header\".\n\n\
+A volume header is responsible for storing information necessary to open a header using encrypted volume and any damage \
 to it will makes it impossible to open the volume causing permanent loss of encrypted data.\n\n\
 The damage to the header is usually caused by accidental formatting of the device or use of \
 some buggy partitioning tools or wrongly reassembled logical volumes.\n\n\
-Having a backup of the luks header is strongly advised because it is the only way the encrypted data will be accessible \
-again after the header is restored if the header on the volume get corrupted.\n\n\
-For more information, please read the FAQ at: http://code.google.com/p/cryptsetup/wiki/FrequentlyAskedQuestions" ) ;
+Having a backup of the volume header is strongly advised because it is the only way the encrypted data will be accessible \
+again after the header is restored if the header on the volume get corrupted.\n\n" ) ;
 
 	DialogMsg m( this ) ;
-	m.ShowUIInfo( tr( "important information on luks header" ),msg ) ;
+	m.ShowUIInfo( tr( "important information on volume header backup" ),msg ) ;
 }
 
 void zuluCrypt::removeRowFromTable( int x )
@@ -802,12 +821,12 @@ void zuluCrypt::openFolder()
 
 void zuluCrypt::openFolder( QString path )
 {
-	utility::openMountPoint( path,m_folderOpener ).then( [ this ]( bool failed ){
+	utility::openMountPoint( path,m_openPath ).then( [ this ]( bool failed ){
 
 		if( failed ){
 
 			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ) ;
+			msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ) ;
 		}
 	} ) ;
 }

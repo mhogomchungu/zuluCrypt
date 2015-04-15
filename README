@@ -1,21 +1,11 @@
 
 
-zuluCrypt is a front end to cryptsetup. It makes it easy to use 
-cryptsetup to manage encrypted volumes by providing a Qt based 
-GUI and a simpler to use cli front end to cryptsetup.
+zuluCrypt
+=========
 
-It does the same thing truecrypt does but uses(through cryptsetup) cryptographic 
-infrastructure that exist inside the kernel in linux and some bsd systems. 
+zuluCrypt is a simple,feature rich and powerful solution for hard drives encryption.
 
-Copyright: (c)2011,2012 Ink Francis aka mhogomchungu
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-( at your option ) any later version. Version 2 and 3 of GNU General
-Public License are provided with these sources for your convenience.
+Project's frontpage is at: https://mhogomchungu.github.io/zuluCrypt
 
-Build instructions are in a text file named "BUILD_INSTRUCTIONS"
-
-The project is hosted at : http://code.google.com/p/zulucrypt/
-
-bugs,wishes and comments can be reported at: http://code.google.com/p/zulucrypt/issues/list
+bugs,wishes and comments can be reported at: https://github.com/mhogomchungu/zuluCrypt/issues or
+to my private email address at mhogomchungu@gmail.com

@@ -34,12 +34,14 @@ class cryptoinfo : public QWidget
 {
 	Q_OBJECT
 public:
+	static bool Show( void ) ;
 	explicit cryptoinfo( QWidget * parent = 0 ) ;
 	~cryptoinfo() ;
 signals:
 	void closeUISignal( void ) ;
 private slots:
 	void pbOK( void ) ;
+	void checkBoxChecked( bool ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;

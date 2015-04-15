@@ -140,6 +140,7 @@ private slots :
 	void walletpassWordChanged( bool ) ;
 	void walletIsOpen( bool ) ;
 	void optionMenuAboutToShow( void ) ;
+	void openpdf( void ) ;
 private:
 	void updateVolumeList( const QString& volume = QString() ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
@@ -169,7 +170,7 @@ private:
 	void decryptFile( const QString& ) ;
 	Ui::zuluCrypt * m_ui ;
 	QSystemTrayIcon * m_trayIcon ;
-	QString m_folderOpener ;
+	QString m_openPath ;
 	bool m_startHidden ;
 	LxQt::Wallet::Wallet * m_wallet ;
 };

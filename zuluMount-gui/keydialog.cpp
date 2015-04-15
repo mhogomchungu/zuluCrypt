@@ -469,7 +469,7 @@ void keyDialog::openVolume()
 	}
 
 	QString test_name = m_ui->lineEditMountPoint->text() ;
-	if( test_name.contains( QString( "/" ) ) ){
+	if( test_name.contains( "/" ) ){
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
 		m_ui->lineEditKey->setFocus() ;
@@ -600,7 +600,7 @@ void keyDialog::openVolume()
 		}else{
 
 			QString z = s.output() ;
-			z.replace( "ERROR: ","" ) ;
+			z.replace( tr( "ERROR: " ),"" ) ;
 
 			DialogMsg msg( this ) ;
 
@@ -627,7 +627,7 @@ void keyDialog::cbActicated( int e )
 
 void keyDialog::plugIn()
 {
-	m_ui->pbkeyOption->setIcon( QIcon( QString( ":/module.png" ) ) ) ;
+	m_ui->pbkeyOption->setIcon( QIcon( ":/module.png" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->label->setText( tr( "plugin name" ) ) ;
 	m_ui->pbkeyOption->setEnabled( true ) ;
@@ -637,7 +637,7 @@ void keyDialog::plugIn()
 
 void keyDialog::key()
 {
-	m_ui->pbkeyOption->setIcon( QIcon( QString( ":/passphrase.png" ) ) ) ;
+	m_ui->pbkeyOption->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->pbkeyOption->setEnabled( false ) ;
 	m_ui->label->setText( tr( "key" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
@@ -647,7 +647,7 @@ void keyDialog::key()
 
 void keyDialog::keyFile()
 {
-	m_ui->pbkeyOption->setIcon( QIcon( QString( ":/keyfile.png" ) ) ) ;
+	m_ui->pbkeyOption->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->label->setText( tr( "keyfile path" ) ) ;
 	m_ui->pbkeyOption->setEnabled( true ) ;

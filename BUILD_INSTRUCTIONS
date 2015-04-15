@@ -1,6 +1,12 @@
 
+look in "rpm" folder for information on how to build an rpm package of zuluCrypt.
+
+look in "debian" or "debian_package_info" folder for information on how to build a debian package.
+
+below instructions are for those who want to build from source old school style :-)
 
 This tool depends on the following packages installed to build, their precise name may differ in your distro.
+
 1. libpwquality-devel( optional dependency used to check the quality of passwords when creating volumes )
 2. libblkid-devel
 3. libqt4-devel( required if building GUI components )
@@ -17,6 +23,7 @@ This tool depends on the following packages installed to build, their precise na
 14.uuid-devel
 
 The precise names of the above packages in debian are:
+
 1. libpwquality-dev( optional dependency used to check the quality of passwords when creating volumes )
 2. libblkid-dev
 3. libqt4-dev( optional dependency used when building GUI components )
@@ -41,41 +48,56 @@ The project is made up of two components,the command line "pure C" based backend
 After you have above packages installed,run these 5 command to build and install.
 The last command depends on your distribution,go with the one recommended by disto.
 
-1.0 mkdir build
+To build zuluCrypt with default options,run these 5 commands from inside the zuluCrypt source folder.
 
-2.0 cd build
+*****************************************************************************************************
 
-To build only the backends,run the following command
-3.1 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOGUI=yes -DCMAKE_BUILD_TYPE=RELEASE . ..
+mkdir build
 
-To build the backends as well as front ends,run the following command
-3.2 cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DCMAKE_BUILD_TYPE=RELEASE . ..
+cd build
 
-3.3
-To build frontends without KDE(kwallet) support, add "-DNOKDE=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOKDE=true -DCMAKE_BUILD_TYPE=RELEASE . ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false -DHOMEMOUNTPREFIX=false -DNOGNOME=false -DNOKDE=false -DCMAKE_BUILD_TYPE=RELEASE . ..
 
-3.4
-To build frontends without gnome(gnome-keyring) support, add "-DNOGNOME=true". eg cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DNOGNOME=true -DCMAKE_BUILD_TYPE=RELEASE . ..
+make
 
-3.5
-udev is not consulted when deciding if a volume is system or not,only fstab is.To also include udev,add the following config option: "-DUDEVSUPPORT=true"
-If the option is set,section 7 of the FAQ talks about removing volumes from a list of system partitions udev considers them as system and the user prefer
-them not to( udev is known to identify some external hard drives as system )
+make install( or sudo make install )
 
-3.6
-Volumes by default are mounted in "/run/media/private/$USER".A compile time option of "-DHOMEMOUNTPREFIX=true" will cause volumes to be mounted
-instead in user's home directory.
-eg: cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DHOMEMOUNTPREFIX=true -DCMAKE_BUILD_TYPE=RELEASE . ..
-
-3.7
-Qt4 is the default Qt dependency,to build against Qt5,pass "-DQT5=true" to cmake
-
-4.0 make
-
-5.0 make install ( or sudo make install or su -c "make install" )
-
-6.0 to uninstall the program,run make uninstall( or sudo make uninstall or su -c "make uninstall" )
+*****************************************************************************************************
 
 After you have it installed,run "zuluCrypt-test" to make sure everything is working as expected.
 
-Build errors/test fails/feature requests/recommendations can be reported at: http://code.google.com/p/zulucrypt/issues/list
+meaning of different options:
+
+-DCMAKE_INSTALL_PREFIX=/usr/
+This option tells the build process to install project's files in "/usr/".
+
+-DCMAKE_BUILD_TYPE=RELEASE
+This option tells the build process to build the project in release mode.This mode is most suitable for non developers.
+
+-DUDEVSUPPORT=true
+This option tell zuluCrypt to ask for udev's opinion when deciding if a volume is system or not.Section 7 of the
+FAQ has more information about udev's problem.Set the option to "false" to ignore udev's opinion.
+
+The FAQ is located at: https://github.com/mhogomchungu/zuluCrypt/wiki/Frequently-Asked-Questions
+
+-DNOGUI=false
+This option tells the build process to build GUI components.Set this option to "true" if you do not want GUI components.
+
+-DQT5=false
+This option tells the build process to build GUI components using Qt4.Set the option to "true" if you want to build using Qt5.
+
+-DHOMEMOUNTPREFIX=false
+This option tells zuluCrypt to create mount paths at "/run/media/private/$USER".Set this option to "true" if you want
+mount points to be created in user's home directory.
+
+-DNOGNOME=false
+This option tells the build process to add gnome's libsecret secure storage of passwords.Set this option to "true" if
+you do not want libsecret's support.
+
+-DNOKDE=false
+This option tells the build process to add KDE's secure storage of passwords.Set this option to "true" if you do not
+want KDE wallet support.
+
+Build errors/test fails/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/zuluCrypt/issues
+or using my private email address at: mhogomchungu@gmail.com
+

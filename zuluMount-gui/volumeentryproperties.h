@@ -61,11 +61,11 @@ public:
 	{
 		m_isSystem = t ;
 	}
-	bool Empty() const
+	bool isEmpty() const
 	{
 		return m_volume.isEmpty() ;
 	}
-	bool notEmpty() const
+	bool isNotEmpty() const
 	{
 		return !m_volume.isEmpty() ;
 	}
@@ -112,7 +112,7 @@ private:
 			m_mountPoint  = l.at( 1 ) ;
 			m_fileSystem  = l.at( 2 ) ;
 			m_label       = l.at( 3 ) ;
-			m_volumeSize   = l.at( 4 ) ;
+			m_volumeSize  = l.at( 4 ) ;
 			m_usedSpacePercentage = l.at( 5 ) ;
 
 			int index = m_fileSystem.indexOf( "/" ) ;

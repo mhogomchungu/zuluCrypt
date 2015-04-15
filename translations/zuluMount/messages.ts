@@ -588,6 +588,11 @@ wrong password or not an encfs volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="603"/>
+        <source>ERROR: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="652"/>
         <source>keyfile path</source>
         <translation type="unfinished"></translation>
@@ -678,6 +683,11 @@ wrong password or not an encfs volume</source>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="156"/>
         <source>&quot;/&quot; character is not allowed in the mount name field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="209"/>
+        <source>ERROR: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>

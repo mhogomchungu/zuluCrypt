@@ -40,7 +40,6 @@ BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: glibc-devel
 BuildRequires: libblkid-devel
-BuildRequires: libmount-devel
 BuildRequires: libgcrypt-devel
 BuildRequires: libsecret-devel
 BuildRequires: libpwquality-devel
@@ -83,7 +82,7 @@ to easy opening and closing of volumes
 %build
 mkdir build
 cd build
-cmake .. -DCMAKE_INSTALL_PREFIX:PATH=/usr -DUDEVSUPPORT=true -DCMAKE_BUILD_TYPE=Release
+cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false -DHOMEMOUNTPREFIX=false -DNOGNOME=false -DNOKDE=false -DCMAKE_BUILD_TYPE=RELEASE ..
 
 %install
 cd build
@@ -134,6 +133,7 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 %{_datadir}/applications/zuluMount.desktop
 %defattr(0644,root,root)
 %{_datadir}/icons/*
+%{_datadir}/zuluCrypt/*
 %{_datadir}/pixmaps/*
 %{_mandir}/man1/*
 %defattr(0644,root,root)

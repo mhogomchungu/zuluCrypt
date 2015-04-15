@@ -795,7 +795,7 @@ void MainWindow::slotMount()
 
 void MainWindow::showMoungDialog( const volumeEntryProperties& v )
 {
-	if( v.Empty() ){
+	if( v.isEmpty() ){
 
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
@@ -923,7 +923,7 @@ void MainWindow::volumeMiniProperties_0( volumeEntryProperties * volumeInfo )
 }
 void MainWindow::updateList( const volumeEntryProperties& entry )
 {
-	if( entry.notEmpty() ){
+	if( entry.isNotEmpty() ){
 
 		auto table = m_ui->tableWidget ;
 

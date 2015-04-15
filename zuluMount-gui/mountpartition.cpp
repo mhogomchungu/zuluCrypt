@@ -206,7 +206,7 @@ void mountPartition::pbMount()
 		if( this->isVisible() ){
 
 			QString z = s.output() ;
-			z.replace( "ERROR: ","" ) ;
+			z.replace( tr( "ERROR: " ),"" ) ;
 
 			DialogMsg m( this ) ;
 			m.ShowUIOK( tr( "ERROR" ),z ) ;

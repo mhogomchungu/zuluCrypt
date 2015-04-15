@@ -20,16 +20,27 @@
 #include "ui_cryptoinfo.h"
 
 #include <QCloseEvent>
+#include <QFile>
+
+static QString _optionPath()
+{
+	return QDir::homePath() + "/.zuluCrypt/doNotshowWarning.option" ;
+}
 
 cryptoinfo::cryptoinfo( QWidget * parent ) :
 	QWidget( parent ),
 	m_ui( new Ui::cryptoinfo )
 {
 	m_ui->setupUi( this ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
+
+	m_ui->checkBox->setChecked( utility::pathExists( _optionPath() ) ) ;
+
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
+	connect( m_ui->checkBox,SIGNAL( clicked( bool ) ),this,SLOT( checkBoxChecked( bool ) ) ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -52,13 +63,31 @@ void cryptoinfo::closeEvent( QCloseEvent * e )
 
 void cryptoinfo::HideUI()
 {
-	emit closeUISignal() ;
 	this->hide() ;
+	this->deleteLater() ;
 }
 
 void cryptoinfo::pbOK()
 {
-	HideUI() ;
+	this->HideUI() ;
+}
+
+bool cryptoinfo::Show()
+{
+	return utility::pathExists( _optionPath() ) == false ;
+}
+
+void cryptoinfo::checkBoxChecked( bool checked )
+{
+	QFile f( _optionPath() ) ;
+
+	if( checked ){
+
+		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+
+	}else{
+		f.remove() ;
+	}
 }
 
 cryptoinfo::~cryptoinfo()

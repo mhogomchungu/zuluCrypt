@@ -1,6 +1,10 @@
 zuluCrypt
 =========
 
-zuluCrypt is a front end to cryptsetup and tcplay and it allows easy management of encrypted block devices
+zuluCrypt is a simple,feature rich and powerful solution for hard drives encryption.
 
-Project's frontpage is at: http://mhogomchungu.github.io/zuluCrypt/
+Project's frontpage is at: https://mhogomchungu.github.io/zuluCrypt
+
+bugs,wishes and comments can be reported at: https://github.com/mhogomchungu/zuluCrypt/issues or
+to my private email address at: mhogomchungu@gmail.com
+
