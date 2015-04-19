@@ -548,10 +548,19 @@ int main( int argc,char * argv[] )
 	 */
 	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid,&stx ) ;
 
+	#define _hide( z ) strncpy( ( char * )z,"x",StringLength( *k ) )
+
+	if( args.device != NULL ){
+		k = StringListAssign( stl ) ;
+		*k = String( args.device ) ;
+		_hide( args.device ) ;
+		args.device = StringContent( *k ) ;
+	}
+
 	if( args.key != NULL ){
 		k = StringListAssign( stl ) ;
 		*k = String( args.key ) ;
-		strncpy( ( char * ) args.key,"x",StringLength( *k ) ) ;
+		_hide( args.key ) ;
 		args.key = StringContent( *k ) ;
 	}
 
@@ -559,7 +568,7 @@ int main( int argc,char * argv[] )
 
 		k = StringListAssign( stl ) ;
 		*k = String( args.tcrypt_multiple_keyfiles[ i ] ) ;
-		strncpy( ( char * ) args.tcrypt_multiple_keyfiles[ i ],"x",StringLength( *k ) ) ;
+		_hide( args.tcrypt_multiple_keyfiles[ i ] ) ;
 		args.tcrypt_multiple_keyfiles[ i ] = StringContent( *k ) ;
 	}
 
