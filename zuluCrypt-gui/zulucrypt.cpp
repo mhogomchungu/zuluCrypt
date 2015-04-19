@@ -707,6 +707,9 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionManage_volumes_in_kde_wallet->setFont( Font ) ;
 	m_ui->actionUse_kde_default_wallet->setFont( Font ) ;
 	m_ui->actionChange_internal_wallet_password->setFont( Font ) ;
+	m_ui->actionVeracrypt_container_in_a_file->setFont( Font ) ;
+	m_ui->actionVeracrypt_container_in_a_partition->setFont( Font ) ;
+	m_ui->actionOpen_zuluCrypt_pdf->setFont( Font ) ;
 }
 
 void zuluCrypt::createEncryptedpartitionUI()
