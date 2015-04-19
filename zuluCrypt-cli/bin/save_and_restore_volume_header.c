@@ -37,27 +37,27 @@
 static int zuluExit( int st,const char * dev )
 {
 	switch( st ){
-		case 0 : printf( gettext( "SUCCESS: header saved successfully\n" ) )						; break ;
-		case 1 : printf( gettext( "SUCCESS: header restored successfully\n" ) )						; break ;
-		case 2 : printf( gettext( "ERROR: presented device is not a LUKS device\n" ) ) 					; break ;
-		case 3 : printf( gettext( "ERROR: failed to perform requested operation\n" ) )					; break ;
-		case 4 : printf( gettext( "ERROR: failed to perform requested operation\n" ) )					; break ;
-		case 5 : printf( gettext( "INFO: operation terminater per user request\n" ) )					; break ;
-		case 6 : printf( gettext( "ERROR: path to be used to create a back up file is occupied or permission denied\n" ) ); break ;
-		case 7 : printf( gettext( "ERROR: failed to perform requested operation\n" ) )					; break ;
-		case 8 : printf( gettext( "ERROR: insufficient privilege to open backup header file for reading\n" ) )		; break ;
-		case 9 : printf( gettext( "ERROR: invalid path to back up header file\n" ) )					; break ;
-		case 10: printf( gettext( "ERROR: insufficient privilege to create a backup header in a destination folder\n" )); break ;
-		case 11: printf( gettext( "ERROR: invalid path to device\n" ) )							; break ;
-		case 12: printf( gettext( "ERROR: argument for path to a backup  header file is missing\n" ) )			; break ;
-		case 13: printf( gettext( "ERROR: argument for path to a backup  header file is missing\n" ) )			; break ;
-		case 14: printf( gettext( "ERROR: only root and \"zulucrypt\" group members can restore and back up luks headers on system devices\n" )	); break ;
-		case 15: printf( gettext( "ERROR: insufficient privilege to open device for writing\n" ) )			; break ;
-		case 16: printf( gettext( "ERROR: could not resolve path to device\n" ) )					; break ;
-		case 17: printf( gettext( "ERROR: backup file does not appear to contain luks header\n" ) )			; break ;
-		case 18: printf( gettext( "ERROR: insufficient privilege to open device for reading\n" ) )			; break ;
-		case 19: printf( gettext( "ERROR: insufficient memory to hold your responce\n" ) )	 			; break ;
-		case 20: printf( gettext( "ERROR: wrong password entered or volume is not a truecrypt volume\n" ) )		; break ;
+		case 0 : printf( gettext( "SUCCESS: Header saved successfully\n" ) )						; break ;
+		case 1 : printf( gettext( "SUCCESS: Header restored successfully\n" ) )						; break ;
+		case 2 : printf( gettext( "ERROR: Presented device is not a LUKS device\n" ) ) 					; break ;
+		case 3 : printf( gettext( "ERROR: Failed to perform requested operation\n" ) )					; break ;
+		case 4 : printf( gettext( "ERROR: Failed to perform requested operation\n" ) )					; break ;
+		case 5 : printf( gettext( "INFO: Operation terminater per user request\n" ) )					; break ;
+		case 6 : printf( gettext( "ERROR: Path to be used to create a back up file is occupied or permission denied\n" ) ); break ;
+		case 7 : printf( gettext( "ERROR: Failed to perform requested operation\n" ) )					; break ;
+		case 8 : printf( gettext( "ERROR: Insufficient privilege to open backup header file for reading\n" ) )		; break ;
+		case 9 : printf( gettext( "ERROR: Invalid path to back up header file\n" ) )					; break ;
+		case 10: printf( gettext( "ERROR: Insufficient privilege to create a backup header in a destination folder\n" )); break ;
+		case 11: printf( gettext( "ERROR: Invalid path to device\n" ) )							; break ;
+		case 12: printf( gettext( "ERROR: Argument for path to a backup  header file is missing\n" ) )			; break ;
+		case 13: printf( gettext( "ERROR: Argument for path to a backup  header file is missing\n" ) )			; break ;
+		case 14: printf( gettext( "ERROR: Only root and \"zulucrypt\" group members can restore and back up luks headers on system devices\n" )	); break ;
+		case 15: printf( gettext( "ERROR: Insufficient privilege to open device for writing\n" ) )			; break ;
+		case 16: printf( gettext( "ERROR: Could not resolve path to device\n" ) )					; break ;
+		case 17: printf( gettext( "ERROR: Backup file does not appear to contain luks header\n" ) )			; break ;
+		case 18: printf( gettext( "ERROR: Insufficient privilege to open device for reading\n" ) )			; break ;
+		case 19: printf( gettext( "ERROR: Insufficient memory to hold your responce\n" ) )	 			; break ;
+		case 20: printf( gettext( "ERROR: Wrong password entered or volume is not a truecrypt volume\n" ) )		; break ;
 	}
 
 	StringFree( dev ) ;
@@ -346,7 +346,7 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 				xt = zuluCryptCreateKeyFile_1( st,"tcrypt-bk-" ) ;
 
 				if( xt == StringVoid ){
-					
+
 					return zuluExit_1( k,st,xt ) ;
 				}else{
 					info->key = StringContent( xt ) ;

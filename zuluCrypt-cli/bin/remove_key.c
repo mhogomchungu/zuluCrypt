@@ -58,29 +58,29 @@ static int zuluExit( int st,stringList_t stl )
 	StringListClearDelete( &stl ) ;
 
 	switch ( st ){
-		case 0 : printf( gettext( "SUCCESS: key removed successfully\n" ) ) ;					break ;
-		case 2 : printf( gettext( "ERROR: there is no key in the volume that match the presented key\n" ) ) ;	break ;
-		case 3 : printf( gettext( "ERROR: could not open the volume\n" ) ) ;					break ;
-		case 4 : printf( gettext( "ERROR: insufficient privilege to open a system device,\
+		case 0 : printf( gettext( "SUCCESS: Key removed successfully\n" ) ) ;					break ;
+		case 2 : printf( gettext( "ERROR: There is no key in the volume that match the presented key\n" ) ) ;	break ;
+		case 3 : printf( gettext( "ERROR: Could not open the volume\n" ) ) ;					break ;
+		case 4 : printf( gettext( "ERROR: Insufficient privilege to open a system device,\
 only root user or members of group zulucrypt can do that\n" ) ) ;						break ;
-		case 5 : printf( gettext( "ERROR: could not open the volume in write mode\n" ) ) ;			break ;
-		case 6 : printf( gettext( "ERROR: insufficient memory to hold your response\n" ) ) ;			break ;
-		case 7 : printf( gettext( "INFO: operation terminated per user request\n" ) ) ;				break ;
-		case 8 : printf( gettext( "ERROR: can not get passphrase in silent mode\n" ) ) ;			break ;
-		case 9 : printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) ) ;			break ;
-		case 10: printf( gettext( "ERROR: one or more required argument(s) for this operation is missing\n" ) );break ;
-		case 11: printf( gettext( "ERROR: keyfile does not exist\n" ) ) ;					break ;
-		case 12: printf( gettext( "ERROR: could not get enough memory to open the key file\n" ) ) ;		break ;
-		case 13: printf( gettext( "ERROR: insufficient privilege to open key file for reading\n" ) ) ;		break ;
-		case 14: printf( gettext( "ERROR: could not get a key from a socket\n" ) ) ;				break ;
-		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st );
+		case 5 : printf( gettext( "ERROR: Could not open the volume in write mode\n" ) ) ;			break ;
+		case 6 : printf( gettext( "ERROR: Insufficient memory to hold your response\n" ) ) ;			break ;
+		case 7 : printf( gettext( "INFO: Operation terminated per user request\n" ) ) ;				break ;
+		case 8 : printf( gettext( "ERROR: Can not get passphrase in silent mode\n" ) ) ;			break ;
+		case 9 : printf( gettext( "ERROR: Insufficient memory to hold passphrase\n" ) ) ;			break ;
+		case 10: printf( gettext( "ERROR: One or more required argument(s) for this operation is missing\n" ) );break ;
+		case 11: printf( gettext( "ERROR: Keyfile does not exist\n" ) ) ;					break ;
+		case 12: printf( gettext( "ERROR: Could not get enough memory to open the key file\n" ) ) ;		break ;
+		case 13: printf( gettext( "ERROR: Insufficient privilege to open key file for reading\n" ) ) ;		break ;
+		case 14: printf( gettext( "ERROR: Could not get a key from a socket\n" ) ) ;				break ;
+		default: printf( gettext( "ERROR: Unrecognized error with status number %d encountered\n" ),st );
 	}
 	return st ;
 }
 
 static int zuluExit_1( int st,const char * device,stringList_t stl )
 {
-	printf( gettext( "ERROR: device \"%s\" is not a luks device\n" ),device ) ;
+	printf( gettext( "ERROR: Device \"%s\" is not a luks device\n" ),device ) ;
 	StringListClearDelete( &stl ) ;
 	return st ;
 }
@@ -132,7 +132,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 
 	if( _zuluCryptExECheckEmptySlots( device ) == 3 ){
 		if( ask_confirmation ){
-			printf( gettext( "WARNING: there is only one key in the volume and all data in it will be lost if you continue.\n" ) ) ;
+			printf( gettext( "WARNING: There is only one key in the volume and all data in it will be lost if you continue.\n" ) ) ;
 			printf( gettext( "Do you still want to continue? Type \"YES\" if you do: " ) ) ;
 			*confirm = StringGetFromTerminal_1( 3 ) ;
 			if( *confirm == StringVoid ){

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>walletconfig</class>
- <widget class="QDialog" name="kwalletconfig">
+ <widget class="QDialog" name="walletconfig">
   <property name="windowModality">
    <enum>Qt::WindowModal</enum>
   </property>
@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>manage volumes in a wallet</string>
+   <string>Manage Volumes In A Wallet</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -29,7 +29,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;add</string>
+    <string>&amp;Add</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -48,7 +48,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;delete</string>
+    <string>&amp;Delete</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbClose">
@@ -61,7 +61,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>do&amp;ne</string>
+    <string>Do&amp;ne</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox">
@@ -108,12 +108,12 @@
     </property>
     <column>
      <property name="text">
-      <string>volume id</string>
+      <string>Volume ID</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>comment</string>
+      <string>Comment</string>
      </property>
     </column>
    </widget>

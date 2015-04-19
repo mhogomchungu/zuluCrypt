@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;ok</string>
+    <string>&amp;Ok</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbYes">
@@ -39,7 +39,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;yes</string>
+    <string>&amp;Yes</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbNo">
@@ -52,7 +52,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;no</string>
+    <string>&amp;No</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">

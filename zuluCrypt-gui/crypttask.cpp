@@ -93,7 +93,7 @@ void CryptTask::run()
 
 void CryptTask::calculateMd5( const QString& path,char * result )
 {
-	emit titleUpdate( tr( "calculating md5sum" ) ) ;
+	emit titleUpdate( tr( "Calculating md5sum" ) ) ;
 	emit disableCancel() ;
 
 	zuluCryptMD5_CTX ctx ;
@@ -143,7 +143,7 @@ CryptTask::status CryptTask::encrypt()
 	int i = 0 ;
 	int j = -1 ;
 
-	emit titleUpdate( tr( "creating encrypted container file" ) ) ;
+	emit titleUpdate( tr( "Creating Encrypted Container File" ) ) ;
 
 	while( size % SIZE != 0 ){
 		size++ ;
@@ -220,7 +220,7 @@ CryptTask::status CryptTask::encrypt()
 
 	j = -1 ;
 
-	emit titleUpdate( tr( "copying data to the container file" ) ) ;
+	emit titleUpdate( tr( "Copying Data To The Container File" ) ) ;
 
 	emit progressUpdate( 0 ) ;
 
@@ -280,7 +280,7 @@ CryptTask::status CryptTask::decrypt()
 		return CryptTask::createFileFail ;
 	}
 
-	emit titleUpdate( tr( "copying data from the container file" ) ) ;
+	emit titleUpdate( tr( "Copying Data From The Container File" ) ) ;
 
 	if( size <= SIZE ){
 		fd_1.read( buffer,size ) ;

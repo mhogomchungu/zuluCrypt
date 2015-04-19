@@ -42,7 +42,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>key </string>
+    <string>Key </string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -73,7 +73,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>existing key in the volume to delete</string>
+     <string>Existing Key In The Volume To Delete</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbPassphraseFromFile">
@@ -86,7 +86,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>existing key from a keyfile to delete</string>
+     <string>Existing Key From A Keyfile To Delete</string>
     </property>
    </widget>
   </widget>
@@ -119,7 +119,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;delete</string>
+    <string>&amp;Delete</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -138,7 +138,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -167,7 +167,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>volume path</string>
+    <string>Volume Path</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

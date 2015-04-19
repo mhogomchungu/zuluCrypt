@@ -52,7 +52,7 @@
     </property>
     <column>
      <property name="text">
-      <string>volume path</string>
+      <string>Volume Path</string>
      </property>
      <property name="textAlignment">
       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -60,7 +60,7 @@
     </column>
     <column>
      <property name="text">
-      <string>mount point path</string>
+      <string>Mount Point Path</string>
      </property>
      <property name="textAlignment">
       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -68,7 +68,7 @@
     </column>
     <column>
      <property name="text">
-      <string>file system</string>
+      <string>File System</string>
      </property>
      <property name="textAlignment">
       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -76,7 +76,7 @@
     </column>
     <column>
      <property name="text">
-      <string>label</string>
+      <string>Label</string>
      </property>
      <property name="textAlignment">
       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -84,7 +84,7 @@
     </column>
     <column>
      <property name="text">
-      <string>size</string>
+      <string>Size</string>
      </property>
      <property name="textAlignment">
       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -92,7 +92,7 @@
     </column>
     <column>
      <property name="text">
-      <string>%used</string>
+      <string>%Used</string>
      </property>
      <property name="textAlignment">
       <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -120,7 +120,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;mount file</string>
+    <string>&amp;Mount File</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>
@@ -139,7 +139,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;refresh</string>
+    <string>&amp;Refresh</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbclose">
@@ -152,7 +152,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;close</string>
+    <string>&amp;Close</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbunlockencfs">
@@ -165,7 +165,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>mount encf&amp;s</string>
+    <string>Mount Encf&amp;s</string>
    </property>
   </widget>
  </widget>

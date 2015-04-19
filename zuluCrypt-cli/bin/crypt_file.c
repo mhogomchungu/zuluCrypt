@@ -32,23 +32,23 @@
 static int zuluExit( int st )
 {
 	switch( st ){
-		case 0 : printf( gettext( "SUCCESS: encrypted file created successfully\n" ) )				; break ;
-		case 1 : printf( gettext( "SUCCESS: decrypted file created successfully\n" ) ) 				; break ;
-		case 2 : printf( gettext( "ERROR: could not open key file for reading\n" ) )   				; break ;
-		case 3 : printf( gettext( "ERROR: missing key source\n" ) )						; break ;
-		case 4 : printf( gettext( "ERROR: could not open encryption routines\n" ) )				; break ;
-		case 5 : printf( gettext( "ERROR: file or folder already exist at destination address\n" ) )		; break ;
-		case 6 : printf( gettext( "ERROR: invalid path to source\n" ) )						; break ;
-		case 7 : printf( gettext( "ERROR: could not resolve path to destination file\n" ) )			; break ;
-		case 8 : printf( gettext( "ERROR: passphrases do not match\n" )	)					; break ;
-		case 9 : printf( gettext( "ERROR: destination path is missing\n" ) )					; break ;
-		case 10: printf( gettext( "ERROR: insufficient privilege to create destination file\n" ) )		; break ;
-		case 11: printf( gettext( "ERROR: presented key did not match the encryption key\n" ) )			; break ;
-		case 12: printf( gettext( "ERROR: can not get passphrase in silent mode\n"  ) )				; break ;
-		case 13: printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) )				; break ;
-		case 14: printf( gettext( "ERROR: source path is missing\n" ) )						; break ;
-		case 15: printf( gettext( "ERROR: insufficient privilege to open source file for reading\n" ) )		; break ;
-		case 16: printf( gettext( "INFORMATION: functionality currently disabled\n" ) ) ;			; break ;
+		case 0 : printf( gettext( "SUCCESS: Encrypted file created successfully\n" ) )				; break ;
+		case 1 : printf( gettext( "SUCCESS: Decrypted file created successfully\n" ) ) 				; break ;
+		case 2 : printf( gettext( "ERROR: Could not open key file for reading\n" ) )   				; break ;
+		case 3 : printf( gettext( "ERROR: Missing key source\n" ) )						; break ;
+		case 4 : printf( gettext( "ERROR: Could not open encryption routines\n" ) )				; break ;
+		case 5 : printf( gettext( "ERROR: File or folder already exist at destination address\n" ) )		; break ;
+		case 6 : printf( gettext( "ERROR: Invalid path to source\n" ) )						; break ;
+		case 7 : printf( gettext( "ERROR: Could not resolve path to destination file\n" ) )			; break ;
+		case 8 : printf( gettext( "ERROR: Passphrases do not match\n" )	)					; break ;
+		case 9 : printf( gettext( "ERROR: Destination path is missing\n" ) )					; break ;
+		case 10: printf( gettext( "ERROR: Insufficient privilege to create destination file\n" ) )		; break ;
+		case 11: printf( gettext( "ERROR: Presented key did not match the encryption key\n" ) )			; break ;
+		case 12: printf( gettext( "ERROR: Can not get passphrase in silent mode\n"  ) )				; break ;
+		case 13: printf( gettext( "ERROR: Insufficient memory to hold passphrase\n" ) )				; break ;
+		case 14: printf( gettext( "ERROR: Source path is missing\n" ) )						; break ;
+		case 15: printf( gettext( "ERROR: Insufficient privilege to open source file for reading\n" ) )		; break ;
+		case 16: printf( gettext( "INFORMATION: Functionality currently disabled\n" ) ) ;			; break ;
 	}
 	return st ;
 }

@@ -81,8 +81,8 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) : QWidge
 
 	m_menu = new QMenu( this ) ;
 
-	m_menu->addAction( tr( "set file system options" ) ) ;
-	m_menu->addAction( tr( "set volume offset" ) ) ;
+	m_menu->addAction( tr( "Set File System Options" ) ) ;
+	m_menu->addAction( tr( "Set Volume Offset" ) ) ;
 
 	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
 
@@ -232,7 +232,7 @@ void mountPartition::showFileSystemOptionWindow()
 
 void mountPartition::doAction( QAction * ac )
 {
-	if( ac->text() == tr( "set file system options" ) ){
+	if( ac->text() == tr( "Set File System Options" ) ){
 		this->showFileSystemOptionWindow() ;
 	}else{
 		this->showOffSetWindowOption() ;
@@ -246,7 +246,7 @@ void mountPartition::pbOptions()
 
 void mountPartition::pbOpenMountPath()
 {
-	QString p = tr( "Select Path to mount point folder" ) ;
+	QString p = tr( "Select Path To Mount Point Folder" ) ;
 	QString Z = QFileDialog::getExistingDirectory( this,p,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){

@@ -29,7 +29,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;done</string>
+    <string>&amp;Done</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>
@@ -48,7 +48,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>add fi&amp;le</string>
+    <string>Add Fi&amp;le</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>
@@ -67,7 +67,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>add dev&amp;ice</string>
+    <string>Add Dev&amp;ice</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>
@@ -105,7 +105,7 @@
    </property>
    <column>
     <property name="text">
-     <string>path to system volumes</string>
+     <string>Path To System Volumes</string>
     </property>
    </column>
   </widget>

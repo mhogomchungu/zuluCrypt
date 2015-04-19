@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>walletconfiginput</class>
- <widget class="QDialog" name="kwalletconfiginput">
+ <widget class="QDialog" name="walletconfiginput">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>add</string>
+    <string>&amp;Add</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButtonCancel">
@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>cancel</string>
+    <string>&amp;Cancel</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupBox">
@@ -61,7 +61,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>volume id</string>
+     <string>Volume ID</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -80,7 +80,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>comment</string>
+     <string>Comment</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -99,7 +99,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>Key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -118,7 +118,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>repeat key</string>
+     <string>Repeat Key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

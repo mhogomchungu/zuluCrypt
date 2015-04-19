@@ -144,29 +144,29 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 {
 	switch( st ){
 		case 0 : _printResult( device,m_point ) ;											break ;
-		case 1 : printf( gettext( "ERROR: failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?\n" ) ) 	;break ;
-		case 2 : printf( gettext( "ERROR: there seem to be an open volume accociated with given address\n" ) ) ;			break ;
-		case 3 : printf( gettext( "ERROR: no file or device exist on given path\n" ) ) ;						break ;
-		case 4 : printf( gettext( "ERROR: volume could not be opened with the presented key\n" ) ) ;					break ;
-		case 5 : printf( gettext( "ERROR: insufficient privilege to mount the device with given options\n" ) ) ;			break ;
-		case 6 : printf( gettext( "ERROR: insufficient privilege to open device in read write mode or device does not exist\n" ) ) ;	break ;
-		case 7 : printf( gettext( "ERROR: only root user can perform this operation\n" ) ) ;						break ;
+		case 1 : printf( gettext( "ERROR: Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?\n" ) ) 	;break ;
+		case 2 : printf( gettext( "ERROR: There seem to be an open volume accociated with given address\n" ) ) ;			break ;
+		case 3 : printf( gettext( "ERROR: No file or device exist on given path\n" ) ) ;						break ;
+		case 4 : printf( gettext( "ERROR: Volume could not be opened with the presented key\n" ) ) ;					break ;
+		case 5 : printf( gettext( "ERROR: Insufficient privilege to mount the device with given options\n" ) ) ;			break ;
+		case 6 : printf( gettext( "ERROR: Insufficient privilege to open device in read write mode or device does not exist\n" ) ) ;	break ;
+		case 7 : printf( gettext( "ERROR: Only root user can perform this operation\n" ) ) ;						break ;
 		case 8 : printf( gettext( "ERROR: -O and -m options can not be used together\n" ) ) ;						break ;
-		case 9 : printf( gettext( "ERROR: could not create mount point, invalid path or path already taken\n" ) ) ;			break ;
-		case 10: printf( gettext( "ERROR: shared mount point path aleady taken\n" ) ) ;							break ;
-		case 11: printf( gettext( "ERROR: there seem to be an opened mapper associated with the device\n" ) ) ;				break ;
-		case 12: printf( gettext( "ERROR: could not get a passphrase from the module\n" ) ) ;						break ;
-		case 13: printf( gettext( "ERROR: could not get passphrase in silent mode\n" ) ); 						break ;
-		case 14: printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) ) ;						break ;
-		case 15: printf( gettext( "ERROR: one or more required argument(s) for this operation is missing\n" ) ) ;			break ;
-		case 16: printf( gettext( "ERROR: invalid path to key file\n" ) ) ;								break ;
-		case 17: printf( gettext( "ERROR: could not get enought memory to hold the key file\n" ) ) ;					break ;
-		case 18: printf( gettext( "ERROR: insufficient privilege to open key file for reading\n" ) );					break ;
-		case 19: printf( gettext( "ERROR: could not get a passphrase through a local socket\n" ) );					break ;
-		case 20: printf( gettext( "ERROR: failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered\n" ) );break ;
-		case 21: printf( gettext( "ERROR: could not create a lock on /etc/mtab\n" ) ) ;							break ;
-		case 22: printf( gettext( "ERROR: insufficient privilege to open a system volume\n" ) ) ;					break ;
-		default: printf( gettext( "ERROR: unrecognized error with status number %d encountered\n" ),st ) ;
+		case 9 : printf( gettext( "ERROR: Could not create mount point, invalid path or path already taken\n" ) ) ;			break ;
+		case 10: printf( gettext( "ERROR: Shared mount point path aleady taken\n" ) ) ;							break ;
+		case 11: printf( gettext( "ERROR: There seem to be an opened mapper associated with the device\n" ) ) ;				break ;
+		case 12: printf( gettext( "ERROR: Could not get a passphrase from the module\n" ) ) ;						break ;
+		case 13: printf( gettext( "ERROR: Could not get passphrase in silent mode\n" ) ); 						break ;
+		case 14: printf( gettext( "ERROR: Insufficient memory to hold passphrase\n" ) ) ;						break ;
+		case 15: printf( gettext( "ERROR: One or more required argument(s) for this operation is missing\n" ) ) ;			break ;
+		case 16: printf( gettext( "ERROR: Invalid path to key file\n" ) ) ;								break ;
+		case 17: printf( gettext( "ERROR: Could not get enought memory to hold the key file\n" ) ) ;					break ;
+		case 18: printf( gettext( "ERROR: Insufficient privilege to open key file for reading\n" ) );					break ;
+		case 19: printf( gettext( "ERROR: Could not get a passphrase through a local socket\n" ) );					break ;
+		case 20: printf( gettext( "ERROR: Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered\n" ) );break ;
+		case 21: printf( gettext( "ERROR: Could not create a lock on /etc/mtab\n" ) ) ;							break ;
+		case 22: printf( gettext( "ERROR: Insufficient privilege to open a system volume\n" ) ) ;					break ;
+		default: printf( gettext( "ERROR: Unrecognized error with status number %d encountered\n" ),st ) ;
 	}
 
 	zuluCryptSecurityUnlockMemory( stl ) ;

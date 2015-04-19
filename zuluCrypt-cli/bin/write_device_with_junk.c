@@ -57,29 +57,29 @@ static int zuluExit( stringList_t stl, int status )
 {
 	ssize_t index ;
 	switch( status ){
-		case 0 : printf( gettext( "SUCCESS: mapper created successfully\n" ) ) ;
+		case 0 : printf( gettext( "SUCCESS: Mapper created successfully\n" ) ) ;
 			 index = StringListHasStartSequence( stl,crypt_get_dir() ) ;
 			 if( index >= 0 ){
-				 printf( gettext( "opened mapper path: " ) ) ;
+				 printf( gettext( "Opened mapper path: " ) ) ;
 				 StringListPrintLineAt( stl,index ) ;
 			 }
 			 break ;
-		case 1 : printf( gettext( "ERROR: could not create mapper\n" ) )					;break ;
-		case 2 : printf( gettext( "ERROR: could not resolve device path\n" ) )					;break ;
-		case 3 : printf( gettext( "\nSUCCESS: random data successfully written\n" ) )				;break ;
-		case 5 : printf( gettext( "INFO: user chose not to proceed\n" ) ) 					;break ;
-		case 8 : printf( gettext( "ERROR: insufficitied privilege to oped device \n" ) ) 			;break ;
-		case 9 : printf( gettext( "ERROR: device path is invalid\n" ) )						;break ;
-		case 10: printf( gettext( "ERROR: passphrase file does not exist\n" ) ) 				;break ;
-		case 11: printf( gettext( "ERROR: could not get enought memory to hold the key file\n" ) ) 	 	;break ;
-		case 12: printf( gettext( "ERROR: insufficient privilege to open key file for reading\n" ) )	       	;break ;
-		case 13: printf( gettext( "ERROR: can not open a mapper on a device with an opened mapper\n" ) )	;break ;
-		case 14: printf( gettext( "ERROR: can not open a mapper on a mounted device\n" ) ) 			;break ;
-		case 15: printf( gettext( "INFO: signal caught,exiting prematurely\n" ) )				;break ;
-		case 16: printf( gettext( "ERROR: can not get passphrase in silent mode\n" ) )				;break ;
-		case 17: printf( gettext( "ERROR: insufficient memory to hold passphrase\n" ) ) 			;break ;
-		case 18: printf( gettext( "ERROR: insufficient memory to hold 3 characters?really?\n" ) ) 		;break ;
-		case 19: printf( gettext( "ERROR: insufficient privilege to open the file with your privileges?\n" ) )  ;break ;
+		case 1 : printf( gettext( "ERROR: Could not create mapper\n" ) )					;break ;
+		case 2 : printf( gettext( "ERROR: Could not resolve device path\n" ) )					;break ;
+		case 3 : printf( gettext( "\nSUCCESS: Random data successfully written\n" ) )				;break ;
+		case 5 : printf( gettext( "INFO: User chose not to proceed\n" ) ) 					;break ;
+		case 8 : printf( gettext( "ERROR: Insufficitied privilege to oped device \n" ) ) 			;break ;
+		case 9 : printf( gettext( "ERROR: Device path is invalid\n" ) )						;break ;
+		case 10: printf( gettext( "ERROR: Passphrase file does not exist\n" ) ) 				;break ;
+		case 11: printf( gettext( "ERROR: Could not get enought memory to hold the key file\n" ) ) 	 	;break ;
+		case 12: printf( gettext( "ERROR: Insufficient privilege to open key file for reading\n" ) )	       	;break ;
+		case 13: printf( gettext( "ERROR: Can not open a mapper on a device with an opened mapper\n" ) )	;break ;
+		case 14: printf( gettext( "ERROR: Can not open a mapper on a mounted device\n" ) ) 			;break ;
+		case 15: printf( gettext( "INFO: Signal caught,exiting prematurely\n" ) )				;break ;
+		case 16: printf( gettext( "ERROR: Can not get passphrase in silent mode\n" ) )				;break ;
+		case 17: printf( gettext( "ERROR: Insufficient memory to hold passphrase\n" ) ) 			;break ;
+		case 18: printf( gettext( "ERROR: Insufficient memory to hold 3 characters?really?\n" ) ) 		;break ;
+		case 19: printf( gettext( "ERROR: Insufficient privilege to open the file with your privileges?\n" ) )  ;break ;
 	}
 
 	StringListClearDelete( &stl ) ;

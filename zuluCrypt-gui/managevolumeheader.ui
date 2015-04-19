@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>backup name</string>
+    <string>Backup Name</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -71,7 +71,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>c&amp;reate</string>
+    <string>C&amp;reate</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -90,7 +90,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -109,7 +109,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>volume path</string>
+    <string>Volume Path</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -202,7 +202,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>Key</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -218,7 +218,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>keyfile</string>
+     <string>Keyfile</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -231,7 +231,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>Key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -263,7 +263,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>normal volume</string>
+     <string>Normal Volume</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -279,7 +279,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>windows system volume</string>
+     <string>Windows System Volume</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="rbFDETrueCrypt">
@@ -292,7 +292,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>whole drive encrypted volume</string>
+     <string>Whole Drive Encrypted Volume</string>
     </property>
    </widget>
   </widget>
@@ -318,7 +318,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>manage a luks header</string>
+     <string>Manage A LUKS Header</string>
     </property>
     <property name="checked">
      <bool>true</bool>
@@ -334,23 +334,10 @@
      </rect>
     </property>
     <property name="text">
-     <string>manage a truecrypt header</string>
+     <string>Manage A TrueCrypt Header</string>
     </property>
    </widget>
   </widget>
-  <zorder>lineEditBackUpName</zorder>
-  <zorder>labelBackUpHeader</zorder>
-  <zorder>pbOpenFolder</zorder>
-  <zorder>pbCreate</zorder>
-  <zorder>pbCancel</zorder>
-  <zorder>labelDevicePath</zorder>
-  <zorder>lineEditDevicePath</zorder>
-  <zorder>pushButtonFile</zorder>
-  <zorder>pushButtonPartition</zorder>
-  <zorder>groupBox</zorder>
-  <zorder>groupBox_2</zorder>
-  <zorder>rbNormalTrueCrypt</zorder>
-  <zorder>groupBox_3</zorder>
  </widget>
  <tabstops>
   <tabstop>lineEditDevicePath</tabstop>

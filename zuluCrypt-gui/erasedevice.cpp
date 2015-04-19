@@ -42,7 +42,7 @@ erasedevice::erasedevice( QWidget * parent ) :
 	m_ui->progressBar->setMaximum( 100 ) ;
 	m_ui->progressBar->setMinimum( 0 ) ;
 
-	this->setWindowTitle( tr( "write random data over existing data" ) ) ;
+	this->setWindowTitle( tr( "Write Random Data Over Existing Data" ) ) ;
 
 	connect( m_ui->pushButtonFile,SIGNAL( clicked() ),this,SLOT( pbFile() ) ) ;
 	connect( m_ui->pushButtonPartition,SIGNAL( clicked() ),this,SLOT( pbPartition() ) ) ;
@@ -101,22 +101,22 @@ void erasedevice::taskResult( int st )
 
 	switch( st ){
 		case 0 : m_ui->progressBar->setValue( 100 ) ;
-			 msg.ShowUIOK( tr( "SUCCESS!" ),tr( "data on the device successfully erased" ) )			;break ;
-		case 1: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create mapper" ) )						;break ;
-		case 2: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve device path" ) )					;break ;
-		case 3: msg.ShowUIOK( tr( "ERROR!" ),tr( "random data successfully written" ) )					;break ;
-		//case 4: msg.ShowUIOK( tr( "ERROR!" ),tr( "user chose not to proceed" ) )					;break ;
-		case 5: msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user choice" ) )				;break ;
-		case 6: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not write on a device with opened mapper" ) )			;break ;
-		case 7: msg.ShowUIOK( tr( "ERROR!" ),tr( "policy prevents non root user opening mapper on system partition" ) ) ;break;
+			 msg.ShowUIOK( tr( "SUCCESS!" ),tr( "Data on the device successfully erased" ) )			;break ;
+		case 1: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create mapper" ) )						;break ;
+		case 2: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not resolve device path" ) )					;break ;
+		case 3: msg.ShowUIOK( tr( "ERROR!" ),tr( "Random data successfully written" ) )					;break ;
+		//case 4: msg.ShowUIOK( tr( "ERROR!" ),tr( "User chose not to proceed" ) )					;break ;
+		case 5: msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) )				;break ;
+		case 6: msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not write on a device with opened mapper" ) )			;break ;
+		case 7: msg.ShowUIOK( tr( "ERROR!" ),tr( "Policy prevents non root user opening mapper on system partition" ) ) ;break;
 		case 8: msg.ShowPermissionProblem( QString( "writing" ),m_ui->lineEdit->text() )				;break ;
-		case 9: msg.ShowUIOK( tr( "ERROR!" ),tr( "device path is invalid" ) )						;break ;
-		case 10:msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrase file does not exist" ) )					;break ;
-		case 11:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enought memory to hold the key file" ) )		;break ;
-		case 12:msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) )		;break ;
-		case 13:msg.ShowUIOK( tr( "ERROR!" ),tr( "this device appear to already be in use" ) )				;break ;
-		case 14:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not open a mapper on a mounted device" ) )			;break ;
-		default:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not write to the device" ) ) ;
+		case 9: msg.ShowUIOK( tr( "ERROR!" ),tr( "Device path is invalid" ) )						;break ;
+		case 10:msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrase file does not exist" ) )					;break ;
+		case 11:msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get enought memory to hold the key file" ) )		;break ;
+		case 12:msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) )		;break ;
+		case 13:msg.ShowUIOK( tr( "ERROR!" ),tr( "This device appear to already be in use" ) )				;break ;
+		case 14:msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not open a mapper on a mounted device" ) )			;break ;
+		default:msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not write to the device" ) ) ;
 	}
 
 	this->HideUI() ;
@@ -135,13 +135,13 @@ void erasedevice::pbStart()
 	DialogMsg msg( this ) ;
 
 	if( path.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "device path field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Device path field is empty" ) ) ;
 	}
 
 	path = utility::resolvePath( path ) ;
 
 	if( !utility::pathExists( path ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to device" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to device" ) ) ;
 	}
 	if( m_option == 0 ){
 		QString x = tr( "\
@@ -152,7 +152,7 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 		}
 	}
 
-	this->setWindowTitle( tr( "writing random data over existing data" ) ) ;
+	this->setWindowTitle( tr( "Writing Random Data Over Existing Data" ) ) ;
 
 	this->disableAll() ;
 
@@ -248,7 +248,7 @@ void erasedevice::pbPartition()
 	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( setPath( QString ) ) ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	op->partitionList( tr( "select a non system partition to erase its contents" )," -N" ) ;
+	op->partitionList( tr( "Select a non system partition to erase its contents" )," -N" ) ;
 }
 
 void erasedevice::setPath( QString p )

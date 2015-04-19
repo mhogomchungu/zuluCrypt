@@ -45,7 +45,7 @@ or in terabytes if the entry ends with &quot;t&quot;</string>
      <string/>
     </property>
     <property name="text">
-     <string>Enter below the offset location of the volume about to be opened.</string>
+     <string>Enter Below The Offset Location Of The Volume About To Be Opened.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -74,7 +74,7 @@ or in terabytes if the entry ends with &quot;t&quot;</string>
      </rect>
     </property>
     <property name="text">
-     <string>Enter the password below to a volume at the above offset.</string>
+     <string>Enter The Password Below To A Volume At The Above Offset.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -103,7 +103,7 @@ or in terabytes if the entry ends with &quot;t&quot;</string>
      </rect>
     </property>
     <property name="text">
-     <string>ok</string>
+     <string>&amp;ok</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pbCancel">
@@ -116,7 +116,7 @@ or in terabytes if the entry ends with &quot;t&quot;</string>
      </rect>
     </property>
     <property name="text">
-     <string>cancel</string>
+     <string>&amp;Cancel</string>
     </property>
    </widget>
   </widget>

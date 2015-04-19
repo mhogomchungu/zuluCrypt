@@ -139,7 +139,7 @@ QString cryptfiles::destinationPath( const QString& e )
 void cryptfiles::encrypt()
 {
 	m_operation = "-E" ;
-	this->setWindowTitle( tr( "create encrypted version of a file" ) ) ;
+	this->setWindowTitle( tr( "Create encrypted version of a file" ) ) ;
 	this->show() ;
 }
 
@@ -148,7 +148,7 @@ void cryptfiles::decrypt()
 	m_operation = "-D" ;
 	m_ui->labelKey2->setEnabled( false ) ;
 	m_ui->lineEditPass_2->setEnabled( false ) ;
-	this->setWindowTitle( tr( "create decrypted version of an encrypted file" ) ) ;
+	this->setWindowTitle( tr( "Create decrypted version of an encrypted file" ) ) ;
 	this->show() ;
 }
 
@@ -160,7 +160,7 @@ void cryptfiles::decrypt( const QString& e )
 	m_ui->lineEditPass_2->setEnabled( false ) ;
 	m_ui->lineEditDestinationPath->setText( this->destinationPath( e )  ) ;
 	this->sourceTextChanged( e ) ;
-	this->setWindowTitle( tr( "create decrypted version of an encrypted file" ) ) ;
+	this->setWindowTitle( tr( "Create decrypted version of an encrypted file" ) ) ;
 	this->show() ;
 }
 
@@ -232,15 +232,15 @@ void cryptfiles::pbCreate()
 	QString source = utility::resolvePath( m_ui->lineEditSourcePath->text() ) ;
 
 	if( source.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "path to source field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Path to source field is empty" ) ) ;
 	}
 	QString dest = utility::resolvePath( m_ui->lineEditDestinationPath->text() ) ;
 
 	if( !utility::pathExists( source ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to source file" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to source file" ) ) ;
 	}
 	if( utility::pathExists( dest ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "destination path already taken" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Destination path already taken" ) ) ;
 	}
 	QString key_1 = m_ui->lineEditPass_1->text() ;
 	QString key_2 = m_ui->lineEditPass_2->text() ;
@@ -249,20 +249,20 @@ void cryptfiles::pbCreate()
 	if( m_ui->comboBox->currentIndex() == 0 ){
 		keySource = "-p" ;
 		if( key_1.isEmpty() ){
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "first key field is empty" ) ) ;
+			return msg.ShowUIOK( tr( "ERROR!" ),tr( "First key field is empty" ) ) ;
 		}
 		if( m_operation == "-E" ){
 			if( key_2.isEmpty() ){
-				return msg.ShowUIOK( tr( "ERROR!" ),tr( "second key field is empty" ) ) ;
+				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Second key field is empty" ) ) ;
 			}
 			if( key_1 != key_2 ){
-				return msg.ShowUIOK( tr( "ERROR!" ),tr( "keys do not match" ) ) ;
+				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Keys do not match" ) ) ;
 			}
 		}
 	}else{
 		keySource = "-f" ;
 		if( !utility::pathExists( key_1 ) ){
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) ) ;
+			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to key file" ) ) ;
 		}
 	}
 
@@ -413,15 +413,15 @@ void cryptfiles::cbChanged( int r )
 {
 	if( r == 0 ){
 
-		m_ui->lineEditPass_1->setToolTip( tr( "enter a key" ) ) ;
+		m_ui->lineEditPass_1->setToolTip( tr( "Enter A Key" ) ) ;
 		m_ui->pushButtonKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 		m_ui->pushButtonKeyFile->setEnabled( false ) ;
 		m_ui->lineEditPass_1->clear() ;
 		m_ui->lineEditPass_2->clear() ;
 		m_ui->lineEditPass_1->setEchoMode( QLineEdit::Password ) ;
 		m_ui->lineEditPass_1->setFocus() ;
-		m_ui->labelKey->setText( tr( "key" ) ) ;
-		m_ui->labelKey2->setText( tr( "repeat key" ) ) ;
+		m_ui->labelKey->setText( tr( "Key" ) ) ;
+		m_ui->labelKey2->setText( tr( "Repeat Key" ) ) ;
 
 		if( m_operation == "-E" ){
 			m_ui->labelKey2->setEnabled( true ) ;
@@ -429,7 +429,7 @@ void cryptfiles::cbChanged( int r )
 		}
 	}else{
 
-		m_ui->lineEditPass_1->setToolTip( tr( "enter a path to a keyfile location" ) ) ;
+		m_ui->lineEditPass_1->setToolTip( tr( "Enter A Path To A Keyfile Location" ) ) ;
 		m_ui->labelKey->setText( tr( "keyfile path" ) ) ;
 		m_ui->pushButtonKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 		m_ui->lineEditPass_2->setEnabled( false ) ;
@@ -446,10 +446,10 @@ void cryptfiles::pbOpenFile()
 {
 	QString Z ;
 	if( m_operation == QString( "-E" ) ){
-		Z = QFileDialog::getOpenFileName( this,tr( "select a file you want to encrypt" ),QDir::homePath(),0 ) ;
+		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Encrypt" ),QDir::homePath(),0 ) ;
 	}else{
 		QString x = tr( "zuluCrypt encrypted files ( *.zc ) ;; All Files ( * )" ) ;
-		Z = QFileDialog::getOpenFileName( this,tr( "select a file you want to decrypt" ),QDir::homePath(),x ) ;
+		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Decrypt" ),QDir::homePath(),x ) ;
 	}
 	m_ui->lineEditSourcePath->setText( Z ) ;
 	m_ui->lineEditDestinationPath->setText( this->destinationPath( Z ) ) ;
@@ -459,7 +459,7 @@ void cryptfiles::pbOpenFile()
 
 void cryptfiles::pbKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "select a keyfile" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),QDir::homePath(),0 ) ;
 
 	m_ui->lineEditPass_1->setText( Z ) ;
 	if( m_ui->lineEditSourcePath->text().isEmpty() ){
@@ -478,33 +478,33 @@ void cryptfiles::taskFinished( int st )
 	CryptTask::status status = CryptTask::status( st ) ;
 
 	switch( status ){
-	case CryptTask::encryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "encrypted file created successfully" ) )     ;
+	case CryptTask::encryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "Encrypted file created successfully" ) )     ;
 		 return this->HideUI() ;
 	case CryptTask::md5Pass               :
-	case CryptTask::decryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "decrypted file created successfully" ) )	;
+	case CryptTask::decryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "Decrypted file created successfully" ) )	;
 		 return this->HideUI() ;
-	case CryptTask::openKeyFileReadFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open keyfile for reading" ) )	;
+	case CryptTask::openKeyFileReadFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open keyfile for reading" ) )	;
 		 break ;
-	case CryptTask::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open encryption routines" ) )	;
+	case CryptTask::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open encryption routines" ) )	;
 		break ;
-	case CryptTask::destinationFileExists : msg.ShowUIOK( tr( "ERROR!" ),tr( "file or folder already exist at destination address" ) )    ;
+	case CryptTask::destinationFileExists : msg.ShowUIOK( tr( "ERROR!" ),tr( "File or folder already exist at destination address" ) )    ;
 		break ;
 	case CryptTask::OpenDestinationFail   :
-	case CryptTask::createFileFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create destination file" ) )      ;
+	case CryptTask::createFileFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to create destination file" ) )      ;
 		break ;
-	case CryptTask::wrongKey              : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key did not match the encryption key" ) )         ;
+	case CryptTask::wrongKey              : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented key did not match the encryption key" ) )         ;
 		break ;
-	case CryptTask::quit                  : msg.ShowUIOK( tr( "INFO!" ),tr( "operation terminated per user request" ) )                   ;
+	case CryptTask::quit                  : msg.ShowUIOK( tr( "INFO!" ),tr( "Operation terminated per user request" ) )                   ;
 		return this->HideUI() ;
-	case CryptTask::OpenSourceFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open source file for reading" ) ) ;
+	case CryptTask::OpenSourceFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open source file for reading" ) ) ;
 		break ;
-	case CryptTask::md5Fail               : msg.ShowUIOK( tr( "WARNING"),tr( "decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
+	case CryptTask::md5Fail               : msg.ShowUIOK( tr( "WARNING"),tr( "Decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
 		return this->HideUI() ;
-	case CryptTask::openMapperReadFail    : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open reading encryption routines" ) )	;
+	case CryptTask::openMapperReadFail    : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open reading encryption routines" ) )	;
 		break ;
-	case CryptTask::openMapperWriteFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open writing encryption routines" ) )	;
+	case CryptTask::openMapperWriteFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open writing encryption routines" ) )	;
 		break ;
-	case CryptTask::closeMapperFail       : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to close encryption routine" ) )		;
+	case CryptTask::closeMapperFail       : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to close encryption routine" ) )		;
 		break ;
 	case CryptTask::unset                 :
 	case CryptTask::success               :

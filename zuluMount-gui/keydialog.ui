@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;open</string>
+    <string>&amp;Open</string>
    </property>
    <property name="default">
     <bool>true</bool>
@@ -42,7 +42,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -55,7 +55,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>key</string>
+    <string>Key</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -97,7 +97,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>mount name</string>
+    <string>Mount Name</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -139,7 +139,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>mount in &amp;read only mode</string>
+    <string>Mount In &amp;Read Only Mode</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="checkBoxShareMountPoint">
@@ -152,7 +152,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;share mount point</string>
+    <string>&amp;Share Mount Point</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbOptions">
@@ -165,7 +165,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>options</string>
+    <string>O&amp;ptions</string>
    </property>
   </widget>
   <widget class="QComboBox" name="cbKeyType">

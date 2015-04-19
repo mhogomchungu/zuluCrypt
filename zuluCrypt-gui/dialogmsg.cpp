@@ -112,12 +112,12 @@ void DialogMsg::ShowPermissionProblem( const QString& msg,const QString& device 
 	QString msg1 ;
 	if( device.startsWith( "/dev/" ) ){
 		if( msg == "reading" ){
-			msg1 = tr( "insufficient privilege to access a system device,\nonly root user or members of group zulucrypt can do that" ) ;
+			msg1 = tr( "Insufficient privilege to access a system device,\nonly root user or members of group zulucrypt can do that" ) ;
 		}else{
-			msg1 = tr( "insufficient privilege to access a system device in read/write mode,\nonly root user or members of group zulucrypt-write can do that" ) ;
+			msg1 = tr( "Insufficient privilege to access a system device in read/write mode,\nonly root user or members of group zulucrypt-write can do that" ) ;
 		}
 	}else{
-		msg1 = tr( "you do not seem to have proper permissions to access the encrypted file in %1 mode,check file permissions and try again" ).arg( msg ) ;
+		msg1 = tr( "You do not seem to have proper permissions to access the encrypted file in %1 mode,check file permissions and try again" ).arg( msg ) ;
 	}
 
 	this->ShowUIOK( tr( "INFORMATION"),msg1 ) ;
@@ -280,7 +280,7 @@ int  DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
 
 bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg )
 {
-	QCheckBox * checkBox = new QCheckBox( tr( "do not show this dialog again" ),this ) ;
+	QCheckBox * checkBox = new QCheckBox( tr( "Do not show this dialog again" ),this ) ;
 
 	this->setFixedSize( 270,110 ) ;
 

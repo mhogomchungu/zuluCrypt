@@ -45,7 +45,7 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 		StringFree( output ) ;
 		xt = 0 ;
 	}else{
-		printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
+		printf( gettext( "ERROR: Could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
 		xt = 2 ;
 	}
 	StringDelete( &p ) ;

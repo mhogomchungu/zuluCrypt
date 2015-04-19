@@ -73,18 +73,18 @@ createvolume::createvolume( QWidget * parent ) :
 
 	m_ui->labelvolumeOptions->setVisible( false ) ;
 
-	QString a = tr( "options are separated by a \".\" character.\n\n" ) ;
-	QString b = tr( "multiple algorithms are separated by \":\" character.\n\n" ) ;
-	QString c = tr( "options are in a format of \"algorithm.cipher mode.key size in bits.hash\"\n\n") ;
-	QString d = tr( "default option is the first entry on the list" ) ;
+	QString a = tr( "Options are separated by a \".\" character.\n\n" ) ;
+	QString b = tr( "Multiple algorithms are separated by \":\" character.\n\n" ) ;
+	QString c = tr( "Options are in a format of \"algorithm.cipher mode.key size in bits.hash\"\n\n") ;
+	QString d = tr( "Default option is the first entry on the list" ) ;
 
 	m_ui->comboBoxOptions->setToolTip( a + b + c + d ) ;
 
-	m_ui->cbNormalVolume->addItem( tr( "key" ) ) ;
-	m_ui->cbNormalVolume->addItem( tr( "keyfile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "Keyfile" ) ) ;
 
-	m_ui->cbHiddenVolume->addItem( tr( "key" ) ) ;
-	m_ui->cbHiddenVolume->addItem( tr( "keyfile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "Keyfile" ) ) ;
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
@@ -98,11 +98,11 @@ createvolume::createvolume( QWidget * parent ) :
 	m_ui->comboBoxFS->addItems( l ) ;
 
 #if TRUECRYPT_CREATE
-	m_ui->comboBoxVolumeType->addItem( tr( "normal truecrypt" ) ) ;
-	m_ui->comboBoxVolumeType->addItem( tr( "normal+hidden truecrypt" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "Normal TrueCrypt" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden TrueCrypt" ) ) ;
 #if VERACRYPT_CREATE
-	m_ui->comboBoxVolumeType->addItem( tr( "normal veracrypt" ) ) ;
-	m_ui->comboBoxVolumeType->addItem( tr( "normal+hidden veracrypt" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "Normal VeraCrypt" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden VeraCrypt" ) ) ;
 #endif
 #endif
 	m_ui->comboBoxVolumeType->setCurrentIndex( int( createvolume::luks ) ) ;
@@ -139,12 +139,12 @@ void createvolume::keyChanged( bool check,const QString& key )
 	if( check ){
 		int st = m_keyStrength.quality( key ) ;
 		if( st < 0 ){
-			this->setWindowTitle( tr( "passphrase quality: 0%" ) ) ;
+			this->setWindowTitle( tr( "Passphrase Quality: 0%" ) ) ;
 		}else{
-			this->setWindowTitle( tr( "passphrase quality: %1%" ).arg( QString::number( st ) ) ) ;
+			this->setWindowTitle( tr( "Passphrase Quality: %1%" ).arg( QString::number( st ) ) ) ;
 		}
 	}else{
-		this->setWindowTitle( tr( "create a new volume" ) ) ;
+		this->setWindowTitle( tr( "Create A New Volume" ) ) ;
 	}
 }
 
@@ -163,10 +163,10 @@ void createvolume::volumeType( int s )
 	m_ui->cbNormalVolume->clear() ;
 	m_ui->cbHiddenVolume->clear() ;
 
-	m_ui->cbNormalVolume->addItem( tr( "key" ) ) ;
-	m_ui->cbNormalVolume->addItem( tr( "keyfile" ) ) ;
-	m_ui->cbHiddenVolume->addItem( tr( "key" ) ) ;
-	m_ui->cbHiddenVolume->addItem( tr( "keyfile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "Keyfile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "Keyfile" ) ) ;
 
 	auto _enableHidden = [ this ](){
 
@@ -219,8 +219,8 @@ void createvolume::volumeType( int s )
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( true ) ;
 		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
-		m_ui->cbHiddenVolume->addItem( tr( "TrueCrypt keys" ) ) ;
-		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt keys" ) ) ;
+		m_ui->cbHiddenVolume->addItem( tr( "TrueCrypt Keys" ) ) ;
+		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt Keys" ) ) ;
 		this->cbHiddenVolume( 0 ) ;
 		_enableHidden() ;
 		break ;
@@ -228,8 +228,8 @@ void createvolume::volumeType( int s )
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( true ) ;
 		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
-		m_ui->cbHiddenVolume->addItem( tr( "VeraCrypt keys" ) ) ;
-		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt keys" ) ) ;
+		m_ui->cbHiddenVolume->addItem( tr( "VeraCrypt Keys" ) ) ;
+		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt Keys" ) ) ;
 		this->cbHiddenVolume( 0 ) ;
 		_enableHidden() ;
 		break ;
@@ -246,12 +246,12 @@ void createvolume::closeEvent( QCloseEvent * e )
 
 void createvolume::ShowPartition( QString volume )
 {
-	this->ShowUI( tr( "path to device" ),volume ) ;
+	this->ShowUI( tr( "Path To Device" ),volume ) ;
 }
 
 void createvolume::ShowFile( QString volume )
 {
-	this->ShowUI( tr( "path to file" ),volume ) ;
+	this->ShowUI( tr( "Path To File" ),volume ) ;
 }
 
 void createvolume::eraseDataPartition()
@@ -394,7 +394,7 @@ void createvolume::ShowUI( const QString& l,const QString& v )
 
 void createvolume::pbOpenKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "key file path" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),QDir::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->lineEditPassphrase1->setText( Z ) ;
 	}
@@ -402,7 +402,7 @@ void createvolume::pbOpenKeyFile()
 
 void createvolume::pbOpenHiddenKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "key file path" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),QDir::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->lineEditHiddenKey->setText( Z ) ;
 	}
@@ -486,7 +486,7 @@ void createvolume::keys( QString key,QStringList keyFiles )
 
 void createvolume::cbNormalVolume( int r )
 {
-	this->setWindowTitle( tr( "create a new volume" ) ) ;
+	this->setWindowTitle( tr( "Create A New Volume" ) ) ;
 
 	if( r == 0 ){
 
@@ -497,7 +497,7 @@ void createvolume::cbNormalVolume( int r )
 		m_ui->lineEditPassPhrase2->clear() ;
 		m_ui->lineEditPassphrase1->setEchoMode( QLineEdit::Password ) ;
 		m_ui->lineEditPassPhrase2->setEchoMode( QLineEdit::Password ) ;
-		m_ui->labelPassPhrase->setText( tr( "key" ) ) ;
+		m_ui->labelPassPhrase->setText( tr( "Key" ) ) ;
 
 		m_ui->labelRepeatPassPhrase->setEnabled( true ) ;
 		m_ui->pbOpenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
@@ -509,7 +509,7 @@ void createvolume::cbNormalVolume( int r )
 		m_ui->lineEditPassPhrase2->clear() ;
 		m_ui->lineEditPassphrase1->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->lineEditPassPhrase2->setEnabled( false ) ;
-		m_ui->labelPassPhrase->setText( tr( "keyfile" ) ) ;
+		m_ui->labelPassPhrase->setText( tr( "Keyfile" ) ) ;
 		m_ui->labelRepeatPassPhrase->setEnabled( false ) ;
 		m_ui->pbOpenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	}else{
@@ -521,7 +521,7 @@ void createvolume::cbNormalVolume( int r )
 		m_ui->lineEditPassphrase1->setEnabled( false ) ;
 		m_ui->lineEditPassphrase1->setText( QString() ) ;
 		m_ui->lineEditPassPhrase2->setText( QString() ) ;
-		m_ui->labelPassPhrase->setText( tr( "keys" ) ) ;
+		m_ui->labelPassPhrase->setText( tr( "Keys" ) ) ;
 		m_ui->labelRepeatPassPhrase->setEnabled( false ) ;
 		m_ui->pbOpenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 
@@ -531,7 +531,7 @@ void createvolume::cbNormalVolume( int r )
 
 void createvolume::cbHiddenVolume( int r )
 {
-	this->setWindowTitle( tr( "create a new volume" ) ) ;
+	this->setWindowTitle( tr( "Create A New Volume" ) ) ;
 
 	if( r == 0 ){
 
@@ -542,7 +542,7 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey1->clear() ;
 		m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Password ) ;
 		m_ui->lineEditHiddenKey1->setEchoMode( QLineEdit::Password ) ;
-		m_ui->labelHidden->setText( tr( "key" ) ) ;
+		m_ui->labelHidden->setText( tr( "Key" ) ) ;
 		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 
 	}else if( r == 1 ){
@@ -552,7 +552,7 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey1->clear() ;
 		m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
-		m_ui->labelHidden->setText( tr( "keyfile" ) ) ;
+		m_ui->labelHidden->setText( tr( "Keyfile" ) ) ;
 		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	}else{
 		m_ui->pbHiddenKeyFile->setEnabled( false ) ;
@@ -563,7 +563,7 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey->setEnabled( false ) ;
 		m_ui->lineEditHiddenKey->setText( QString() ) ;
 		m_ui->lineEditHiddenKey1->setText( QString() ) ;
-		m_ui->labelHidden->setText( tr( "keys" ) ) ;
+		m_ui->labelHidden->setText( tr( "Keys" ) ) ;
 		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 
 		this->tcryptGui( false ) ;
@@ -645,7 +645,7 @@ void createvolume::pbCreateClicked()
 	createvolume::createVolumeType type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
 
 	if( volumePath.isEmpty() ){
-		return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "volume path field is empty" ) ) ;
+		return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume path field is empty" ) ) ;
 	}
 
 	if( type == createvolume::normal_and_hidden_truecrypt || type == createvolume::normal_and_hidden_veracrypt ){
@@ -653,24 +653,24 @@ void createvolume::pbCreateClicked()
 		QString x = m_ui->lineEditHiddenSize->text() ;
 
 		if( x.isEmpty() ){
-			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 		}
 
 		bool ok ;
 		x.toUInt( &ok ) ;
 
 		if( !ok ){
-			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "illegal character detected in the hidden volume size field" ) ) ;
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Illegal character detected in the hidden volume size field" ) ) ;
 		}
 
 		if( m_ui->cbHiddenVolume->currentIndex() < 3 ){
 			if( m_ui->cbHiddenVolume->currentIndex() == 0 ){
 				if( m_ui->lineEditHiddenKey->text() != m_ui->lineEditHiddenKey1->text() ){
-					return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "hidden passphrases do not match" ) ) ;
+					return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Hidden passphrases do not match" ) ) ;
 				}
 			}else if( m_ui->cbHiddenVolume->currentIndex() == 1 ){
 				if( m_ui->lineEditHiddenKey->text().isEmpty() ){
-					return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+					return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 				}
 			}
 		}
@@ -687,7 +687,7 @@ void createvolume::pbCreateClicked()
 	if( r == 0 ){
 
 		if( passphrase_1 != passphrase_2 ){
-			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match" ) ) ;
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;
 		}else{
 			source = "-f" ;
 			passphrase_1 = utility::keyPath() + "-2" ;
@@ -698,7 +698,7 @@ void createvolume::pbCreateClicked()
 		}
 	}else if( r == 1 ){
 		if( passphrase_1.isEmpty() ){
-			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 		}else{
 			source = "-f" ;
 			passphrase_1 = utility::resolvePath( passphrase_1 ).replace( "\"","\"\"\"" ) ;
@@ -803,7 +803,7 @@ void createvolume::pbCreateClicked()
 
 	if( type == createvolume::normal_veracrypt || type == createvolume::normal_and_hidden_veracrypt ){
 
-		m_veraCryptWarning.show( tr( "please be patient as creating a VeraCrypt volume may take a very long time.\n\n" ) ) ;
+		m_veraCryptWarning.show( tr( "Please be patient as creating a VeraCrypt volume may take a very long time.\n\n" ) ) ;
 	}
 
 
@@ -816,43 +816,43 @@ void createvolume::pbCreateClicked()
 
 void createvolume::taskFinished( int st )
 {
-	m_veraCryptWarning.hide();
+	m_veraCryptWarning.hide() ;
 
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
-	QString x = tr( "volume created successfully." ) ;
+	QString x = tr( "Volume created successfully." ) ;
 	if( m_volumeType.contains( "luks" ) || m_volumeType.contains( "truecrypt" ) || m_volumeType.contains( "veracrypt" ) ){
-		x += tr( "\ncreating a backup of the \"%1\" volume header is strongly advised.\nPlease read documentation on why this is important." ).arg( m_volumeType ) ;
+		x += tr( "\nCreating a backup of the \"%1\" volume header is strongly advised.\nPlease read documentation on why this is important." ).arg( m_volumeType ) ;
 	}
 	switch ( st ){
 		case 0 : msg.ShowUIOK( tr( "SUCCESS!" ),x ) ;
 		return this->HideUI() ;													break  ;
-		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented file system is not supported,see documentation for more information" ) ) ;	break  ;
+		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented file system is not supported,see documentation for more information" ) ) ;	break  ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system device in read/write mode,\n\
 only root user or members of group zulucrypt can do that" ) ) ;									break  ;
-		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create an encrypted volume" ) ) ;					break  ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open volume for writing" ) ) ;					break  ;
-		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) ) ;		break  ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "can not create a volume on a mounted device" ) ) ;				break  ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "container file must be bigger than 3MB" ) ) ;					break  ;
+		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create an encrypted volume" ) ) ;					break  ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open volume for writing" ) ) ;					break  ;
+		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There seem to be an opened mapper associated with the device" ) ) ;		break  ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not create a volume on a mounted device" ) ) ;				break  ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Container file must be bigger than 3MB" ) ) ;					break  ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "%1 not found" ).arg( ZULUCRYPTmkfs ) ) ;					break  ;
-		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold your response" ) ) ;				break  ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user request" ) ) ; 				break  ;													break  ;
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get passphrase in silent mode" ) ) ;				break  ;
-		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold the passphrase" ) ) ;				break  ;
-		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match" ) ) ;						break  ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) ) ;						break  ;
-		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a key from a key file" ) ) ;					break  ;
-		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "couldnt get enought memory to hold the key file" ) ) ;			break  ;
-		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a key from a socket" ) ) ;					break  ;
-		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) ) ;	break  ;
-		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not get passphrase in silent mode" ) ) ;					break  ;
-		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) ) ;				break  ;
-		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "passphrases do not match") ) ;						break  ;
-		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to create a volume" ) ) ;						break  ;
-		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong argument detected for tcrypt volume" ) ) ;				break  ;
-		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "could not find any partition with the presented UUID" ) ) ;			break  ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
+		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold your response" ) ) ;				break  ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user request" ) ) ; 				break  ;													break  ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get passphrase in silent mode" ) ) ;				break  ;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold the passphrase" ) ) ;				break  ;
+		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;						break  ;
+		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to key file" ) ) ;						break  ;
+		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a key from a key file" ) ) ;					break  ;
+		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "Couldnt get enought memory to hold the key file" ) ) ;			break  ;
+		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a key from a socket" ) ) ;					break  ;
+		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "One or more required argument(s) for this operation is missing" ) ) ;	break  ;
+		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not get passphrase in silent mode" ) ) ;					break  ;
+		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold passphrase" ) ) ;				break  ;
+		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match") ) ;						break  ;
+		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create a volume" ) ) ;						break  ;
+		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "Wrong argument detected for tcrypt volume" ) ) ;				break  ;
+		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not find any partition with the presented UUID" ) ) ;			break  ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
 	}
 
 	this->enableAll() ;

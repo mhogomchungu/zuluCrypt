@@ -77,12 +77,12 @@
     </property>
     <column>
      <property name="text">
-      <string>Encrypted volume path</string>
+      <string>Encrypted Volume Path</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Encrypted volume mount point path</string>
+      <string>Encrypted Volume Mount Point Path</string>
      </property>
     </column>
     <column>
@@ -103,7 +103,7 @@
    </property>
    <widget class="QMenu" name="menuOpen">
     <property name="title">
-     <string>&amp;open</string>
+     <string>&amp;Open</string>
     </property>
     <addaction name="actionFileOpen"/>
     <addaction name="actionPartitionOpen"/>
@@ -113,7 +113,7 @@
    </widget>
    <widget class="QMenu" name="menuCreate">
     <property name="title">
-     <string>&amp;create</string>
+     <string>&amp;Create</string>
     </property>
     <addaction name="actionFileCreate"/>
     <addaction name="actionPartitionCreate"/>
@@ -121,7 +121,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>&amp;help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionLuks_header_backup"/>
     <addaction name="actionOpen_zuluCrypt_pdf"/>
@@ -129,7 +129,7 @@
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">
-     <string>volumes</string>
+     <string>&amp;Volumes</string>
     </property>
     <addaction name="actionAddKey"/>
     <addaction name="actionDeleteKey"/>
@@ -139,7 +139,7 @@
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
-     <string>o&amp;ptions</string>
+     <string>O&amp;ptions</string>
     </property>
     <addaction name="actionTray_icon"/>
     <addaction name="actionFonts"/>
@@ -153,7 +153,7 @@
    </widget>
    <widget class="QMenu" name="menuFavorites">
     <property name="title">
-     <string>&amp;favorites</string>
+     <string>&amp;Favorites</string>
     </property>
    </widget>
    <widget class="QMenu" name="menu_zc">
@@ -183,7 +183,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionFileOpen">
    <property name="text">
-    <string>plain,luks,truecrypt container in a file</string>
+    <string>PLAIN,LUKS,TrueCrypt Container In A File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -191,7 +191,7 @@
   </action>
   <action name="actionPartitionOpen">
    <property name="text">
-    <string>plain,luks,truecrypt container in a partition</string>
+    <string>PLAIN,LUKS,TrueCrypt Container An A Partition</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -202,7 +202,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>encrypted container in a file</string>
+    <string>Encrypted Container In A File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
@@ -216,7 +216,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>encrypted container in a partition</string>
+    <string>Encrypted Container In A Partition</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -227,7 +227,7 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>about</string>
+    <string>About</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -235,7 +235,7 @@
   </action>
   <action name="actionAddKey">
    <property name="text">
-    <string>add a key to a volume</string>
+    <string>Add A Key To A Volume</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+U</string>
@@ -243,7 +243,7 @@
   </action>
   <action name="actionDeleteKey">
    <property name="text">
-    <string>delete a key from a volume</string>
+    <string>Delete A Key From A Volume</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
@@ -259,7 +259,7 @@
   </action>
   <action name="actionCreatekeyFile">
    <property name="text">
-    <string>keyfile</string>
+    <string>Keyfile</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
@@ -267,7 +267,7 @@
   </action>
   <action name="actionTray_icon">
    <property name="text">
-    <string>tray icon</string>
+    <string>Tray Icon</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+K</string>
@@ -275,7 +275,7 @@
   </action>
   <action name="actionFonts">
    <property name="text">
-    <string>select font</string>
+    <string>Select Font</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
@@ -309,7 +309,7 @@
   </action>
   <action name="action_update_volume_list">
    <property name="text">
-    <string>update volume list</string>
+    <string>Update Volume List</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
@@ -317,7 +317,7 @@
   </action>
   <action name="actionMinimize_to_tray">
    <property name="text">
-    <string>minimize to tray</string>
+    <string>Minimize To Tray</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Y</string>
@@ -325,7 +325,7 @@
   </action>
   <action name="action_close">
    <property name="text">
-    <string>quit</string>
+    <string>Quit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -333,7 +333,7 @@
   </action>
   <action name="actionClose_all_opened_volumes">
    <property name="text">
-    <string>close all opened volumes</string>
+    <string>Close All Opened Volumes</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
@@ -341,7 +341,7 @@
   </action>
   <action name="actionManage_names">
    <property name="text">
-    <string>manage favorites</string>
+    <string>Manage Favorites</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
@@ -349,7 +349,7 @@
   </action>
   <action name="actionErase_data_on_device">
    <property name="text">
-    <string>erase data in a device</string>
+    <string>Erase Data In A Device</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -357,7 +357,7 @@
   </action>
   <action name="actionBackup_header">
    <property name="text">
-    <string>backup header</string>
+    <string>Backup Header</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
@@ -365,7 +365,7 @@
   </action>
   <action name="actionRestore_header">
    <property name="text">
-    <string>restore header</string>
+    <string>Restore Header</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -381,7 +381,7 @@
   </action>
   <action name="actionEncrypt_file">
    <property name="text">
-    <string>encrypt a file</string>
+    <string>Encrypt A File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -389,7 +389,7 @@
   </action>
   <action name="actionDecrypt_file">
    <property name="text">
-    <string>decrypt a file</string>
+    <string>Decrypt A File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+H</string>
@@ -397,7 +397,7 @@
   </action>
   <action name="actionLuks_header_backup">
    <property name="text">
-    <string>header backup</string>
+    <string>Header Backup</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+J</string>
@@ -405,7 +405,7 @@
   </action>
   <action name="actionManage_system_partitions">
    <property name="text">
-    <string>manage system volumes</string>
+    <string>Manage System Volumes</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -413,7 +413,7 @@
   </action>
   <action name="actionManage_volumes_in_internal_wallet">
    <property name="text">
-    <string>manage volumes in internal wallet</string>
+    <string>Manage Volumes In Internal Wallet</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -429,7 +429,7 @@
   </action>
   <action name="actionManage_non_system_partitions">
    <property name="text">
-    <string>manage non system volumes</string>
+    <string>Manage Non System Volumes</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
@@ -437,7 +437,7 @@
   </action>
   <action name="actionManage_volumes_in_kde_wallet">
    <property name="text">
-    <string>manage volumes in kde wallet</string>
+    <string>Manage Volumes In KDE Wallet</string>
    </property>
    <property name="shortcut">
     <string>Shift+V</string>
@@ -445,7 +445,7 @@
   </action>
   <action name="actionManage_volumes_in_gnome_wallet">
    <property name="text">
-    <string>manage volumes in gnome wallet</string>
+    <string>Manage Volumes In GNOME keyring</string>
    </property>
    <property name="shortcut">
     <string>Alt+V</string>
@@ -453,7 +453,7 @@
   </action>
   <action name="actionChange_internal_wallet_password">
    <property name="text">
-    <string>change internal wallet password</string>
+    <string>Change Internal Wallet Password</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -471,7 +471,7 @@
   </action>
   <action name="actionVeracrypt_container_in_a_file">
    <property name="text">
-    <string>veracrypt container in a file</string>
+    <string>VeraCrypt Container In A File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -479,7 +479,7 @@
   </action>
   <action name="actionVeracrypt_container_in_a_partition">
    <property name="text">
-    <string>veracrypt container in a partition</string>
+    <string>VeraCrypt Container In A Partition</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -487,7 +487,7 @@
   </action>
   <action name="actionOpen_zuluCrypt_pdf">
    <property name="text">
-    <string>open zuluCrypt.pdf</string>
+    <string>Open ZuluCrypt.pdf</string>
    </property>
    <property name="shortcut">
     <string>Shift+H</string>

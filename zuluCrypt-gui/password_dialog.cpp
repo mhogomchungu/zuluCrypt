@@ -52,9 +52,9 @@
 
 #include "utility.h"
 
-#define KWALLET         "kde wallet"
-#define INTERNAL_WALLET "internal wallet"
-#define GNOME_WALLET    "gnome wallet"
+#define KWALLET         "KDE Wallet"
+#define INTERNAL_WALLET "Internal Wallet"
+#define GNOME_WALLET    "GNOME keyring"
 
 /*
  * this header is created at config time
@@ -161,7 +161,7 @@ void passwordDialog::pbPlugin()
 
 	if( j == 0 ){
 		DialogMsg msg( this ) ;
-		return	msg.ShowUIOK( tr( "ERROR" ),tr( "could not find any plugin installed" ) ) ;
+		return	msg.ShowUIOK( tr( "ERROR" ),tr( "Could not find any plugin installed" ) ) ;
 	}
 
 	for( int i = 0 ; i < j ; i++ ){
@@ -170,7 +170,7 @@ void passwordDialog::pbPlugin()
 
 	m_pluginMenu->addSeparator() ;
 
-	m_pluginMenu->addAction( tr( "cancel" ) ) ;
+	m_pluginMenu->addAction( tr( "Cancel" ) ) ;
 
 	connect( m_pluginMenu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
 
@@ -180,7 +180,7 @@ void passwordDialog::pbPlugin()
 void passwordDialog::pbPluginEntryClicked( QAction * e )
 {
 	QString text = e->text() ;
-	if( text != tr( "cancel" ) ){
+	if( text != tr( "Cancel" ) ){
 		m_ui->PassPhraseField->setText( text ) ;
 	}
 }
@@ -197,7 +197,7 @@ void passwordDialog::tcryptCancelled( void )
 void passwordDialog::tcryptGui()
 {
 	this->disableAll() ;
-	m_ui->PassPhraseField->setText( "" ) ;
+	m_ui->PassPhraseField->setText( QString() ) ;
 
 	tcrypt * t = new tcrypt( this ) ;
 	connect( t,SIGNAL( Keys( QString,QStringList ) ),this,SLOT( keys( QString,QStringList ) ) ) ;
@@ -236,10 +236,10 @@ void passwordDialog::closeEvent( QCloseEvent * e )
 void passwordDialog::addTcryptVcryptKeyOption()
 {
 	if( m_veraCryptVolume ){
-		m_ui->cbKeyType->addItem( tr( "VeraCrypt keys" ) ) ;
+		m_ui->cbKeyType->addItem( tr( "VeraCrypt Keys" ) ) ;
 	}else{
 		#if TRUECRYPT_CRYPTSETUP
-			m_ui->cbKeyType->addItem( tr( "TrueCrypt keys" ) ) ;
+			m_ui->cbKeyType->addItem( tr( "TrueCrypt Keys" ) ) ;
 		#endif
 	}
 }
@@ -324,15 +324,15 @@ void passwordDialog::pbKeyOption()
 
 void passwordDialog::pluginOption()
 {
-	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a module from the file system" ) ) ;
-	m_ui->PassPhraseField->setToolTip( tr( "enter a module name to use to get passphrase" ) ) ;
+	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "Choose A Module From The File System" ) ) ;
+	m_ui->PassPhraseField->setToolTip( tr( "Enter A Module Name To Use To Get Passphrase" ) ) ;
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
-	m_ui->labelPassphrase->setText( tr( "plugin name" ) ) ;
+	m_ui->labelPassphrase->setText( tr( "Plugin Name" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->pbKeyOption->setIcon( QIcon( ":/module.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( true ) ;
-	m_ui->pushButtonPlugin->setToolTip( tr( "select a key module" ) ) ;
+	m_ui->pushButtonPlugin->setToolTip( tr( "Select A Key Module" ) ) ;
 	m_ui->pbKeyOption->setEnabled( true ) ;
 	m_ui->PassPhraseField->setEnabled( false ) ;
 	m_ui->PassPhraseField->setText( INTERNAL_WALLET ) ;
@@ -340,11 +340,11 @@ void passwordDialog::pluginOption()
 
 void passwordDialog::passphraseOption()
 {
-	m_ui->PassPhraseField->setToolTip( tr( "enter a key" ) ) ;
+	m_ui->PassPhraseField->setToolTip( tr( "Enter A Key" ) ) ;
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Password ) ;
 	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
-	m_ui->labelPassphrase->setText( tr( "key" ) ) ;
+	m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->pbKeyOption->setIcon( QIcon( QString() ) ) ;
@@ -354,12 +354,12 @@ void passwordDialog::passphraseOption()
 
 void passwordDialog::passphraseFromFileOption()
 {
-	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "choose a key file from the file system" ) ) ;
-	m_ui->PassPhraseField->setToolTip( tr( "enter a path to a keyfile location" ) ) ;
+	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "Choose A Key File From The File System" ) ) ;
+	m_ui->PassPhraseField->setToolTip( tr( "Enter A path To A Keyfile Location" ) ) ;
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
-	m_ui->labelPassphrase->setText( tr( "keyfile path" ) ) ;
+	m_ui->labelPassphrase->setText( tr( "Keyfile Path" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->pbKeyOption->setIcon( QIcon( ":/keyfile.png" ) ) ;
@@ -372,9 +372,9 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 {
 	QString msg ;
 	if( m_ui->cbKeyType->currentIndex() == passwordDialog::keyfile ){
-		msg = tr( "Select a keyfile" ) ;
+		msg = tr( "Select A Keyfile" ) ;
 	}else{
-		msg = tr( "Select a key module" ) ;
+		msg = tr( "Select A Key Module" ) ;
 	}
 
 	QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath(),0 ) ;
@@ -385,7 +385,7 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 
 void passwordDialog::mount_point( void )
 {
-	QString p = tr( "Select Path to mount point folder" ) ;
+	QString p = tr( "Select Path To Mount Point Folder" ) ;
 	QString Z = QFileDialog::getExistingDirectory( this,p,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
@@ -402,7 +402,7 @@ void passwordDialog::mount_point( void )
 
 void passwordDialog::file_path( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select encrypted volume" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select Encrypted volume" ),QDir::homePath(),0 ) ;
 	m_ui->OpenVolumePath->setText( Z ) ;
 	if( !Z.isEmpty() ){
 		m_ui->MountPointPath->setText( utility::mountPathPostFix( Z.split( "/" ).last() ) ) ;
@@ -439,7 +439,7 @@ void passwordDialog::buttonOpenClicked( void )
 			if( w.notConfigured ){
 
 				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR!" ),tr( "internal wallet is not configured" ) ) ;
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal wallet is not configured" ) ) ;
 				return this->enableAll() ;
 
 			}else{
@@ -458,7 +458,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 			if( w.key.isEmpty() ){
 				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+				msg.ShowUIOK( tr( "ERROR" ),tr( "The volume does not appear to have an entry in the wallet" ) ) ;
 				this->enableAll() ;
 			}else{
 				m_key = w.key ;
@@ -541,7 +541,7 @@ void passwordDialog::openVolume()
 	m_point = m_ui->MountPointPath->text() ;
 	if( m_point.isEmpty() || m_device.isEmpty() ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 		return this->enableAll() ;
 	}
 
@@ -569,7 +569,7 @@ void passwordDialog::openVolume()
 	if( keySource == passwordDialog::keyfile ){
 		if( m_key.isEmpty() ){
 			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 			return this->enableAll() ;
 		}else{
 			passtype = "-f" ;
@@ -582,7 +582,7 @@ void passwordDialog::openVolume()
 	}else if( keySource == passwordDialog::plugin ){
 		if( m_key.isEmpty() ){
 			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 			return this->enableAll() ;
 		}else{
 			QString r = m_ui->PassPhraseField->text() ;
@@ -702,31 +702,31 @@ void passwordDialog::failed( int r )
 	DialogMsg msg( this ) ;
 	switch ( r ){
 		case 0 : ;
-		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;
-		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an open volume accociated with given address" ) ) ;				break ;
-		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "no file or device exist on given path" ) ) ; 						break ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "volume could not be opened with the presented key" ) ) ;					break ;
-		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to mount the device with given options" ) ) ;				break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device in read write mode or device does not exist" ) ) ;	break ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user can perform this operation" ) ) ;						break ;
+		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;
+		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There seem to be an open volume accociated with given address" ) ) ;				break ;
+		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "No file or device exist on given path" ) ) ; 						break ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume could not be opened with the presented key" ) ) ;					break ;
+		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to mount the device with given options" ) ) ;				break ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open device in read write mode or device does not exist" ) ) ;	break ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Only root user can perform this operation" ) ) ;						break ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) ) ;						break ;
-		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create mount point, invalid path or path already taken" ) ) ;			break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "shared mount point path aleady taken" ) ) ;							break ;
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "there seem to be an opened mapper associated with the device" ) ) ;				break ;
-		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase from the module" ) ) ;						break ;
-		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get passphrase in silent mode" ) ) ;						break ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) ) ;							break ;
-		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) ) ;				break ;
-		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to key file" ) ) ;								break ;
-		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enought memory to hold the key file" ) ) ;					break ;
-		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) ) ;					break ;
-		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a passphrase through a local socket" ) ) ;					break ;
-		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;	break ;
-		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not create a lock on /etc/mtab" ) ) ;							break ;
-		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system volume.\n\nConsult menu->help->permission for more informaion\n" ) ) ;					break ;
-		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "a non supported device encountered,device is missing or permission denied\n\
+		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create mount point, invalid path or path already taken" ) ) ;			break ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point path aleady taken" ) ) ;							break ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "There seem to be an opened mapper associated with the device" ) ) ;				break ;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a passphrase from the module" ) ) ;						break ;
+		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get passphrase in silent mode" ) ) ;						break ;
+		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold passphrase" ) ) ;							break ;
+		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "One or more required argument(s) for this operation is missing" ) ) ;				break ;
+		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to key file" ) ) ;								break ;
+		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get enought memory to hold the key file" ) ) ;					break ;
+		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) ) ;					break ;
+		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a passphrase through a local socket" ) ) ;					break ;
+		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;	break ;
+		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create a lock on /etc/mtab" ) ) ;							break ;
+		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open a system volume.\n\nConsult menu->help->permission for more informaion\n" ) ) ;					break ;
+		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "A non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;					break ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR with status number %1 encountered" ).arg( r ) ) ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR with status number %1 encountered" ).arg( r ) ) ;
 	}
 
 	this->enableAll() ;

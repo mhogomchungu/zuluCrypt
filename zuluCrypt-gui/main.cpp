@@ -28,16 +28,16 @@ int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	QCoreApplication::setApplicationName( QString( "zuluCrypt" ) ) ;
+	QCoreApplication::setApplicationName( "zuluCrypt" ) ;
 
 	QStringList q = QCoreApplication::arguments() ;
-	if( q.contains( QString( "-h" ) ) ||
-	    q.contains( QString( "-help" ) ) ||
-	    q.contains( QString( "--help" ) ) ||
-	    q.contains( QString( "-v" ) ) ||
-	    q.contains( QString( "-version" ) ) ||
-	    q.contains( QString( "--version" ) ) ){
-		utility::help( QString( "zuluCrypt" ) ) ;
+	if( q.contains( "-h" ) ||
+	    q.contains( "-help" ) ||
+	    q.contains( "--help" ) ||
+	    q.contains( "-v" ) ||
+	    q.contains(  "-version" ) ||
+	    q.contains( "--version" ) ){
+		utility::help( "zuluCrypt" ) ;
 		return 0 ;
 	}else{
 		zuluCrypt zc ;

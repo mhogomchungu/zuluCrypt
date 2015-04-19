@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>mount name</string>
+    <string>Mount Name</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -42,7 +42,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;mount</string>
+    <string>&amp;Mount</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -74,7 +74,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>use la&amp;bel</string>
+    <string>Use La&amp;bel</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit">
@@ -97,7 +97,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -113,7 +113,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>mount &amp;read only</string>
+    <string>Mount &amp;Read Only</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="checkBoxShareMountPoint">
@@ -126,7 +126,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;share mount point</string>
+    <string>&amp;Share Mount Point</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbOptions">
@@ -139,7 +139,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>options</string>
+    <string>&amp;Options</string>
    </property>
   </widget>
  </widget>

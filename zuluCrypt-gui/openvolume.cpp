@@ -117,13 +117,13 @@ void openvolume::pbHelp()
 	QString m ;
 
 	if( m_option == 2 ){
-		m = tr( "a list of all partitions on this system are displayed here.\nDouble click an entry to use it" ) ;
+		m = tr( "A list of all partitions on this system are displayed here.\nDouble click an entry to use it" ) ;
 	}else{
 		if( getuid() != 0 ) {
-			m = tr( "you are not root user and hence only non system partition are displayed on this list.\
+			m = tr( "You are not root user and hence only non system partition are displayed on this list.\
 \nPlease read documentation for more information on system/non system partitions.\nDouble click an entry to use it" ) ;
 		}else{
-			m = tr( "you are a root user and all partitions are displayed.\nDouble click an entry to use it" )	;
+			m = tr( "You are a root user and all partitions are displayed.\nDouble click an entry to use it" )	;
 		}
 	}
 	msg.ShowUIOK( tr( "info" ),m ) ;
@@ -161,13 +161,13 @@ void openvolume::currentItemChanged( QTableWidgetItem * current, QTableWidgetIte
 void openvolume::ShowNonSystemPartitions()
 {
 	m_option = 1 ;
-	this->partitionList( tr( "select a partition to create an encrypted volume in" )," -N" ) ;
+	this->partitionList( tr( "Select A Partition To Create An Encrypted Volume In" )," -N" ) ;
 }
 
 void openvolume::ShowAllPartitions()
 {
 	m_option = 2 ;
-	this->partitionList( tr( "select an encrypted partition to open" )," -A" ) ;
+	this->partitionList( tr( "Select An Encrypted Partition To Open" )," -A" ) ;
 }
 
 void openvolume::ShowPartitionList( QString x,QString y )
@@ -263,14 +263,14 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 		if( tw->item( item->row(),3 )->text() != "crypto_LUKS" ){
 			DialogMsg m( this ) ;
 
-			return m.ShowUIOK( tr( "ERROR" ),tr( "only cryto_LUKS volumes can be selected" ) ) ;
+			return m.ShowUIOK( tr( "ERROR" ),tr( "Only crypto_LUKS volumes can be selected" ) ) ;
 		}else{
 			m_ui->pbUUID->setFlat( true ) ;
 		}
 
 	}
 	if( m_ui->pbUUID->isFlat() ){
-		dev = QString( "UUID=\"" ) + tw->item( item->row(),4 )->text() + QString( "\"" ) ;
+		dev = "UUID=\"" + tw->item( item->row(),4 )->text() + "\"" ;
 	}else{
 		dev = tw->item( item->row(),0 )->text() ;
 	}

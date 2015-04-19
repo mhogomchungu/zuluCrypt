@@ -121,7 +121,7 @@ void manageSystemVolumes::writeSystemPartitions()
 	if( !file.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open \"%1\" for writing" ).arg( m_path ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Could not open \"%1\" for writing" ).arg( m_path ) ) ;
 	}else{
 		QTableWidgetItem * it ;
 		QTableWidget * table = m_ui->tableWidget ;
@@ -153,10 +153,10 @@ void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 	if( current ){
 		QMenu m ;
 		m.setFont( this->font() ) ;
-		connect( m.addAction( tr( "remove selected entry" ) ),SIGNAL( triggered() ),this,SLOT( removeCurrentRow() ) ) ;
+		connect( m.addAction( tr( "Remove Selected Entry" ) ),SIGNAL( triggered() ),this,SLOT( removeCurrentRow() ) ) ;
 
 		m.addSeparator() ;
-		m.addAction( tr( "cancel" ) ) ;
+		m.addAction( tr( "Cancel" ) ) ;
 
 		if( clicked ){
 			m.exec( QCursor::pos() ) ;
@@ -171,7 +171,7 @@ void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 void manageSystemVolumes::removeCurrentRow()
 {
 	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
-	QString m = tr( "are you sure you want to remove \n\"%1\"\n from the list?" ).arg( it->text() ) ;
+	QString m = tr( "Are you sure you want to remove \n\"%1\"\n from the list?" ).arg( it->text() ) ;
 
 	DialogMsg msg( this ) ;
 
@@ -204,7 +204,7 @@ void manageSystemVolumes::pbDone()
 
 void manageSystemVolumes::pbFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "select path to system volume" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select Path To System Volume" ),QDir::homePath(),0 ) ;
 
 	this->addItemsToTable( Z ) ;
 }

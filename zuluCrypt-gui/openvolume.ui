@@ -32,7 +32,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>use uuid</string>
+    <string>Use UUID</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbHelp">
@@ -45,7 +45,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;help</string>
+    <string>&amp;Help</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>
@@ -61,7 +61,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>use &amp;uuid</string>
+    <string>Use &amp;UUID</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>
@@ -77,7 +77,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
    <property name="autoDefault">
     <bool>false</bool>

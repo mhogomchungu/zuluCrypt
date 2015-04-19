@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>ok</string>
+    <string>&amp;Ok</string>
    </property>
    <property name="default">
     <bool>true</bool>
@@ -39,7 +39,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>cancel</string>
+    <string>&amp;Cancel</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -52,7 +52,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Enter comma separated volume's file system options below</string>
+    <string>Enter Comma Separated Volume's File System Options Below</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

@@ -297,8 +297,8 @@ void zuluCrypt::setupUIElements()
 
 	QMenu * trayMenu = new QMenu( this ) ;
 
-	trayMenu->addAction( tr( "show the interface" ),this,SLOT( raiseWindow() ) ) ;
-	trayMenu->addAction( tr( "quit" ),this,SLOT( closeApplication() ) ) ;
+	trayMenu->addAction( tr( "Show The Interface" ),this,SLOT( raiseWindow() ) ) ;
+	trayMenu->addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
 
 	m_trayIcon->setContextMenu( trayMenu ) ;
 
@@ -362,8 +362,8 @@ void zuluCrypt::setupConnections()
 
 	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
 
-	m_ui->actionRestore_header->setText( tr( "restore volume header" ) ) ;
-	m_ui->actionBackup_header->setText( tr( "backup volume header" ) ) ;
+	m_ui->actionRestore_header->setText( tr( "Restore Volume Header" ) ) ;
+	m_ui->actionBackup_header->setText( tr( "Backup Volume Header" ) ) ;
 
 	connect( m_ui->actionBackup_header,SIGNAL( triggered() ),this,SLOT( volumeHeaderBackUp() ) ) ;
 	connect( m_ui->actionRestore_header,SIGNAL( triggered() ),this,SLOT( volumeRestoreHeader() ) ) ;
@@ -406,7 +406,7 @@ void zuluCrypt::openpdf()
 
 			DialogMsg msg( this ) ;
 
-			msg.ShowUIOK( tr( "WARNING" ),tr( "failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
+			msg.ShowUIOK( tr( "WARNING" ),tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
 		}
 	} ) ;
 }
@@ -660,7 +660,7 @@ void zuluCrypt::fonts()
 		if( k > size ){
 			k = size ;
 			Font.setPointSize( k ) ;
-			UIMessage( tr( "info" ),tr( "resetting font size to %1 because larger font sizes do not fit" ).arg( QString::number( size ) ) ) ;
+			UIMessage( tr( "info" ),tr( "Resetting font size to %1 because larger font sizes do not fit" ).arg( QString::number( size ) ) ) ;
 		}
 
 		this->setUserFont( Font ) ;
@@ -763,9 +763,9 @@ void zuluCrypt::volume_property()
 
 		DialogMsg msg( this ) ;
 		if( r.isEmpty() ){
-			msg.ShowUIOK( tr( "ERROR!"),tr( "volume is not open or was opened by a different user" ) ) ;
+			msg.ShowUIOK( tr( "ERROR!"),tr( "Volume is not open or was opened by a different user" ) ) ;
 		}else{
-			msg.ShowUIVolumeProperties( tr( "volume properties" ),r ) ;
+			msg.ShowUIVolumeProperties( tr( "Volume Properties" ),r ) ;
 		}
 		m_ui->tableWidget->setEnabled( true ) ;
 	} ) ;
@@ -793,7 +793,7 @@ void zuluCrypt::readFavorites()
 			m_ui->menuFavorites->addAction( ac ) ;
 		}
 	}else{
-		ac = new QAction( tr( "list is empty" ),m_ui->menuFavorites ) ;
+		ac = new QAction( tr( "List Is Empty" ),m_ui->menuFavorites ) ;
 		ac->setEnabled( false ) ;
 		m_ui->menuFavorites->addAction( ac ) ;
 	}
@@ -826,7 +826,7 @@ void zuluCrypt::openFolder( QString path )
 		if( failed ){
 
 			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "warning" ),tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ) ;
+			msg.ShowUIOK( tr( "warning" ),tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ) ;
 		}
 	} ) ;
 }
@@ -840,24 +840,24 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 {
 	QMenu m ;
 	m.setFont( this->font() ) ;
-	connect( m.addAction( tr( "close" ) ),SIGNAL( triggered() ),this,SLOT( close() ) ) ;
+	connect( m.addAction( tr( "Close" ) ),SIGNAL( triggered() ),this,SLOT( close() ) ) ;
 
 	m.addSeparator() ;
 
-	connect( m.addAction( tr( "properties" ) ) ,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
+	connect( m.addAction( tr( "Properties" ) ) ,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
 
 	m.addSeparator() ;
 
-	connect( m.addAction( tr( "open folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
+	connect( m.addAction( tr( "Open Folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
 
 	m.addSeparator() ;
 
 	if( m_ui->tableWidget->item( item->row(),2 )->text() == "luks" ){
 		m.addSeparator() ;
-		connect( m.addAction( tr( "add key" ) ),SIGNAL( triggered() ),this,SLOT( luksAddKeyContextMenu() ) ) ;
-		connect( m.addAction( tr( "remove key" ) ),SIGNAL( triggered() ),this,SLOT( luksDeleteKeyContextMenu() ) ) ;
+		connect( m.addAction( tr( "Add Key" ) ),SIGNAL( triggered() ),this,SLOT( luksAddKeyContextMenu() ) ) ;
+		connect( m.addAction( tr( "Remove Key" ) ),SIGNAL( triggered() ),this,SLOT( luksDeleteKeyContextMenu() ) ) ;
 		m.addSeparator() ;
-		connect( m.addAction( tr( "backup luks header" ) ),SIGNAL( triggered() ),this,SLOT( luksHeaderBackUpContextMenu() ) ) ;
+		connect( m.addAction( tr( "Backup LUKS Header" ) ),SIGNAL( triggered() ),this,SLOT( luksHeaderBackUpContextMenu() ) ) ;
 	}
 
 	m.addSeparator() ;
@@ -870,7 +870,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	QByteArray data = f.readAll() ;
 
-	QAction * ac = m.addAction( tr( "add to favorite" ) ) ;
+	QAction * ac = m.addAction( tr( "Add To Favorite" ) ) ;
 
 	if( data.contains( volume_id.toLatin1() ) ){
 		ac->setEnabled( false ) ;
@@ -885,7 +885,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 		int y = m_ui->tableWidget->rowHeight( item->row() ) * item->row() + 20 ;
 
 		m.addSeparator() ;
-		m.addAction( tr( "cancel" ) ) ;
+		m.addAction( tr( "Cancel" ) ) ;
 		m.exec( m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
 	}
 }
@@ -927,16 +927,16 @@ void zuluCrypt::closeStatus( int st )
 void zuluCrypt::closeStatusErrorMessage( int st )
 {
 	switch ( st ) {
-		case 1 :UIMessage( tr( "ERROR!" ),tr( "close failed, volume is not open or was opened by a different user" ) ) ;			break ;
-		case 2 :UIMessage( tr( "ERROR!" ),tr( "close failed, one or more files in the volume are in use." ) ) ;					break ;
-		case 3 :UIMessage( tr( "ERROR!" ),tr( "close failed, volume does not have an entry in /etc/mtab" ) ) ;					break ;
-		case 4 :UIMessage( tr( "ERROR!" ),tr( "close failed, could not get a lock on /etc/mtab~" ) ) ;						break ;
-		case 5 :UIMessage( tr( "ERROR!" ),tr( "close failed, volume is unmounted but could not close mapper,advice to close it manually" ) ) ;	break ;
-		case 6 :UIMessage( tr( "ERROR!" ),tr( "close failed, could not resolve full path of device\n" ) ) ;               			break ;
-		case 7 :UIMessage( tr( "ERROR!" ),tr( "close failed, shared mount point appear to be busy\n" ) ) ;					break ;
-		case 8 :UIMessage( tr( "ERROR!" ),tr( "close failed, shared mount point appear to belong to a different user\n" ) ) ;			break ;
-		case 9 :UIMessage( tr( "ERROR!" ),tr( "close failed, shared mount point appear to be in an ambiguous state,advice to unmount manually" )) ;break ;
-		case 110:UIMessage( tr( "ERROR!" ),tr( "close failed, could not find any partition with the presented UUID" ) ) ;			break ;
+		case 1 :UIMessage( tr( "ERROR!" ),tr( "Close failed, volume is not open or was opened by a different user" ) ) ;			break ;
+		case 2 :UIMessage( tr( "ERROR!" ),tr( "Close failed, one or more files in the volume are in use." ) ) ;					break ;
+		case 3 :UIMessage( tr( "ERROR!" ),tr( "Close failed, volume does not have an entry in /etc/mtab" ) ) ;					break ;
+		case 4 :UIMessage( tr( "ERROR!" ),tr( "Close failed, could not get a lock on /etc/mtab~" ) ) ;						break ;
+		case 5 :UIMessage( tr( "ERROR!" ),tr( "Close failed, volume is unmounted but could not close mapper,advice to close it manually" ) ) ;	break ;
+		case 6 :UIMessage( tr( "ERROR!" ),tr( "Close failed, could not resolve full path of device\n" ) ) ;               			break ;
+		case 7 :UIMessage( tr( "ERROR!" ),tr( "Close failed, shared mount point appear to be busy\n" ) ) ;					break ;
+		case 8 :UIMessage( tr( "ERROR!" ),tr( "Close failed, shared mount point appear to belong to a different user\n" ) ) ;			break ;
+		case 9 :UIMessage( tr( "ERROR!" ),tr( "Close failed, shared mount point appear to be in an ambiguous state,advice to unmount manually" )) ;break ;
+		case 110:UIMessage( tr( "ERROR!" ),tr( "Close failed, could not find any partition with the presented UUID" ) ) ;			break ;
 		default:UIMessage( tr( "ERROR!" ),tr( "unrecognized error with status number %1 encountered" ).arg( st ) ) ;
 	}
 }

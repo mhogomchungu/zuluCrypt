@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>file name</string>
+    <string>File Name</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -65,7 +65,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>file path</string>
+    <string>File Path</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -84,7 +84,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>file size</string>
+    <string>File Size</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -142,7 +142,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -161,7 +161,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>% complete</string>
+    <string>% Complete</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -180,7 +180,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>c&amp;reate</string>
+    <string>C&amp;reate</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>

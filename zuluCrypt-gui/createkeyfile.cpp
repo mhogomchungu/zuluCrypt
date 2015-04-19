@@ -147,16 +147,16 @@ void createkeyfile::pbCreate()
 	QString path = m_ui->lineEditPath->text() ;
 
 	if( fileName.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "the key name field is empth" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "The key name field is empth" ) ) ;
 	}
 	if( path.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "folder path to where the key will be created is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Folder path to where the key will be created is empty" ) ) ;
 	}
 	if( utility::pathExists( path ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File with the same name and at the destination folder already exist" ) ) ;
 	}
 	if( !utility::canCreateFile( path ) ){
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "You dont seem to have writing access to the destination folder" ) ) ;
 		m_ui->lineEditPath->setFocus() ;
 		return ;
 	}
@@ -206,17 +206,17 @@ void createkeyfile::pbCreate()
 	m_running = false ;
 
 	if( m_stop ){
-		msg.ShowUIOK( tr( "WARNING!" ),tr( "process interrupted,key not fully generated" ) ) ;
+		msg.ShowUIOK( tr( "WARNING!" ),tr( "Process interrupted,key not fully generated" ) ) ;
 		this->enableAll() ;
 	}else{
-		msg.ShowUIOK( tr( "SUCCESS!" ),tr( "key file successfully created" ) ) ;
+		msg.ShowUIOK( tr( "SUCCESS!" ),tr( "Key file successfully created" ) ) ;
 		this->HideUI() ;
 	}
 }
 
 void createkeyfile::pbOpenFolder()
 {
-	QString p = tr( "Select a folder to create a key file in" ) ;
+	QString p = tr( "Select A Folder To Create A Key File In" ) ;
 	QString q = QDir::homePath() ;
 	QString Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 

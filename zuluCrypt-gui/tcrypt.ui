@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>open</string>
+    <string>&amp;Open</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pbCancel">
@@ -39,7 +39,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>cancel</string>
+    <string>&amp;Cancel</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit">
@@ -65,7 +65,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>add keyfile</string>
+    <string>Add &amp;Keyfile</string>
    </property>
   </widget>
   <widget class="QTableWidget" name="tableWidget">
@@ -109,7 +109,7 @@
    </property>
    <column>
     <property name="text">
-     <string>keyfile paths</string>
+     <string>Keyfile Paths</string>
     </property>
     <property name="toolTip">
      <string>drag and drop key files to add them to the list</string>
@@ -145,7 +145,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Enter a passphrase below to be used to open the volume</string>
+    <string>Enter A Passphrase Below To Be Used To Open The Volume</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

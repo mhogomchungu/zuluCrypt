@@ -47,7 +47,7 @@ static int zuluCryptEXEGetDevice( const char * device )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( c == NULL ){
-		printf( gettext( "ERROR: could not get device address from mapper address\n" ) ) ;
+		printf( gettext( "ERROR: Could not get device address from mapper address\n" ) ) ;
 		st = 1 ;
 	}else{
 		printf( "%s\n",c ) ;
@@ -71,9 +71,9 @@ static int zuluCryptEXECheckIfLuks( const char * device )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( status ){
-		printf( gettext( "device is a luks volume\n" ) ) ;
+		printf( gettext( "Device is a luks volume\n" ) ) ;
 	}else{
-		printf( gettext( "device is not a luks volume\n" ) ) ;
+		printf( gettext( "Device is not a luks volume\n" ) ) ;
 	}
 	return status ;
 }
@@ -87,11 +87,11 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 	size_t key_len ;
 	int st = 1 ;
 	if( key == NULL ){
-		printf( gettext( "ERROR: key argument is missing\n" ) ) ;
+		printf( gettext( "ERROR: Key argument is missing\n" ) ) ;
 		return 1 ;
 	}
 	if( source == NULL ){
-		printf( gettext( "ERROR: key source argument is missing\n" ) ) ;
+		printf( gettext( "ERROR: Key source argument is missing\n" ) ) ;
 		return 1 ;
 	}
 	if( StringsAreEqual( source,"-p" ) ){
@@ -148,7 +148,7 @@ static int zuluCryptEXECheckEmptySlots( const char * device )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( c == NULL ){
-		printf( gettext( "device \"%s\" is not a luks device\n" ),device ) ;
+		printf( gettext( "Device \"%s\" is not a luks device\n" ),device ) ;
 		status = 2 ;
 	}else{
 		printf( "%s\n",c ) ;
@@ -174,7 +174,7 @@ static int zuluCryptEXEHeaderMatchBackUpHeader( const char * device,const char *
 
 	if( r == 1 ){
 		if( uid != 0 || !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
-			printf( gettext( "ERROR: insufficient privilges to operate on a system device\n" ) ) ;
+			printf( gettext( "ERROR: Insufficient privilges to operate on a system device\n" ) ) ;
 			return 1 ;
 		}
 	}
@@ -183,10 +183,10 @@ static int zuluCryptEXEHeaderMatchBackUpHeader( const char * device,const char *
 	 */
 	r = zuluCryptHeaderMatchBackUpHeader( device,header_backup,uid ) ;
 	if( r ){
-		printf( gettext( "header backup match the one on the device\n" ) ) ;
+		printf( gettext( "Header backup match the one on the device\n" ) ) ;
 		return 0 ;
 	}else{
-		printf( gettext( "header backup does not match the one on the device\n" ) ) ;
+		printf( gettext( "Header backup does not match the one on the device\n" ) ) ;
 		return 1 ;
 	}
 }
@@ -235,7 +235,7 @@ static int zuluExit( int st,stringList_t stl,stringList_t stx,const char * const
 
 static void ExitOnMemoryExaustion( void )
 {
-	printf( gettext( "unexpected exiting because you have run out of memory\n" ) ) ;
+	printf( gettext( "Unexpected exiting because you have run out of memory\n" ) ) ;
 	exit( 1 ) ;
 }
 
@@ -494,7 +494,7 @@ int main( int argc,char * argv[] )
 		return zuluExit( 130,stl,stx,env,gettext( "ERROR: \"action\" argument is missing" ) ) ;
 	}
 	if( device == NULL ){
-		return zuluExit( 120,stl,stx,env,gettext( "ERROR: required option( device path ) is missing for this operation" ) ) ;
+		return zuluExit( 120,stl,stx,env,gettext( "ERROR: Required option( device path ) is missing for this operation" ) ) ;
 	}
 	if( action == 'U' ){
 		st = _print_uuid_from_path( device ) ;
@@ -521,7 +521,7 @@ int main( int argc,char * argv[] )
 			return zuluExit( st,stl,stx,env,NULL ) ;
 		}else{
 			StringDelete( &q ) ;
-			return zuluExit( 110,stl,stx,env,gettext( "ERROR: could not find any partition with the presented UUID" ) ) ;
+			return zuluExit( 110,stl,stx,env,gettext( "ERROR: Could not find any partition with the presented UUID" ) ) ;
 		}
 	}else{
 		/*
@@ -529,11 +529,11 @@ int main( int argc,char * argv[] )
 		 */
 		switch( zuluCryptGetDeviceFileProperties( device,&fd,&fd1,&dev,uid ) ){
 			case 0 : break ;
-			case 1 : return zuluExit( 111,stl,stx,env,gettext( "ERROR: devices in /dev/shm/ path is not suppored" ) ) ;
-			case 2 : return zuluExit( 112,stl,stx,env,gettext( "ERROR: given path is a directory" ) ) ;
-			case 3 : return zuluExit( 113,stl,stx,env,gettext( "ERROR: a file can have only one hard link" ) ) ;
-			case 4 : return zuluExit( 113,stl,stx,env,gettext( "ERROR: insufficient privilges to access the device" ) ) ;
-			default: return zuluExit( 113,stl,stx,env,gettext( "ERROR: a non supported device encountered,device is missing or permission denied\n\
+			case 1 : return zuluExit( 111,stl,stx,env,gettext( "ERROR: Devices in /dev/shm/ path is not suppored" ) ) ;
+			case 2 : return zuluExit( 112,stl,stx,env,gettext( "ERROR: Given path is a directory" ) ) ;
+			case 3 : return zuluExit( 113,stl,stx,env,gettext( "ERROR: A file can have only one hard link" ) ) ;
+			case 4 : return zuluExit( 113,stl,stx,env,gettext( "ERROR: Insufficient privilges to access the device" ) ) ;
+			default: return zuluExit( 113,stl,stx,env,gettext( "ERROR: A non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;
 		}
 
@@ -544,7 +544,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 			if( fd != -1 ){
 				close( fd ) ;
 			}
-			return zuluExit( 114,stl,stx,env,gettext( "ERROR: could not resolve path to device" ) ) ;
+			return zuluExit( 114,stl,stx,env,gettext( "ERROR: Could not resolve path to device" ) ) ;
 		}else{
 			/*
 			 * zuluCryptDeviceIsSupported() is defined in partitions.c
@@ -577,7 +577,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 				}
 			}else{
 				st = 113 ;
-				puts( gettext( "ERROR: a non supported device encountered,device is missing or permission denied\n\
+				puts( gettext( "ERROR: A non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;
 			}
 

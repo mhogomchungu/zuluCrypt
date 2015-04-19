@@ -96,7 +96,7 @@ void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list )
 	int j = list.size() ;
 
 	if( j != table->columnCount() ){
-		qDebug() << "ERROR: table column count is NOT the same as QStringList size ";
+		qDebug() << "ERROR: Table column count is NOT the same as QStringList size ";
 		return ;
 	}
 

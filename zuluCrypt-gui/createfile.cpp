@@ -53,7 +53,7 @@ createfile::createfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::cre
 
 	this->installEventFilter( this ) ;
 
-	this->setWindowTitle( tr( "create a container file" ) ) ;
+	this->setWindowTitle( tr( "Create A Container File" ) ) ;
 	
 	m_running = false ;
 }
@@ -141,13 +141,13 @@ void createfile::pbCreate()
 	QString fileSize = m_ui->lineEditFileSize->text() ;
 
 	if( fileName.isEmpty()){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file name field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File name field is empty" ) ) ;
 	}
 	if( filePath.isEmpty()){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file path field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File path field is empty" ) ) ;
 	}
 	if( fileSize.isEmpty()){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file size field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File size field is empty" ) ) ;
 	}
 
 	bool test ;
@@ -159,10 +159,10 @@ void createfile::pbCreate()
 	}
 
 	if( utility::pathExists( filePath ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "file with the same name and at the destination folder already exist" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File with the same name and at the destination folder already exist" ) ) ;
 	}
 	if( !utility::canCreateFile( filePath ) ){
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "you dont seem to have writing access to the destination folder" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "You dont seem to have writing access to the destination folder" ) ) ;
 		m_ui->lineEditFilePath->setFocus() ;
 		return ;
 	}
@@ -179,7 +179,7 @@ void createfile::pbCreate()
 	}
 
 	if( size < 3145728 ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "container file must be bigger than 3MB" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Container file must be bigger than 3MB" ) ) ;
 	}
 
 	this->disableAll() ;
@@ -187,14 +187,14 @@ void createfile::pbCreate()
 	QFile file( filePath ) ;
 
 	if( !file.open( QIODevice::WriteOnly ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to create volume file" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
 	}
 
 	emit sendProgress( 0 ) ;
 
 	if( !file.resize( size ) ){
 		QFile::remove( filePath ) ;
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to create volume file" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
 	}
 
 	file.close() ;
@@ -205,12 +205,12 @@ void createfile::pbCreate()
 	int r = utility::clearVolume( filePath,&m_exit,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
 
 	if( r == 5 ){
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user choice" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
 		QFile::remove( filePath ) ;
 	}else if( r == 0 ){
 		emit fileCreated( filePath ) ;
 	}else{
-		msg.ShowUIOK( tr( "ERROR" ),tr( "could not open cryptographic back end to generate random data" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
 		QFile::remove( filePath ) ;
 	}
 
@@ -223,8 +223,8 @@ void createfile::pbCancel()
 {
 	if( m_running ){
 
-		QString x = tr( "terminating file creation process" ) ;
-		QString y = tr( "are you sure you want to stop file creation process?" ) ;
+		QString x = tr( "Terminating file creation process" ) ;
+		QString y = tr( "Are you sure you want to stop file creation process?" ) ;
 
 		DialogMsg msg( this ) ;
 
@@ -254,7 +254,7 @@ void createfile::pbOpenFolder()
 	QString Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
-		Z = Z + QString( "/" ) + m_ui->lineEditFilePath->text().split( "/" ).last() ;
+		Z = Z + "/" + m_ui->lineEditFilePath->text().split( "/" ).last() ;
 		m_ui->lineEditFilePath->setText( Z ) ;
 	}
 }

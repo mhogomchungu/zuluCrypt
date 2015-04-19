@@ -152,10 +152,10 @@ void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 {
 	QMenu m ;
 	m.setFont( this->font() ) ;
-	connect( m.addAction( tr( "remove selected entry" ) ),SIGNAL( triggered() ),this,SLOT( removeEntryFromFavoriteList() ) ) ;
+	connect( m.addAction( tr( "Remove Selected Entry" ) ),SIGNAL( triggered() ),this,SLOT( removeEntryFromFavoriteList() ) ) ;
 
 	m.addSeparator() ;
-	m.addAction( tr( "cancel" ) ) ;
+	m.addAction( tr( "Cancel" ) ) ;
 
 	if( clicked ){
 		m.exec( QCursor::pos() ) ;
@@ -199,10 +199,10 @@ void favorites::add()
 	QString m_path = m_ui->lineEditMountPath->text() ;
 
 	if( dev.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "device address field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Device address field is empty" ) ) ;
 	}
 	if( m_path.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "mount point path field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount point path field is empty" ) ) ;
 	}
 
 	m_ui->tableWidget->setEnabled( false ) ;
@@ -219,7 +219,7 @@ void favorites::add()
 
 void favorites::fileAddress()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "path to an encrypted volume" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Path To An Encrypted Volume" ),QDir::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->lineEditDeviceAddress->setText( Z ) ;
 	}

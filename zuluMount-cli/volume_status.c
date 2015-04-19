@@ -300,7 +300,7 @@ static int _starts_with_digits_only( string_t st )
 			return 1 ;
 		}
 		if( !( e >= '0' && e <= '9' ) ){
-			
+
 			return 0 ;
 		}
 	}
@@ -750,7 +750,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 				st = zuluCryptEXEVolumeInfo( e,dev,uid ) ;
 				free( dev ) ;
 			}else{
-				printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
+				printf( gettext( "ERROR: Could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
 				st = 1 ;
 			}
 		}else{
@@ -770,7 +770,7 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 				st = zuluCryptEXEVolumeInfo( e,dev,uid ) ;
 				StringFree( dev ) ;
 			}else{
-				printf( gettext( "ERROR: could not get volume properties,volume is not open or was opened by a different user" ) ) ;
+				printf( gettext( "ERROR: Could not get volume properties,volume is not open or was opened by a different user" ) ) ;
 				st = 1 ;
 			}
 		}else{

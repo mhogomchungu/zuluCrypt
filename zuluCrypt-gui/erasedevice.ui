@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>path to device</string>
+    <string>Path to Device</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -71,7 +71,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>% completed</string>
+    <string>% Completed</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -103,7 +103,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;start</string>
+    <string>&amp;Start</string>
    </property>
    <property name="default">
     <bool>true</bool>
@@ -119,7 +119,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>

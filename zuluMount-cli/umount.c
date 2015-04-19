@@ -33,7 +33,7 @@ int zuluMountUMount( ARGS * args )
 	string_t st = StringVoid ;
 	const char * dev = NULL ;
 	const char * errorMsg = gettext( "\
-ERROR: you can not umount volumes out of \"%s\" since you are not root and do not belong to group \"zulumount\"\n" ) ;
+ERROR: You can not umount volumes out of \"%s\" since you are not root and do not belong to group \"zulumount\"\n" ) ;
 	string_t xt ;
 
 	if( 0 && mode && mount_point_option ) {;}
@@ -48,7 +48,7 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 			 * the error msg is a lie,but its harmless since the user will most likely never see it as
 			 * this code path will not be passed.
 			 */
-			return _zuluExit( 100,StringVoid,m_point,gettext( "ERROR: device does not appear to be mounted" ) ) ;
+			return _zuluExit( 100,StringVoid,m_point,gettext( "ERROR: Device does not appear to be mounted" ) ) ;
 		}else{
 			st = StringInherit( &loop_device ) ;
 			dev = StringContent( st ) ;
@@ -57,7 +57,7 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 			 */
 			m_point = zuluCryptGetMountPointFromPath( dev ) ;
 			if( m_point == NULL ){
-				return _zuluExit( 100,st,m_point,gettext( "ERROR: device does not appear to be mounted" ) ) ;
+				return _zuluExit( 100,st,m_point,gettext( "ERROR: Device does not appear to be mounted" ) ) ;
 			}
 		}
 	}else{
@@ -66,7 +66,7 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 		*/
 		m_point = zuluCryptGetMountPointFromPath( device ) ;
 		if( m_point == NULL ){
-			return _zuluExit( 100,st,m_point,gettext( "ERROR: device does not appear to be mounted" ) ) ;
+			return _zuluExit( 100,st,m_point,gettext( "ERROR: Device does not appear to be mounted" ) ) ;
 		}
 	}
 
@@ -95,9 +95,9 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 	 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
 	 */
 	switch( zuluCryptBindUnmountVolume( StringListVoid,device,uid ) ){
-		case 3 : return _zuluExit( 107,st,m_point,gettext( "ERROR: shared mount point appear to be busy" ) ) ;
-		case 4 : return _zuluExit( 108,st,m_point,gettext( "ERROR: shared mount point appear to belong to a different user" ) ) ;
-		case 5 : return _zuluExit( 109,st,m_point,gettext( "ERROR: shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ) ;
+		case 3 : return _zuluExit( 107,st,m_point,gettext( "ERROR: Shared mount point appear to be busy" ) ) ;
+		case 4 : return _zuluExit( 108,st,m_point,gettext( "ERROR: Shared mount point appear to belong to a different user" ) ) ;
+		case 5 : return _zuluExit( 109,st,m_point,gettext( "ERROR: Shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ) ;
 		default: ;
 	}
 
@@ -124,10 +124,10 @@ ERROR: you can not umount volumes out of \"%s\" since you are not root and do no
 		return _zuluExit( 0,st,m_point,gettext( "SUCCESS: umount complete successfully" ) ) ;
 	}else{
 		switch( status ) {
-			case 1 : return _zuluExit( 103,st,m_point,gettext( "ERROR: device does not exist" ) ) ;
-			case 2 : return _zuluExit( 104,st,m_point,gettext( "ERROR: failed to unmount,the mount point and/or one or more files are in use" ) ) ;
-			case 4 : return _zuluExit( 105,st,m_point,gettext( "ERROR: failed to unmount,could not get a lock on /etc/mtab~" ) ) ;
-			default: return _zuluExit( 106,st,m_point,gettext( "ERROR: failed to unmount the partition" ) ) ;
+			case 1 : return _zuluExit( 103,st,m_point,gettext( "ERROR: Device does not exist" ) ) ;
+			case 2 : return _zuluExit( 104,st,m_point,gettext( "ERROR: Failed to unmount,the mount point and/or one or more files are in use" ) ) ;
+			case 4 : return _zuluExit( 105,st,m_point,gettext( "ERROR: Failed to unmount,could not get a lock on /etc/mtab~" ) ) ;
+			default: return _zuluExit( 106,st,m_point,gettext( "ERROR: Failed to unmount the partition" ) ) ;
 		}
 	}
 }

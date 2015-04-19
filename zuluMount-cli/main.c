@@ -392,7 +392,7 @@ mount and encrypted volume with a key \"xyz\" : zuluMount-cli -m -d /dev/sdc2 -p
 
 static void ExitOnMemoryExaustion( void )
 {
-	printf( gettext( "unexpected exiting because you have run out of memory\n" ) ) ;
+	printf( gettext( "Unexpected exiting because you have run out of memory\n" ) ) ;
 	exit( 1 ) ;
 }
 
@@ -402,7 +402,7 @@ static int _zuluMountDoAction( ARGS * args )
 	int fd1 = -1 ;
 	int status ;
 	char * dev = NULL ;
-	const char * msg = gettext( "ERROR: a non supported device encountered,device is missing or permission denied\n\
+	const char * msg = gettext( "ERROR: A non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature\n"  ) ;
 	/*
 	 * zuluCryptGetDeviceFileProperties is defined in ../zuluCrypt-lib/file_path_security.c
@@ -428,10 +428,10 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 				 close( fd ) ;
 			 }
 			 return status ;
-		case 1 : printf( gettext( "ERROR: devices in /dev/shm path is not suppored\n" ) ) ;	return 220 ;
-		case 2 : printf( gettext( "ERROR: given path is a directory\n" ) ) ;  			return 221 ;
-		case 3 : printf( gettext( "ERROR: a file can have only one hard link\n" ) ) ;		return 222 ;
-		case 4 : printf( gettext( "ERROR: insufficient privilges to access the device\n" ) ) ; 	return 223 ;
+		case 1 : printf( gettext( "ERROR: Devices in /dev/shm path is not suppored\n" ) ) ;	return 220 ;
+		case 2 : printf( gettext( "ERROR: Given path is a directory\n" ) ) ;  			return 221 ;
+		case 3 : printf( gettext( "ERROR: A file can have only one hard link\n" ) ) ;		return 222 ;
+		case 4 : printf( gettext( "ERROR: Insufficient privilges to access the device\n" ) ) ; 	return 223 ;
 		default: printf( "%s",msg ) ; 								return 224 ;
 	}
 }
@@ -566,7 +566,7 @@ int main( int argc,char * argv[] )
 	zuluCryptSecurityLockMemory( stl ) ;
 
 	if( args.action == NULL ){
-		return _zuluExit_2( 212,stl,stx,gettext( "ERROR: action not specified" ) ) ;
+		return _zuluExit_2( 212,stl,stx,gettext( "ERROR: Action not specified" ) ) ;
 	}
 	if( StringsAreEqual( args.action,"-E" ) ){
 		return _zuluExit_2(  zuluMountprintAListOfMountedVolumes(),stl,stx,NULL ) ;
@@ -612,7 +612,7 @@ int main( int argc,char * argv[] )
 			status = _zuluMountDoAction( &args ) ;
 			StringFree( device ) ;
 		}else{
-			printf( gettext( "could not resolve UUID\n" ) ) ;
+			printf( gettext( "Could not resolve UUID\n" ) ) ;
 			status = 214 ;
 		}
 	}else if( StringPrefixEqual( args.device,"LABEL=" ) ){
@@ -622,7 +622,7 @@ int main( int argc,char * argv[] )
 			status = _zuluMountDoAction( &args ) ;
 			StringFree( device ) ;
 		}else{
-			printf( gettext( "could not resolve LABEL\n" ) ) ;
+			printf( gettext( "Could not resolve LABEL\n" ) ) ;
 			status = 215 ;
 		}
 	}else{

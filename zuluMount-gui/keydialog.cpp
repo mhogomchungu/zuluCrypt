@@ -75,9 +75,9 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	QString msg ;
 	if( e.fileSystem() == "crypto_LUKS" ){
-		msg = tr( "unlock and mount a luks volume in \"%1\"").arg( m_path ) ;
+		msg = tr( "Mount A LUKS volume in \"%1\"").arg( m_path ) ;
 	}else{
-		msg = tr( "unlock and mount an encrypted volume in \"%1\"").arg( m_path ) ;
+		msg = tr( "Mount An Encrypted Volume In \"%1\"").arg( m_path ) ;
 	}
 	this->setWindowTitle( msg ) ;
 
@@ -120,22 +120,22 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_menu_1 = new QMenu( this ) ;
 
-	m_menu_1->addAction( tr( "set file system options" ) ) ;
-	m_menu_1->addAction( tr( "set volume offset" ) ) ;
+	m_menu_1->addAction( tr( "Set File System Options" ) ) ;
+	m_menu_1->addAction( tr( "Set Volume Offset" ) ) ;
 
 	QString r ;
 
 #if VERACRYPT_SUPPORT
-	m_menu_1->addAction( tr( "set volume as VeraCrypt volume" ) ) ;
+	m_menu_1->addAction( tr( "Set Volume As VeraCrypt Volume" ) ) ;
 
-	r = tr( "TrueCrypt/VeraCrypt keys" ) ;
+	r = tr( "TrueCrypt/VeraCrypt Keys" ) ;
 #else
 	r = tr( "TrueCrypt keys" ) ;
 #endif
 
-	m_ui->cbKeyType->addItem( tr( "key" ) ) ;
-	m_ui->cbKeyType->addItem( tr( "keyfile" ) ) ;
-	m_ui->cbKeyType->addItem( tr( "plugin" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "Keyfile" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "Plugin" ) ) ;
 	m_ui->cbKeyType->addItem( r ) ;
 
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
@@ -160,14 +160,14 @@ void keyDialog::tcryptCancelled( void )
 	m_key.clear() ;
 	m_keyFiles.clear() ;
 	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
-	m_ui->lineEditKey->setText( "" ) ;
+	m_ui->lineEditKey->setText( QString() ) ;
 	this->enableAll() ;
 }
 
 void keyDialog::tcryptGui()
 {
 	this->disableAll() ;
-	m_ui->lineEditKey->setText( "" ) ;
+	m_ui->lineEditKey->setText( QString() ) ;
 
 	tcrypt * t = new tcrypt( this ) ;
 	connect( t,SIGNAL( Keys( QString,QStringList ) ),this,SLOT( keys( QString,QStringList ) ) ) ;
@@ -182,7 +182,7 @@ void keyDialog::keys( QString key,QStringList keyFiles )
 	m_keyFiles = keyFiles ;
 	this->openVolume() ;
 	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
-	m_ui->lineEditKey->setText( "" ) ;
+	m_ui->lineEditKey->setText( QString() ) ;
 	m_ui->lineEditKey->setEnabled( false ) ;
 }
 
@@ -208,11 +208,11 @@ void keyDialog::doAction( QAction * ac )
 {
 	QString e = ac->text() ;
 
-	if( e == tr( "set file system options" ) ){
+	if( e == tr( "Set File System 0ptions" ) ){
 		this->showFileSystemOptionWindow() ;
-	}else if( e == tr( "set volume offset" ) ){
+	}else if( e == tr( "Set Volume Offset" ) ){
 		this->showOffSetWindowOption() ;
-	}else{
+	}else if( e == tr( "Set Volume As VeraCrypt Volume" ) ){
 		m_veraCryptVolume = true ;
 	}
 }
@@ -239,7 +239,7 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 
 void keyDialog::pbMountPointPath()
 {
-	QString msg = tr( "select a folder to create a mount point in" ) ;
+	QString msg = tr( "Select A Folder To Create A Mount Point In" ) ;
 	QString Z = QFileDialog::getExistingDirectory( this,msg,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
@@ -285,7 +285,7 @@ void keyDialog::disableAll()
 void keyDialog::KeyFile()
 {
 	if( m_ui->cbKeyType->currentIndex() == keyDialog::keyfile ){
-		QString msg = tr( "select a file to be used as a keyfile" ) ;
+		QString msg = tr( "Select A File To Be Used As A Keyfile" ) ;
 		QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath() ) ;
 
 		if( !Z.isEmpty() ){
@@ -342,7 +342,7 @@ void keyDialog::Plugin()
 	}
 	m_menu->addSeparator() ;
 
-	m_menu->addAction( tr( "cancel" ) ) ;
+	m_menu->addAction( tr( "Cancel" ) ) ;
 
 	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
 
@@ -351,7 +351,7 @@ void keyDialog::Plugin()
 
 void keyDialog::pbPluginEntryClicked( QAction * e )
 {
-	if( e->text() != tr( "cancel" ) ){
+	if( e->text() != tr( "Cancel" ) ){
 		m_ui->lineEditKey->setText( e->text() ) ;
 	}
 }
@@ -383,7 +383,7 @@ void keyDialog::pbOpen()
 			if( w.notConfigured ){
 
 				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR!" ),tr( "internal wallet is not configured" ) ) ;
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal wallet is not configured" ) ) ;
 				return this->enableAll() ;
 			}else{
 				_internalPassWord = w.password ;
@@ -400,7 +400,7 @@ void keyDialog::pbOpen()
 
 			if( w.key.isEmpty() ){
 				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR" ),tr( "the volume does not appear to have an entry in the wallet" ) ) ;
+				msg.ShowUIOK( tr( "ERROR" ),tr( "The volume does not appear to have an entry in the wallet" ) ) ;
 				this->enableAll() ;
 				if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
 					m_ui->lineEditKey->setEnabled( false ) ;
@@ -434,7 +434,7 @@ void keyDialog::encfsMount()
 		this->HideUI() ;
 	}else{
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "failed to unlock an encfs volume.\nwrong password or not an encfs volume" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nwrong password or not an encfs volume" ) ) ;
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
 			m_ui->lineEditKey->clear() ;
 		}
@@ -457,12 +457,12 @@ void keyDialog::openVolume()
 			;
 		}else if( keyType == keyDialog::plugin ){
 			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR" ),tr( "plug in name field is empty" ) ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Plug in name field is empty" ) ) ;
 			m_ui->lineEditKey->setFocus() ;
 			return this->enableAll() ;
 		}else if( keyType == keyDialog::keyfile ){
 			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR" ),tr( "keyfile field is empty" ) ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Keyfile field is empty" ) ) ;
 			m_ui->lineEditKey->setFocus() ;
 			return this->enableAll() ;
 		}
@@ -510,7 +510,7 @@ void keyDialog::openVolume()
 
 		utility::keySend( addr,m_key ) ;
 	}else{
-		qDebug() << "ERROR: uncaught condition" ;
+		qDebug() << "ERROR: Uncaught condition" ;
 	}
 
 	QString volume = m_path ;
@@ -629,7 +629,7 @@ void keyDialog::plugIn()
 {
 	m_ui->pbkeyOption->setIcon( QIcon( ":/module.png" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->label->setText( tr( "plugin name" ) ) ;
+	m_ui->label->setText( tr( "Plugin name" ) ) ;
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->lineEditKey->setEnabled( false ) ;
 	m_ui->lineEditKey->setText( INTERNAL_WALLET ) ;
@@ -639,7 +639,7 @@ void keyDialog::key()
 {
 	m_ui->pbkeyOption->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->pbkeyOption->setEnabled( false ) ;
-	m_ui->label->setText( tr( "key" ) ) ;
+	m_ui->label->setText( tr( "Key" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
@@ -649,7 +649,7 @@ void keyDialog::keyFile()
 {
 	m_ui->pbkeyOption->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->label->setText( tr( "keyfile path" ) ) ;
+	m_ui->label->setText( tr( "Keyfile path" ) ) ;
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;

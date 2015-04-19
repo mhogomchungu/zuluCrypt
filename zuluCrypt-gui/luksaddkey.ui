@@ -32,7 +32,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>volume path</string>
+    <string>Volume Path</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -98,7 +98,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>Key</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="radioButtonPassphraseInVolumeFromFile">
@@ -111,7 +111,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>keyfile</string>
+     <string>Keyfile</string>
     </property>
    </widget>
    <widget class="QLabel" name="labelExistingPassphrase">
@@ -124,7 +124,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>Key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -173,7 +173,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;add</string>
+    <string>&amp;Add</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -192,7 +192,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -236,7 +236,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>Key</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="radioButtonNewPassphraseFromFile">
@@ -249,7 +249,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>keyfile</string>
+     <string>Keyfile</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonOpenNewKeyFile">
@@ -281,7 +281,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>Key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -320,7 +320,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>reenter key</string>
+     <string>Reenter Key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -340,7 +340,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>key already in the encrypted volume</string>
+    <string>Key Already In The Encrypted Volume</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -356,7 +356,7 @@
     </rect>
    </property>
    <property name="text">
-    <string> key to be added to the encrypted volume</string>
+    <string> Key To Be Added To The Encrypted Volume</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

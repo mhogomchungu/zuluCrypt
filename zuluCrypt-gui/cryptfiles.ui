@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>destination path</string>
+    <string>Destination</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -71,7 +71,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>c&amp;reate</string>
+    <string>C&amp;reate</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -90,7 +90,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>source path</string>
+    <string>Source</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -145,12 +145,12 @@
     </property>
     <item>
      <property name="text">
-      <string>key</string>
+      <string>Key</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>keyfile</string>
+      <string>Keyfile</string>
      </property>
     </item>
    </widget>
@@ -188,7 +188,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>key</string>
+    <string>Key</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -217,7 +217,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>repeat key</string>
+    <string>Repeat Key</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -236,7 +236,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
   </widget>
   <widget class="QProgressBar" name="progressBar">
@@ -262,7 +262,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>% complete</string>
+    <string>% Complete</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

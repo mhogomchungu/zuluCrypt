@@ -132,7 +132,7 @@ void MainWindow::setUpApp( const QString& volume )
 	m_autoMountAction->setCheckable( true ) ;
 	m_autoMountAction->setChecked( m_autoMount ) ;
 
-	m_autoMountAction->setText( tr( "automount volumes" ) ) ;
+	m_autoMountAction->setText( tr( "Automount Volumes" ) ) ;
 
 	connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoMountToggled( bool ) ) ) ;
 
@@ -142,41 +142,41 @@ void MainWindow::setUpApp( const QString& volume )
 	autoOpenFolderOnMount->setCheckable( true ) ;
 	m_autoOpenFolderOnMount = this->autoOpenFolderOnMount() ;
 	autoOpenFolderOnMount->setChecked( m_autoOpenFolderOnMount ) ;
-	autoOpenFolderOnMount->setText( tr( "auto open mount point" ) ) ;
+	autoOpenFolderOnMount->setText( tr( "Auto Open Mount Point" ) ) ;
 	connect( autoOpenFolderOnMount,SIGNAL( toggled( bool ) ),this,SLOT( autoOpenFolderOnMount( bool ) ) ) ;
 
 	trayMenu->addAction( autoOpenFolderOnMount ) ;
 
 	auto ac = new QAction( this ) ;
-	ac->setText( tr( "show the interface" ) ) ;
+	ac->setText( tr( "Show The Interface" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( raiseWindow() ) ) ;
 
 	trayMenu->addAction( ac ) ;
 
 	ac = new QAction( this ) ;
-	ac->setText( tr( "unmount all" ) ) ;
+	ac->setText( tr( "Unmount All" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( unMountAll() ) ) ;
 
 	trayMenu->addAction( ac ) ;
 
-	m_favorite_menu = trayMenu->addMenu( tr( "favorites" ) ) ;
+	m_favorite_menu = trayMenu->addMenu( tr( "Favorites" ) ) ;
 	connect( m_favorite_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( favoriteClicked( QAction * ) ) ) ;
 	connect( m_favorite_menu,SIGNAL( aboutToShow() ),this,SLOT( showFavorites() ) ) ;
 
-	m_not_hidden_volume_menu = trayMenu->addMenu( tr( "hide volume from view" ) ) ;
+	m_not_hidden_volume_menu = trayMenu->addMenu( tr( "Hide Volume From View" ) ) ;
 	connect( m_not_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( removeVolumeFromVisibleVolumeList( QAction * ) ) ) ;
 	connect( m_not_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showVisibleVolumeList() ) ) ;
 
-	m_hidden_volume_menu = trayMenu->addMenu( tr( "unhide volume from view" ) ) ;
+	m_hidden_volume_menu = trayMenu->addMenu( tr( "Unhide Volume From View" ) ) ;
 	connect( m_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( removeVolumeFromHiddenVolumeList( QAction * ) ) ) ;
 	connect( m_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showHiddenVolumeList() ) ) ;
 
 	ac = new QAction( this ) ;
-	ac->setText( tr( "about" ) ) ;
+	ac->setText( tr( "About" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( licenseInfo() ) ) ;
 	trayMenu->addAction( ac ) ;
 
-	trayMenu->addAction( tr( "quit" ),this,SLOT( pbClose() ) ) ;
+	trayMenu->addAction( tr( "Quit" ),this,SLOT( pbClose() ) ) ;
 	m_trayIcon->setContextMenu( trayMenu ) ;
 
 	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
@@ -230,7 +230,7 @@ void MainWindow::showHiddenVolumeList()
 
 	if( l.isEmpty() ){
 
-		auto ac = new QAction( tr( "list is empty" ),m_hidden_volume_menu ) ;
+		auto ac = new QAction( tr( "List Is Empty" ),m_hidden_volume_menu ) ;
 		ac->setEnabled( false ) ;
 		m_hidden_volume_menu->addAction( ac ) ;
 	}else{
@@ -249,7 +249,7 @@ void MainWindow::showVisibleVolumeList()
 
 	if( l.isEmpty() ){
 
-		auto ac = new QAction( tr( "list is empty" ),m_not_hidden_volume_menu ) ;
+		auto ac = new QAction( tr( "List Is Empty" ),m_not_hidden_volume_menu ) ;
 		ac->setEnabled( false ) ;
 		m_not_hidden_volume_menu->addAction( ac ) ;
 	}else{
@@ -289,7 +289,7 @@ void MainWindow::showFavorites()
 	QStringList l = utility::readFavorites() ;
 
 	if( l.isEmpty() ){
-		auto ac = new QAction( tr( "list is empty" ),m_favorite_menu ) ;
+		auto ac = new QAction( tr( "List Is Empty" ),m_favorite_menu ) ;
 		ac->setEnabled( false ) ;
 		m_favorite_menu->addAction( ac ) ;
 	}else{
@@ -529,14 +529,14 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	if( mt == "Nil" ){
 
-		connect( m.addAction( tr( "mount" ) ),SIGNAL( triggered() ),this,SLOT( slotMount() ) ) ;
+		connect( m.addAction( tr( "Mount" ) ),SIGNAL( triggered() ),this,SLOT( slotMount() ) ) ;
 	}else{
 		QString mp = QString( "/run/media/private/%1/" ).arg( utility::userName() ) ;
 		QString mp_1 = QString( "/home/%1/" ).arg( utility::userName() ) ;
 
 		if( mt.startsWith( mp ) || mt.startsWith( mp_1 ) ){
 
-			connect( m.addAction( tr( "unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
+			connect( m.addAction( tr( "Unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 
 			m.addSeparator() ;
 
@@ -544,7 +544,7 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			if( fs != "encfs" ){
 
-				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 				m.addSeparator() ;
 			}
 
@@ -552,12 +552,12 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			if( m_sharedFolderPath.isEmpty() ){
 
-				connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),
+				connect( m.addAction( tr( "Open Folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenFolder() ) ) ;
 			}else{
-				connect( m.addAction( tr( "open private folder" ) ),SIGNAL( triggered() ),
+				connect( m.addAction( tr( "Open Private Folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenFolder() ) ) ;
-				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),
+				connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenSharedFolder() ) ) ;
 			}
 		}else{
@@ -567,26 +567,26 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 				if( utility::pathIsReadable( mt ) ){
 
-					connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+					connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 					m.addSeparator() ;
-					connect( m.addAction( tr( "open folder" ) ),SIGNAL( triggered() ),
+					connect( m.addAction( tr( "Open Folder" ) ),SIGNAL( triggered() ),
 						 this,SLOT( slotOpenFolder() ) ) ;
 				}else{
-					connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+					connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 				}
 			}else{
-				connect( m.addAction( tr( "properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
+				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 
 				m.addSeparator() ;
 
-				connect( m.addAction( tr( "open shared folder" ) ),SIGNAL( triggered() ),
+				connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenSharedFolder() ) ) ;
 			}
 		}
 	}
 
 	m.addSeparator() ;
-	m.addAction( tr( "close menu" ) ) ;
+	m.addAction( tr( "Close Menu" ) ) ;
 
 	if( itemClicked ){
 		m.exec( QCursor::pos() ) ;
@@ -635,9 +635,9 @@ void MainWindow::openMountPoint( const QString& m_point )
 	utility::openMountPoint( m_point,m_folderOpener ).then( [ this ]( bool failed ){
 
 		if( failed ){
-			QString x = tr( "could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
+			QString x = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
 			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "warning" ),x ) ;
+			msg.ShowUIOK( tr( "Warning" ),x ) ;
 		}
 	} ) ;
 }
@@ -663,14 +663,14 @@ void MainWindow::volumeProperties()
 
 	if( r.isEmpty() ){
 		msg.ShowUIOK( tr( "ERROR" ),
-			      tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
+			      tr( "Could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
 	}else{
 		int i = r.indexOf( "\n" ) ;
 		if( i != -1 ){
-			msg.ShowUIVolumeProperties( tr( "volume properties" ),r.mid( i + 1 ) ) ;
+			msg.ShowUIVolumeProperties( tr( "Volume Properties" ),r.mid( i + 1 ) ) ;
 		}else{
 			msg.ShowUIOK( tr( "ERROR" ),
-				      tr( "could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
+				      tr( "Could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
 		}
 	}
 
@@ -799,7 +799,7 @@ void MainWindow::showMoungDialog( const volumeEntryProperties& v )
 
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
-			      tr( "permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;
+			      tr( "Permission to access the volume was denied\nor\nthe volume is not supported\n(LVM/MDRAID signatures found)" ) ) ;
 		this->enableAll() ;
 	}else{
 		this->mount( v ) ;
@@ -836,7 +836,7 @@ void MainWindow::pbMount()
 {
 	this->disableAll() ;
 
-	QString path = QFileDialog::getOpenFileName( this,tr( "select an image file to mount" ),QDir::homePath() ) ;
+	QString path = QFileDialog::getOpenFileName( this,tr( "Aelect An Image File To Mount" ),QDir::homePath() ) ;
 
 	if( path.isEmpty() ){
 
@@ -850,7 +850,7 @@ void MainWindow::unlockencfs()
 {
 	this->disableAll() ;
 
-	QString path = QFileDialog::getExistingDirectory( this,tr( "select an encfs volume directory" ),QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
+	QString path = QFileDialog::getExistingDirectory( this,tr( "Select An Encfs Volume Directory" ),QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( path.isEmpty() ){
 
@@ -956,7 +956,7 @@ void MainWindow::pbUmount()
 		if( !zuluMountTask::encfsUnmount( m ).await() ){
 
 			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),tr( "failed to unmount encfs volume" ) ) ;
+			m.ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount encfs volume" ) ) ;
 			this->enableAll() ;
 		}
 	}else{
@@ -1051,7 +1051,7 @@ void MainWindow::updateVolumeList( const QVector< volumeEntryProperties >& r )
 
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),
-			      tr( "reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) ) ;
+			      tr( "Reading partition properties took longer than expected and operation was terminated,click refresh to try again" ) ) ;
 
 		this->enableAll() ;
 	}else{

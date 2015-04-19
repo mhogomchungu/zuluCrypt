@@ -99,12 +99,12 @@ void luksaddkey::keyChanged( QString key )
 	if( checkQuality ){
 		int st = m_keystrength.quality( key ) ;
 		if( st < 0 ){
-			this->setWindowTitle( tr( "passphrase quality: 0%" ) ) ;
+			this->setWindowTitle( tr( "Passphrase Quality: 0%" ) ) ;
 		}else{
-			this->setWindowTitle( tr( "passphrase quality: %1%" ).arg( QString::number( st ) ) ) ;
+			this->setWindowTitle( tr( "Passphrase Quality: %1%" ).arg( QString::number( st ) ) ) ;
 		}
 	}else{
-		this->setWindowTitle( tr( "add a key to a volume" ) ) ;
+		this->setWindowTitle( tr( "Add A Key To A Volume" ) ) ;
 	}
 }
 
@@ -155,7 +155,7 @@ void luksaddkey::HideUI()
 
 void luksaddkey::pbOpenExisitingKeyFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "existing key file" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Existing Keyfile" ),QDir::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->textEditExistingPassphrase->setText( Z ) ;
 	}
@@ -164,7 +164,7 @@ void luksaddkey::pbOpenExisitingKeyFile( void )
 
 void luksaddkey::pbOpenNewKeyFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "new key file" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "New Keyfile" ),QDir::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->textEditPassphraseToAdd->setText( Z ) ;
 	}
@@ -173,7 +173,7 @@ void luksaddkey::pbOpenNewKeyFile( void )
 
 void luksaddkey::pbOpenFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "encrypted volume path" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Encrypted Volume Path" ),QDir::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->textEditPathToVolume->setText( Z ) ;
 	}
@@ -195,7 +195,7 @@ void luksaddkey::rbExistingPassphrase( void )
 	m_ui->textEditExistingPassphrase->setToolTip( tr( "enter a key" ) ) ;
 	m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Password ) ;
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
-	m_ui->labelExistingPassphrase->setText( tr( "key" ) ) ;
+	m_ui->labelExistingPassphrase->setText( tr( "Key" ) ) ;
 	m_ui->textEditExistingPassphrase->clear() ;
 	m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->textEditExistingPassphrase->setFocus() ;
@@ -203,10 +203,10 @@ void luksaddkey::rbExistingPassphrase( void )
 
 void luksaddkey::rbExistingPassphraseFromFile( void )
 {
-	m_ui->textEditExistingPassphrase->setToolTip( tr( "enter a path to a keyfile location" ) ) ;
+	m_ui->textEditExistingPassphrase->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
 	m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( true ) ;
-	m_ui->labelExistingPassphrase->setText( tr( "keyfile path" ) ) ;
+	m_ui->labelExistingPassphrase->setText( tr( "Keyfile Path" ) ) ;
 	m_ui->textEditExistingPassphrase->clear() ;
 	m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->textEditExistingPassphrase->setFocus() ;
@@ -214,10 +214,10 @@ void luksaddkey::rbExistingPassphraseFromFile( void )
 
 void luksaddkey::rbNewPassphrase( void )
 {
-	m_ui->textEditPassphraseToAdd->setToolTip( tr( "enter a key" ) ) ;
+	m_ui->textEditPassphraseToAdd->setToolTip( tr( "Enter a key" ) ) ;
 	m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Password ) ;
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( false ) ;
-	m_ui->labelNewPassphrase->setText( tr( "key" ) ) ;
+	m_ui->labelNewPassphrase->setText( tr( "Key" ) ) ;
 	m_ui->textEditPassphraseToAdd->clear() ;
 	m_ui->lineEditReEnterPassphrase->setEnabled( true ) ;
 	m_ui->labelReEnterPassphrase->setEnabled( true ) ;
@@ -227,10 +227,10 @@ void luksaddkey::rbNewPassphrase( void )
 
 void luksaddkey::rbNewPassphraseFromFile()
 {
-	m_ui->textEditPassphraseToAdd->setToolTip( tr( "enter a path to a keyfile location" ) ) ;
+	m_ui->textEditPassphraseToAdd->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
 	m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( true ) ;
-	m_ui->labelNewPassphrase->setText( tr( "keyfile path" ) ) ;
+	m_ui->labelNewPassphrase->setText( tr( "Keyfile path" ) ) ;
 	m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
 	m_ui->lineEditReEnterPassphrase->clear() ;
 	m_ui->labelReEnterPassphrase->setEnabled( false ) ;
@@ -249,24 +249,24 @@ void luksaddkey::pbAdd( void )
 	m_volumePath = m_ui->textEditPathToVolume->text() ;
 
 	if( m_volumePath.isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 	}
 
 	m_volumePath = utility::resolvePath( m_volumePath ) ;
 
 	if( m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ){
 		if( ExistingKey.isEmpty() ){
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 		}
 	}
 
 	if( m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
 		if( NewKey.isEmpty() ){
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 		}
 	}else{
 		if( NewKey != NewKey_1 ){
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "keys do not match" ) ) ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "Keys do not match" ) ) ;
 			m_ui->textEditPassphraseToAdd->clear() ;
 			m_ui->lineEditReEnterPassphrase->clear() ;
 			m_ui->textEditPassphraseToAdd->setFocus() ;
@@ -329,9 +329,9 @@ void luksaddkey::keyAdded()
 
 	if( l.isEmpty() ){
 
-		success = tr( "key added successfully." ) ;
+		success = tr( "Key added successfully." ) ;
 	}else{
-		QString x = tr( "key added successfully.\n%1 / %2 slots are now in use" ) ;
+		QString x = tr( "Key added successfully.\n%1 / %2 slots are now in use" ) ;
 		success = x.arg( l.first() ).arg( l.at( 1 ) ) ;
 	}
 
@@ -347,24 +347,24 @@ void luksaddkey::taskFinished( int r )
 	DialogMsg msg( this ) ;
 	switch( r ){
 		case 0  : return this->keyAdded() ;
-		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented key does not match any key in the volume" ) ) ;		      	break ;
-		case 2  : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open luks volume" ) ) ;					     	break ;
-		case 3  : msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) ) ;					     	break ;
-		case 4  : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to add a key to a system device,\nonly root user or members of group \"zulucrypt\" can do that\n" ) )	;break ;
-		case 5  : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open volume in write mode" ) ) ;					break ;
-		case 6  : msg.ShowUIOK( tr( "ERROR!" ),tr( "all key slots are occupied, can not add any more keys" ) ) ;		break ;
-		case 7  : msg.ShowUIOK( tr( "ERROR!" ),tr( "can not get passphrase in silent mode" ) ) ;			   	break ;
-		case 8  : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) ) ;	                      	break ;
-		case 9  : msg.ShowUIOK( tr( "ERROR!" ),tr( "new passphrases do not match" ) ) ;						break ;
-		case 10 : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) ) ;      	break ;
-		case 11 : msg.ShowUIOK( tr( "ERROR!" ),tr( "one or both keyfile(s) does not exist" ) ) ;				break ;
-		case 12 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) ) ;			break ;
-		case 13 : msg.ShowUIOK( tr( "ERROR!" ),tr( "couldnt get enought memory to hold the key file" ) ) ;			break ;
-		case 14 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a key from a socket" ) ) ;					break ;
-		case 15 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get elevated privilege,check binary permissions" ) ) ;		break ;
-		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) ) ;			break ;
-		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "device is not a luks device" ) ) ;						break ;
-		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
+		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented key does not match any key in the volume" ) ) ;		      	break ;
+		case 2  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open luks volume" ) ) ;					     	break ;
+		case 3  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume is not a luks volume" ) ) ;					     	break ;
+		case 4  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to add a key to a system device,\nonly root user or members of group \"zulucrypt\" can do that\n" ) )	;break ;
+		case 5  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open volume in write mode" ) ) ;					break ;
+		case 6  : msg.ShowUIOK( tr( "ERROR!" ),tr( "All key slots are occupied, can not add any more keys" ) ) ;		break ;
+		case 7  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not get passphrase in silent mode" ) ) ;			   	break ;
+		case 8  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold passphrase" ) ) ;	                      	break ;
+		case 9  : msg.ShowUIOK( tr( "ERROR!" ),tr( "New passphrases do not match" ) ) ;						break ;
+		case 10 : msg.ShowUIOK( tr( "ERROR!" ),tr( "One or more required argument(s) for this operation is missing" ) ) ;      	break ;
+		case 11 : msg.ShowUIOK( tr( "ERROR!" ),tr( "One or both keyfile(s) does not exist" ) ) ;				break ;
+		case 12 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) ) ;			break ;
+		case 13 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Couldnt get enought memory to hold the key file" ) ) ;			break ;
+		case 14 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a key from a socket" ) ) ;					break ;
+		case 15 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get elevated privilege,check binary permissions" ) ) ;		break ;
+		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not find a partition that match presented UUID" ) ) ;			break ;
+		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "Cevice is not a luks device" ) ) ;						break ;
+		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
 	}
 
 	this->enableAll() ;

@@ -182,9 +182,9 @@ int zuluMountMount( ARGS * args )
 	unsigned long m_flags ;
 	const char * dev = device ;
 	const char * msg = gettext( "\
-ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges can be acquired by:\n\
-1. adding an entry for the volume in fstab with \"user\" mount option\n\
-2. add yourself to \"zulumount\" group" ) ;
+ERROR: Insuffienct privilege to manage a system volume.\nnecessary privileges can be acquired by:\n\
+1. Adding an entry for the volume in fstab with \"user\" mount option\n\
+2. Add yourself to \"zulumount\" group" ) ;
 
 	if( mount_point_from_fstab ){;}
 
@@ -194,7 +194,7 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 		 */
 		path = zuluCryptLoopDeviceAddress_1( device ) ;
 		if( path == NULL ){
-			return _zuluExit( 112,z,path,gettext( "ERROR: could not resolve path to device or device could not be opened in read write mode" ) ) ;
+			return _zuluExit( 112,z,path,gettext( "ERROR: Could not resolve path to device or device could not be opened in read write mode" ) ) ;
 		}else{
 			dev = path ;
 		}
@@ -216,20 +216,20 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 	}
 
 	if( status != 0 ){
-		return _zuluExit( 112,z,path,gettext( "ERROR: could not resolve path to device or device could not be opened in read write mode" ) ) ;
+		return _zuluExit( 112,z,path,gettext( "ERROR: Could not resolve path to device or device could not be opened in read write mode" ) ) ;
 	}
 
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ../zuluCrypt-cli/bin/mount_flags.c
 	 */
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ){
-		return _zuluExit( 100,z,path,gettext( "ERROR: insuffienct privileges to mount the volume with given mount options" ) ) ;
+		return _zuluExit( 100,z,path,gettext( "ERROR: Insuffienct privileges to mount the volume with given mount options" ) ) ;
 	}
 	/*
 	 * zuluCryptPartitionIsMounted is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
 	if( zuluCryptPartitionIsMounted( dev ) ){
-		return _zuluExit( 102,z,path,gettext( "ERROR: device already mounted" ) ) ;
+		return _zuluExit( 102,z,path,gettext( "ERROR: Device already mounted" ) ) ;
 	}
 
 	status = _zuluMountPartitionAccess( dev,m_opts,uid ) ;
@@ -248,7 +248,7 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 	z = zuluCryptCreateMountPoint( device,m_point,m_opts,uid ) ;
 
 	if( z == StringVoid ){
-		return _zuluExit( 106,z,path,gettext( "ERROR: could not create mount point path,path already taken" ) ) ;
+		return _zuluExit( 106,z,path,gettext( "ERROR: Could not create mount point path,path already taken" ) ) ;
 	}
 
 	rm_point = StringContent( z ) ;
@@ -261,7 +261,7 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 			zuluCryptSecurityGainElevatedPrivileges() ;
 			rmdir( rm_point ) ;
 			zuluCryptSecurityDropElevatedPrivileges() ;
-			return _zuluExit( 113,z,path,gettext( "ERROR: shared mount point path aleady taken" ) ) ;
+			return _zuluExit( 113,z,path,gettext( "ERROR: Shared mount point path aleady taken" ) ) ;
 		}
 	}
 
@@ -282,18 +282,18 @@ ERROR: insuffienct privilege to manage a system volume.\nnecessary privileges ca
 			 */
 			zuluCryptBindMountVolume( device,z,m_flags ) ;
 		}
-		printf( gettext( "SUCCESS: mount complete successfully\nvolume mounted at: %s\n" ),rm_point ) ;
+		printf( gettext( "SUCCESS: Mount complete successfully\nvolume mounted at: %s\n" ),rm_point ) ;
 		return _zuluExit( 0,z,path,NULL ) ;
 	}else{
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		rmdir( rm_point ) ;
 		zuluCryptSecurityDropElevatedPrivileges() ;
 		switch( status ){
-			case -1: return _zuluExit( 108,z,path,gettext( "ERROR: failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;
-			case 1 : return _zuluExit( 109,z,path,gettext( "ERROR: failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ;
-			case 4 : return _zuluExit( 110,z,path,gettext( "ERROR: mount failed,no or unrecognized file system" ) )	;
-			case 12: return _zuluExit( 111,z,path,gettext( "ERROR: mount failed,could not get a lock on /etc/mtab~" ) ) ;
-			default: return _zuluExit( 112,z,path,gettext( "ERROR: failed to mount the partition" ) ) ;
+			case -1: return _zuluExit( 108,z,path,gettext( "ERROR: Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;
+			case 1 : return _zuluExit( 109,z,path,gettext( "ERROR: Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ;
+			case 4 : return _zuluExit( 110,z,path,gettext( "ERROR: Mount failed,no or unrecognized file system" ) )	;
+			case 12: return _zuluExit( 111,z,path,gettext( "ERROR: Mount failed,could not get a lock on /etc/mtab~" ) ) ;
+			default: return _zuluExit( 112,z,path,gettext( "ERROR: Failed to mount the partition" ) ) ;
 		}
 	}
 }

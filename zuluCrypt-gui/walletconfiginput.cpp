@@ -46,8 +46,8 @@ walletconfiginput::walletconfiginput( QWidget * parent ) : QDialog( parent ),m_u
 	connect( m_ui->pushButtonImageFile,SIGNAL( clicked() ),this,SLOT( pbImageFilePath() ) ) ;
 	connect( m_ui->pushButtonVolume,SIGNAL( clicked() ),this,SLOT( pbVolumePath() ) ) ;
 
-	m_ui->pushButtonImageFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
-	m_ui->pushButtonVolume->setIcon( QIcon( QString( ":/partition.png" ) ) ) ;
+	m_ui->pushButtonImageFile->setIcon( QIcon( ":/file.png" ) ) ;
+	m_ui->pushButtonVolume->setIcon( QIcon( ":/partition.png" ) ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -87,18 +87,18 @@ void walletconfiginput::pbAdd()
 
 	if( volumeID.isEmpty() || key.isEmpty() || repeatKey.isEmpty() ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "atleast one required field is empty" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Atleast one required field is empty" ) ) ;
 		return ;
 	}
 
 	if( key != repeatKey ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "passphrases do not match" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Passphrases do not match" ) ) ;
 		return ;
 	}
 
 	if( comment.isEmpty() ){
-		comment = QString( "Nil" ) ;
+		comment = "Nil" ;
 	}
 
 	emit add( volumeID,comment,key ) ;
@@ -113,7 +113,7 @@ void walletconfiginput::slotCancel()
 
 void walletconfiginput::pbImageFilePath()
 {
-	QString x = QFileDialog::getOpenFileName( this,tr( "select a volume" ),QDir::homePath(),0 ) ;
+	QString x = QFileDialog::getOpenFileName( this,tr( "Select A Volume" ),QDir::homePath(),0 ) ;
 
 	if( !x.isEmpty() ){
 		this->setvolumeID( x ) ;

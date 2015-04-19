@@ -82,8 +82,8 @@ void luksdeletekey::closeEvent( QCloseEvent * e )
 
 void luksdeletekey::rbPassphrase()
 {
-	m_ui->lineEditPassphrase->setToolTip( tr( "enter a key" ) ) ;
-	m_ui->labelPassphrase->setText( tr( "key" ) ) ;
+	m_ui->lineEditPassphrase->setToolTip( tr( "Enter a key" ) ) ;
+	m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
 	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Password ) ;
 	m_ui->lineEditPassphrase->clear() ;
 	m_ui->pushButtonOpenKeyFile->setEnabled( false ) ;
@@ -93,8 +93,8 @@ void luksdeletekey::rbPassphrase()
 
 void luksdeletekey::rbPassphraseFromFile()
 {
-	m_ui->lineEditPassphrase->setToolTip( tr( "enter a path to a keyfile location" ) ) ;
-	m_ui->labelPassphrase->setText( tr( "keyfile path" ) ) ;
+	m_ui->lineEditPassphrase->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
+	m_ui->labelPassphrase->setText( tr( "Keyfile path" ) ) ;
 	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->lineEditPassphrase->clear() ;
 	m_ui->pushButtonOpenKeyFile->setEnabled( true ) ;
@@ -103,7 +103,7 @@ void luksdeletekey::rbPassphraseFromFile()
 
 void luksdeletekey::pbOpenKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "key file with a passphrase to delete" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Key file with a passphrase to delete" ),QDir::homePath(),0 ) ;
 	m_ui->lineEditPassphrase->setText( Z ) ;
 	if( m_ui->lineEditVolumePath->text().isEmpty() ){
 		m_ui->lineEditVolumePath->setFocus() ;
@@ -116,7 +116,7 @@ void luksdeletekey::ShowUI()
 {
 	this->enableAll() ;
 	m_ui->rbPassphrase->setEnabled( true ) ;
-	m_ui->labelPassphrase->setText( tr( "key" ) ) ;
+	m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
 	m_ui->rbPassphrase->setChecked( true ) ;
 
 	if( m_ui->lineEditVolumePath->text().isEmpty() ){
@@ -188,7 +188,7 @@ void luksdeletekey::pbDelete()
 	m_volumePath = utility::resolvePath( m_ui->lineEditVolumePath->text() ) ;
 
 	if( m_volumePath.isEmpty() ){
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 	}else{
 		this->disableAll() ;
 
@@ -203,7 +203,7 @@ void luksdeletekey::deleteKey( const QStringList& l )
 	DialogMsg msg( this ) ;
 
 	if( l.isEmpty() ){
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "volume is not a luks volume" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume is not a luks volume" ) ) ;
 		return this->enableAll() ;
 	}else if( l.first().toInt() == 1 ){
 		QString s = tr( "There is only one last key in the volume." ) ;
@@ -214,7 +214,7 @@ void luksdeletekey::deleteKey( const QStringList& l )
 			return this->enableAll() ;
 		}
 	}else{
-		QString s = tr( "are you sure you want to delete a key from this volume?" ) ;
+		QString s = tr( "Are you sure you want to delete a key from this volume?" ) ;
 		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
 			return this->enableAll() ;
 		}
@@ -252,22 +252,22 @@ void luksdeletekey::taskFinished( int r )
 			success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( m_keyNumber ) ).arg( m_totalKeys ) ;
 			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
 			return this->HideUI() ;
-		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "there is no key in the volume that match the presented key" ) ) ;				break ;
-		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open the volume" ) ) ;								break ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system device,\
+		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There is no key in the volume that match the presented key" ) ) ;				break ;
+		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open the volume" ) ) ;								break ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open a system device,\
 only root user or members of group zulucrypt can do that" ) ) ;											break ;
-		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "could not open the volume in write mode" ) ) ;						break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold your response" ) ) ;						break ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "operation terminated per user request" ) ) ;							break ;
-		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "can not get passphrase in silent mode" ) ) ;							break ;
-		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient memory to hold passphrase" ) ) ;						break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "one or more required argument(s) for this operation is missing" ) ) ;			break ;
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "keyfile does not exist" ) ) ;								break;
-		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get enough memory to open the key file") ) ;					break ;
-		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open key file for reading" ) ) ;					break ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not get a key from a socket" ) ) ;							break ;
-		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "can not find a partition that match presented UUID" ) ) ;					break ;
-		default :msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
+		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open the volume in write mode" ) ) ;						break ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold your response" ) ) ;						break ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user request" ) ) ;							break ;
+		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not get passphrase in silent mode" ) ) ;							break ;
+		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold passphrase" ) ) ;						break ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "One or more required argument(s) for this operation is missing" ) ) ;			break ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "Keyfile does not exist" ) ) ;								break;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get enough memory to open the key file") ) ;					break ;
+		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) ) ;					break ;
+		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a key from a socket" ) ) ;							break ;
+		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not find a partition that match presented UUID" ) ) ;					break ;
+		default :msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
 	}
 
 	this->enableAll() ;
@@ -280,7 +280,7 @@ only root user or members of group zulucrypt can do that" ) ) ;											break 
 
 void luksdeletekey::pbOpenVolume()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "volume path" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Volume path" ),QDir::homePath(),0 ) ;
 	m_ui->lineEditVolumePath->setText( Z ) ;
 	if( m_ui->lineEditPassphrase->text().isEmpty() ){
 		m_ui->lineEditPassphrase->setFocus() ;

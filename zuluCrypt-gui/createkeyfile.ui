@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>keyfile name</string>
+    <string>Keyfile Name</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -84,7 +84,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>c&amp;reate</string>
+    <string>C&amp;reate</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -103,7 +103,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;cancel</string>
+    <string>&amp;Cancel</string>
    </property>
    <property name="autoDefault">
     <bool>true</bool>
@@ -122,7 +122,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>keyfile path</string>
+    <string>Keyfile Path</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -141,7 +141,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>rng</string>
+    <string>RNG</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

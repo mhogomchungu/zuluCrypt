@@ -157,20 +157,20 @@ void managevolumeheader::ShowUI()
 void managevolumeheader::restoreHeader()
 {
 	m_operation = "restore" ;
-	m_ui->label->setText( tr( "enter an existing key in the back up header file" ) ) ;
-	this->setWindowTitle( tr( "restore volume header" ) ) ;
-	m_ui->labelBackUpHeader->setText( "backup path" ) ;
-	m_ui->pbCreate->setText( tr( "&restore" ) ) ;
+	m_ui->label->setText( tr( "Enter an existing key in the back up header file" ) ) ;
+	this->setWindowTitle( tr( "Restore volume header" ) ) ;
+	m_ui->labelBackUpHeader->setText( "Backup path" ) ;
+	m_ui->pbCreate->setText( tr( "&Restore" ) ) ;
 	this->ShowUI() ;
 }
 
 void managevolumeheader::headerBackUp()
 {
 	m_operation = "backup" ;
-	m_ui->label->setText( tr( "enter an existing key in the volume" ) ) ;
-	this->setWindowTitle( tr( "back up volume header" ) ) ;
-	m_ui->labelBackUpHeader->setText( "backup path" ) ;
-	m_ui->pbCreate->setText( tr( "&backup" ) ) ;
+	m_ui->label->setText( tr( "Enter an existing key in the volume" ) ) ;
+	this->setWindowTitle( tr( "Back up volume header" ) ) ;
+	m_ui->labelBackUpHeader->setText( "Backup path" ) ;
+	m_ui->pbCreate->setText( tr( "&Backup" ) ) ;
 	this->ShowUI() ;
 }
 
@@ -224,12 +224,12 @@ void managevolumeheader::pbOpenLuksHeaderBackUp()
 	QString Z ;
 	QString Y ;
 	if( m_operation == "restore" ){
-		Z = QFileDialog::getOpenFileName( this,tr( "select a file with a luks backup header" ),QDir::homePath(),0 ) ;
+		Z = QFileDialog::getOpenFileName( this,tr( "Select a file with a luks backup header" ),QDir::homePath(),0 ) ;
 		if( Z.isEmpty() ){
 			return ;
 		}
 	}else{
-		Z = QFileDialog::getExistingDirectory( this,tr( "select a folder to store the header" ),QDir::homePath(),0 ) ;
+		Z = QFileDialog::getExistingDirectory( this,tr( "Select a folder to store the header" ),QDir::homePath(),0 ) ;
 
 		if( Z.isEmpty() ){
 			return ;
@@ -332,10 +332,10 @@ void managevolumeheader::pbCreate()
 	DialogMsg msg( this ) ;
 
 	if( m_ui->lineEditBackUpName->text().isEmpty() || m_ui->lineEditDevicePath->text().isEmpty() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 	}
 	if( m_ui->lineEditPassWord->text().isEmpty() && m_ui->rbKeyFile->isChecked() && m_ui->rbTrueCryptHeader->isChecked() ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "atleast one required field is empty" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 	}
 
 	QString device = utility::resolvePath( m_ui->lineEditDevicePath->text() ) ;
@@ -429,7 +429,7 @@ void managevolumeheader::selectedPartition( QString p )
 
 void managevolumeheader::pbOpenFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "select luks container you want to backup its header" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select luks container you want to backup its header" ),QDir::homePath(),0 ) ;
 	m_ui->lineEditDevicePath->setText( Z ) ;
 	if( m_ui->lineEditBackUpName->text().isEmpty() ){
 		m_ui->lineEditBackUpName->setFocus() ;
@@ -451,9 +451,9 @@ void managevolumeheader::success()
 {
 	DialogMsg msg( this ) ;
 	if( m_saveHeader ){
-		msg.ShowUIOK( tr( "SUCCESS" ),tr( "header saved successfully.\nif possible,store it securely." ) ) ;
+		msg.ShowUIOK( tr( "SUCCESS" ),tr( "Header saved successfully.\nif possible,store it securely." ) ) ;
 	}else{
-		msg.ShowUIOK(  tr( "SUCCESS" ),tr( "header restored successfully" ) )	;
+		msg.ShowUIOK(  tr( "SUCCESS" ),tr( "Header restored successfully" ) )	;
 	}
 	return this->HideUI() ;
 }
@@ -465,31 +465,31 @@ void managevolumeheader::taskFinished( int st )
 	switch( st ){
 		case 0 : return this->success() ;
 		case 1 : return this->success() ;
-		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "presented device is not a LUKS device" ) )					; break ;
-		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to perform requested operation" ) )					; break ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to perform requested operation" ) )					; break ;
-		case 5 : msg.ShowUIOK( tr( "INFO!"  ),tr( "operation terminater per user request" ) )					; break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "path to be used to create a back up file is occupied" ) ) 			; break ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to perform requested operation" ) )					; break ;
-		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open backup header file for reading" ) ) 		; break ;
-		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to back up header file" ) )					; break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to create a backup header in a destination folder" )) ; break ;
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "invalid path to device" ) )							; break ;
-		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "argument for path to a backup  header file is missing" ) ) 			; break ;
-		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "argument for path to a backup  header file is missing" ) ) 			; break ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "only root user and \"zulucrypt\" members can restore and back up luks headers on system devices" ) )	; break ;
-		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device for writing" ) ) 			; break ;
-		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "could not resolve path to device" ) )					; break ;
-		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "backup file does not appear to contain luks header" ) )			; break ;
-		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open device for reading" ) )			; break ;
+		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Oresented device is not a LUKS device" ) )					; break ;
+		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to perform requested operation" ) )					; break ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to perform requested operation" ) )					; break ;
+		case 5 : msg.ShowUIOK( tr( "INFO!"  ),tr( "Operation terminater per user request" ) )					; break ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Path to be used to create a back up file is occupied" ) ) 			; break ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to perform requested operation" ) )					; break ;
+		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open backup header file for reading" ) ) 		; break ;
+		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to back up header file" ) )					; break ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to create a backup header in a destination folder" )) ; break ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to device" ) )							; break ;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "Argument for path to a backup  header file is missing" ) ) 			; break ;
+		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "Argument for path to a backup  header file is missing" ) ) 			; break ;
+		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "Only root user and \"zulucrypt\" members can restore and back up luks headers on system devices" ) )	; break ;
+		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open device for writing" ) ) 			; break ;
+		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not resolve path to device" ) )					; break ;
+		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "Backup file does not appear to contain luks header" ) )			; break ;
+		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open device for reading" ) )			; break ;
 		case 20:{
 				if( m_ui->rbTrueCryptHeader->isChecked() ){
-					msg.ShowUIOK( tr( "ERROR!" ),tr( "wrong password entered or volume is not a truecrypt volume" ) )	; break ;
+					msg.ShowUIOK( tr( "ERROR!" ),tr( "Wrong password entered or volume is not a truecrypt volume" ) )	; break ;
 				}else{
-					msg.ShowUIOK( tr( "ERROR!" ),tr( "failed to perform requested operation on the LUKS volume" ) )		; break ;
+					msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to perform requested operation on the LUKS volume" ) )		; break ;
 				}
 			}
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
 	}
 	this->enableAll() ;
 }

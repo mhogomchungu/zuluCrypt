@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-<class>favorites</class>
+ <class>favorites</class>
  <widget class="QDialog" name="favorites">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;add</string>
+    <string>&amp;Add</string>
    </property>
    <property name="default">
     <bool>true</bool>
@@ -61,7 +61,7 @@
    </property>
    <column>
     <property name="text">
-     <string>volume id</string>
+     <string>Volume ID</string>
     </property>
     <property name="textAlignment">
      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -69,7 +69,7 @@
    </column>
    <column>
     <property name="text">
-     <string>mount point component</string>
+     <string>Mount Point</string>
     </property>
     <property name="textAlignment">
      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
@@ -86,7 +86,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>volume id</string>
+    <string>Volume ID</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -105,7 +105,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>mount point component</string>
+    <string>Mount Point</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -176,7 +176,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>&amp;done</string>
+    <string>&amp;Done</string>
    </property>
   </widget>
  </widget>

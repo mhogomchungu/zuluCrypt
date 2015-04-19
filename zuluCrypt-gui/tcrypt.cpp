@@ -118,7 +118,7 @@ void tcrypt::pbSend()
 
 	if( l.isEmpty() ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "at least one keyfile is required" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "At least one keyfile is required" ) ) ;
 	}else{
 		/*
 		 * we call hide() because the GUI doesnt seem to hide when called later on in HideUI()
@@ -138,7 +138,7 @@ void tcrypt::pbCancel()
 
 void tcrypt::pbAddKeyFIle()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select a keyfile" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),QDir::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		QTableWidget * table = m_ui->tableWidget ;
 		QStringList l ;

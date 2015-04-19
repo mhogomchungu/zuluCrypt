@@ -26,7 +26,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>ok</string>
+    <string>Ok</string>
    </property>
   </widget>
   <widget class="QLabel" name="label">
@@ -68,7 +68,7 @@ Recommending reading FAQ page from the project's main page.</string>
     </rect>
    </property>
    <property name="text">
-    <string>do not show this message again.</string>
+    <string>Do not show this message again.</string>
    </property>
   </widget>
  </widget>
