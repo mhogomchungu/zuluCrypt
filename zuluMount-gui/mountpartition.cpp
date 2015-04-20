@@ -262,9 +262,11 @@ void mountPartition::ShowUI( const volumeEntryProperties& e )
 	m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
 	m_ui->lineEdit->setText( m_point ) ;
 
-	if( m_label == "Nil" ){
-		m_ui->checkBox->setEnabled( false ) ;
-	}
+	bool r = m_label != "Nil" ;
+
+	m_ui->checkBox->setEnabled( r ) ;
+	m_ui->checkBox->setChecked( r ) ;
+
 	this->show() ;
 }
 
