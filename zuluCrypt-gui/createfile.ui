@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
+    <width>521</width>
     <height>164</height>
    </rect>
   </property>
@@ -21,7 +21,7 @@
     <rect>
      <x>120</x>
      <y>10</y>
-     <width>271</width>
+     <width>281</width>
      <height>31</height>
     </rect>
    </property>
@@ -50,7 +50,7 @@
     <rect>
      <x>120</x>
      <y>40</y>
-     <width>271</width>
+     <width>281</width>
      <height>31</height>
     </rect>
    </property>
@@ -108,7 +108,7 @@
     <rect>
      <x>120</x>
      <y>102</y>
-     <width>271</width>
+     <width>281</width>
      <height>21</height>
     </rect>
    </property>
@@ -119,7 +119,7 @@
   <widget class="QPushButton" name="pbOpenFolder">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>400</x>
      <y>40</y>
      <width>31</width>
      <height>31</height>
@@ -135,9 +135,9 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>240</x>
+     <x>260</x>
      <y>130</y>
-     <width>91</width>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -175,7 +175,7 @@
     <rect>
      <x>150</x>
      <y>130</y>
-     <width>91</width>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
