@@ -182,8 +182,8 @@ int main( int argc,char * argv[] )
 
 	w.setToken( *( argv + 3 ) ) ;
 	w.setApplicationName( "network key" ) ;
-	w.setkeyLabel( QObject::tr( "enter zuluCrypt wallet key below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "enter network key below" ) ) ;
+	w.setkeyLabel( QObject::tr( "Enter zuluCrypt Wallet Key Below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "Enter Network Key Below" ) ) ;
 	w.setKeyFileAsKey() ;
 
 	auto e = [ = ]( const QVector<QString>& exe,const QString& network_key,const QString& password ){

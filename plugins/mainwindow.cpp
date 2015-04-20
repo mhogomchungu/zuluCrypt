@@ -91,10 +91,10 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 void MainWindow::Show()
 {
-	if( m_appName.endsWith( " key" ) ){
-		this->setWindowTitle( tr( "%1 module" ).arg( m_appName ) ) ;
+	if( m_appName.endsWith( " Key" ) ){
+		this->setWindowTitle( tr( "%1 Module" ).arg( m_appName ) ) ;
 	}else{
-		this->setWindowTitle( tr( "%1 key module" ).arg( m_appName ) ) ;
+		this->setWindowTitle( tr( "%1 Key Module" ).arg( m_appName ) ) ;
 	}
 
 	this->show() ;
@@ -166,8 +166,8 @@ void MainWindow::pbCancel()
 {
 	if( m_working ){
 		DialogMsg msg( this ) ;
-		int st = msg.ShowUIYesNoDefaultNo( tr( "warning"),
-						   tr( "are you sure you want to terminate this operation prematurely?" ) ) ;
+		int st = msg.ShowUIYesNoDefaultNo( tr( "WARNING"),
+						   tr( "Are you sure you want to terminate this operation prematurely?" ) ) ;
 
 		if( st == QMessageBox::Yes ){
 			this->enableAlll() ;
@@ -213,7 +213,7 @@ void MainWindow::pbOpen()
 	QString key = m_ui->lineEditKey->text().toLatin1() ;
 	if( m_requireKey ){
 		if( key.isEmpty() ){
-			return msg.ShowUIOK( tr( "ERROR" ),tr( "key field is empty" ) ) ;
+			return msg.ShowUIOK( tr( "ERROR" ),tr( "Key field is empty" ) ) ;
 		}
 	}
 
@@ -226,10 +226,10 @@ void MainWindow::pbOpen()
 			;
 		}else{
 			if( keyFile.isEmpty() ){
-				return msg.ShowUIOK( tr( "ERROR" ),tr( "path to %1 keyfile is empty" ).arg( m_appName ) ) ;
+				return msg.ShowUIOK( tr( "ERROR" ),tr( "Path to %1 keyfile is empty" ).arg( m_appName ) ) ;
 			}
 			if( !QFile::exists( keyFile ) ){
-				return msg.ShowUIOK( tr( "ERROR" ),tr( "invalid path to %1 keyfile" ).arg( m_appName ) ) ;
+				return msg.ShowUIOK( tr( "ERROR" ),tr( "Invalid path to %1 keyfile" ).arg( m_appName ) ) ;
 			}
 		}
 	}
@@ -238,7 +238,7 @@ void MainWindow::pbOpen()
 	QString e = m_findExecutable( m_exe_1 ) ;
 	if( !e.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR" ),
-				     tr( "could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( e ) ) ;
+				     tr( "Could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( e ) ) ;
 	}
 
 	this->disableAll() ;
@@ -271,9 +271,9 @@ void MainWindow::pbOpen()
 			m_working = false ;
 
 			if( m_appName.endsWith( " key" ) ){
-				msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1,wrong key?" ).arg( m_appName ) ) ;
+				msg.ShowUIOK( tr( "ERROR" ),tr("Could not decrypt the %1,wrong key?" ).arg( m_appName ) ) ;
 			}else{
-				msg.ShowUIOK( tr( "ERROR" ),tr("could not decrypt the %1 key,wrong key?" ).arg( m_appName ) ) ;
+				msg.ShowUIOK( tr( "ERROR" ),tr("Could not decrypt the %1 key,wrong key?" ).arg( m_appName ) ) ;
 			}
 
 			this->enableAlll() ;
@@ -284,7 +284,7 @@ void MainWindow::pbOpen()
 
 void MainWindow::pbKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "select a key file" ),QDir::homePath() ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),QDir::homePath() ) ;
 
 	if( !Z.isEmpty() ){
 		m_ui->lineEditKeyFile->setText( Z ) ;

@@ -29,12 +29,12 @@ int main( int argc,char * argv[] )
 	MainWindow w ;
 
 	w.setToken( QString( argv[ 3 ] ) ) ;
-	w.setApplicationName( QString( "gpg" ) ) ;
-	w.setkeyLabel( QObject::tr( "enter gpg key below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "enter a path to a gpg keyfile below" ) ) ;
+	w.setApplicationName( "gpg" ) ;
+	w.setkeyLabel( QObject::tr( "Enter GPG Key Below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "Enter A Path To A GPG Keyfile Below" ) ) ;
 
 	QVector<QString> exe ;
-	exe.append( QString( "gpg" ) ) ;
+	exe.append( "gpg" ) ;
 
 	w.setExe( exe ) ;
 	w.setKeyFunction( gpg ) ;

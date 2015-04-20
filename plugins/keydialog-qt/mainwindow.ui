@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>send a key to unlock a volume</string>
+   <string>Send A Key To Unlock A Volume</string>
   </property>
   <widget class="QWidget" name="centralWidget" native="true">
    <property name="geometry">
@@ -32,7 +32,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>&amp;send</string>
+     <string>&amp;Send</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pbCancel">
@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>&amp;cancel</string>
+     <string>&amp;Cancel</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
@@ -58,7 +58,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>Key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

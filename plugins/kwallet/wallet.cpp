@@ -25,7 +25,7 @@
 
 wallet::wallet( const QString& path,const QString& uuid,const QString& sockAddr )
 {
-	if( uuid == QString( "Nil" ) ){
+	if( uuid == "Nil" ){
 		m_keyID = path ;
 	}else{
 		m_keyID = QString( "UUID=\"%1\"" ).arg( uuid ) ;

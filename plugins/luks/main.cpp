@@ -33,8 +33,8 @@ int main( int argc,char * argv[] )
 
 	w.setToken( argv[ 3 ] ) ;
 	w.setApplicationName( "luks" ) ;
-	w.setkeyLabel( QObject::tr( " enter luks key below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "enter a path to a luks header below" ) ) ;
+	w.setkeyLabel( QObject::tr( " Enter LUKS Key Below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "Enter A Path To A LUKS Header Below" ) ) ;
 
 	auto e = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 		Q_UNUSED( exe ) ;

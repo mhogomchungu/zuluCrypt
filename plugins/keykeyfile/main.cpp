@@ -31,10 +31,10 @@ int main( int argc,char * argv[] )
 
 	MainWindow w ;
 
-	w.setToken( QString( argv[ 3 ] ) ) ;
-	w.setkeyLabel( QObject::tr( "enter key below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "enter a path to a keyfile below" ) ) ;
-	w.setButtonIcon( QString( "keyfile" ) ) ;
+	w.setToken( argv[ 3 ] ) ;
+	w.setkeyLabel( QObject::tr( "Enter Key Below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "Enter A Path To A Keyfile Below" ) ) ;
+	w.setButtonIcon( "Keyfile" ) ;
 
 	auto e = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 		Q_UNUSED( exe ) ;

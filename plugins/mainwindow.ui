@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>key module</string>
+   <string>Key Module</string>
   </property>
   <widget class="QWidget" name="centralWidget" native="true">
    <property name="geometry">
@@ -35,7 +35,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>&amp;open</string>
+     <string>&amp;Open</string>
     </property>
     <property name="autoDefault">
      <bool>true</bool>
@@ -54,7 +54,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>&amp;cancel</string>
+     <string>&amp;Cancel</string>
     </property>
     <property name="autoDefault">
      <bool>true</bool>
@@ -108,7 +108,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>key</string>
+     <string>Key</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>

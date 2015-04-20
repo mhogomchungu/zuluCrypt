@@ -29,7 +29,7 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
-	this->setWindowIcon( QIcon( QString( ":/key.png" ) ) ) ;
+	this->setWindowIcon( QIcon( ":/key.png" ) ) ;
 
 	QAction * ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;

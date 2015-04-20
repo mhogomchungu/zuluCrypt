@@ -41,8 +41,8 @@ int main( int argc,char * argv[] )
 
 	w.setToken( argv[ 3 ] ) ;
 	w.setApplicationName( "tomb" ) ;
-	w.setkeyLabel( QObject::tr( "enter tomb/steghide key below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "enter a path to a tomb/steghide keyfile below" ) ) ;
+	w.setkeyLabel( QObject::tr( "Enter tomb/steghide Key Below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "Enter A Path To A tomb/steghide Keyfile Below" ) ) ;
 
 	auto tomb = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 		/*
