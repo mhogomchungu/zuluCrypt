@@ -193,7 +193,7 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 #else
 	auto _update = [ & ]( int i ){ emit sendProgress( i ) ;	} ;
 #endif
-	
+
 	int r = utility::clearVolume( path,&m_exit,_update ).await() ;
 
 	m_running = false ;
@@ -239,7 +239,7 @@ void erasedevice::pbCancel()
 
 void erasedevice::pbFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "enter path to volume to be erased" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Enter Path To Volume To Be Erased" ),QDir::homePath(),0 ) ;
 	m_ui->lineEdit->setText( Z ) ;
 }
 
