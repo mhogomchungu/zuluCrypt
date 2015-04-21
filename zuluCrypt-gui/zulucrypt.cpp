@@ -660,7 +660,7 @@ void zuluCrypt::fonts()
 		if( k > size ){
 			k = size ;
 			Font.setPointSize( k ) ;
-			UIMessage( tr( "info" ),tr( "Resetting font size to %1 because larger font sizes do not fit" ).arg( QString::number( size ) ) ) ;
+			UIMessage( tr( "INFO" ),tr( "Resetting font size to %1 because larger font sizes do not fit" ).arg( QString::number( size ) ) ) ;
 		}
 
 		this->setUserFont( Font ) ;
@@ -829,7 +829,7 @@ void zuluCrypt::openFolder( QString path )
 		if( failed ){
 
 			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "warning" ),tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ) ;
+			msg.ShowUIOK( tr( "WARNING" ),tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ) ;
 		}
 	} ) ;
 }
@@ -940,7 +940,7 @@ void zuluCrypt::closeStatusErrorMessage( int st )
 		case 8 :UIMessage( tr( "ERROR!" ),tr( "Close failed, shared mount point appear to belong to a different user\n" ) ) ;			break ;
 		case 9 :UIMessage( tr( "ERROR!" ),tr( "Close failed, shared mount point appear to be in an ambiguous state,advice to unmount manually" )) ;break ;
 		case 110:UIMessage( tr( "ERROR!" ),tr( "Close failed, could not find any partition with the presented UUID" ) ) ;			break ;
-		default:UIMessage( tr( "ERROR!" ),tr( "unrecognized error with status number %1 encountered" ).arg( st ) ) ;
+		default:UIMessage( tr( "ERROR!" ),tr( "Unrecognized error with status number %1 encountered" ).arg( st ) ) ;
 	}
 }
 
