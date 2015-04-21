@@ -127,28 +127,25 @@ string_t zuluCryptConvertIfPathIsLVM( const char * path )
 
 	struct stat st ;
 
-	char * c ;
-	char * d ;
-	char * k ;
-
-	StringIterator it  ;
-	StringIterator end ;
+	StringIterator a ;
+	StringIterator b ;
+	StringIterator c ;
+	StringIterator d ;
 
 	string_t q = String( path ) ;
 
-	StringGetIterators( q,&it,&end ) ;
+	StringGetIterators( q,&c,&d ) ;
 
-	for( it = it + 3 ; it < end ; it++ ){
+	for( c = c + 3 ; c < d ; c++ ){
 
-		d = it ;
-		c = it - 1 ;
-		k = it - 2 ;
+		a = c - 2 ;
+		b = c - 1 ;
 
-		if( *k != '-' && *c == '-' && *d != '-' ){
+		if( *a != '-' && *b == '-' && *c != '-' ){
 			/*
 			 * found a place with a single dash,replace the dash with a slash
 			 */
-			*c = '/' ;
+			*b = '/' ;
 			/*
 			 * replace double dashes if present.
 			 */
