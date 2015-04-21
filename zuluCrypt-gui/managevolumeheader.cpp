@@ -451,7 +451,7 @@ void managevolumeheader::success()
 {
 	DialogMsg msg( this ) ;
 	if( m_saveHeader ){
-		msg.ShowUIOK( tr( "SUCCESS" ),tr( "Header saved successfully.\nif possible,store it securely." ) ) ;
+		msg.ShowUIOK( tr( "SUCCESS" ),tr( "Header saved successfully.\nIf possible,store it securely." ) ) ;
 	}else{
 		msg.ShowUIOK(  tr( "SUCCESS" ),tr( "Header restored successfully" ) )	;
 	}
