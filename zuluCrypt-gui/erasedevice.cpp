@@ -248,7 +248,7 @@ void erasedevice::pbPartition()
 	openvolume * op = new openvolume( this ) ;
 	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( setPath( QString ) ) ) ;
 	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	op->partitionList( tr( "Select a non system partition to erase its contents" )," -N" ) ;
+	op->partitionList( tr( "Select Aa Non System Partition To Erase Its Contents" )," -N" ) ;
 }
 
 void erasedevice::setPath( QString p )
