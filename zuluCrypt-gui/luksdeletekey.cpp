@@ -249,7 +249,7 @@ void luksdeletekey::taskFinished( int r )
 	QString success;
 	switch(  r ){
 		case 0 :
-			success = tr( "key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( m_keyNumber ) ).arg( m_totalKeys ) ;
+			success = tr( "Key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( m_keyNumber ) ).arg( m_totalKeys ) ;
 			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
 			return this->HideUI() ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There is no key in the volume that match the presented key" ) ) ;				break ;
