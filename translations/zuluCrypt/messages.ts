@@ -1489,8 +1489,13 @@ Are you sure you want to continue? </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/erasedevice.cpp" line="242"/>
+        <source>Enter Path To Volume To Be Erased</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../zuluCrypt-gui/erasedevice.cpp" line="251"/>
-        <source>Select a non system partition to erase its contents</source>
+        <source>Select A Non System Partition To Erase Its Contents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1520,11 +1525,6 @@ Are you sure you want to continue? </source>
     <message>
         <location filename="../../zuluCrypt-gui/erasedevice.cpp" line="150"/>
         <source>WARNING!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/erasedevice.cpp" line="242"/>
-        <source>enter path to volume to be erased</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2009,6 +2009,12 @@ Are you sure you want to delete this key?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="252"/>
+        <source>Key removed successfully.
+%1 / %2 slots are now in use</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="255"/>
         <source>There is no key in the volume that match the presented key</source>
         <translation type="unfinished"></translation>
@@ -2086,12 +2092,6 @@ Are you sure you want to delete this key?</source>
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="283"/>
         <source>Volume path</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="252"/>
-        <source>key removed successfully.
-%1 / %2 slots are now in use</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3180,18 +3180,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="194"/>
-        <source>PLAIN,LUKS,TrueCrypt Container An A Partition</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="205"/>
         <source>Encrypted Container In A File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="219"/>
-        <source>Encrypted Container In A Partition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3324,7 +3314,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="482"/>
-        <source>VeraCrypt Container In A Partition</source>
+        <source>VeraCrypt Container In A Hard Drive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3340,6 +3330,16 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="323"/>
         <source>Ctrl+Y</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="194"/>
+        <source>PLAIN,LUKS,TrueCrypt Container In A Hard Drive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="219"/>
+        <source>Encrypted Container In A Hard Drive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3481,6 +3481,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="409"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="832"/>
         <source>WARNING</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3491,12 +3492,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="663"/>
-        <source>info</source>
+        <source>Resetting font size to %1 because larger font sizes do not fit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="663"/>
-        <source>Resetting font size to %1 because larger font sizes do not fit</source>
+        <source>INFO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3632,6 +3633,11 @@ Having a backup of the volume header is strongly advised because it is the only 
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="943"/>
+        <source>Unrecognized error with status number %1 encountered</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="769"/>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="933"/>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="934"/>
@@ -3645,16 +3651,6 @@ Having a backup of the volume header is strongly advised because it is the only 
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="942"/>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="943"/>
         <source>ERROR!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="832"/>
-        <source>warning</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="943"/>
-        <source>unrecognized error with status number %1 encountered</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

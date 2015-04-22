@@ -191,7 +191,7 @@
   </action>
   <action name="actionPartitionOpen">
    <property name="text">
-    <string>PLAIN,LUKS,TrueCrypt Container An A Partition</string>
+    <string>PLAIN,LUKS,TrueCrypt Container In A Hard Drive</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -216,7 +216,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Encrypted Container In A Partition</string>
+    <string>Encrypted Container In A Hard Drive</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -479,7 +479,7 @@
   </action>
   <action name="actionVeracrypt_container_in_a_partition">
    <property name="text">
-    <string>VeraCrypt Container In A Partition</string>
+    <string>VeraCrypt Container In A Hard Drive</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
