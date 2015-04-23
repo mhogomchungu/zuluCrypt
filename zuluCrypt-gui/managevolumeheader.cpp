@@ -199,13 +199,13 @@ void managevolumeheader::backUpHeaderNameChange( QString name )
 			QString path = m_ui->lineEditBackUpName->text() ;
 
 			if( path.isEmpty() ){
-				path = QDir::homePath() + QString( "/" ) ;
+				path = QDir::homePath() + "/" ;
 			}
 			QStringList q = path.split( "/" ) ;
 			path.clear() ;
 			int j = q.size() - 1 ;
 			for(  int i = 0 ; i < j ; i++ ){
-				path += q.at( i ) +  QString( "/" ) ;
+				path += q.at( i ) +  "/" ;
 			}
 
 			if( m_ui->rbTrueCryptHeader->isChecked() ){
@@ -224,12 +224,12 @@ void managevolumeheader::pbOpenLuksHeaderBackUp()
 	QString Z ;
 	QString Y ;
 	if( m_operation == "restore" ){
-		Z = QFileDialog::getOpenFileName( this,tr( "Select a file with a luks backup header" ),QDir::homePath(),0 ) ;
+		Z = QFileDialog::getOpenFileName( this,tr( "Select A File With A LUKS Backup Header" ),QDir::homePath(),0 ) ;
 		if( Z.isEmpty() ){
 			return ;
 		}
 	}else{
-		Z = QFileDialog::getExistingDirectory( this,tr( "Select a folder to store the header" ),QDir::homePath(),0 ) ;
+		Z = QFileDialog::getExistingDirectory( this,tr( "Select A Folder To Store The Header" ),QDir::homePath(),0 ) ;
 
 		if( Z.isEmpty() ){
 			return ;

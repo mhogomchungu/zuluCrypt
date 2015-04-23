@@ -51,8 +51,8 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 	m_ui->progressBar->setMaximum( 100 ) ;
 	m_ui->progressBar->setValue( 0 ) ;
 
-	m_ui->pbOpenFolder->setIcon( QIcon( QString( ":/folder.png" ) ) ) ;
-	m_ui->pushButtonFile->setIcon( QIcon( QString( ":/file.png" ) ) ) ;
+	m_ui->pbOpenFolder->setIcon( QIcon( ":/folder.png" ) ) ;
+	m_ui->pushButtonFile->setIcon( QIcon( ":/file.png" ) ) ;
 
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
 	connect( m_ui->pushButtonFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;
@@ -445,7 +445,7 @@ void cryptfiles::cbChanged( int r )
 void cryptfiles::pbOpenFile()
 {
 	QString Z ;
-	if( m_operation == QString( "-E" ) ){
+	if( m_operation == "-E" ){
 		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Encrypt" ),QDir::homePath(),0 ) ;
 	}else{
 		QString x = tr( "zuluCrypt encrypted files ( *.zc ) ;; All Files ( * )" ) ;

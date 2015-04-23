@@ -95,7 +95,7 @@ void erasedevice::ShowUI( const QString& path )
 
 void erasedevice::taskResult( int st )
 {
-	this->setWindowTitle( tr( "write random data over existing data" ) ) ;
+	this->setWindowTitle( tr( "Write Random Data Over Existing Data" ) ) ;
 
 	DialogMsg msg( this ) ;
 
@@ -109,7 +109,7 @@ void erasedevice::taskResult( int st )
 		case 5: msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) )				;break ;
 		case 6: msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not write on a device with opened mapper" ) )			;break ;
 		case 7: msg.ShowUIOK( tr( "ERROR!" ),tr( "Policy prevents non root user opening mapper on system partition" ) ) ;break;
-		case 8: msg.ShowPermissionProblem( QString( "writing" ),m_ui->lineEdit->text() )				;break ;
+		case 8: msg.ShowPermissionProblem( "Writing",m_ui->lineEdit->text() )				;break ;
 		case 9: msg.ShowUIOK( tr( "ERROR!" ),tr( "Device path is invalid" ) )						;break ;
 		case 10:msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrase file does not exist" ) )					;break ;
 		case 11:msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get enought memory to hold the key file" ) )		;break ;

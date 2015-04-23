@@ -192,7 +192,7 @@ void luksaddkey::pbOpenPartition( void )
 
 void luksaddkey::rbExistingPassphrase( void )
 {
-	m_ui->textEditExistingPassphrase->setToolTip( tr( "enter a key" ) ) ;
+	m_ui->textEditExistingPassphrase->setToolTip( tr( "Enter A Key" ) ) ;
 	m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Password ) ;
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
 	m_ui->labelExistingPassphrase->setText( tr( "Key" ) ) ;
@@ -363,7 +363,7 @@ void luksaddkey::taskFinished( int r )
 		case 14 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a key from a socket" ) ) ;					break ;
 		case 15 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get elevated privilege,check binary permissions" ) ) ;		break ;
 		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not find a partition that match presented UUID" ) ) ;			break ;
-		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "Cevice is not a luks device" ) ) ;						break ;
+		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "Device is not a luks device" ) ) ;						break ;
 		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
 	}
 

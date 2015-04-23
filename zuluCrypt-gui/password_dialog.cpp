@@ -161,7 +161,7 @@ void passwordDialog::pbPlugin()
 
 	if( j == 0 ){
 		DialogMsg msg( this ) ;
-		return	msg.ShowUIOK( tr( "ERROR" ),tr( "Could not find any plugin installed" ) ) ;
+		return	msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not find any plugin installed" ) ) ;
 	}
 
 	for( int i = 0 ; i < j ; i++ ){
@@ -458,7 +458,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 			if( w.key.isEmpty() ){
 				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR" ),tr( "The volume does not appear to have an entry in the wallet" ) ) ;
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "The volume does not appear to have an entry in the wallet" ) ) ;
 				this->enableAll() ;
 			}else{
 				m_key = w.key ;
@@ -545,9 +545,9 @@ void passwordDialog::openVolume()
 		return this->enableAll() ;
 	}
 
-	if( m_point.contains( QString( "/" ) ) ){
+	if( m_point.contains( "/" ) ){
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in mount name field" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "\"/\" character is not allowed in mount name field" ) ) ;
 		m_ui->OpenVolumePath->setFocus() ;
 		return this->enableAll() ;
 	}

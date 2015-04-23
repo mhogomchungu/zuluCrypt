@@ -54,7 +54,7 @@ createfile::createfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::cre
 	this->installEventFilter( this ) ;
 
 	this->setWindowTitle( tr( "Create A Container File" ) ) ;
-	
+
 	m_running = false ;
 }
 
@@ -125,7 +125,7 @@ void createfile::showUI()
 	this->enableAll() ;
 	m_ui->comboBox->setCurrentIndex( 1 ) ;
 	m_ui->lineEditFileName->clear() ;
-	m_ui->lineEditFilePath->setText( QDir::homePath() + QString( "/") ) ;
+	m_ui->lineEditFilePath->setText( QDir::homePath() + "/" ) ;
 	m_ui->lineEditFileSize->clear() ;
 	m_ui->progressBar->setValue( 0 ) ;
 	m_ui->lineEditFileName->setFocus() ;
@@ -210,7 +210,7 @@ void createfile::pbCreate()
 	}else if( r == 0 ){
 		emit fileCreated( filePath ) ;
 	}else{
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
 		QFile::remove( filePath ) ;
 	}
 

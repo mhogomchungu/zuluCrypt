@@ -126,7 +126,7 @@ void openvolume::pbHelp()
 			m = tr( "You are a root user and all partitions are displayed.\nDouble click an entry to use it" )	;
 		}
 	}
-	msg.ShowUIOK( tr( "info" ),m ) ;
+	msg.ShowUIOK( tr( "INFO" ),m ) ;
 }
 
 void openvolume::pbUUID()

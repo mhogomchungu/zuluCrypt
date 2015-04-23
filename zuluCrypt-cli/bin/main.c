@@ -421,7 +421,7 @@ int main( int argc,char * argv[] )
 		StringSubChar( q,StringLength( q ) - 1,'\0' ) ;
 	}
 
-	clargs.argv = StringListContentAt( stl,0 );
+	clargs.argv = StringListContentAtFirstPlace( stl ) ;
 
 	/*
 	 * Hide "sensitive" command line arguments from ps comamnd and related tools.
@@ -516,7 +516,7 @@ int main( int argc,char * argv[] )
 		if( ac != NULL ) {
 			clargs.device = ac ;
 			st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
-			free( ac ) ;
+			StringFree( ac ) ;
 			StringDelete( &q ) ;
 			return zuluExit( st,stl,stx,env,NULL ) ;
 		}else{

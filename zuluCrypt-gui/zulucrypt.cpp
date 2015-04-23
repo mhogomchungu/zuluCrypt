@@ -246,7 +246,7 @@ void zuluCrypt::start()
 	m_openPath = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_startHidden  = l.contains( "-e" ) ;
 
-	QString sockpath = QString( "zuluCrypt-gui.socket" ) ;
+	QString sockpath( "zuluCrypt-gui.socket" ) ;
 	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow",e ) ;
 	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 	connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
@@ -406,7 +406,7 @@ void zuluCrypt::openpdf()
 
 			DialogMsg msg( this ) ;
 
-			msg.ShowUIOK( tr( "WARNING" ),tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
+			msg.ShowUIOK( tr( "WARNING!" ),tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
 		}
 	} ) ;
 }
@@ -733,7 +733,7 @@ Having a backup of the volume header is strongly advised because it is the only 
 again after the header is restored if the header on the volume get corrupted.\n\n" ) ;
 
 	DialogMsg m( this ) ;
-	m.ShowUIInfo( tr( "important information on volume header backup" ),msg ) ;
+	m.ShowUIInfo( tr( "Important Information On Volume Header Backup" ),msg ) ;
 }
 
 void zuluCrypt::removeRowFromTable( int x )
@@ -829,7 +829,7 @@ void zuluCrypt::openFolder( QString path )
 		if( failed ){
 
 			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "WARNING" ),tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ) ;
+			msg.ShowUIOK( tr( "WARNING!" ),tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ) ;
 		}
 	} ) ;
 }
