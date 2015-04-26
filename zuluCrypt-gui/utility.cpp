@@ -30,7 +30,7 @@
 #include <pwd.h>
 
 #include <QDebug>
-
+#include <QCoreApplication>
 #include <blkid/blkid.h>
 #include <QByteArray>
 #include <QProcess>
@@ -67,6 +67,44 @@
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
+
+static int _help()
+{
+	std::cout << VERSION_STRING << std::endl ;
+
+	QString helpMsg = QObject::tr( "\n\
+options:\n\
+	-d   path to where a volume to be auto unlocked/mounted is located\n\
+	-m   tool to use to open a default file manager(default tool is xdg-open)\n\
+	-e   start the application without showing the GUI\n" ) ;
+
+	std::cout << helpMsg.toLatin1().constData() << std::endl ;
+
+	return 0 ;
+}
+
+static bool _printHelpOrVersionInfo()
+{
+	QStringList q = QCoreApplication::arguments() ;
+	return q.contains( "-h" )        ||
+	       q.contains( "-help" )     ||
+	       q.contains( "--help" )    ||
+	       q.contains( "-v" )        ||
+	       q.contains(  "-version" ) ||
+	       q.contains( "--version" ) ;
+}
+
+int utility::startApplication( const char * appName,std::function< int( void )> start )
+{
+	QCoreApplication::setApplicationName( appName ) ;
+
+	if( _printHelpOrVersionInfo() ){
+
+		return _help() ;
+	}else{
+		return start() ;
+	}
+}
 
 void utility::keySend( const QString& path,const QString& key )
 {
@@ -364,23 +402,6 @@ bool utility::userIsRoot()
 QString utility::userName()
 {
 	return QString( getpwuid( getuid() )->pw_name ) ;
-}
-
-void utility::help( const QString& app )
-{
-	Q_UNUSED( app ) ;
-
-	std::cout << VERSION_STRING << std::endl ;
-
-	QString helpMsg = QObject::tr( "\n\
-options:\n\
-	-d   path to where a volume to be auto unlocked/mounted is located\n\
-	-m   tool to use to open a default file manager(default tool is xdg-open)\n\
-	-e   start the application without showing the GUI\n" ) ;
-
-	QByteArray s = helpMsg.toLatin1() ;
-
-	std::cout << s.constData() << std::endl ;
 }
 
 QString utility::shareMountPointToolTip()

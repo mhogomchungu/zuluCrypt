@@ -19,25 +19,17 @@
 
 #include <QApplication>
 #include "mainwindow.h"
-#include <QStringList>
 #include "../zuluCrypt-gui/utility.h"
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	QStringList q = QCoreApplication::arguments() ;
-	if( q.contains( QString( "-h" ) ) ||
-	    q.contains( QString( "-help" ) ) ||
-	    q.contains( QString( "--help" ) ) ||
-	    q.contains( QString( "-v" ) ) ||
-	    q.contains( QString( "-version" ) ) ||
-	    q.contains( QString( "--version" ) ) ){
-		utility::help( QString( "zuluMount" ) ) ;
-		return 0 ;
-	}else{
-		MainWindow w( argc,argv ) ;
-		w.start() ;
+	return utility::startApplication( "zuluMount",[ & ](){
+
+		MainWindow e ;
+		e.Show() ;
+
 		return a.exec() ;
-	}
+	} ) ;
 }

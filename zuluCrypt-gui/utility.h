@@ -64,6 +64,8 @@ namespace utility
 		qDebug() << t ;
 	}
 
+	int startApplication( const char * appName,std::function<int()> ) ;
+
 	wallet getKeyFromWallet( LxQt::Wallet::walletBackEnd,const QString& keyID,const QString& pwd = QString() ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,
@@ -85,7 +87,6 @@ namespace utility
 	QString homeMountPath( const QString& ) ;
 	QString mountPathPostFix( const QString&,bool encfs = false ) ;
 	QString userName( void ) ;
-	void help( const QString& app ) ;
 	QString shareMountPointToolTip( void ) ;
 	QString shareMountPointToolTip( const QString& ) ;
 	QString sharedMountPointPath( const QString& ) ;

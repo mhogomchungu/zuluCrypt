@@ -42,9 +42,9 @@ class MainWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit MainWindow( int argc,char * argv[],QWidget * parent = 0 ) ;
+	explicit MainWindow( QWidget * parent = 0 ) ;
 	~MainWindow() ;
-	void start( void ) ;
+	void Show( void ) ;
 signals:
 	void result( int,QString ) ;
 	void unlistVolume( QString ) ;
@@ -107,26 +107,24 @@ private:
 
 	Ui::MainWindow * m_ui ;
 	QString m_folderOpener ;
-	int m_argc ;
-	char ** m_argv ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	void setUpApp( const QString& ) ;
 	QSystemTrayIcon * m_trayIcon ;
-	events * m_events ;
-	monitor_mountinfo * m_mountInfo ;
-	QAction * m_autoMountAction ;
-	QMenu * m_favorite_menu ;
-	QMenu * m_hidden_volume_menu ;
-	QMenu * m_not_hidden_volume_menu ;
+	events * m_events = nullptr ;
+	monitor_mountinfo * m_mountInfo = nullptr ;
+	QAction * m_autoMountAction = nullptr ;
+	QMenu * m_favorite_menu = nullptr ;
+	QMenu * m_hidden_volume_menu = nullptr ;
+	QMenu * m_not_hidden_volume_menu = nullptr ;
 
 	bool m_startHidden ;
 	bool m_autoMount ;
 	QString m_sharedFolderPath ;
 	bool m_autoOpenFolderOnMount ;
-	bool m_removeAllVolumes ;
+	bool m_removeAllVolumes = false ;
 };
 
 #endif // MAINWINDOW_H

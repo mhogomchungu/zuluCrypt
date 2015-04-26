@@ -72,12 +72,8 @@ private:
 
 #define Object_raii( x ) Object_raii< decltype( x ) > Object_raii_x( x ) ; Q_UNUSED( Object_raii_x )
 
-MainWindow::MainWindow( int argc,char * argv[],QWidget * parent ) :QWidget( parent ),
-	m_events( 0 ),m_autoMountAction( 0 )
+MainWindow::MainWindow( QWidget * parent ) : QWidget( parent )
 {
-	m_argc = argc ;
-	m_argv = argv ;
-	m_removeAllVolumes = false ;
 }
 
 void MainWindow::setUpApp( const QString& volume )
@@ -497,7 +493,7 @@ void MainWindow::raiseWindow( QString volume )
 	this->showMoungDialog( volume ) ;
 }
 
-void MainWindow::start()
+void MainWindow::Show()
 {
 	QStringList l = QCoreApplication::arguments() ;
 

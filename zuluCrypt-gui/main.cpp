@@ -17,31 +17,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QIcon>
 #include <QApplication>
 #include "zulucrypt.h"
 #include "utility.h"
-#include <QCoreApplication>
-#include <QStringList>
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	QCoreApplication::setApplicationName( "zuluCrypt" ) ;
+	return utility::startApplication( "zuluCrypt",[ & ](){
 
-	QStringList q = QCoreApplication::arguments() ;
-	if( q.contains( "-h" ) ||
-	    q.contains( "-help" ) ||
-	    q.contains( "--help" ) ||
-	    q.contains( "-v" ) ||
-	    q.contains(  "-version" ) ||
-	    q.contains( "--version" ) ){
-		utility::help( "zuluCrypt" ) ;
-		return 0 ;
-	}else{
-		zuluCrypt zc ;
-		zc.start() ;
+		zuluCrypt e ;
+		e.start() ;
+
 		return a.exec() ;
-	}
+	} ) ;
 }
