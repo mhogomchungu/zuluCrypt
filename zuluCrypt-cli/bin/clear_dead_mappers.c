@@ -69,13 +69,7 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	stringList_t stl ;
 	string_t p ;
 	string_t z ;
-#if TRUECRYPT_TCPLAY
-	/*
-	 * return pematurely because crypt_get_device_name() does not work
-	 * as expected with truecrypt volumes opened with tcplay
-	 */
-	return ;
-#endif
+
 	if( dir == NULL ){
 		return ;
 	}
@@ -84,12 +78,11 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	 * zuluCryptGetMoutedListFromMountInfo_1()  is defined in ../lib/process_mountinfo.c
 	 */
 	stl = zuluCryptGetMoutedListFromMountInfo_1() ;
-	z = String( dir_path ) ;
+	z = String_1( dir_path,"/",NULL ) ;
 
-	StringAppend( z,"/" ) ;
 	len1 = StringLength( z ) ;
 
-	p = String( "zuluCrypt-" );
+	p = String( "zuluCrypt-" ) ;
 	m = StringAppendInt( p,uid ) ;
 	len = StringLength( p ) ;
 
@@ -105,7 +98,7 @@ void zuluCryptClearDeadMappers( uid_t uid )
 			e = StringAppendAt( z,len1,entry->d_name ) ;
 
 			if( crypt_init_by_name( &cd,e ) == 0 ){
-				
+
 				if( crypt_get_device_name( cd ) == NULL ){
 					/*
 					 * we will get here if PLAIN or TRUECRYPT mapper is active but the underlying device is gone

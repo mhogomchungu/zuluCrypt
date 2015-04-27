@@ -192,7 +192,7 @@ only root user or members of group zulucrypt-write can do that</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="283"/>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="303"/>
         <source>Do not show this dialog again</source>
         <translation type="unfinished"></translation>
     </message>
@@ -325,7 +325,7 @@ only root user or members of group zulucrypt-write can do that</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="375"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="75"/>
         <source>
 options:
 	-d   path to where a volume to be auto unlocked/mounted is located
@@ -335,24 +335,24 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="388"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="409"/>
         <source>if the option is checked,a primary private mount point will be created in &quot;/run/media/private/$USER/&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;/run/media/public/&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="551"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="572"/>
         <source>setting this option will cause the volume to open in read only mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="564"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="575"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="585"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="596"/>
         <source>info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="903"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="924"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2920,22 +2920,22 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="316"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="317"/>
         <source>Elapsed time: 0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="324"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="325"/>
         <source>Elapsed time: %0 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="326"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="327"/>
         <source>Elapsed time: %0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="337"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="338"/>
         <source>please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>

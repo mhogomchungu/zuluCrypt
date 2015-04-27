@@ -160,6 +160,11 @@ void ProcessSetOptionTimeout( process_t p,int timeout,int signal ) ;
 int ProcessExitStatus( process_t ) ;
 
 /*
+ * block waiting for the forked process to exit.
+ */
+void ProcessWait( process_t ) ;
+
+/*
  * block waiting for the forked process to exit and then get its exit status and then clean up
  * used resources.
  *

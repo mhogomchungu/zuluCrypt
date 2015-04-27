@@ -128,7 +128,7 @@ only root user or members of group zulucrypt-write can do that</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="283"/>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="303"/>
         <source>Do not show this dialog again</source>
         <translation type="unfinished"></translation>
     </message>
@@ -191,134 +191,134 @@ only root user or members of group zulucrypt-write can do that</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="135"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="131"/>
         <source>Automount Volumes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="145"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="141"/>
         <source>Auto Open Mount Point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="151"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="147"/>
         <source>Show The Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="157"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="153"/>
         <source>Unmount All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="162"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="158"/>
         <source>Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="166"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="162"/>
         <source>Hide Volume From View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="170"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="166"/>
         <source>Unhide Volume From View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="175"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="171"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="179"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="175"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="233"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="252"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="292"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="229"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="248"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="288"/>
         <source>List Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="454"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="461"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="468"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="450"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="457"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="464"/>
         <source>LABEL=&quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="470"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="466"/>
         <source>LABEL=&quot;%1&quot;
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="532"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="528"/>
         <source>Mount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="539"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="535"/>
         <source>Unmount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="547"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="570"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="575"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="578"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="543"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="566"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="571"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="574"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="555"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="572"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="551"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="568"/>
         <source>Open Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="558"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="554"/>
         <source>Open Private Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="560"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="582"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="556"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="578"/>
         <source>Open Shared Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="589"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="585"/>
         <source>Close Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="638"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="634"/>
         <source>Could not open mount point because &quot;%1&quot; tool does not appear to be working correctly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="640"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="636"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="666"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="673"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="662"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="669"/>
         <source>Could not get volume properties.
 volume is not open or was opened by a different user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="670"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="666"/>
         <source>Volume Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="802"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="798"/>
         <source>Permission to access the volume was denied
 or
 the volume is not supported
@@ -326,32 +326,32 @@ the volume is not supported
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="839"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="835"/>
         <source>Aelect An Image File To Mount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="853"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="849"/>
         <source>Select An Encfs Volume Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="959"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="955"/>
         <source>Failed to unmount encfs volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="1054"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="1050"/>
         <source>Reading partition properties took longer than expected and operation was terminated,click refresh to try again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="665"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="672"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="801"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="959"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="968"/>
-        <location filename="../../zuluMount-gui/mainwindow.cpp" line="1053"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="661"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="668"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="797"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="955"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="964"/>
+        <location filename="../../zuluMount-gui/mainwindow.cpp" line="1049"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
@@ -359,7 +359,7 @@ the volume is not supported
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="375"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="75"/>
         <source>
 options:
 	-d   path to where a volume to be auto unlocked/mounted is located
@@ -369,23 +369,23 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="551"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="572"/>
         <source>setting this option will cause the volume to open in read only mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="564"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="575"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="585"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="596"/>
         <source>info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="903"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="924"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="388"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="409"/>
         <source>if the option is checked,a primary private mount point will be created in &quot;/run/media/private/$USER/&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;/run/media/public/&quot;</source>
         <translation type="unfinished"></translation>
@@ -717,22 +717,22 @@ wrong password or not an encfs volume</source>
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="316"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="317"/>
         <source>Elapsed time: 0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="324"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="325"/>
         <source>Elapsed time: %0 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="326"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="327"/>
         <source>Elapsed time: %0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="337"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="338"/>
         <source>please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>

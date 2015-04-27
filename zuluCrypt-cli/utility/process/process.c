@@ -51,11 +51,21 @@ struct ProcessType_t{
 	ProcessStructure str ;
 };
 
-static void ( *_fcn_ )( void )  = NULL ;
+static void _f( void )
+{
+}
+
+static void ( *_memory_error )( void ) = _f ;
 
 void ProcessExitOnMemoryExaustion( void ( *f )( void ) )
 {
-	_fcn_ = f ;
+	_memory_error = f ;
+}
+
+static void * _ProcessError( void )
+{
+	_memory_error() ;
+	return NULL ;
 }
 
 ProcessStructure * ProcessArgumentStructure( process_t p )
@@ -72,14 +82,6 @@ void ProcessSetEnvironmentalVariable( process_t p,const char * const * env )
 	if( p != ProcessVoid ){
 		p->str.env = env ;
 	}
-}
-
-static void * _ProcessError( void )
-{
-	if( _fcn_ != NULL ){
-		( *_fcn_ )() ;
-	}
-	return NULL ;
 }
 
 void ProcessSetArgumentList( process_t p,... )
@@ -113,8 +115,8 @@ void ProcessSetArgumentList( process_t p,... )
 
 		if( e == NULL ){
 			free( args ) ;
-			_ProcessError() ;
 			va_end( list ) ;
+			_ProcessError() ;
 			return ;
 		}else{
 			args = e ;
@@ -523,6 +525,11 @@ int ProcessExitStatus( process_t p )
 			return WEXITSTATUS( s ) ;
 		}
 	}
+}
+
+void ProcessWait( process_t p )
+{
+	ProcessExitStatus( p ) ;
 }
 
 void ProcessSetArguments( process_t p,const char * const s[] )

@@ -48,7 +48,7 @@ if ( WITH_TCPLAY )
 	pkg_check_modules( TCPLAY tcplay )
 endif ( WITH_TCPLAY )
 
-set( PGR_VERSION "4.7.5" )
+set( PGR_VERSION "4.7.6" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 

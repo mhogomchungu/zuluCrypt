@@ -70,7 +70,7 @@
 
 static int _help()
 {
-	std::cout << VERSION_STRING << std::endl ;
+	std::cout << "\n" << VERSION_STRING << std::endl ;
 
 	QString helpMsg = QObject::tr( "\n\
 options:\n\
@@ -94,7 +94,7 @@ static bool _printHelpOrVersionInfo()
 	       q.contains( "--version" ) ;
 }
 
-int utility::startApplication( const char * appName,std::function< int( void )> start )
+int utility::startApplication( const char * appName,std::function<int()> start )
 {
 	QCoreApplication::setApplicationName( appName ) ;
 
