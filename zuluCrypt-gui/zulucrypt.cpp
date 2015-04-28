@@ -143,18 +143,20 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 			for( const auto& it : l ){
 
 				z = utility::split( it,'\t' ) ;
+
 				if( z.size() >= 3 ){
 
-					const QString& fs = z.at( 2 ) ;
+					const QString& q = z.at( 2 ) ;
 
-					if( fs.startsWith( "crypto_LUKS" ) ){
+					if( q.startsWith( "crypto_LUKS" ) ){
+
 						z.replace( 2,"luks" ) ;
-					}else if( fs == "crypto_PLAIN" ){
-						z.replace( 2,"plain" ) ;
-					}else if( fs == "crypto_TCRYPT" ){
-						z.replace( 2,"tcrypt" ) ;
-					}else if( fs == "crypto_VCRYPT" ){
-						z.replace( 2,"vcrypt" ) ;
+					}else{
+						QString e( q ) ;
+
+						e.remove( "crypto_" ) ;
+
+						z.replace( 2,e.toLower() ) ;
 					}
 
 					tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
@@ -243,7 +245,7 @@ void zuluCrypt::start()
 	QStringList l = QCoreApplication::arguments() ;
 
 	QString e      = utility::cmdArgumentValue( l,"-d" ) ;
-	m_openPath = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+	m_openPath     = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_startHidden  = l.contains( "-e" ) ;
 
 	QString sockpath( "zuluCrypt-gui.socket" ) ;

@@ -2,3 +2,4 @@ usr/bin/*-gui
 usr/share/applications/
 usr/share/icons/
 usr/share/man/man1/*-gui.*
+usr/share/zuluCrypt/*

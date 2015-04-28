@@ -1,3 +1,59 @@
 
-TODO:
-Add instructions on how to create an rpm package.
+ps: copy and paste all given commands to make sure you dont mistype them.
+ps: at step 5,replace "4.7.6" to zuluCrypt version you are building.
+ps: these instructions assumes rpm build directory is at "~/rpmbuild".
+    Modify the paths in step 5 if they are different in your distribution.
+
+
+1. make sure the following packages are installed in your system. Their precise names maybe different in your
+   distribution:
+
+   a. libpwquality-devel( optional dependency used to check the quality of passwords when creating volumes )
+   b. libblkid-devel
+   c. libqt4-devel( required if building GUI components )
+   d. gcc
+   e. gcc-c++
+   f. cryptsetup-devel
+   g. cmake
+   h. libtcplay-devel( optional dependency used to create truecrypt volumes )
+   i. libgcrypt-devel
+   j. libsecret-devel( optional dependency to store keys in gnome's libsecret )
+   k. kde-devel( optional dependency to store keys in kde's kwallet )
+   l. pkg-config
+   m. libdevmapper-devel aka device-mapper-devel.
+   n. uuid-devel
+   o. rpmdevtools( this package contains programs necessary to build rpm packages )
+
+2. make sure "tar" and "xz" commands are installed in your computer as they are needed in step 5.
+
+
+3. decompress the zuluCrypt archive you downloaded(you should be able to do this from context menu
+   when you right the archive on your file manager).
+
+
+4. open the terminal and change directory to zuluCrypt's source folder.
+
+
+5. while on zuluCrypt source folder,run the following commands to create rpm building environment
+
+   ****************************************************************************************************************
+
+   rpmdev-setuptree
+   tar   -cf  ~/rpmbuild/SOURCES/zuluCrypt-4.7.6.tar ../zuluCrypt-4.7.6
+   xz    -z  ~/rpmbuild/SOURCES/zuluCrypt-4.7.6.tar
+
+   ****************************************************************************************************************
+
+
+5. while on zuluCrypt source folder,run the following commad to create a zuluCrypt rpm package.
+
+   ****************************************************************************************************************
+
+   QA_RPATHS=$[ 0x0001|0x0010 ] rpmbuild -bb rpm/zuluCrypt.spec
+
+   ****************************************************************************************************************
+
+6. wait for the build to finish and look for the rpm packages in a folder located in "~/rpmbuild/RPMS/".
+
+7. consult your distribution's documentation on how to install .rpm packages and install the ones you will find in
+   step 6 above.

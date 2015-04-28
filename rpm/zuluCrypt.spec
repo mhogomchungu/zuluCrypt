@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 Name:           zuluCrypt
-Version:        4.7.5
+Version:        4.7.6
 Release:        0
 Summary:        Qt GUI front end to cryptsetup
 License:        GPL-2.0+
@@ -27,8 +27,8 @@ Source100:      zuluCrypt-rpmlint
 URL:            https://github.com/mhogomchungu/zuluCrypt
 
 %define libversion 3_2_0
-%define srcname zulucrypt
-%define libname %srcname%libversion
+%define srcname zuluCrypt
+%define libname lib%srcname%libversion
 %define libnamedev %{srcname}%{libversion}-devel
 
 #You may want to add dependencies for kwallet,gnome-keyring and pwquality below
@@ -61,7 +61,7 @@ It does the same thing truecrypt does but without licensing problems or requirin
 This package contains the applications.
 
 %package -n %{libnamedev}
-Requires:       lib%{libname} = %{version}
+Requires:       %{libname} = %{version}
 Summary:        Development library package
 Group:          Development/Libraries/C and C++
 
