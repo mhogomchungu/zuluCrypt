@@ -1085,17 +1085,6 @@ only root user or members of group zulucrypt can do that</source>
 <context>
     <name>cryptfiles</name>
     <message>
-        <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="142"/>
-        <source>Create encrypted version of a file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="151"/>
-        <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="163"/>
-        <source>Create decrypted version of an encrypted file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="235"/>
         <source>Path to source field is empty</source>
         <translation type="unfinished"></translation>
@@ -1243,6 +1232,17 @@ only root user or members of group zulucrypt can do that</source>
         <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="505"/>
         <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="507"/>
         <source>ERROR!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="142"/>
+        <source>Create An Encrypted Version Of A File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="151"/>
+        <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="163"/>
+        <source>Create A Decrypted Version Of An encrypted File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

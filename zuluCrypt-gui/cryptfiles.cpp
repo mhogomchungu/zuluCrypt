@@ -139,7 +139,7 @@ QString cryptfiles::destinationPath( const QString& e )
 void cryptfiles::encrypt()
 {
 	m_operation = "-E" ;
-	this->setWindowTitle( tr( "Create encrypted version of a file" ) ) ;
+	this->setWindowTitle( tr( "Create An Encrypted Version Of A File" ) ) ;
 	this->show() ;
 }
 
@@ -148,7 +148,7 @@ void cryptfiles::decrypt()
 	m_operation = "-D" ;
 	m_ui->labelKey2->setEnabled( false ) ;
 	m_ui->lineEditPass_2->setEnabled( false ) ;
-	this->setWindowTitle( tr( "Create decrypted version of an encrypted file" ) ) ;
+	this->setWindowTitle( tr( "Create A Decrypted Version Of An encrypted File" ) ) ;
 	this->show() ;
 }
 
@@ -160,7 +160,7 @@ void cryptfiles::decrypt( const QString& e )
 	m_ui->lineEditPass_2->setEnabled( false ) ;
 	m_ui->lineEditDestinationPath->setText( this->destinationPath( e )  ) ;
 	this->sourceTextChanged( e ) ;
-	this->setWindowTitle( tr( "Create decrypted version of an encrypted file" ) ) ;
+	this->setWindowTitle( tr( "Create A Decrypted Version Of An encrypted File" ) ) ;
 	this->show() ;
 }
 
