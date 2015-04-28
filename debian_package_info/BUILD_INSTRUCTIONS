@@ -23,7 +23,7 @@ HOW TO BUILD A ZULUCRYPT PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTIO
 
    ******************************************************************************************************
 
-   sudo apt-get install tar xz-utils libpwquality-dev libblkid-dev libqt4-dev gcc g++ libcryptsetup-dev cmake libgcrypt11-dev libtcplay-dev libsecret-1-dev pkg-config libdevmapper-dev uuid-dev libudev-dev vchrpath vbzip2 vdebhelper
+   sudo apt-get install tar xz-utils libpwquality-dev libblkid-dev libqt4-dev gcc g++ libcryptsetup-dev cmake libgcrypt11-dev libtcplay-dev libsecret-1-dev pkg-config libdevmapper-dev uuid-dev libudev-dev chrpath bzip2 debhelper
 
    ******************************************************************************************************
 
@@ -79,7 +79,7 @@ HOW TO BUILD A ZULUCRYPT PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTIO
 
    ******************************************************************************************************
 
-   su -c "apt-get install tar xz-utils libpwquality-dev libblkid-dev libqt4-dev gcc g++ libcryptsetup-dev cmake libgcrypt11-dev libtcplay-dev libsecret-1-dev pkg-config libdevmapper-dev uuid-dev libudev-dev vchrpath vbzip2 vdebhelper"
+   su -c "apt-get install tar xz-utils libpwquality-dev libblkid-dev libqt4-dev gcc g++ libcryptsetup-dev cmake libgcrypt11-dev libtcplay-dev libsecret-1-dev pkg-config libdevmapper-dev uuid-dev libudev-dev chrpath bzip2 debhelper"
 
    ******************************************************************************************************
 
