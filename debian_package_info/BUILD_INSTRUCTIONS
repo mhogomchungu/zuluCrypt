@@ -7,6 +7,8 @@ that use "su" command to gain root's privileges.
 
 ps: copy and paste all commands to make sure you dont mistype them.
 
+ps: at step 4,make sure the version number on the command matches the version number of zuluCrypt you are building.
+
 HOW TO BUILD A ZULUCRYPT PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTION THAT USES "SUDO".
 
 
