@@ -54,7 +54,7 @@ typedef struct struct_opts_1{
 	const char * tcrypt_multiple_keyfiles[ TRUECRYPT_MAX_KEYFILES + 1 ] ;
 	const char * back_up_file_path ;
 	const char * offset ;
-	const char * const * env ;
+	char * const * env ;
 	char action ;
 	int partition_number ;
 	int ask_confirmation ;

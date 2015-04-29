@@ -30,7 +30,7 @@ typedef struct{
 	/*
 	 * if this variable is set,then it is expect to be in the same format the last argument of execv() expect
 	 */
-	const char * const * args ;
+	char * const * args ;
 	/*
 	 * this variable is set will cause the program to be executed will run with the identify of this user.
 	 */
@@ -38,7 +38,7 @@ typedef struct{
 	/*
 	 * If this variable is set,then it is expected to be in the format the last argument of execve() expect
 	 */
-	const char * const * env ;
+	char * const * env ;
 	/*
 	 * If this variable is set,the process will be terminate if its still running after timeout seconds
 	 * The default signal sent is sigterm
@@ -124,7 +124,7 @@ int ProcessKill( process_t ) ;
  * the forked process will be started with arguments list given by the second argument
  * look at the example at the end of this header file for info on how to use the API
  */
-void ProcessSetArguments( process_t p,const char * const argv[] ) ;
+void ProcessSetArguments( process_t p,char * const argv[] ) ;
 
 /*
  * look at the example at the end of this header file for info on how to use the API
@@ -134,7 +134,7 @@ void ProcessSetArgumentList( process_t p,... )  __attribute__ ( ( sentinel ) ) ;
 /*
  * set the child process to start with the given enviromental variables
  */
-void ProcessSetEnvironmentalVariable( process_t p,const char * const * env ) ;
+void ProcessSetEnvironmentalVariable( process_t p,char * const * env ) ;
 
 /*
  * get state of the process handled by handle p
@@ -249,7 +249,7 @@ int main( void )
 int main( void )
 {
 	const char * argv[ 3 ] ;
-	process_t p = Process( NULL ) ;
+	process_t p = Process( NULL,NULL ) ;
 	argv[ 0 ] = "/bin/ls" ;
 	argv[ 1 ] = "-l" ;
 	argv[ 2 ] = NULL ;
@@ -285,7 +285,7 @@ int main( void )
 int main( void )
 {
 	const char * argv[ 3 ] ;
-	process_t p = Process( NULL ) ;
+	process_t p = Process( NULL,NULL ) ;
 	argv[ 0 ] = "/bin/ls" ;
 	argv[ 1 ] = "-l" ;
 	argv[ 2 ] = NULL ;
