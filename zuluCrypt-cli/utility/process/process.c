@@ -136,6 +136,113 @@ void ProcessSetArgumentList( process_t p,... )
 	p->str.args = ( const char * const * ) args ;
 }
 
+static process_t _process( const char * path )
+{
+	process_t p  ;
+
+	size_t len ;
+
+	if( path == NULL ){
+		len = 0 ;
+	}else{
+		len = strlen( path ) ;
+	}
+
+	p = malloc( sizeof( struct ProcessType_t ) ) ;
+
+	if( p == NULL ){
+		return _ProcessError() ;
+	}
+
+	if( len == 0 ){
+		p->exe = malloc( sizeof( char ) ) ;
+		p->exe[ 0 ] = '\0' ;
+	}else{
+		p->exe = malloc( sizeof( char ) * ( len + 1 ) ) ;
+		if( p->exe == NULL ){
+			free( p ) ;
+			return _ProcessError() ;
+		}
+		memcpy( p->exe,path,len + 1 ) ;
+	}
+
+	p->std_io = 0       ;
+	p->wait_status = -1 ;
+	p->thread = NULL    ;
+	p->fd_0[ 0 ] = -1   ;
+	p->args     = NULL  ;
+	p->str.args = NULL  ;
+	p->str.timeout = -1 ;
+	p->str.env = NULL   ;
+	p->str.user_id = -1 ;
+	p->str.priority = 0 ;
+	p->str.signal = SIGTERM ;
+	p->state = ProcessHasNotStarted ;
+	return p ;
+}
+
+process_t Process( const char * path,... )
+{
+	char * entry ;
+	char ** args  ;
+	char ** e ;
+	size_t size = sizeof( char * ) ;
+	int index = 0 ;
+	va_list list ;
+	process_t p ;
+
+	if( path == NULL ){
+		return _process( NULL ) ;
+	}
+
+	args = malloc( size ) ;
+
+	if( args == NULL ){
+		_ProcessError() ;
+		return ProcessVoid ;
+	}
+
+	p = _process( path ) ;
+
+	if( p == ProcessVoid ){
+		return ProcessVoid ;
+	}
+
+	*( args + index ) = p->exe ;
+	index++ ;
+
+	va_start( list,path ) ;
+
+	while( 1 ){
+		entry = va_arg( list,char * ) ;
+		e = realloc( args,( 1 + index ) * size ) ;
+
+		if( e == NULL ){
+			ProcessCleanUp( &p ) ;
+			free( args ) ;
+			va_end( list ) ;
+			_ProcessError() ;
+			return ProcessVoid ;
+		}else{
+			args = e ;
+		}
+
+		if( entry == NULL ){
+			*( args + index ) = NULL ;
+			break ;
+		}else{
+			*( args + index ) = entry ;
+			index++ ;
+		}
+	}
+
+	va_end( list ) ;
+	p->args = args ;
+	p->str.args = ( const char * const * ) args ;
+
+	return p ;
+}
+
 static void * __timer( void * x )
 {
 	process_t p = x ;
@@ -365,50 +472,6 @@ void ProcessCloseStdWrite( process_t p )
 {
 	close( p->fd_0[ 0 ] ) ;
 	p->fd_0[ 0 ] = -1 ;
-}
-
-process_t Process( const char * path )
-{
-	process_t p  ;
-
-	size_t len ;
-
-	if( path == NULL ){
-		return ProcessVoid ;
-	}
-
-	len = strlen( path ) ;
-
-	p = malloc( sizeof( struct ProcessType_t ) ) ;
-
-	if( p == NULL ){
-		return _ProcessError() ;
-	}
-
-	if( len == 0 ){
-		p->exe = NULL ;
-	}else{
-		p->exe = malloc( sizeof( char ) * ( len + 1 ) ) ;
-		if( p->exe == NULL ){
-			free( p ) ;
-			return _ProcessError() ;
-		}
-		memcpy( p->exe,path,len + 1 ) ;
-	}
-
-	p->std_io = 0       ;
-	p->wait_status = -1 ;
-	p->thread = NULL    ;
-	p->fd_0[ 0 ] = -1   ;
-	p->args     = NULL  ;
-	p->str.args = NULL  ;
-	p->str.timeout = -1 ;
-	p->str.env = NULL   ;
-	p->str.user_id = -1 ;
-	p->str.priority = 0 ;
-	p->str.signal = SIGTERM ;
-	p->state = ProcessHasNotStarted ;
-	return p ;
 }
 
 void ProcessSetOptionTimeout( process_t p,int timeout,int signal )

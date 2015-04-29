@@ -74,7 +74,7 @@ void ProcessExitOnMemoryExaustion( void (*)( void ) ) ;
  * create a handle to a process that will be started.
  * Path to executable to be started must be in full path format
  */
-process_t Process( const char * path ) ;
+process_t Process( const char * path,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
  * This structure can be used an an alternative way to set various options.
@@ -129,7 +129,7 @@ void ProcessSetArguments( process_t p,const char * const argv[] ) ;
 /*
  * look at the example at the end of this header file for info on how to use the API
  */
-void ProcessSetArgumentList( process_t p,... ) ;
+void ProcessSetArgumentList( process_t p,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
  * set the child process to start with the given enviromental variables
@@ -218,8 +218,7 @@ ssize_t ProcessGetOutPut_1( process_t,char * buffer,int size,ProcessIO ) ;
 
 int main( void )
 {
-	process_t p = Process( "/bin/ls" ) ;
-	ProcessSetArgumentList( p,"-l",NULL ) ;
+	process_t p = Process( "/bin/ls","-l",NULL ) ;
 	ProcessStart( p ) ;
 	char * c = NULL ;
 	while( 1 ){
@@ -250,7 +249,7 @@ int main( void )
 int main( void )
 {
 	const char * argv[ 3 ] ;
-	process_t p = Process( "" ) ;
+	process_t p = Process( NULL ) ;
 	argv[ 0 ] = "/bin/ls" ;
 	argv[ 1 ] = "-l" ;
 	argv[ 2 ] = NULL ;
@@ -286,7 +285,7 @@ int main( void )
 int main( void )
 {
 	const char * argv[ 3 ] ;
-	process_t p = Process( "" ) ;
+	process_t p = Process( NULL ) ;
 	argv[ 0 ] = "/bin/ls" ;
 	argv[ 1 ] = "-l" ;
 	argv[ 2 ] = NULL ;

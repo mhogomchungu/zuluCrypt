@@ -199,7 +199,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		*( args + 5 ) = argv ;
 		*( args + 6 ) = NULL ;
 
-		p = Process( "" ) ;
+		p = Process( NULL ) ;
 		str = ProcessArgumentStructure( p ) ;
 		str->args    = args ;
 		str->env     = env ;

@@ -34,7 +34,7 @@ static inline int zuluExit( int st,string_t m )
 
 int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapper )
 {
-	int status ;
+	int r ;
 	char * e = NULL ;
 	process_t p ;
 
@@ -45,7 +45,7 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 		return 1 ;
 	}
 
-	p = Process( ZULUCRYPTmkfs ) ;
+	p = Process( ZULUCRYPTmkfs,NULL ) ;
 
 	if( StringAtLeastOneMatch_1( fs,"ext2","ext3","ext4",NULL ) ){
 
@@ -81,9 +81,9 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 
 	ProcessStart( p ) ;
 
-	status = ProcessExitStatus( p ) ;
+	r = ProcessExitStatus( p ) ;
 
-	if( status ){
+	if( r ){
 		ProcessGetOutPut( p,&e,ProcessStdError ) ;
 		if( e ){
 			puts( e ) ;
@@ -92,7 +92,7 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 	}
 
 	ProcessCleanUp( &p ) ;
-	return status ;
+	return r ;
 }
 
 static int _create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )

@@ -308,13 +308,15 @@ static int mount_FUSEfs_0( m_struct * mst )
 	int r ;
 	const char * opts ;
 
-	process_t p = Process( ZULUCRYPTmount ) ;
+	process_t p = Process( ZULUCRYPTmount,NULL ) ;
 	string_t st = set_mount_options( mst ) ;
 
 	opts = _mount_options( mst->m_flags,st ) ;
 
 	if( StringsAreEqual( mst->fs,"ntfs" ) ){
+
 		if( StringHasComponent( opts,"ignore_case" ) ){
+			
 			ProcessSetArgumentList( p,"-n","-t","lowntfs-3g","-o",opts,mst->device,mst->m_point,NULL ) ;
 		}else{
 			ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,NULL ) ;

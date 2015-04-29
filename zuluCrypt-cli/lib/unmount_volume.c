@@ -63,9 +63,8 @@ static inline int _unmount_volume_1( const char * m_dir )
 	 */
 	for( i = 0 ; i < 5 ; i++ ){
 
-		p = Process( ZULUCRYPTumount ) ;
+		p = Process( ZULUCRYPTumount,m_dir,NULL ) ;
 
-		ProcessSetArgumentList( p,m_dir,NULL ) ;
 		ProcessStart( p ) ;
 
 		h = ProcessWaitUntilFinished( &p ) ;
@@ -138,7 +137,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	}
 
 	if( h != 0 && h != 3 && h != 4 ){
-		
+
 		h = 2 ;
 	}
 

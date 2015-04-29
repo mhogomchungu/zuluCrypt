@@ -44,14 +44,13 @@ static int create_group( const char * groupname ) __attribute__((unused)) ;
 static int create_group( const char * groupname )
 {
 	process_t p ;
-	int st = 1 ;
+	int r ;
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	p = Process( ZULUCRYPTgroupadd ) ;
-	ProcessSetArgumentList( p,"-f",groupname,NULL ) ;
+	p = Process( ZULUCRYPTgroupadd,"-f",groupname,NULL ) ;
 	ProcessStart( p ) ;
-	st = ProcessWaitUntilFinished( &p ) ;
+	r = ProcessWaitUntilFinished( &p ) ;
 	zuluCryptSecurityDropElevatedPrivileges();
-	return st == 0 ;
+	return r == 0 ;
 }
 
 static int _polkitAuthenticated( void )
