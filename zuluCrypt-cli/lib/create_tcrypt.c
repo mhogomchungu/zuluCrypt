@@ -69,7 +69,7 @@ static int _create_file_system( const create_tcrypt_t * e )
 	opts.key_len = e->passphrase_size ;
 
 	if( e->keyfiles != NULL ){
-		opts.tcrypt_keyfiles       = ( const char ** ) e->keyfiles ;
+		opts.tcrypt_keyfiles       = e->keyfiles ;
 		opts.tcrypt_keyfiles_count = e->keyfiles_number ;
 	}
 

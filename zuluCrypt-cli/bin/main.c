@@ -218,7 +218,7 @@ static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t ui
 	return 200 ; /* shouldnt get here */
 }
 
-static int zuluExit( int st,stringList_t stl,stringList_t stx,const char * const * env,const char * msg )
+static int zuluExit( int st,stringList_t stl,stringList_t stx,char * const * env,const char * msg )
 {
 	zuluCryptSecurityUnlockMemory( stl ) ;
 	StringListClearDelete( &stl ) ;
@@ -299,7 +299,7 @@ int main( int argc,char * argv[] )
 	char * dev ;
 	char action ;
 	int st ;
-	const char * const * env ;
+	char * const * env ;
 	ssize_t i ;
 
 	string_t q = StringVoid ;

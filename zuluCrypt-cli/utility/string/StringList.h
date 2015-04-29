@@ -389,7 +389,15 @@ void StringListDelete( stringList_t * stl ) ;
  * NULL is returned on error.
  * NOTE: remember to free() the returned value but DONOT free its content.
  */
-const char * const * StringListStringArray( stringList_t ) ;
+char * const * StringListStringArray( stringList_t ) ;
+
+/*
+ * returns the restult of StringListStringArray() but with a different cast
+ */
+static __inline__ const char * const * StringListStringArray_0( stringList_t stl )
+{
+	return ( const char * const * ) StringListStringArray( stl ) ;
+}
 
 /*
  * It does what the above does but it reuses the buffer and hence its better if the function is called

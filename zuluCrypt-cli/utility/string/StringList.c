@@ -909,7 +909,7 @@ string_t StringListHasStartSequence_1( stringList_t stl,const char * str )
 	}
 }
 
-const char * const * StringListStringArray( stringList_t stl )
+char * const * StringListStringArray( stringList_t stl )
 {
 	size_t i ;
 	size_t j ;
@@ -941,7 +941,7 @@ const char * const * StringListStringArray( stringList_t stl )
 			}
 		}
 	}
-	return ( const char * const * )q ;
+	return q ;
 }
 
 void StringListStringArray_1( char * const ** buffer,size_t * size ,stringList_t stl )

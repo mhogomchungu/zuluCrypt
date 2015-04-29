@@ -120,7 +120,7 @@ static int _open_mapper( const open_struct_t * opts )
 		 * zuluCryptOpenLuks() is defined in open_luks.c
 		 */
 		r = zuluCryptOpenLuks_1( opts ) ;
-		
+
 	}else if( zuluCryptVolumeIsLuks( opts->device ) ){
 
 		if( opts->veraCrypt_volume ){
