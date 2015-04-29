@@ -77,6 +77,12 @@ void ProcessExitOnMemoryExaustion( void (*)( void ) ) ;
 process_t Process( const char * path,... )  __attribute__ ( ( sentinel ) ) ;
 
 /*
+ * run exe process with its NULL terminated arguments and then return the
+ * process' exit status
+ */
+int ProcessExecute( const char * exe,... ) __attribute__ ( ( sentinel ) ) ;
+
+/*
  * This structure can be used an an alternative way to set various options.
  * There exist a separate function to set each one of them
  */

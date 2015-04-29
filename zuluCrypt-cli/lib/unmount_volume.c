@@ -52,8 +52,6 @@ static inline int _unmount_volume( const char * m_dir )
 
 static inline int _unmount_volume_1( const char * m_dir )
 {
-	process_t p ;
-
 	int h ;
 	int i ;
 
@@ -63,11 +61,7 @@ static inline int _unmount_volume_1( const char * m_dir )
 	 */
 	for( i = 0 ; i < 5 ; i++ ){
 
-		p = Process( ZULUCRYPTumount,m_dir,NULL ) ;
-
-		ProcessStart( p ) ;
-
-		h = ProcessWaitUntilFinished( &p ) ;
+		h = ProcessExecute( ZULUCRYPTumount,m_dir,NULL ) ;
 
 		if( h == 0 ){
 			break ;

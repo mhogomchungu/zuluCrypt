@@ -237,6 +237,65 @@ process_t Process( const char * path,... )
 	return p ;
 }
 
+int ProcessExecute( const char * exe,... )
+{
+	char * entry ;
+	char ** args  ;
+	char ** e ;
+	size_t size = sizeof( char * ) ;
+	int index = 1 ;
+	va_list list ;
+	process_t p ;
+
+	if( exe == NULL ){
+		return -1 ;
+	}
+
+	p = _process( exe ) ;
+
+	if( p == ProcessVoid ){
+		return -1 ;
+	}
+
+	args = p->args ;
+
+	va_start( list,exe ) ;
+
+	while( 1 ){
+
+		entry = va_arg( list,char * ) ;
+		e = realloc( args,( 1 + index ) * size ) ;
+
+		if( e == NULL ){
+			ProcessCleanUp( &p ) ;
+			free( args ) ;
+			va_end( list ) ;
+			_ProcessError() ;
+			return -1 ;
+		}else{
+			args = e ;
+		}
+
+		if( entry == NULL ){
+			*( args + index ) = NULL ;
+			break ;
+		}else{
+			*( args + index ) = entry ;
+			index++ ;
+		}
+	}
+
+	va_end( list ) ;
+
+	p->args      = args ;
+	p->args[ 0 ] = p->exe ;
+	p->str.args  = args ;
+
+	ProcessStart( p ) ;
+
+	return ProcessWaitUntilFinished( &p ) ;
+}
+
 static void * __timer( void * x )
 {
 	process_t p = x ;
