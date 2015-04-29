@@ -259,11 +259,11 @@ namespace utility
 		}
 		bool success() const
 		{
-			return m_exitCode == 0 ;
+			return m_exitCode == 0 && m_exitStatus == QProcess::NormalExit && m_finished == true ;
 		}
 		bool failed() const
 		{
-			return m_exitCode != 0 ;
+			return !this->success() ;
 		}
 		bool finished() const
 		{

@@ -471,7 +471,7 @@ Task::future<bool>& zuluMountTask::encfsUnmount( const QString& m )
 
 		auto _umount = [ & ](){
 
-			if( utility::Task( "fusermount -u " + m,10 ).success() ){
+			if( utility::Task( "fusermount -u " + m,10000 ).success() ){
 
 				QDir d ;
 				d.rmdir( m ) ;
