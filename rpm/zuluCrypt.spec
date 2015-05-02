@@ -116,9 +116,7 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 %{_bindir}/zuluCrypt-cli
 %{_bindir}/zuluSafe-cli
 
-#It is necessary to comment in the below two lines if you want to build these optional features
-#and all dependencies are met.
-#%%{_libdir}/zuluCrypt/kwallet
+%dir %{_libdir}/zuluCrypt
 %{_libdir}/zuluCrypt/keyring
 %{_libdir}/zuluCrypt/zuluCrypt-testKey
 %{_libdir}/zuluCrypt/keykeyfile
@@ -131,6 +129,7 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 
 %{_datadir}/applications/zuluCrypt.desktop
 %{_datadir}/applications/zuluMount.desktop
+
 %defattr(0644,root,root)
 %{_datadir}/icons/*
 %{_datadir}/zuluCrypt/*
@@ -140,7 +139,6 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 
 %files -n %{libname}
 %defattr(0644,root,root)
-%dir %{_libdir}/zuluCrypt
 %{_libdir}/libzuluCrypt.so.*
 %{_libdir}/libzuluCrypt-exe.so.*
 %{_libdir}/libzuluCryptPluginManager.so.*
