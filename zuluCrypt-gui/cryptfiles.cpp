@@ -292,13 +292,12 @@ void cryptfiles::pbCreate()
 	}
 }
 
-void cryptfiles::cryptFile( const char * s,const char * d,const char * key,unsigned long l,bool encrypt )
+void cryptfiles::cryptFile( const char * s,const char * d,const char * k,unsigned long l,bool encrypt )
 {
 	struct foo
 	{
-		foo( std::function< int( int ) > function )
+		foo( std::function< int( int ) > function ) : update( std::move( function ) )
 		{
-			update = std::move( function ) ;
 		}
 
 		std::function< int( int ) > update ;
@@ -320,9 +319,9 @@ void cryptfiles::cryptFile( const char * s,const char * d,const char * key,unsig
 
 		if( encrypt ){
 
-			return lxqt_wallet_create_encrypted_file( key,r,s,d,u,f ) ;
+			return lxqt_wallet_create_encrypted_file( k,r,s,d,u,f ) ;
 		}else{
-			return lxqt_wallet_create_decrypted_file( key,r,s,d,u,f ) ;
+			return lxqt_wallet_create_decrypted_file( k,r,s,d,u,f ) ;
 		}
 	} ) ;
 

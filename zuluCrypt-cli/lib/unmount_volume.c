@@ -26,31 +26,20 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-static inline int _unmount_volume( const char * m_dir )
+static int _unmount_rest( const char * m_dir )
 {
-	int h ;
-	int i ;
-
-	/*
-	 * try 5 times on one second intervals to umount the volume.
-	 * Trying to unmount more than once seem to be necessary sometimes
-	 */
-	for( i = 0 ; i < 5 ; i++ ){
-
-		h = umount( m_dir ) ;
-
-		if( h == 0 ){
-
-			break ;
-		}else{
-			sleep( 1 ) ;
-		}
-	}
-
-	return h ;
+	return umount( m_dir ) ;
 }
 
-static inline int _unmount_volume_1( const char * m_dir )
+static int _unmount_fuse( const char * m_dir )
+{
+	/*
+	 * ZULUCRYPTumount is defined in ../constants.h
+	 */
+	return ProcessExecute( ZULUCRYPTumount,m_dir,NULL ) ;
+}
+
+static int _unmount( int( *function )( const char * m_dir ),const char * m_dir )
 {
 	int h ;
 	int i ;
@@ -61,7 +50,7 @@ static inline int _unmount_volume_1( const char * m_dir )
 	 */
 	for( i = 0 ; i < 5 ; i++ ){
 
-		h = ProcessExecute( ZULUCRYPTumount,m_dir,NULL ) ;
+		h = function( m_dir ) ;
 
 		if( h == 0 ){
 			break ;
@@ -110,11 +99,11 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 		 */
 		if( zuluCryptFileSystemIsFUSEbased( device ) ){
 			/*
-			 * Dont know whats going on but FUSE based file systems do not seem to work with mount()
+			 * Dont know whats going on but FUSE based file systems do not seem to work with umount()
 			 */
-			h = _unmount_volume_1( m ) ;
+			h = _unmount( _unmount_fuse,m ) ;
 		}else{
-			h = _unmount_volume( m ) ;
+			h = _unmount( _unmount_rest,m ) ;
 		}
 
 		if( h == 0 ){

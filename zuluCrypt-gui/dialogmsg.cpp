@@ -199,23 +199,16 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 
 	QStringList stl = msg.split( "\n" ) ;
 
-	auto _trancate_long_path = []( const QString& e )->QString{
+	auto _trancate_long_path = []( QString e ){
 
-		if( e.length() <= 45 ){
+		const int len    = 45 ;
+		const int length = e.length() ;
+
+		if( length <= len ){
 
 			return e ;
 		}else{
-			QString r = e ;
-
-			auto y = e.length() ;
-
-			auto x = y - 45 ;
-
-			auto z = y / 2 ;
-
-			r.replace( z,x,"......" ) ;
-
-			return r ;
+			return e.replace( 25,length - len,"......" ) ;
 		}
 	} ;
 
