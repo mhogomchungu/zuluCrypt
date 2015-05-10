@@ -52,7 +52,7 @@ void monitor_mountinfo::stop()
 
 void monitor_mountinfo::threadStopped()
 {
-	emit stopped();
+	emit stopped() ;
 	m_running = false ;
 }
 

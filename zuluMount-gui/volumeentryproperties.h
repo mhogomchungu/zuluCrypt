@@ -25,9 +25,9 @@
 class volumeEntryProperties
 {
 public:
-	explicit volumeEntryProperties( const QStringList& l = QStringList() )
+	volumeEntryProperties( const QStringList& l = QStringList(),bool isSystem = false )
 	{
-		this->setValues( l ) ;
+		this->setValues( l,isSystem ) ;
 	}
 	const QString& volumeName() const
 	{
@@ -56,10 +56,6 @@ public:
 	bool isSystem() const
 	{
 		return m_isSystem ;
-	}
-	void setisSystem( bool t = true )
-	{
-		m_isSystem = t ;
 	}
 	bool isEmpty() const
 	{
@@ -105,8 +101,10 @@ public:
 		return l ;
 	}
 private:
-	void setValues( const QStringList& l )
+	void setValues( const QStringList& l,bool isSystem )
 	{
+		m_isSystem = isSystem ;
+
 		if( l.size() >= 6 ){
 			m_volume      = l.at( 0 ) ;
 			m_mountPoint  = l.at( 1 ) ;
@@ -123,6 +121,7 @@ private:
 			m_usedSpacePercentage.remove( QChar( '\n' ) ) ;
 		}
 	}
+
 	QString m_volume ;
 	QString m_mountPoint ;
 	QString m_fileSystem ;

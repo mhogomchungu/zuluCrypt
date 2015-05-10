@@ -300,20 +300,17 @@ void MainWindow::showFavorites()
 void MainWindow::setLocalizationLanguage()
 {
 	auto translator  = new QTranslator( this ) ;
-	QString pgr      = "zuluMount-gui" ;
-	QString lang     = utility::localizationLanguage( pgr ) ;
-	QString langPath = utility::localizationLanguagePath( pgr ) ;
 
-	QByteArray r = lang.toLatin1() ;
+	const char * app = "zuluMount-gui" ;
 
-	QByteArray e( "en_US" ) ;
+	QByteArray r = utility::localizationLanguage( app ).toLatin1() ;
 
-	if( e == r ){
+	if( r == "en_US" ){
 		/*
 		 * english_US language,its the default and hence dont load anything
 		 */
 	}else{
-		translator->load( r.constData(),langPath ) ;
+		translator->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
 		QCoreApplication::installTranslator( translator ) ;
 	}
 }
@@ -814,16 +811,9 @@ void MainWindow::showMoungDialog( const QString& volume )
 
 			QStringList l ;
 
-			l.append( volume ) ;
-			l.append( "Nil" ) ;
-			l.append( "encfs" ) ;
-			l.append( "Nil" ) ;
-			l.append( "Nil" ) ;
-			l.append( "Nil" ) ;
+			l << volume << "Nil" << "encfs" << "Nil" << "Nil" << "Nil" ;
 
-			volumeEntryProperties v( l ) ;
-
-			this->mount( v ) ;
+			this->mount( volumeEntryProperties( l ) ) ;
 		}
 	}
 }
@@ -832,7 +822,7 @@ void MainWindow::pbMount()
 {
 	this->disableAll() ;
 
-	QString path = QFileDialog::getOpenFileName( this,tr( "Aelect An Image File To Mount" ),QDir::homePath() ) ;
+	QString path = QFileDialog::getOpenFileName( this,tr( "Select An Image File To Mount" ),QDir::homePath() ) ;
 
 	if( path.isEmpty() ){
 

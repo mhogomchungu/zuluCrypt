@@ -131,7 +131,6 @@ private slots :
 	void failedToOpenWallet( void ) ;
 	void openFolder( void ) ;
 	void openFolder( QString ) ;
-	void openVolumeFromArgumentList( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void manageVolumesInInternalWallet( void ) ;
 	void manageVolumesInKDEWallet( void ) ;
@@ -165,8 +164,6 @@ private:
 	void initKeyCombo( void ) ;
 	void closeStatusErrorMessage( int ) ;
 	void setUpApp( const QString& ) ;
-	void setFolderOpener( void ) ;
-	void processArgumentList( void ) ;
 	void decryptFile( const QString& ) ;
 	Ui::zuluCrypt * m_ui ;
 	QSystemTrayIcon * m_trayIcon ;

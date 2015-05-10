@@ -96,7 +96,7 @@ int main( int argc,char * argv[] )
 
 	w.setToken( argv[ 3 ] ) ;
 	w.setApplicationName( "hmac" ) ;
-	w.setkeyLabel( QObject::tr( "Eenter A Password Below" ) ) ;
+	w.setkeyLabel( QObject::tr( "Enter A Password Below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "Enter A Path To A Keyfile Below" ) ) ;
 
 	w.setKeyFunction( hmac ) ;

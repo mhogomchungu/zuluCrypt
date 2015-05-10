@@ -53,10 +53,7 @@ volumeEntryProperties _getVolumeProperties( const QString& e )
 
 	if( r.success() ) {
 
-		volumeEntryProperties v( r.splitOutput( '\t' ) ) ;
-		v.setisSystem( _volumeIsSystemVolume( device ) ) ;
-
-		return v ;
+		return volumeEntryProperties( r.splitOutput( '\t' ),_volumeIsSystemVolume( device ) ) ;
 	}else{
 		return volumeEntryProperties() ;
 	}
@@ -204,7 +201,7 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 
 				return false ;
 			}
-			if( e.contains( "\tswap\t") || e.contains( "member\t" ) || e.contains( "\t/run/media/public" ) ){
+			if( e.contains( "\tswap\t" ) || e.contains( "member\t" ) || e.contains( "\t/run/media/public" ) ){
 
 				return false ;
 			}
@@ -238,9 +235,8 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 
 					if( _validEntry( it ) ){
 
-						volumeEntryProperties v( utility::split( it,'\t' ) ) ;
-						v.setisSystem( s.contains( v.volumeName() ) ) ;
-						list.append( v ) ;
+						const auto& e = utility::split( it,'\t' ) ;
+						list.append( volumeEntryProperties( e,s.contains( e.first() ) ) ) ;
 					}
 				}
 			}
@@ -312,8 +308,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 
 	if( r.success() ){
 
-		s.entry = new volumeEntryProperties( r.splitOutput( '\t' ) ) ;
-		s.entry->setisSystem( _volumeIsSystemVolume( volume ) ) ;
+		s.entry = new volumeEntryProperties( r.splitOutput( '\t' ),_volumeIsSystemVolume( volume ) ) ;
 	}
 
 	return s ;

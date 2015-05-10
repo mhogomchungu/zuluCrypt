@@ -43,9 +43,9 @@ static int _remove_key( const char * device ,const char * pass,size_t pass_size 
 		return zuluExit( 3,cd ) ;
 	}
 
-	slot = crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,pass,pass_size,0 );
+	slot = crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,pass,pass_size,0 ) ;
 
-	if ( slot < 0 ){
+	if( slot < 0 ){
 		return zuluExit( 2,cd ) ;
 	}
 	if( crypt_keyslot_destroy( cd,slot ) < 0 ){
@@ -69,7 +69,7 @@ int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size 
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
 		 */
 		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&st ) ){
-			
+
 			r = _remove_key( StringContent( st ),pass,pass_size ) ;
 			StringDelete( &st ) ;
 			close( fd ) ;

@@ -80,31 +80,18 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 void zuluCrypt::setLocalizationLanguage()
 {
 	QTranslator * translator = new QTranslator( this ) ;
-	QString program  = "zuluCrypt-gui" ;
-	QString lang     = utility::localizationLanguage( program ) ;
-	QString langPath = utility::localizationLanguagePath( program ) ;
 
-	QByteArray r = lang.toLatin1() ;
+	const char * app = "zuluCrypt-gui" ;
 
-	QByteArray e( "en_US" ) ;
-	if( e == r ){
+	QByteArray r = utility::localizationLanguage( app ).toLatin1() ;
+
+	if( r == "en_US" ){
 		/*
 		 *english_US language,its the default and hence dont load anything
 		 */
 	}else{
-		translator->load( r.constData(),langPath ) ;
+		translator->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
 		QCoreApplication::installTranslator( translator ) ;
-	}
-}
-
-void zuluCrypt::setFolderOpener()
-{
-	//currently not used
-	QStringList argv = QCoreApplication::arguments() ;
-	if( argv.size() < 2 ){
-		m_openPath = "xdg-open" ;
-	}else{
-		m_openPath = argv.at( 1 ) ;
 	}
 }
 
@@ -185,14 +172,6 @@ void zuluCrypt::updateVolumeListAction()
 	}
 }
 
-void zuluCrypt::processArgumentList()
-{
-}
-
-void zuluCrypt::openVolumeFromArgumentList()
-{
-}
-
 void zuluCrypt::initKeyCombo()
 {
 	QAction * rca = new QAction( this ) ;
@@ -216,7 +195,7 @@ void zuluCrypt::raiseWindow()
 		m_trayIcon->setVisible( true ) ;
 	}else{
 		this->setVisible( true ) ;
-		this->show() ; ;
+		this->show() ;
 		this->raise() ;
 		this->setWindowState( Qt::WindowActive ) ;
 	}
@@ -225,7 +204,7 @@ void zuluCrypt::raiseWindow()
 void zuluCrypt::raiseWindow( QString device )
 {
 	this->setVisible( true ) ;
-	this->show() ; ;
+	this->show() ;
 	this->raise() ;
 	this->setWindowState( Qt::WindowActive ) ;
 	QString y = device.split( "/" ).last() ;
@@ -398,19 +377,14 @@ void zuluCrypt::optionMenuAboutToShow()
 
 void zuluCrypt::openpdf()
 {
-	Task::run<bool>( [ this ](){
+	bool failed = Task::await< bool >( [ this ](){ return utility::Task( m_openPath + PDF_PATH ).failed() ; } ) ;
 
-		return utility::Task( m_openPath + PDF_PATH ).failed() ;
+	if( failed ){
 
-	} ).then( [ this ]( bool failed ){
+		DialogMsg msg( this ) ;
 
-		if( failed ){
-
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIOK( tr( "WARNING!" ),tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
-		}
-	} ) ;
+		msg.ShowUIOK( tr( "WARNING!" ),tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
+	}
 }
 
 void zuluCrypt::info()
@@ -466,12 +440,13 @@ void zuluCrypt::walletpassWordChanged( bool b )
 {
 	Q_UNUSED( b ) ;
 	m_wallet->deleteLater() ;
+	m_wallet = nullptr ;
 }
 
 void zuluCrypt::permissionExplanation()
 {
 	DialogMsg m( this ) ;
-	m.ShowPermissionProblem( QString( "" ) ) ;
+	m.ShowPermissionProblem( QString() ) ;
 }
 
 void zuluCrypt::ShowManageSystemPartitions()
@@ -657,7 +632,7 @@ void zuluCrypt::fonts()
 	int size = 11 ;
 	bool ok ;
 	QFont Font = QFontDialog::getFont( &ok,this->font(),this ) ;
-	if( ok == true ){
+	if( ok ){
 		int k = Font.pointSize() ;
 		if( k > size ){
 			k = size ;
@@ -1052,7 +1027,7 @@ createvolume * zuluCrypt::setUpCreatepartition()
 {
 	createvolume * cp = new createvolume( this ) ;
 	connect( cp,SIGNAL( HideUISignal() ),cp,SLOT( deleteLater() ) ) ;
-	return cp;
+	return cp ;
 }
 
 void zuluCrypt::createPartition( QString partition )

@@ -569,7 +569,7 @@ bool utility::setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& 
 	f.close() ;
 
 	DialogMsg msg( parent ) ;
-	QString m = QObject::tr( "setting this option will cause the volume to open in read only mode" ) ;
+	QString m = QObject::tr( "Setting This Option Will Cause The Volume To Open In Read Only Mode" ) ;
 
 	QString path = Path + "-readOnlyOption" ;
 
@@ -579,10 +579,10 @@ bool utility::setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& 
 	if( f.exists() ){
 		f.open( QIODevice::ReadWrite ) ;
 		QByteArray opt = f.readAll() ;
-		if( opt == QByteArray( "0" ) && check ) {
+		if( opt == "0" && check ) {
 			f.seek( 0 ) ;
 
-			st = msg.ShowUIOKDoNotShowOption( QObject::tr( "info" ),m ) ;
+			st = msg.ShowUIOKDoNotShowOption( QObject::tr( "Info" ),m ) ;
 
 			if( st ){
 				f.write( "1" ) ;
@@ -593,7 +593,7 @@ bool utility::setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& 
 			f.close() ;
 		}
 	}else{
-		st = msg.ShowUIOKDoNotShowOption( QObject::tr( "info" ),m ) ;
+		st = msg.ShowUIOKDoNotShowOption( QObject::tr( "Info" ),m ) ;
 
 		f.open( QIODevice::WriteOnly ) ;
 
@@ -734,7 +734,7 @@ QString utility::mapperPath( const QString& r,const QString& component )
 {
 	QString rpath = r ;
 
-	QString path = utility::cryptMapperPath() + QString( "zuluCrypt-" ) + QString::number( getuid() ) ;
+	QString path = utility::cryptMapperPath() + "zuluCrypt-" + QString::number( getuid() ) ;
 
 	if( rpath.startsWith( "UUID=" ) ){
 
