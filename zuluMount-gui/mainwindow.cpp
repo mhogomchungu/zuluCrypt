@@ -499,11 +499,13 @@ void MainWindow::Show()
 
 	QString volume = utility::cmdArgumentValue( l,"-d" ) ;
 
-	QString sockpath = "zuluMount-gui.socket" ;
-	auto instance = new oneinstance( this,sockpath,"startGUI",volume ) ;
-	if( !instance->instanceExist() ){
+	auto instance = new oneinstance( this,"zuluMount-gui.socket","startGUI",volume ) ;
+
+	if( instance->onlyInstance() ){
+
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
+		
 		this->setUpApp( volume ) ;
 	}
 }
@@ -905,8 +907,8 @@ void MainWindow::volumeMiniProperties_0( volumeEntryProperties * volumeInfo )
 	}else{
 		this->pbUpdate() ;
 	}
-
 }
+
 void MainWindow::updateList( const volumeEntryProperties& entry )
 {
 	if( entry.isNotEmpty() ){

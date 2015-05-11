@@ -21,37 +21,42 @@
 #include "oneinstance.h"
 #include <QDebug>
 
-oneinstance::oneinstance( QObject * parent,const QString& socketPath,const char * methodName,const QString& device )
+oneinstance::oneinstance( QObject * parent,const char * socketPath,const char * methodName,const QString& device )
 {
 	m_device = device ;
+
 	this->setParent( parent ) ;
-	m_instanceExist = false ;
-	m_serverPath = QDir::homePath() + QString( "/.zuluCrypt-socket/" ) ;
+
+	m_serverPath = QDir::homePath() + "/.zuluCrypt-socket/" ;
+
 	m_methodName = methodName ;
+
 	QDir d ;
+
 	d.mkdir( m_serverPath ) ;
 
 	m_serverPath += socketPath ;
 
 	if( QFile::exists( m_serverPath ) ){
-		m_instanceExist = true ;
+
 		m_localSocket = new QLocalSocket( this ) ;
+
 		connect( m_localSocket,SIGNAL( connected() ),this,SLOT( connected() ) ) ;
+
 		m_localSocket->connectToServer( m_serverPath ) ;
 
 		if( m_localSocket->waitForConnected( 10000 ) ){
+
+			m_onlyInstance = false ;
 			qDebug() << tr( "There seem to be another instance running,exiting this one" ) ;
 		}else{
+			m_onlyInstance = true ;
 			qDebug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
-
-			/*
-			 * failed to connect in 10 seconds, assuming the socketPath has a stale file
-			 * and we are deleting it and hope the user will launch us again.
-			 */
 			QFile::remove( m_serverPath ) ;
 			this->startInstance() ;
 		}
 	}else{
+		m_onlyInstance = true ;
 		this->startInstance() ;
 	}
 }
@@ -60,12 +65,11 @@ void oneinstance::startInstance()
 {
 	QMetaObject::invokeMethod( this->parent(),m_methodName,Qt::QueuedConnection ) ;
 
-	m_instanceExist = false ;
+	m_onlyInstance = true ;
 	m_localServer = new QLocalServer( this ) ;
 
 	connect( m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
 
-	m_localServer->setMaxPendingConnections( 100 ) ;
 	m_localServer->listen( QString( m_serverPath ) ) ;
 }
 
@@ -87,11 +91,17 @@ void oneinstance::killProcess()
 void oneinstance::gotConnection()
 {
 	QLocalSocket * s = m_localServer->nextPendingConnection() ;
+
 	s->waitForReadyRead() ;
+
 	QByteArray data = s->readAll() ;
+
 	s->close() ;
+
 	s->deleteLater() ;
+
 	if( data.isEmpty() ){
+
 		emit raise() ;
 	}else{
 		emit raiseWithDevice( data ) ;
@@ -101,6 +111,7 @@ void oneinstance::gotConnection()
 void oneinstance::connected()
 {
 	if( !m_device.isEmpty() ){
+
 		m_localSocket->write( m_device.toLatin1() ) ;
 		m_localSocket->waitForBytesWritten() ;
 	}
@@ -108,14 +119,14 @@ void oneinstance::connected()
 	this->killProcess() ;
 }
 
-bool oneinstance::instanceExist()
+bool oneinstance::onlyInstance()
 {
-	return m_instanceExist ;
+	return m_onlyInstance ;
 }
 
 oneinstance::~oneinstance()
 {
-	if( !m_instanceExist ){
+	if( m_onlyInstance ){
 		m_localServer->close() ;
 		delete m_localServer ;
 		QFile::remove( m_serverPath ) ;

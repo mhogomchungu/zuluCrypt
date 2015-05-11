@@ -4,9 +4,9 @@ zulucrypt (4.7.6-1) UNRELEASED; urgency=low
      -- add "hmac" plugin.This plugin produces a key as follows: key = hmac-sha256( passphrase,keyfile-contents ).
           this plugin can be used when unlocking a volume requires a passphrase and a keyfile.
      -- use "tcrypt" to refer to TrueCrypt volumes and "vcrypt" to refer to VeraCrypt volumes.
-     -- add ability to create VeraCrypt volumes( cryptsetup > 1.6.6 and tcplay > 2.1.0 required).
+     -- add ability to create VeraCrypt volumes(cryptsetup > 1.6.6 required).
 
- -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sun, 1 Mar 2014 16:38:48 +0000
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Mon, 1 Jun 2014 16:38:48 +0000
 
 zulucrypt (4.7.5-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]

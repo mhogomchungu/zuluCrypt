@@ -207,10 +207,10 @@ version 4.7.5
    it and then dropping it on zuluMount-gui main window.
 -- add ablity to create TrueCrypt volumes using a passphrase together with one or more keyfiles.Previous versions allowed
    creation of volumes using either a passphrase or a single keyfile.
--- add support for opening of VeraCrypt volumes(cryptsetup >= 1.7.0 required).
+-- add support for opening of VeraCrypt volumes(cryptsetup > 1.6.6 required).
 
 version 4.7.6
 -- add "hmac" plugin.This plugin produces a key as follows: key = hmac-sha256( passphrase,keyfile-contents ).
    this plugin can be used when unlocking a volume requires a passphrase and a keyfile.
 -- use "tcrypt" to refer to TrueCrypt volumes and "vcrypt" to refer to VeraCrypt volumes.
--- add ability to create VeraCrypt volumes( cryptsetup > 1.6.6 and tcplay >= 2.1.0 required).
+-- add ability to create VeraCrypt volumes(cryptsetup > 1.6.6 required).

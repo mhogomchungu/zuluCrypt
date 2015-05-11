@@ -36,9 +36,9 @@ class oneinstance : public QObject
 {
 	Q_OBJECT
 public:
-	explicit oneinstance( QObject * parent,const QString& socketPath,const char *,const QString& ) ;
+	explicit oneinstance( QObject *,const char *,const char *,const QString& ) ;
 	~oneinstance() ;
-	bool instanceExist( void ) ;
+	bool onlyInstance( void ) ;
 	void setDevice( QString ) ;
 signals:
 	void raise( void ) ;
@@ -54,7 +54,7 @@ private:
 	QLocalServer * m_localServer ;
 	QLocalSocket * m_localSocket ;
 	QString m_serverPath ;
-	bool m_instanceExist ;
+	bool m_onlyInstance ;
 	const char * m_methodName ;
 	QString m_device ;
 };

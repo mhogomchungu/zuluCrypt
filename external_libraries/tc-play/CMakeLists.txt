@@ -39,6 +39,8 @@ if (HAVE_GCRYPT_PBKDF)
 	set (CFLAGS_PBKDF  "")
 	set (PBKDF_BACKEND gcrypt)
 else()
+	message(FATAL_ERROR "Could not find development files of libgcrypt")
+
 	pkg_check_modules(OPENSSL openssl>=1.0.0a)
 	if (NOT OPENSSL_FOUND)
 		message(FATAL_ERROR "Could not find a gcrypt with gcry_kdf_derive() nor OpenSSL >= 1.0.0a")

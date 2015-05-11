@@ -337,7 +337,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 
 				for( const auto& it : l ){
 
-					dev_1 = QString( "/dev/md/" ) + it ;
+					dev_1 = "/dev/md/" + it ;
 					f.setPath( dev_1 ) ;
 
 					if( f.canonicalPath() == dev ){

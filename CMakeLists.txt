@@ -81,6 +81,22 @@ else( NOT CRYPTSETUP_FOUND )
 	endif( NOT cryptsetup_lib )
 endif( NOT CRYPTSETUP_FOUND )
 
+find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
+
+find_library( GCRYPT_LIBRARY gcrypt )
+
+if( NOT GCRYPT_INCLUDE_FILE )
+	MESSAGE( FATAL_ERROR "could not find gcrypt header file" )
+else()
+	MESSAGE( STATUS "found gcrypt header file: ${GCRYPT_INCLUDE_FILE}" )
+endif()
+
+if( NOT GCRYPT_LIBRARY )
+	MESSAGE( FATAL_ERROR "could not find gcrypt library(libgcrypt.so)" )
+else()
+	MESSAGE( STATUS "found gcrypt library: ${GCRYPT_LIBRARY}" )
+endif()
+
 if( LIB_SUFFIX )
 	set ( LIB_PATH "${CMAKE_INSTALL_PREFIX}/${LIB_SUFFIX}" )
 else( LIB_SUFFIX )
@@ -190,10 +206,12 @@ set_target_properties( crypt_buffer PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BIT
 TARGET_LINK_LIBRARIES( crypt_buffer -lgcrypt )
 
 ADD_SUBDIRECTORY( zuluCrypt-cli )
-ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 ADD_SUBDIRECTORY( zuluSafe )
 
 if( NOT NOGUI )
+
+	ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
+
 	if( WITH_PWQUALITY AND PWQUALITY_FOUND )
 		find_file ( header_pwquality pwquality.h PATHS ${PWQUALITY_INCLUDE_DIRS} )
 		find_library ( library_pwquality libpwquality.so )
@@ -237,6 +255,10 @@ if( NOT NOGUI )
 	ADD_SUBDIRECTORY( plugins )
 	ADD_SUBDIRECTORY( zuluMount-gui )
 
+else( NOT NOGUI )
+	if( QT5 )
+	#adding this one just to silence a warning
+	endif()
 endif( NOT NOGUI )
 
 file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${CMAKE_INSTALL_PREFIX}/share/zuluCrypt/translations/\"\n")

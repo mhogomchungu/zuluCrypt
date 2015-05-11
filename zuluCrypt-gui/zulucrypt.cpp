@@ -227,12 +227,13 @@ void zuluCrypt::start()
 	m_openPath     = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_startHidden  = l.contains( "-e" ) ;
 
-	QString sockpath( "zuluCrypt-gui.socket" ) ;
-	oneinstance * instance = new oneinstance( this,sockpath,"raiseWindow",e ) ;
-	connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
-	connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
+	auto instance = new oneinstance( this,"zuluCrypt-gui.socket","raiseWindow",e ) ;
 
-	if( !instance->instanceExist() ){
+	if( instance->onlyInstance() ){
+
+		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
+		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
+
 		this->setUpApp( e ) ;
 	}
 }
