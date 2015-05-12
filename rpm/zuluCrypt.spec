@@ -45,6 +45,7 @@ BuildRequires: libsecret-devel
 BuildRequires: libpwquality-devel
 BuildRequires: pkgconfig(QtCore)
 BuildRequires: pkgconfig(QtGui)
+BuildRequires: pkgconfig(QtNetwork)
 
 %if 0%{?fedora}
 BuildRequires: cryptsetup-luks-devel
@@ -117,6 +118,7 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 %{_bindir}/zuluSafe-cli
 
 %dir %{_libdir}/zuluCrypt
+%dir %{_datadir}/zuluCrypt
 %{_libdir}/zuluCrypt/keyring
 %{_libdir}/zuluCrypt/zuluCrypt-testKey
 %{_libdir}/zuluCrypt/keykeyfile

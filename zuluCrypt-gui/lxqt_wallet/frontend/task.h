@@ -80,7 +80,7 @@ namespace Task
 		{
 		}
 	private:
-		virtual void run( void )
+		virtual void run()
 		{
 		}
 	};
@@ -91,16 +91,16 @@ namespace Task
 	public:
 		future( std::function< void() > start,
 			std::function< void() > cancel,
-			std::function< void( T& ) > get )
+			std::function< void( T& ) > get ) :
+			m_start ( std::move( start ) ),
+			m_cancel( std::move( cancel ) ),
+			m_get   ( std::move( get ) )
 		{
-			m_start  = std::move( start ) ;
-			m_cancel = std::move( cancel ) ;
-			m_get    = std::move( get ) ;
 		}
 		void then( std::function< void( T ) > function )
 		{
 			m_function = std::move( function ) ;
-			m_start() ;
+			this->start() ;
 		}
 		T get()
 		{
@@ -116,7 +116,7 @@ namespace Task
 
 			m_function = [ & ]( T r ){ q = std::move( r ) ; p.exit() ; } ;
 
-			m_start() ;
+			this->start() ;
 
 			p.exec() ;
 
@@ -152,7 +152,7 @@ namespace Task
 				  [ this ]( T& r ){ r = m_function() ; this->deleteLater() ; } )
 		{
 		}
-		future<T>& Future( void )
+		future<T>& Future()
 		{
 			return m_future ;
 		}
@@ -161,7 +161,7 @@ namespace Task
 		{
 			m_future.run( std::move( m_result ) ) ;
 		}
-		void run( void )
+		void run()
 		{
 			m_result =  m_function() ;
 		}
@@ -176,16 +176,16 @@ namespace Task
 	public:
 		future( std::function< void() > start,
 			std::function< void() > cancel,
-			std::function< void() > get )
+			std::function< void() > get ) :
+			m_start ( std::move( start ) ),
+			m_cancel( std::move( cancel ) ),
+			m_get   ( std::move( get ) )
 		{
-			m_start  = std::move( start ) ;
-			m_cancel = std::move( cancel ) ;
-			m_get    = std::move( get ) ;
 		}
 		void then( std::function< void() > function )
 		{
 			m_function = std::move( function ) ;
-			m_start() ;
+			this->start() ;
 		}
 		void get()
 		{
@@ -197,7 +197,7 @@ namespace Task
 
 			m_function = [ & ](){ p.exit() ; } ;
 
-			m_start() ;
+			this->start() ;
 
 			p.exec() ;
 		}
@@ -231,7 +231,7 @@ namespace Task
 				  [ this ](){ m_function() ; this->deleteLater() ; } )
 		{
 		}
-		future< void >& Future( void )
+		future< void >& Future()
 		{
 			return m_future ;
 		}
@@ -240,7 +240,7 @@ namespace Task
 		{
 			m_future.run() ;
 		}
-		void run( void )
+		void run()
 		{
 			m_function() ;
 		}
