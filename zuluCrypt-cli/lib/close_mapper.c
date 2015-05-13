@@ -17,8 +17,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libcryptsetup.h>
 #include <unistd.h>
+#include <stddef.h>
+#include <libcryptsetup.h>
 
 int zuluCryptCloseMapper( const char * mapper )
 {
