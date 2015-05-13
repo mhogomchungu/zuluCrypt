@@ -85,7 +85,7 @@ namespace utility
 	bool mapperPathExists( const QString& path ) ;
 	QString mountPath( const QString& ) ;
 	QString homeMountPath( const QString& ) ;
-	QString mountPathPostFix( const QString&,bool encfs = false ) ;
+	QString mountPathPostFix( const QString& ) ;
 	QString userName( void ) ;
 	QString shareMountPointToolTip( void ) ;
 	QString shareMountPointToolTip( const QString& ) ;

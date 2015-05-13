@@ -108,7 +108,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->pbOpenMountPoint->setVisible( false ) ;
 
-	m_point = utility::mountPathPostFix( m_path.split( "/" ).last(),m_volumeIsEncFs ) ;
+	m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
 
 	m_ui->lineEditMountPoint->setText( m_point ) ;
 
@@ -420,7 +420,7 @@ void keyDialog::pbOpen()
 
 void keyDialog::encfsMount()
 {
-	QString m = utility::homeMountPath( m_point ) ;
+	QString m = utility::mountPath( m_point ) ;
 	QString key ;
 
 	key = m_ui->lineEditKey->text() ;

@@ -41,7 +41,7 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 	int c ;
 	int k = 0 ;
 
-	while( ( c = getopt( argc,argv,"cEMLnASNshlPmuDd:z:e:Y:p:f:G:o:F:t:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"cEMLnASNshlPmuDd:z:e:Y:p:f:G:o:F:t:B:b:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
@@ -57,6 +57,10 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 			case 'm' : args->action  = "-m"   ; break ;
 			case 'u' : args->action  = "-u"   ; break ;
 			case 'c' : args->action  = "-c"   ; break ;
+			case 'B' : args->action  = "-B"   ;
+			           args->m_point = optarg ; break ;
+			case 'b' : args->action  = "-b"   ;
+				   args->m_point = optarg ; break ;
 			case 't' : args->type    = optarg ; break ;
 			case 'o' : args->offset  = optarg ; break ;
 			case 'd' : args->device  = optarg ; break ;
@@ -449,6 +453,57 @@ static void _forceTerminateOnSeriousError( int sig )
 	exit( 255 ) ;
 }
 
+static int _create_mount_point( const char * label,const char * m_opts,uid_t uid )
+{
+	/*
+	 * zuluCryptCreateMountPoint() is defined in ../zuluCrypt-cli/bin/create_mount_point.c
+	 */
+	string_t st = zuluCryptCreateMountPoint( NULL,label,m_opts,uid ) ;
+
+	int r ;
+
+	if( st != StringVoid ){
+
+		r = 0 ;
+
+		StringDelete( &st ) ;
+	}else{
+		r = 1 ;
+	}
+
+	return r ;
+}
+
+static int _delete_mount_point( const char * m_path,uid_t uid )
+{
+	/*
+	 * zuluCryptGetUserName() is defined in ../zuluCrypt-cli/lib/user_home_path.c
+	 */
+	string_t st = zuluCryptGetUserName( uid ) ;
+
+	const char * e = StringPrepend( st,"/run/media/private/" ) ;
+
+	int r ;
+
+	if( StringPrefixEqual( m_path,e ) ){
+
+		zuluCryptSecurityGainElevatedPrivileges() ;
+
+		r = rmdir( m_path ) ;
+
+		zuluCryptSecurityDropElevatedPrivileges() ;
+
+	}else{
+		zuluCryptSecurityDropElevatedPrivileges() ;
+
+		r = rmdir( m_path ) ;
+	}
+
+	StringDelete( &st ) ;
+
+	return r ;
+}
+
 int main( int argc,char * argv[] )
 {
 	char * action ;
@@ -594,6 +649,12 @@ int main( int argc,char * argv[] )
 	}
 	if( StringsAreEqual( args.action,"-N" ) ){
 		return _zuluExit_2( _zuluMountNonSystemDeviceList( uid ),stl,stx,NULL ) ;
+	}
+	if( StringsAreEqual( args.action,"-B" ) ){
+		return _zuluExit_2( _create_mount_point( args.m_point,args.m_opts,args.uid ),stl,stx,NULL ) ;
+	}
+	if( StringsAreEqual( args.action,"-b" ) ){
+		return _zuluExit_2( _delete_mount_point( args.m_point,args.uid ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-h" ) ){
 		return _zuluExit_2( _mount_help(),stl,stx,NULL ) ;

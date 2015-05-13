@@ -267,53 +267,51 @@ int zuluCryptModifyTcryptHeader( const info_t * e )
 
 static const char * _set_cipher_chain( char * const * q )
 {
-	const char * r = NULL ;
 	const char * e = *q ;
 
 	if( StringsAreEqual( e,"aes" ) ){
 
-		r = "AES-256-XTS" ;
+		return "AES-256-XTS" ;
 
 	}else if( StringsAreEqual( e,"twofish" ) ){
 
-		r = "TWOFISH-256-XTS" ;
+		return "TWOFISH-256-XTS" ;
 
 	}else if( StringsAreEqual( e,"serpent" ) ){
 
-		r = "SERPENT-256-XTS" ;
+		return "SERPENT-256-XTS" ;
 
 	}else if( StringsAreEqual( e,"twofish:aes" ) ){
 
-		r = "TWOFISH-256-XTS,AES-256-XTS" ;
+		return "TWOFISH-256-XTS,AES-256-XTS" ;
 
 	}else if( StringsAreEqual( e,"aes:serpent" ) ){
 
-		r = "AES-256-XTS,SERPENT-256-XTS" ;
+		return "AES-256-XTS,SERPENT-256-XTS" ;
 
 	}else if( StringsAreEqual( e,"serpent:twofish" ) ){
 
-		r = "SERPENT-256-XTS,TWOFISH-256-XTS" ;
+		return "SERPENT-256-XTS,TWOFISH-256-XTS" ;
 
 	}else if( StringsAreEqual( e,"aes:twofish:serpent" ) ){
 
-		r = "AES-256-XTS,TWOFISH-256-XTS,SERPENT-256-XTS" ;
+		return "AES-256-XTS,TWOFISH-256-XTS,SERPENT-256-XTS" ;
 
 	}else if( StringsAreEqual( e,"serpent:twofish:aes" ) ){
 
-		r =  "SERPENT-256-XTS,TWOFISH-256-XTS,AES-256-XTS" ;
+		return "SERPENT-256-XTS,TWOFISH-256-XTS,AES-256-XTS" ;
+	}else{
+		return NULL ;
 	}
-
-	return r ;
 }
 
 static const char * _set_hash( char * const * q )
 {
-	const char * r = NULL ;
 	const char * e = *q ;
 
 	if( StringsAreEqual( e,"ripemd160" ) ){
 
-		r = "RIPEMD160" ;
+		return "RIPEMD160" ;
 
 	}else if( StringsAreEqual( e,"whirlpool" ) ){
 
@@ -322,15 +320,17 @@ static const char * _set_hash( char * const * q )
 		 */
 		if( zuluCryptWhirlpoolIsSupported() ){
 
-			r = "whirlpool" ;
+			return "whirlpool" ;
+		}else{
+			return NULL ;
 		}
 
 	}else if( StringsAreEqual( e,"sha512" ) ){
 
-		r = "SHA512" ;
+		return "SHA512" ;
+	}else{
+		return NULL ;
 	}
-
-	return r ;
 }
 
 static int _zuluExit( int r,char * const * options,stringList_t stl )
@@ -375,7 +375,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 		return !TC_OK ;
 	}
 
-	if( StringIsEmpty_1( e->encryption_options ) ){
+	if( StringHasNothing( e->encryption_options ) ){
 
 		stl = StringList( "/dev/urandom" ) ;
 	}else{

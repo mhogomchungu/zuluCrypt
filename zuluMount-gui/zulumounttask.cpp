@@ -460,6 +460,22 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 	}
 }
 
+static bool _delete_encfs_mount_point( const QString& m )
+{
+	return utility::Task( QString( "%1 -b %2" ).arg( zuluMountPath,m ) ).success() ;
+}
+
+static bool _delete_encfs_m_point( const QString& m )
+{
+	_delete_encfs_mount_point( m ) ;
+	return false ;
+}
+
+static bool _create_encfs_mount_point( const QString& m )
+{
+	return utility::Task( QString( "%1 -B %2" ).arg( zuluMountPath,m ) ).success() ;
+}
+
 Task::future<bool>& zuluMountTask::encfsUnmount( const QString& m )
 {
 	return Task::run< bool >( [ m ](){
@@ -468,10 +484,7 @@ Task::future<bool>& zuluMountTask::encfsUnmount( const QString& m )
 
 			if( utility::Task( "fusermount -u " + m,10000 ).success() ){
 
-				QDir d ;
-				d.rmdir( m ) ;
-
-				return true ;
+				return _delete_encfs_mount_point( m ) ;
 			}else{
 				return false ;
 			}
@@ -517,31 +530,24 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 				e.closeWriteChannel() ;
 
 				if( e.waitForFinished( 10000 ) ){
+
 					return e.exitCode() == 0 ;
 				}else{
 					return false ;
 				}
 			} ;
 
-			if( utility::pathExists( m ) ){
 
-				return _mount() ;
-			}else{
-				QDir d ;
+			if( _create_encfs_mount_point( m ) ){
 
-				if( d.mkpath( m ) ){
+				if( _mount() ) {
 
-					if( _mount() ){
-
-						return true ;
-					}else{
-						d.rmdir( m ) ;
-
-						return false ;
-					}
+					return true ;
 				}else{
-					return false ;
+					return _delete_encfs_m_point( m ) ;
 				}
+			}else{
+				return _delete_encfs_m_point( m ) ;
 			}
 		} ;
 

@@ -110,7 +110,7 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 	if( crypt_init( &cd,dev ) != 0 ){
 		return 1 ;
 	}
-	if( StringIsEmpty_1( opts ) ){
+	if( StringHasNothing( opts ) ){
 
 		stl = StringList( "/dev/urandom" ) ;
 	}else{

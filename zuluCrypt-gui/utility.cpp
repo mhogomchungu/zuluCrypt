@@ -693,7 +693,7 @@ QString utility::homeMountPath( const QString& path )
 	return QString( "%1/%2" ).arg( getpwuid( getuid() )->pw_dir ).arg( path ) ;
 }
 
-QString utility::mountPathPostFix( const QString& path,bool encfs )
+QString utility::mountPathPostFix( const QString& path )
 {
 	if( path.isEmpty() ){
 
@@ -701,13 +701,7 @@ QString utility::mountPathPostFix( const QString& path,bool encfs )
 	}else{
 		auto _path_not_found = []( const QString& e ){ return !utility::pathExists( e ) ; } ;
 
-		QString e ;
-
-		if( encfs ){
-			e = utility::homeMountPath( path ) ;
-		}else{
-			e = utility::mountPath( path ) ;
-		}
+		QString e = utility::mountPath( path ) ;
 
 		if( _path_not_found( e ) ){
 

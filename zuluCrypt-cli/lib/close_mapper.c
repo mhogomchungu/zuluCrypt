@@ -17,32 +17,35 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "includes.h"
-
-/*
- * this header is created at config time
- */
-#include "truecrypt_support.h"
 #include <libcryptsetup.h>
 #include <unistd.h>
 
 int zuluCryptCloseMapper( const char * mapper )
 {
 	int j ;
-	int st = 1;
-	struct crypt_device * cd;
+
+	int r = 1 ;
+
+	struct crypt_device * cd ;
+
 	if( crypt_init_by_name( &cd,mapper ) == 0 ){
+
 		for( j = 0 ; j < 3 ; j++ ) {
+
 			/*
-			* try multiple types to close the mapper just in case
-			*/
-			st = crypt_deactivate( cd,mapper ) ;
-			if( st == 0 ){
+			 * try multiple times to close the mapper just in case
+			 */
+
+			r = crypt_deactivate( cd,mapper ) ;
+
+			if( r == 0 ){
+
 				break ;
 			}else{
 				sleep( 1 ) ;
 			}
 		}
+
 		crypt_free( cd ) ;
 	}else{
 		/*
@@ -51,5 +54,5 @@ int zuluCryptCloseMapper( const char * mapper )
 		;
 	}
 
-	return st ;
+	return r ;
 }

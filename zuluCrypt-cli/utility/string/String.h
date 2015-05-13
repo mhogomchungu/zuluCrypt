@@ -617,10 +617,12 @@ int StringEqualString( string_t x,string_t y ) ;
  */
 int StringEqual( string_t x,const char * y ) ;
 
-static __inline__ int StringIsEmpty( string_t x )
-{
-	return StringEqual( x,"" ) ;
-}
+/*
+ * return 1 if x holds an empty string
+ * return 0 if x holds a non empty string
+ * return 0 if x is StringVoid
+ */
+int StringIsEmpty( string_t x ) ;
 
 /*
  * Compare a string handled by handle x to a string pointer to by y.
@@ -835,9 +837,9 @@ static __inline__ int StringsAreEqual( const char * x,const char * y )
 	}
 }
 
-static __inline__ int StringIsEmpty_1( const char * x )
+static __inline__ int StringHasNothing( const char * x )
 {
-	return StringsAreEqual( x,"" ) ;
+	return x != NULL && *x == '\0' ;
 }
 
 static __inline__ int StringsAreNotEqual( const char * x,const char * y )

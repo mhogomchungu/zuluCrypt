@@ -1293,6 +1293,15 @@ const char * StringRemoveString( string_t st,const char * s )
 	return StringRemoveStringPos( st,s,0 ) ;
 }
 
+int StringIsEmpty( string_t x )
+{
+	if( x == StringVoid ){
+		return 0 ;
+	}else{
+		return x->string[ 0 ] == '\0' ;
+	}
+}
+
 static char * StringCRC__( string_t st, char x,char y,size_t p )
 {
 	char * c ;
@@ -1310,7 +1319,6 @@ static char * StringCRC__( string_t st, char x,char y,size_t p )
 	}
 	return st->string ;
 }
-
 
 const char * StringReplaceCharPos( string_t st,char x,char y,size_t p )
 {
