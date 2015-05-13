@@ -537,7 +537,6 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 				}
 			} ;
 
-
 			if( _create_encfs_mount_point( m ) ){
 
 				if( _mount() ) {

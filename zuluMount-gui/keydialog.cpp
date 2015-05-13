@@ -62,29 +62,23 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_working = false ;
 	m_volumeIsEncFs = e.fileSystem() == "encfs" ;
 
-	if( m_volumeIsEncFs ){
-
-		m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
-
-		int s = m_ui->cbKeyType->count() - 1 ;
-
-		for( int i = s ; i > 0 ; i-- ){
-			m_ui->cbKeyType->removeItem( i ) ;
-		}
-	}
-
 	QString msg ;
+
 	if( e.fileSystem() == "crypto_LUKS" ){
+
 		msg = tr( "Mount A LUKS volume in \"%1\"").arg( m_path ) ;
 	}else{
 		msg = tr( "Mount An Encrypted Volume In \"%1\"").arg( m_path ) ;
 	}
+
 	this->setWindowTitle( msg ) ;
 
 	m_ui->lineEditMountPoint->setText( m_path ) ;
 	m_ui->pbOpenMountPoint->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	m_menu = new QMenu( this ) ;
+
+	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
 
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
@@ -123,20 +117,23 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_menu_1->addAction( tr( "Set File System Options" ) ) ;
 	m_menu_1->addAction( tr( "Set Volume Offset" ) ) ;
 
-	QString r ;
-
-#if VERACRYPT_SUPPORT
-	m_menu_1->addAction( tr( "Set Volume As VeraCrypt Volume" ) ) ;
-
-	r = tr( "TrueCrypt/VeraCrypt Keys" ) ;
-#else
-	r = tr( "TrueCrypt keys" ) ;
-#endif
+	ac = m_menu_1->addAction( tr( "Set Volume As VeraCrypt Volume" ) ) ;
+	ac->setEnabled( VERACRYPT_SUPPORT ) ;
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Keyfile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Plugin" ) ) ;
-	m_ui->cbKeyType->addItem( r ) ;
+
+	if( m_volumeIsEncFs ){
+
+		m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
+	}else{
+		#if VERACRYPT_SUPPORT
+			m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
+		#else
+			m_ui->cbKeyType->addItem( tr( "TrueCrypt keys" ) ) ;
+		#endif
+	}
 
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
 
@@ -263,7 +260,11 @@ void keyDialog::enableAll()
 	}
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
-	m_ui->checkBoxShareMountPoint->setEnabled( true ) ;
+
+	if( !m_volumeIsEncFs ){
+
+		m_ui->checkBoxShareMountPoint->setEnabled( true ) ;
+	}
 }
 
 void keyDialog::disableAll()
@@ -307,19 +308,21 @@ void keyDialog::Plugin()
 {
 	QStringList list ;
 
-	// ZULUCRYPTpluginPath is set at config time and it equals $prefix/lib(64)/zuluCrypt
+	if( !m_volumeIsEncFs ){
 
-	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
+		QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
 
-	if( dir.exists() ){
-		list = dir.entryList() ;
+		if( dir.exists() ){
+
+			list = dir.entryList() ;
+
+			list.removeOne( "zuluCrypt-testKey" ) ;
+			list.removeOne( "." ) ;
+			list.removeOne( ".." ) ;
+			list.removeOne( "keyring" ) ;
+			list.removeOne( "kwallet" ) ;
+		}
 	}
-
-	list.removeOne( "zuluCrypt-testKey" ) ;
-	list.removeOne( "." ) ;
-	list.removeOne( ".." ) ;
-	list.removeOne( "keyring" ) ;
-	list.removeOne( "kwallet" ) ;
 
 	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
 		list.prepend( tr( GNOME_WALLET ) ) ;
@@ -334,17 +337,13 @@ void keyDialog::Plugin()
 
 	int j = list.size()  ;
 
-	if( j == 0 ){
-		return ;
-	}
 	for( int i = 0 ; i < j ; i++ ){
 		m_menu->addAction( list.at( i ) ) ;
 	}
+
 	m_menu->addSeparator() ;
 
 	m_menu->addAction( tr( "Cancel" ) ) ;
-
-	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
 
 	m_menu->exec( QCursor::pos() ) ;
 }
@@ -352,6 +351,7 @@ void keyDialog::Plugin()
 void keyDialog::pbPluginEntryClicked( QAction * e )
 {
 	if( e->text() != tr( "Cancel" ) ){
+
 		m_ui->lineEditKey->setText( e->text() ) ;
 	}
 }
@@ -421,13 +421,10 @@ void keyDialog::pbOpen()
 void keyDialog::encfsMount()
 {
 	QString m = utility::mountPath( m_point ) ;
-	QString key ;
-
-	key = m_ui->lineEditKey->text() ;
 
 	bool ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-	if( zuluMountTask::encfsMount( m_path,m,key,ro ).await() ){
+	if( zuluMountTask::encfsMount( m_path,m,m_key,ro ).await() ){
 
 		emit openMountPoint( m ) ;
 
@@ -445,12 +442,31 @@ void keyDialog::encfsMount()
 
 void keyDialog::openVolume()
 {
+	int keyType = m_ui->cbKeyType->currentIndex() ;
+
 	if( m_volumeIsEncFs ){
+
+		if( keyType == keyDialog::Key ){
+
+			m_key = m_ui->lineEditKey->text() ;
+
+		}else if( keyType == keyDialog::keyfile ){
+
+			QFile f( m_ui->lineEditKey->text() ) ;
+
+			f.open( QIODevice::ReadOnly ) ;
+
+			m_key = f.readAll() ;
+
+		}else if( keyType == keyDialog::plugin ){
+
+			/*
+			 * m_key is already set
+			 */
+		}
 
 		return this->encfsMount() ;
 	}
-
-	int keyType = m_ui->cbKeyType->currentIndex() ;
 
 	if( m_ui->lineEditKey->text().isEmpty() ){
 		if( keyType == keyDialog::Key ){
