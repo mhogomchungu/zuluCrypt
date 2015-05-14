@@ -114,11 +114,15 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_menu_1 = new QMenu( this ) ;
 
-	m_menu_1->addAction( tr( "Set File System Options" ) ) ;
-	m_menu_1->addAction( tr( "Set Volume Offset" ) ) ;
+	auto _add_action = [ & ]( const QString& e ){
 
-	ac = m_menu_1->addAction( tr( "Set Volume As VeraCrypt Volume" ) ) ;
-	ac->setEnabled( VERACRYPT_SUPPORT ) ;
+		ac = m_menu_1->addAction( e ) ;
+		ac ->setEnabled( !m_volumeIsEncFs ) ;
+	} ;
+
+	_add_action( tr( "Set File System Options" ) ) ;
+	_add_action( tr( "Set Volume Offset" ) ) ;
+	_add_action( tr( "Set Volume As VeraCrypt Volume" ) ) ;
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Keyfile" ) ) ;
