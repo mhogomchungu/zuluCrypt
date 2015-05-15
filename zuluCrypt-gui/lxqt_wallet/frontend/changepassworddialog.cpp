@@ -31,6 +31,8 @@
 #include "changepassworddialog.h"
 #include "ui_changepassworddialog.h"
 
+namespace Task = LxQt::Wallet::Task ;
+
 LxQt::Wallet::changePassWordDialog::changePassWordDialog( QWidget * parent,const QString& walletName,const QString& applicationName ):
 	QDialog( parent ),m_ui( new Ui::changePassWordDialog ),m_wallet( 0 ),m_walletName( walletName ),
 	m_applicationName( applicationName )
@@ -145,22 +147,26 @@ void LxQt::Wallet::changePassWordDialog::change()
 
 	if( m_ui->lineEditNewPassWord->text() == m_ui->lineEditNewPassWord_2->text() ){
 
-		QString password = m_ui->lineEditCurrentPassWord->text() ;
+		Task::run<bool>( [ this ](){
 
-		auto _a = [ &,password ](){
+			QString password = m_ui->lineEditCurrentPassWord->text() ;
 
-			lxqt_wallet_error r = lxqt_wallet_open( &m_wallet,password.toLatin1().constData(),
-								password.size(),m_walletName.toLatin1().constData(),
-								m_applicationName.toLatin1().constData() ) ;
+			auto r = lxqt_wallet_open( &m_wallet,password.toLatin1().constData(),
+						   password.size(),m_walletName.toLatin1().constData(),
+						   m_applicationName.toLatin1().constData() ) ;
+
 			return r == lxqt_wallet_no_error ;
-		} ;
 
-		auto _b = [&]( bool opened ){
+		} ).then( [ this ]( bool opened ){
 
 			if( opened ){
-				QString new_password = m_ui->lineEditNewPassWord->text() ;
-				lxqt_wallet_error r = lxqt_wallet_change_wallet_password( m_wallet,new_password.toLatin1().constData(),new_password.size() ) ;
+
+				QByteArray e = m_ui->lineEditNewPassWord->text().toLatin1() ;
+
+				auto r = lxqt_wallet_change_wallet_password( m_wallet,e.constData(),e.size() ) ;
+
 				if( r == lxqt_wallet_no_error ){
+
 					m_walletPassWordChanged = true ;
 					this->HideUI() ;
 				}else{
@@ -181,9 +187,8 @@ void LxQt::Wallet::changePassWordDialog::change()
 				m_ui->pushButtonOK->setVisible( true ) ;
 				m_ui->pushButtonOK->setFocus() ;
 			}
-		} ;
+		} ) ;
 
-		LxQt::Wallet::Task::run< bool >( _a ).then( _b ) ;
 	}else{
 		m_ui->label->setText( tr( "New passwords do not match" ) ) ;
 		m_ui->pushButtonOK->setVisible( true ) ;

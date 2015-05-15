@@ -56,7 +56,7 @@ only root user or members of group zulucrypt-system can do that\n" ) ) ;						br
 		case 20: printf( gettext( "ERROR: Insufficient memory to hold passphrase\n" ) ) ;			break  ;
 		case 21: printf( gettext( "ERROR: Passphrases do not match\n" ) ) ;					break  ;
 		case 22: printf( gettext( "ERROR: Failed to create a volume\n" ) ) ;					break  ;
-		case 23: printf( gettext( "ERROR: Wrong argument detected for tcrypt volume" ) ) ;			break  ;
+		case 23: printf( gettext( "ERROR: Wrong argument detected for tcrypt volume\n" ) ) ;			break  ;
 		default: printf( gettext( "ERROR: Unrecognized error with status number %d encountered\n" ),st ) ;
 	}
 	return st ;

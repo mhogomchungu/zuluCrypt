@@ -139,7 +139,7 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 			keySize = ( size_t ) StringConvertToInt( *( options + 3 ) ) / 8 ;
 			hash    = *( options + 4 ) ;
 
-			if( options_count == 6 ){
+			if( options_count > 5 ){
 				iterations = StringConvertToInt( *( options + 5 ) )  ;
 			}
 		}

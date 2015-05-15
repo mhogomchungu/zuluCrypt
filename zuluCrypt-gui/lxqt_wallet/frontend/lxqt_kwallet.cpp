@@ -75,6 +75,7 @@ bool LxQt::Wallet::kwallet::await_open( const QString& walletName,const QString&
 	if( m_kwallet != nullptr ){
 
 		if( m_applicationName.isEmpty() ){
+
 			m_kwallet->createFolder( m_kwallet->PasswordFolder() ) ;
 			m_kwallet->setFolder( m_kwallet->PasswordFolder() ) ;
 		}else{
@@ -109,7 +110,9 @@ void LxQt::Wallet::kwallet::open( const QString& walletName,const QString& appli
 void LxQt::Wallet::kwallet::walletOpened( bool opened )
 {
 	if( opened ){
+
 		if( m_applicationName.isEmpty() ){
+
 			m_kwallet->createFolder( m_kwallet->PasswordFolder() ) ;
 			m_kwallet->setFolder( m_kwallet->PasswordFolder() ) ;
 		}else{
@@ -137,6 +140,7 @@ QVector<LxQt::Wallet::walletKeyValues> LxQt::Wallet::kwallet::readAllKeyValues( 
 	int j = l.size() ;
 
 	for( int i = 0 ; i < j ; i++ ){
+
 		m_kwallet->readPassword( l.at( i ),value ) ;
 		LxQt::Wallet::walletKeyValues q( l.at( i ),value.toLatin1() ) ;
 		p.append( q ) ;

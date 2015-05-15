@@ -46,6 +46,8 @@ int lxqt_secret_service_wallet_is_open( const void * ) ;
 void * lxqt_secret_service_create_schema( const char * schemaName,const char * type ) ;
 }
 
+namespace Task = LxQt::Wallet::Task ;
+
 LxQt::Wallet::secretService::secretService()
 {
 	m_schema   = nullptr ;
@@ -66,9 +68,11 @@ void LxQt::Wallet::secretService::setImage( const QString& image )
 bool LxQt::Wallet::secretService::addKey( const QString& key,const QByteArray& value )
 {
 	if( key.isEmpty() ){
+
 		return false ;
 	}else{
 		if( m_schema && m_schema_1 ){
+
 			return lxqt_secret_service_password_store_sync( key.toLatin1().constBegin(),value.constData(),m_schema,m_schema_1 ) ;
 		}else{
 			return false ;
@@ -104,7 +108,7 @@ void LxQt::Wallet::secretService::open( const QString& walletName,const QString&
 		m_walletName        = m_byteArrayWalletName.constData() ;
 		m_applicationName   = m_byteArrayApplicationName.constData() ;
 
-		m_byteArraySchemaName = QString( "lxqt.Wallet.%1.%2" ).arg( walletName ).arg( walletName ).toLatin1() ;
+		m_byteArraySchemaName = QString( "lxqt.Wallet.%1.%2" ).arg( walletName,walletName ).toLatin1() ;
 	}else{
 		m_byteArrayWalletName      = walletName.toLatin1() ;
 		m_byteArrayApplicationName = applicationName.toLatin1() ;
@@ -112,23 +116,20 @@ void LxQt::Wallet::secretService::open( const QString& walletName,const QString&
 		m_walletName        = m_byteArrayWalletName.constData() ;
 		m_applicationName   = m_byteArrayApplicationName.constData() ;
 
-		m_byteArraySchemaName = QString( "lxqt.Wallet.%1.%2" ).arg( walletName ).arg( applicationName ).toLatin1() ;
+		m_byteArraySchemaName = QString( "lxqt.Wallet.%1.%2" ).arg( walletName,applicationName ).toLatin1() ;
 	}
 
 	m_schema   = lxqt_secret_service_create_schema( m_byteArraySchemaName.constData(),"string" ) ;
 	m_schema_1 = lxqt_secret_service_create_schema( m_byteArraySchemaName.constData(),"integer" ) ;
 
-	auto _a = [&](){
+	Task::run<bool>( [ this ](){
 
 		return lxqt_secret_service_wallet_is_open( m_schema ) ;
-	} ;
 
-	auto _b = [&]( bool opened ){
+	} ).then( [ this ]( bool opened ){
 
 		this->walletOpened( opened ) ;
-	} ;
-
-	LxQt::Wallet::Task::run< bool >( _a ).then( _b ) ;
+	} ) ;
 }
 
 void LxQt::Wallet::secretService::walletOpened( bool opened )
@@ -141,12 +142,17 @@ void LxQt::Wallet::secretService::walletOpened( bool opened )
 QByteArray LxQt::Wallet::secretService::readValue( const QString& key )
 {
 	if( m_schema ){
+
 		QByteArray r ;
+
 		char * e = lxqt_secret_service_get_value( key.toLatin1().constData(),m_schema ) ;
+		
 		if( e ){
+
 			r = QByteArray( e ) ;
 			free( e ) ;
 		}
+
 		return r ;
 	}else{
 		return QByteArray() ;
@@ -156,27 +162,33 @@ QByteArray LxQt::Wallet::secretService::readValue( const QString& key )
 QVector<LxQt::Wallet::walletKeyValues> LxQt::Wallet::secretService::readAllKeyValues( void )
 {
 	QVector<LxQt::Wallet::walletKeyValues> p ;
-	QStringList l = this->readAllKeys() ;
-	for( const auto& it : l ){
-		LxQt::Wallet::walletKeyValues q( it,this->readValue( it ) ) ;
-		p.append( q ) ;
+
+	for( const auto& it : this->readAllKeys() ){
+
+		p.append( LxQt::Wallet::walletKeyValues( it,this->readValue( it ) ) ) ;
 	}
+
 	return p ;
 }
 
 QStringList LxQt::Wallet::secretService::readAllKeys( void )
 {
 	if( m_schema && m_schema_1 ){
+
 		int count ;
 		QStringList l ;
 		char ** c = lxqt_secret_get_all_keys( m_schema,m_schema_1,&count ) ;
 		char * e ;
+
 		if( c ){
+
 			for( int i = 0 ; i < count ; i++ ){
+
 				e = *( c + i ) ;
 				l.append( e ) ;
 				free( e ) ;
 			}
+
 			free( c ) ;
 		}
 		return l ;
@@ -188,7 +200,9 @@ QStringList LxQt::Wallet::secretService::readAllKeys( void )
 void LxQt::Wallet::secretService::deleteKey( const QString& key )
 {
 	if( m_schema && m_schema_1 ){
+
 		if( !key.isEmpty() ){
+
 			lxqt_secret_service_clear_sync( key.toLatin1().constData(),m_schema,m_schema_1 ) ;
 		}
 	}
@@ -197,6 +211,7 @@ void LxQt::Wallet::secretService::deleteKey( const QString& key )
 int LxQt::Wallet::secretService::walletSize( void )
 {
 	if( m_schema ){
+
 		return lxqt_secret_service_wallet_size( m_schema ) ;
 	}else{
 		return -1 ;

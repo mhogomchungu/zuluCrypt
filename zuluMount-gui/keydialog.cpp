@@ -27,6 +27,7 @@
 #include <QDir>
 #include <QTableWidget>
 #include <QDebug>
+#include <QFile>
 
 #include "bin_path.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
@@ -312,6 +313,15 @@ void keyDialog::Plugin()
 {
 	QStringList list ;
 
+	list.append( tr( INTERNAL_WALLET ) ) ;
+
+	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
+		list.append( tr( GNOME_WALLET ) ) ;
+	}
+	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
+		list.append( tr( KWALLET ) ) ;
+	}
+
 	if( !m_volumeIsEncFs ){
 
 		QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
@@ -327,15 +337,6 @@ void keyDialog::Plugin()
 			list.removeOne( "kwallet" ) ;
 		}
 	}
-
-	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
-		list.prepend( tr( GNOME_WALLET ) ) ;
-	}
-	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
-		list.prepend( tr( KWALLET ) ) ;
-	}
-
-	list.prepend( tr( INTERNAL_WALLET ) ) ;
 
 	m_menu->clear() ;
 
@@ -435,7 +436,7 @@ void keyDialog::encfsMount()
 		this->HideUI() ;
 	}else{
 		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nwrong password or not an encfs volume" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nWrong password or not an encfs volume" ) ) ;
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
 			m_ui->lineEditKey->clear() ;
 		}

@@ -352,7 +352,7 @@ and a secondary publicly accessible &quot;mirror&quot; mount point will be creat
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="924"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="918"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
