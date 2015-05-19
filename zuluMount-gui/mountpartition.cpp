@@ -247,7 +247,7 @@ void mountPartition::pbOptions()
 void mountPartition::pbOpenMountPath()
 {
 	QString p = tr( "Select Path To Mount Point Folder" ) ;
-	QString Z = QFileDialog::getExistingDirectory( this,p,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
+	QString Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
 		Z = Z + "/" + m_ui->lineEdit->text().split( "/" ).last() ;

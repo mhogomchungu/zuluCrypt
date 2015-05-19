@@ -75,7 +75,7 @@ void createkeyfile::keyTextChange( QString txt )
 	QString p = m_ui->lineEditPath->text() ;
 
 	if( p.isEmpty() ){
-		QString x = QDir::homePath() + "/" + txt.split( "/" ).last() ;
+		QString x = utility::homePath() + "/" + txt.split( "/" ).last() ;
 		m_ui->lineEditPath->setText( x ) ;
 	}else{
 		int i = p.lastIndexOf( "/" ) ;
@@ -101,7 +101,7 @@ void createkeyfile::closeEvent( QCloseEvent * e )
 void createkeyfile::ShowUI()
 {
 	m_ui->lineEditFileName->clear() ;
-	m_ui->lineEditPath->setText( QDir::homePath() + "/" ) ;
+	m_ui->lineEditPath->setText( utility::homePath() + "/" ) ;
 	m_ui->comboBoxRNG->setCurrentIndex( 0 ) ;
 	this->show() ;
 }
@@ -217,7 +217,7 @@ void createkeyfile::pbCreate()
 void createkeyfile::pbOpenFolder()
 {
 	QString p = tr( "Select A Folder To Create A Key File In" ) ;
-	QString q = QDir::homePath() ;
+	QString q = utility::homePath() ;
 	QString Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){

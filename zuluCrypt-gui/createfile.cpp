@@ -73,7 +73,7 @@ void createfile::fileTextChange( QString txt )
 	QString p = m_ui->lineEditFilePath->text() ;
 
 	if( p.isEmpty() ){
-		QString x = QDir::homePath() + "/" + txt.split( "/" ).last() ;
+		QString x = utility::homePath() + "/" + txt.split( "/" ).last() ;
 		m_ui->lineEditFilePath->setText( x ) ;
 		return ;
 	}
@@ -125,7 +125,7 @@ void createfile::showUI()
 	this->enableAll() ;
 	m_ui->comboBox->setCurrentIndex( 1 ) ;
 	m_ui->lineEditFileName->clear() ;
-	m_ui->lineEditFilePath->setText( QDir::homePath() + "/" ) ;
+	m_ui->lineEditFilePath->setText( utility::homePath() + "/" ) ;
 	m_ui->lineEditFileSize->clear() ;
 	m_ui->progressBar->setValue( 0 ) ;
 	m_ui->lineEditFileName->setFocus() ;
@@ -250,7 +250,7 @@ void createfile::setProgress( int p )
 void createfile::pbOpenFolder()
 {
 	QString p = tr( "Select Path to where the file will be created" ) ;
-	QString q = QDir::homePath() ;
+	QString q = utility::homePath() ;
 	QString Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){

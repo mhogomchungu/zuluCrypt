@@ -199,7 +199,7 @@ void managevolumeheader::backUpHeaderNameChange( QString name )
 			QString path = m_ui->lineEditBackUpName->text() ;
 
 			if( path.isEmpty() ){
-				path = QDir::homePath() + "/" ;
+				path = utility::homePath() + "/" ;
 			}
 			QStringList q = path.split( "/" ) ;
 			path.clear() ;
@@ -224,12 +224,12 @@ void managevolumeheader::pbOpenLuksHeaderBackUp()
 	QString Z ;
 	QString Y ;
 	if( m_operation == "restore" ){
-		Z = QFileDialog::getOpenFileName( this,tr( "Select A File With A LUKS Backup Header" ),QDir::homePath(),0 ) ;
+		Z = QFileDialog::getOpenFileName( this,tr( "Select A File With A LUKS Backup Header" ),utility::homePath(),0 ) ;
 		if( Z.isEmpty() ){
 			return ;
 		}
 	}else{
-		Z = QFileDialog::getExistingDirectory( this,tr( "Select A Folder To Store The Header" ),QDir::homePath(),0 ) ;
+		Z = QFileDialog::getExistingDirectory( this,tr( "Select A Folder To Store The Header" ),utility::homePath(),0 ) ;
 
 		if( Z.isEmpty() ){
 			return ;
@@ -429,7 +429,7 @@ void managevolumeheader::selectedPartition( QString p )
 
 void managevolumeheader::pbOpenFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select luks container you want to backup its header" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select luks container you want to backup its header" ),utility::homePath(),0 ) ;
 	m_ui->lineEditDevicePath->setText( Z ) ;
 	if( m_ui->lineEditBackUpName->text().isEmpty() ){
 		m_ui->lineEditBackUpName->setFocus() ;
@@ -440,7 +440,7 @@ void managevolumeheader::pbOpenFile()
 
 void managevolumeheader::pbKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "" ),utility::homePath(),0 ) ;
 
 	if( !Z.isEmpty() ){
 		m_ui->lineEditPassWord->setText( Z ) ;

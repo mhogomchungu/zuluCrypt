@@ -242,7 +242,7 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 void keyDialog::pbMountPointPath()
 {
 	QString msg = tr( "Select A Folder To Create A Mount Point In" ) ;
-	QString Z = QFileDialog::getExistingDirectory( this,msg,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
+	QString Z = QFileDialog::getExistingDirectory( this,msg,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
 		Z = Z + "/" + m_ui->lineEditMountPoint->text().split( "/" ).last() ;
@@ -292,7 +292,7 @@ void keyDialog::KeyFile()
 {
 	if( m_ui->cbKeyType->currentIndex() == keyDialog::keyfile ){
 		QString msg = tr( "Select A File To Be Used As A Keyfile" ) ;
-		QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath() ) ;
+		QString Z = QFileDialog::getOpenFileName( this,msg,utility::homePath() ) ;
 
 		if( !Z.isEmpty() ){
 			m_ui->lineEditKey->setText( Z ) ;

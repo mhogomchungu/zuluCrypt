@@ -239,7 +239,7 @@ void erasedevice::pbCancel()
 
 void erasedevice::pbFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Enter Path To Volume To Be Erased" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Enter Path To Volume To Be Erased" ),utility::homePath(),0 ) ;
 	m_ui->lineEdit->setText( Z ) ;
 }
 

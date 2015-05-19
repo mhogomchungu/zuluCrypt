@@ -394,7 +394,7 @@ void createvolume::ShowUI( const QString& l,const QString& v )
 
 void createvolume::pbOpenKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->lineEditPassphrase1->setText( Z ) ;
 	}
@@ -402,7 +402,7 @@ void createvolume::pbOpenKeyFile()
 
 void createvolume::pbOpenHiddenKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->lineEditHiddenKey->setText( Z ) ;
 	}

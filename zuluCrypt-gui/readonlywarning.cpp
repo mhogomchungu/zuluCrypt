@@ -29,12 +29,12 @@
 
 static QString _configPathReadOnly( const QString& app )
 {
-	return QDir::homePath() + "/.zuluCrypt/" + app + "-readOnlyOption" ;
+	return utility::homePath() + "/.zuluCrypt/" + app + "-readOnlyOption" ;
 }
 
 static QString _configPathShowUI( const QString& app )
 {
-	return QDir::homePath() + "/.zuluCrypt/" + app + "-readOnlyUIWarningOption" ;
+	return utility::homePath() + "/.zuluCrypt/" + app + "-readOnlyUIWarningOption" ;
 }
 
 bool readOnlyWarning::getOpenVolumeReadOnlyOption( const QString& app )

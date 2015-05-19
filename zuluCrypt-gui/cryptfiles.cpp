@@ -122,12 +122,12 @@ QString cryptfiles::destinationPath( const QString& e )
 {
 	if( e.isEmpty() ){
 
-		return QDir::homePath() + "/" ;
+		return utility::homePath() + "/" ;
 	}else{
 		int r = e.lastIndexOf( '/' ) ;
 
 		if( r == -1 ){
-			return QDir::homePath() + "/" ;
+			return utility::homePath() + "/" ;
 		}else{
 			QString x = e ;
 			x.truncate( r ) ;
@@ -389,10 +389,10 @@ void cryptfiles::progressBarUpdate( int i )
 void cryptfiles::pbOpenFolder( void )
 {
 	QString p = tr( "Select Path to put destination file" ) ;
-	QString Z = QFileDialog::getExistingDirectory( this,p,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
+	QString Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( Z.isEmpty() ){
-		Z = QDir::homePath() ;
+		Z = utility::homePath() ;
 	}
 	QString path ;
 	if( m_operation == "-E" ){
@@ -447,10 +447,10 @@ void cryptfiles::pbOpenFile()
 {
 	QString Z ;
 	if( m_operation == "-E" ){
-		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Encrypt" ),QDir::homePath(),0 ) ;
+		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Encrypt" ),utility::homePath(),0 ) ;
 	}else{
 		QString x = tr( "zuluCrypt encrypted files ( *.zc ) ;; All Files ( * )" ) ;
-		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Decrypt" ),QDir::homePath(),x ) ;
+		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Decrypt" ),utility::homePath(),x ) ;
 	}
 	m_ui->lineEditSourcePath->setText( Z ) ;
 	m_ui->lineEditDestinationPath->setText( this->destinationPath( Z ) ) ;
@@ -460,7 +460,7 @@ void cryptfiles::pbOpenFile()
 
 void cryptfiles::pbKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath(),0 ) ;
 
 	m_ui->lineEditPass_1->setText( Z ) ;
 	if( m_ui->lineEditSourcePath->text().isEmpty() ){

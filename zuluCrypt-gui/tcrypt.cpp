@@ -138,7 +138,7 @@ void tcrypt::pbCancel()
 
 void tcrypt::pbAddKeyFIle()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		QTableWidget * table = m_ui->tableWidget ;
 		QStringList l ;

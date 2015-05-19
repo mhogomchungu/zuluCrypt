@@ -180,7 +180,7 @@ void MainWindow::setUpApp( const QString& volume )
 
 	m_trayIcon->show() ;
 
-	QString dirPath = QDir::homePath() + "/.zuluCrypt/" ;
+	QString dirPath = utility::homePath() + "/.zuluCrypt/" ;
 	QDir dir( dirPath ) ;
 
 	if( !dir.exists() ){
@@ -319,7 +319,7 @@ void MainWindow::setLocalizationLanguage()
 
 void MainWindow::autoOpenFolderOnMount( bool b )
 {
-	QString x = QDir::homePath() + QString( zuluMOUNT_AUTO_OPEN_FOLDER ) ;
+	QString x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
 
 	m_autoOpenFolderOnMount = b ;
 	if( b ){
@@ -333,8 +333,8 @@ void MainWindow::autoOpenFolderOnMount( bool b )
 
 bool MainWindow::autoOpenFolderOnMount( void )
 {
-	QString x = QDir::homePath() + QString( zuluMOUNT_AUTO_OPEN_FOLDER ) ;
-	return QFile::exists( x ) == false ;
+	QString x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
+	return !QFile::exists( x ) ;
 }
 
 void MainWindow::startAutoMonitor()
@@ -829,7 +829,7 @@ void MainWindow::pbMount()
 {
 	this->disableAll() ;
 
-	QString path = QFileDialog::getOpenFileName( this,tr( "Select An Image File To Mount" ),QDir::homePath() ) ;
+	QString path = QFileDialog::getOpenFileName( this,tr( "Select An Image File To Mount" ),utility::homePath() ) ;
 
 	if( path.isEmpty() ){
 
@@ -843,7 +843,7 @@ void MainWindow::unlockencfs()
 {
 	this->disableAll() ;
 
-	QString path = QFileDialog::getExistingDirectory( this,tr( "Select An Encfs Volume Directory" ),QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
+	QString path = QFileDialog::getExistingDirectory( this,tr( "Select An Encfs Volume Directory" ),utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( path.isEmpty() ){
 
@@ -1164,13 +1164,13 @@ void MainWindow::enableAll_1()
 
 bool MainWindow::autoMount()
 {
-	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) ) ;
+	QFile f( utility::homePath() + zuluMOUNT_AUTOPATH ) ;
 	return f.exists() ;
 }
 
 MainWindow::~MainWindow()
 {
-	QFile f( QDir::homePath() + QString( zuluMOUNT_AUTOPATH ) ) ;
+	QFile f( utility::homePath() + zuluMOUNT_AUTOPATH ) ;
 
 	if( m_autoMountAction ){
 		if( m_autoMountAction->isChecked() ){

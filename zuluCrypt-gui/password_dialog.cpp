@@ -272,7 +272,7 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 
 void passwordDialog::ShowUI( QString dev )
 {
-	QString m_point = QDir::homePath() + "/" + dev.split( "/" ).last() ;
+	QString m_point = utility::homePath() + "/" + dev.split( "/" ).last() ;
 	this->ShowUI( dev,m_point ) ;
 }
 
@@ -377,7 +377,7 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 		msg = tr( "Select A Key Module" ) ;
 	}
 
-	QString Z = QFileDialog::getOpenFileName( this,msg,QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,msg,utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->PassPhraseField->setText( Z ) ;
 	}
@@ -386,7 +386,7 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 void passwordDialog::mount_point( void )
 {
 	QString p = tr( "Select Path To Mount Point Folder" ) ;
-	QString Z = QFileDialog::getExistingDirectory( this,p,QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
+	QString Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
 		Z = Z + "/" + m_ui->OpenVolumePath->text().split( "/" ).last() ;
@@ -402,7 +402,8 @@ void passwordDialog::mount_point( void )
 
 void passwordDialog::file_path( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select Encrypted volume" ),QDir::homePath(),0 ) ;
+
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select Encrypted volume" ),utility::homePath(),0 ) ;
 	m_ui->OpenVolumePath->setText( Z ) ;
 	if( !Z.isEmpty() ){
 		m_ui->MountPointPath->setText( utility::mountPathPostFix( Z.split( "/" ).last() ) ) ;

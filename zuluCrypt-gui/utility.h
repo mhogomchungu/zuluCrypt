@@ -57,6 +57,7 @@ namespace utility
 	QString getStringUserID() ;
 	QString appendUserUID( const QString& ) ;
 	void changeFileOwner( const char * path ) ;
+	QString homePath() ;
 }
 
 namespace utility

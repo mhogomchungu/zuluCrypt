@@ -123,6 +123,16 @@ static passwd * _getPassWd()
 	return getpwuid( utility::getUserID() ) ;
 }
 
+QString utility::userName()
+{
+	return _getPassWd()->pw_name ;
+}
+
+QString utility::homePath()
+{
+	return getpwuid( utility::getUserID() )->pw_dir ;
+}
+
 static int _help()
 {
 	std::cout << "\n" << VERSION_STRING << std::endl ;
@@ -460,11 +470,6 @@ bool utility::userIsRoot()
 	return getuid() == 0 ;
 }
 
-QString utility::userName()
-{
-	return QString( _getPassWd()->pw_name ) ;
-}
-
 QString utility::shareMountPointToolTip()
 {
 	QString s = QObject::tr( "\
@@ -633,16 +638,7 @@ QString utility::keyPath()
 
 	QByteArray data = f.read( 64 ) ;
 
-	QString a ;
-
-	QString e = utility::userName() ;
-
-	if( e == "root" ){
-
-		a = "/root" ;
-	}else{
-		a = "/home/" + e ;
-	}
+	QString a = utility::homePath() ;
 
 	return QString( "%1/.zuluCrypt-socket/%2" ).arg( a,utility::hashPath( data ).mid( 1 ) ) ;
 }
@@ -803,9 +799,9 @@ bool utility::canCreateFile( const QString& path )
 QString utility::resolvePath( const QString& path )
 {
 	if( path.size() == 1 && path.at( 0 ) == QChar( '~' ) ){
-		return QDir::homePath() + "/" ;
+		return utility::homePath() + "/" ;
 	}else if( path.startsWith( "~/" ) ){
-		return QDir::homePath() + "/" + path.mid( 2 ) ;
+		return utility::homePath() + "/" + path.mid( 2 ) ;
 	}else if( path.startsWith( "UUID=") ){
 		return path ;
 	}else if( path.startsWith( "/dev/" ) ){
@@ -842,7 +838,7 @@ QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const
 void utility::addToFavorite( const QString& dev,const QString& m_point )
 {
 	QString fav = QString( "%1\t%2\n" ).arg( dev,m_point ) ;
-	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
+	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
 	f.write( fav.toLatin1() ) ;
 	f.close() ;
@@ -850,7 +846,7 @@ void utility::addToFavorite( const QString& dev,const QString& m_point )
 
 QStringList utility::readFavorites()
 {
-	QFile f( QDir::homePath() + "/.zuluCrypt/favorites" ) ;
+	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
 	QStringList list ;
 	if( f.open( QIODevice::ReadOnly ) ){
 		QString data( f.readAll() ) ;
@@ -864,7 +860,7 @@ QStringList utility::readFavorites()
 
 void utility::removeFavoriteEntry( const QString& entry )
 {
-	QFile f( QDir::homePath() + "/.zuluCrypt/favorites" ) ;
+	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
 	f.open( QIODevice::ReadOnly ) ;
 	QByteArray b = f.readAll() ;
 	f.close() ;

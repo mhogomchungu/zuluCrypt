@@ -155,7 +155,7 @@ void luksaddkey::HideUI()
 
 void luksaddkey::pbOpenExisitingKeyFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Existing Keyfile" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Existing Keyfile" ),utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->textEditExistingPassphrase->setText( Z ) ;
 	}
@@ -164,7 +164,7 @@ void luksaddkey::pbOpenExisitingKeyFile( void )
 
 void luksaddkey::pbOpenNewKeyFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "New Keyfile" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "New Keyfile" ),utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->textEditPassphraseToAdd->setText( Z ) ;
 	}
@@ -173,7 +173,7 @@ void luksaddkey::pbOpenNewKeyFile( void )
 
 void luksaddkey::pbOpenFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Encrypted Volume Path" ),QDir::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Encrypted Volume Path" ),utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->textEditPathToVolume->setText( Z ) ;
 	}
