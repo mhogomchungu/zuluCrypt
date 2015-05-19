@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>greetings</string>
+   <string>Greetings</string>
   </property>
   <widget class="QPushButton" name="pbOK">
    <property name="geometry">
@@ -63,7 +63,7 @@ Recommending reading FAQ page from the project's main page.</string>
     <rect>
      <x>150</x>
      <y>220</y>
-     <width>261</width>
+     <width>391</width>
      <height>41</height>
     </rect>
    </property>

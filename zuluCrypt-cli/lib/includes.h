@@ -476,6 +476,11 @@ string_t zuluCryptResolvePath_1( const char * path ) ;
 char * zuluCryptResolvePath_3( const char * path ) ;
 
 /*
+ * zuluCryptResolvePath_4() is defined in resolve_paths.c
+ */
+char * zuluCryptResolvePath_4( const char * path ) ;
+
+/*
  * zuluCryptResolvePath() is defined in resolve_paths.c
  */
 char * zuluCryptResolvePath( const char * path ) ;

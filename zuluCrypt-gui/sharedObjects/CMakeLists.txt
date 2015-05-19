@@ -6,13 +6,15 @@ set( SRC
 	../userfont.cpp
 	../tablewidget.cpp
 	../utility.cpp
+	../readonlywarning.cpp
 )
 
 set( MOC_FILES
 	../dialogmsg.h
+	../readonlywarning.h
 )
 
-set( UI_FILES ../dialogmsg.ui )
+set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR})
 
@@ -30,7 +32,7 @@ add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} )
 if( BUILDKWALLET )
 	target_link_libraries( sharedObject lxqtwallet ${kwallet_library} -lblkid )
 else()
-	target_link_libraries( sharedObject lxqtwallet -lblkid )
+	target_link_libraries( sharedObject lxqtwallet -lblkid Process )
 endif()
 
 set_target_properties( sharedObject PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -pedantic" )

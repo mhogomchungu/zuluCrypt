@@ -636,7 +636,7 @@ void passwordDialog::openVolume()
 
 	m_working = true ;
 
-	auto r = utility::Task::run( exe ).await() ;
+	auto r = utility::Task::run( utility::appendUserUID( exe ) ).await() ;
 
 	m_working = false ;
 

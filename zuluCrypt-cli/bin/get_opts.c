@@ -42,7 +42,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 
 	zuluCryptEXEGetOptsSetDefault( stopts ) ;
 
-	while ( ( c = getopt( argc,argv,"MHZCUWTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:Y:i:z:g:y:u:l:n:j:t:G:F:V:" ) ) != -1 ) {
+	while ( ( c = getopt( argc,argv,"MHZCUWTJLORBXASNPkhocsarqwibEDs:m:d:p:f:e:Y:i:z:g:y:u:l:n:j:t:G:F:V:K:" ) ) != -1 ) {
 		switch( c ){
 			case( 'H' ) : stopts->action = 'H' 	; break ;
 			case( 'C' ) : stopts->action = 'C' 	; break ;
@@ -99,6 +99,8 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			stopts->action = 'N' ;
 			break ;
 			case( 't' ) : stopts->type = optarg ;
+			break ;
+			case( 'K' ) : stopts->uid = optarg ;
 			break ;
 			case( 'm' ) : stopts->mount_point = optarg ;
 			break ;

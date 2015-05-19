@@ -203,15 +203,23 @@ char * zuluCryptGetLoopDeviceAddress( const char * device )
 
 char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 {
+	char * e ;
+	char * c ;
+
 	string_t xt = String( "/proc/self/fd/" ) ;
-	char * c = zuluCryptRealPath( StringAppendInt( xt,fd ) ) ;
+
+	e = zuluCryptRealPath( StringAppendInt( xt,fd ) ) ;
+
 	/*
-	 * zuluCryptResolvePath() is defined in resolve_paths.c
+	 * zuluCryptResolvePath_4() is defined in resolve_paths.c
 	 */
-	char * e = zuluCryptResolvePath( c ) ;
+	c = zuluCryptResolvePath_4( e ) ;
+
+	StringFree( e ) ;
+
 	StringDelete( &xt ) ;
-	StringFree( c ) ;
-	return e ;
+	
+	return c ;
 }
 
 /*

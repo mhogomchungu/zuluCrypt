@@ -37,19 +37,19 @@ static QString _device( const QString& device )
 
 static bool _volumeIsSystemVolume( const QString& e )
 {
-	return utility::Task( QString( "%1 -S" ).arg( zuluMountPath ) ).splitOutput( '\n' ).contains( e ) ;
+	return utility::Task( utility::appendUserUID( "%1 -S" ).arg( zuluMountPath ) ).splitOutput( '\n' ).contains( e ) ;
 }
 
 QStringList zuluMountTask::mountedVolumeList( void )
 {
-	return utility::Task( QString( "%1 -E" ).arg( zuluMountPath ) ).splitOutput( '\n' ) ;
+	return utility::Task( utility::appendUserUID( "%1 -E" ).arg( zuluMountPath ) ).splitOutput( '\n' ) ;
 }
 
 volumeEntryProperties _getVolumeProperties( const QString& e )
 {
 	QString device = _device( e ) ;
 
-	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath,device ) ) ;
+	auto r = utility::Task( utility::appendUserUID( "%1 -L -d \"%2\"" ).arg( zuluMountPath,device ) ) ;
 
 	if( r.success() ) {
 
@@ -75,7 +75,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 
 		QString volume = _device( v ) ;
 
-		auto r = utility::Task( QString( "%1 -s -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
+		auto r = utility::Task( utility::appendUserUID( "%1 -s -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
 		if( r.ok() ){
 
@@ -87,7 +87,8 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 				* this could be a plain volume opened with an offset
 				*/
 
-				r = utility::Task( QString( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
+				QString e = utility::appendUserUID( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ) ;
+				r = utility::Task( e.arg( zuluMountPath,volume ) ) ;
 
 				if( r.ok() ){
 
@@ -117,7 +118,7 @@ utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QStr
 
 	QString volume = _device( volumePath ) ;
 
-	auto r = _run( QString( "%1 -u -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
+	auto r = _run( utility::appendUserUID( "%1 -u -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
 	if( r.failed() ){
 
@@ -125,7 +126,7 @@ utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QStr
 			/*
 			 * we could be trying to unmount a volume with an offset
 			 */
-			r = _run( QString( "%1 -o bogusNecessaryArgument -u -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
+			r = _run( utility::appendUserUID( "%1 -o bogusNecessaryArgument -u -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 		}
 	}
 
@@ -220,11 +221,11 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 
 		QVector< volumeEntryProperties > list ;
 
-		auto all = utility::Task( QString( "%1 -l" ).arg( zuluMountPath ),10000 ) ;
+		auto all = utility::Task( utility::appendUserUID( "%1 -l" ).arg( zuluMountPath ),10000 ) ;
 
 		if( all.finished() ){
 
-			auto system = utility::Task( QString( "%1 -S" ).arg( zuluMountPath ),10000 ) ;
+			auto system = utility::Task( utility::appendUserUID( "%1 -S" ).arg( zuluMountPath ),10000 ) ;
 
 			if( system.finished() ){
 
@@ -248,7 +249,7 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 
 void zuluMountTask::checkUnMount( const QString& volume )
 {
-	utility::Task( QString( "%1 -c -d \"%2\"" ).arg( zuluMountPath ).arg( _device( volume ) ) ) ;
+	utility::Task( utility::appendUserUID( "%1 -c -d \"%2\"" ).arg( zuluMountPath,_device( volume ) ) ) ;
 }
 
 volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QString& volume )
@@ -304,7 +305,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 		}
 	}
 
-	auto r = utility::Task( QString( "%1 -L -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
+	auto r = utility::Task( utility::appendUserUID( "%1 -L -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
 	if( r.success() ){
 
@@ -462,7 +463,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 
 static bool _delete_encfs_mount_point( const QString& m )
 {
-	return utility::Task( QString( "%1 -b %2" ).arg( zuluMountPath,m ) ).success() ;
+	return utility::Task( utility::appendUserUID( "%1 -b %2" ).arg( zuluMountPath,m ) ).success() ;
 }
 
 static bool _delete_encfs_m_point( const QString& m )
@@ -473,7 +474,7 @@ static bool _delete_encfs_m_point( const QString& m )
 
 static bool _create_encfs_mount_point( const QString& m )
 {
-	return utility::Task( QString( "%1 -B %2" ).arg( zuluMountPath,m ) ).success() ;
+	return utility::Task( utility::appendUserUID( "%1 -B %2" ).arg( zuluMountPath,m ) ).success() ;
 }
 
 Task::future<bool>& zuluMountTask::encfsUnmount( const QString& m )

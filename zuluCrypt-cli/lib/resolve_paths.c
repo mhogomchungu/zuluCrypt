@@ -283,3 +283,13 @@ char * zuluCryptResolvePath_3( const char * path )
 		return zuluCryptResolvePath( path ) ;
 	}
 }
+
+char * zuluCryptResolvePath_4( const char * path )
+{
+	if( StringPrefixEqual( path,"/dev/loop" ) ){
+
+		return StringCopy_2( path ) ;
+	}else{
+		return zuluCryptResolvePath( path ) ;
+	}
+}

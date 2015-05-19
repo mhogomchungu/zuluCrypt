@@ -234,8 +234,9 @@ void luksdeletekey::deleteKey( const QStringList& l )
 		utility::keySend( keypath,key ) ;
 	}
 
-	const char * r = "%1 -k -r -d \"%2\" -f \"%3\"" ;
-	QString exe = QString( r ).arg( ZULUCRYPTzuluCrypt,m_volumePath,keypath ) ;
+	auto r = "%1 -k -r -d \"%2\" -f \"%3\"" ;
+
+	QString exe = utility::appendUserUID( r ).arg( ZULUCRYPTzuluCrypt,m_volumePath,keypath ) ;
 
 	m_isWindowClosable = false ;
 

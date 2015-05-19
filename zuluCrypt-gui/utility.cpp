@@ -55,6 +55,7 @@
 #include "storage_manager.h"
 #include "dialogmsg.h"
 #include "support_whirlpool.h"
+#include "readonlywarning.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -67,6 +68,60 @@
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
+
+#include "../zuluCrypt-cli/utility/process/process.h"
+
+static int staticGlobalUserId = -1 ;
+
+void utility::setUID( int uid )
+{
+	staticGlobalUserId = uid ;
+}
+
+int utility::getUID()
+{
+	return staticGlobalUserId ;
+}
+
+int utility::getUserID()
+{
+	if( staticGlobalUserId == -1 ){
+
+		return getuid() ;
+	}else{
+		return staticGlobalUserId ;
+	}
+}
+
+QString utility::getStringUserID()
+{
+	return QString::number( utility::getUserID() ) ;
+}
+
+QString utility::appendUserUID( const QString& e )
+{
+	if( staticGlobalUserId == -1 ){
+
+		return e ;
+	}else{
+		return e + " -K " + utility::getStringUserID() ;
+	}
+}
+
+void utility::changeFileOwner( const char * path )
+{
+	int uid = utility::getUID() ;
+
+	if( uid != -1 ){
+
+		chown( path,uid,uid ) ;
+	}
+}
+
+static passwd * _getPassWd()
+{
+	return getpwuid( utility::getUserID() ) ;
+}
 
 static int _help()
 {
@@ -137,7 +192,9 @@ void utility::keySend( const QString& path,const QString& key )
 {
 	return ::Task::run<QStringList>( [ volumePath ](){
 
-		auto r = utility::Task( QString( "%1 -b -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
+		QString e = utility::appendUserUID( "%1 -b -d \"%2\"" ) ;
+
+		auto r = utility::Task( e.arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
 
 		QStringList l ;
 
@@ -188,7 +245,7 @@ void utility::keySend( const QString& path,const QString& key )
 
 		QString device = dev ;
 		device = device.replace( "\"", "\"\"\"" ) ;
-		QString exe = QString( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt ).arg( device ) ;
+		QString exe = utility::appendUserUID( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,device ) ;
 
 		auto r = utility::Task( exe ) ;
 
@@ -208,14 +265,16 @@ void utility::keySend( const QString& path,const QString& key )
 	} ) ;
 }
 
-::Task::future<bool>& utility::openMountPoint( const QString& path,const QString& opener )
+::Task::future<bool>& utility::openMountPoint( const QString& path,const QString& opener,const QString& env )
 {
+	Q_UNUSED( env ) ;
+
 	return ::Task::run<bool>( [ path,opener ](){
 
 		QString e = path ;
 		e.replace( "\"","\"\"\"" ) ;
 
-		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( opener ).arg( e ) ) ;
+		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( opener,e ) ) ;
 
 		return r.exitCode() != 0 || r.exitStatus() != 0 ;
 	} ) ;
@@ -316,7 +375,7 @@ static std::function< void( int ) > _closeFunction( const QString& e )
 
 				if( close( fd ) == 0 ){
 
-					utility::Task( QString( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,e ) ) ;
+					utility::Task( utility::appendUserUID( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,e ) ) ;
 
 					break ;
 				}
@@ -338,7 +397,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 
 		volumePath.replace( "\"","\"\"\"" ) ;
 
-		int r = utility::Task( QString( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ).exitCode() ;
+		int r = utility::Task( utility::appendUserUID( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ).exitCode() ;
 
 		if( r != 0 ){
 			return r ;
@@ -376,7 +435,9 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 						i = int( ( size_written * 100 / size ) ) ;
 
 						if( i > j ){
+
 							function( i ) ;
+
 							j = i ;
 						}
 					}
@@ -391,7 +452,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 QString utility::cryptMapperPath()
 {
 	//return QString( crypt_get_dir() )
-	return QString( "/dev/mapper/" ) ;
+	return "/dev/mapper/" ;
 }
 
 bool utility::userIsRoot()
@@ -401,7 +462,7 @@ bool utility::userIsRoot()
 
 QString utility::userName()
 {
-	return QString( getpwuid( getuid() )->pw_name ) ;
+	return QString( _getPassWd()->pw_name ) ;
 }
 
 QString utility::shareMountPointToolTip()
@@ -419,26 +480,26 @@ QString utility::shareMountPointToolTip( const QString& path )
 	QByteArray x = s.toLatin1() ;
 	const char * y = x.constData() ;
 	if( stat( y,&st ) == 0 ){
-		return QString( "public mount point: " ) + s ;
+		return "public mount point: " + s ;
 	}else{
 		//return QString( "no public mount point" ) ;
-		return QString( "" ) ;
+		return QString() ;
 	}
 }
 
 QString utility::sharedMountPointPath( const QString& path )
 {
-	if( path == QString( "/" ) ){
-		return QString( "" ) ;
+	if( path == "/" ){
+		return QString() ;
 	}else{
 		struct stat st ;
-		QString s = QString( "/run/media/public/" ) + path.split( "/" ).last() ;
+		QString s = "/run/media/public/" + path.split( "/" ).last() ;
 		QByteArray x = s.toLatin1() ;
 		const char * y = x.constData() ;
 		if( stat( y,&st ) == 0 ){
 			return s ;
 		}else{
-			return QString( "" ) ;
+			return QString() ;
 		}
 	}
 }
@@ -554,101 +615,48 @@ bool utility::pathIsReadable( const QString& path )
 	}
 }
 
-bool utility::setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app )
+bool utility::setOpenVolumeReadOnly( QWidget * parent,bool checked,const QString& app )
 {
-	QString Path = QDir::homePath() + "/.zuluCrypt/" + app ;
-	QFile f( Path + "-openMode" ) ;
-
-	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-	if( check ){
-		f.write( "1" ) ;
-	}else{
-		f.write( "0" ) ;
-	}
-
-	f.close() ;
-
-	DialogMsg msg( parent ) ;
-	QString m = QObject::tr( "Setting This Option Will Cause The Volume To Open In Read Only Mode" ) ;
-
-	QString path = Path + "-readOnlyOption" ;
-
-	f.setFileName( path ) ;
-
-	bool st ;
-	if( f.exists() ){
-		f.open( QIODevice::ReadWrite ) ;
-		QByteArray opt = f.readAll() ;
-		if( opt == "0" && check ) {
-			f.seek( 0 ) ;
-
-			st = msg.ShowUIOKDoNotShowOption( QObject::tr( "Info" ),m ) ;
-
-			if( st ){
-				f.write( "1" ) ;
-			}else{
-				f.write( "0" ) ;
-			}
-
-			f.close() ;
-		}
-	}else{
-		st = msg.ShowUIOKDoNotShowOption( QObject::tr( "Info" ),m ) ;
-
-		f.open( QIODevice::WriteOnly ) ;
-
-		if( st ){
-			f.write( "1" ) ;
-		}else{
-			f.write( "0" ) ;
-		}
-
-		f.close() ;
-	}
-
-	return check ;
+	return readOnlyWarning::showWarning( parent,checked,app ) ;
 }
 
 bool utility::getOpenVolumeReadOnlyOption( const QString& app )
 {
-	QString home = QDir::homePath() + "/.zuluCrypt/" ;
-	QDir d( home ) ;
-
-	if( !d.exists() ){
-		d.mkdir( home ) ;
-	}
-
-	QFile f( home + app + "-openMode" ) ;
-
-	if( !f.exists() ){
-		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-		f.write( "0" ) ;
-		f.close() ;
-	}
-
-	f.open( QIODevice::ReadOnly ) ;
-	int st = QString( f.readAll() ).toInt() ;
-
-	f.close() ;
-	return st == 1 ;
+	return readOnlyWarning::getOpenVolumeReadOnlyOption( app ) ;
 }
 
 QString utility::keyPath()
 {
 	QFile f( "/dev/urandom" ) ;
+
 	f.open( QIODevice::ReadOnly ) ;
+
 	QByteArray data = f.read( 64 ) ;
-	QString a = QDir::homePath() ;
-	QString b = utility::hashPath( data ).mid( 1 ) ;
-	return QString( "%1/.zuluCrypt-socket/%2" ).arg( a ).arg( b ) ;
+
+	QString a ;
+
+	QString e = utility::userName() ;
+
+	if( e == "root" ){
+
+		a = "/root" ;
+	}else{
+		a = "/home/" + e ;
+	}
+
+	return QString( "%1/.zuluCrypt-socket/%2" ).arg( a,utility::hashPath( data ).mid( 1 ) ) ;
 }
 
 bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event )
 {
 	if( watched == gui ){
+
 		if( event->type() == QEvent::KeyPress ){
+
 			QKeyEvent * keyEvent = static_cast< QKeyEvent* >( event ) ;
+
 			if( keyEvent->key() == Qt::Key_Escape ){
+
 				return true ;
 			}
 		}
@@ -679,7 +687,7 @@ bool utility::mapperPathExists( const QString& path )
 
 QString utility::mountPath( const QString& path )
 {
-	auto pass = getpwuid( getuid() ) ;
+	auto pass = _getPassWd() ;
 
 #if USE_HOME_PATH_AS_MOUNT_PREFIX
 	return QString( "%1/%2" ).arg( QString( pass->pw_dir ) ).arg( path ) ;
@@ -690,7 +698,7 @@ QString utility::mountPath( const QString& path )
 
 QString utility::homeMountPath( const QString& path )
 {
-	return QString( "%1/%2" ).arg( getpwuid( getuid() )->pw_dir ).arg( path ) ;
+	return QString( "%1/%2" ).arg( _getPassWd()->pw_dir,path ) ;
 }
 
 QString utility::mountPathPostFix( const QString& path )
@@ -728,7 +736,7 @@ QString utility::mapperPath( const QString& r,const QString& component )
 {
 	QString rpath = r ;
 
-	QString path = utility::cryptMapperPath() + "zuluCrypt-" + QString::number( getuid() ) ;
+	QString path = utility::cryptMapperPath() + "zuluCrypt-" + utility::getStringUserID() ;
 
 	if( rpath.startsWith( "UUID=" ) ){
 
@@ -833,7 +841,7 @@ QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const
 
 void utility::addToFavorite( const QString& dev,const QString& m_point )
 {
-	QString fav = QString( "%1\t%2\n" ).arg( dev ).arg( m_point ) ;
+	QString fav = QString( "%1\t%2\n" ).arg( dev,m_point ) ;
 	QFile f( QDir::homePath() + QString( "/.zuluCrypt/favorites" ) ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
 	f.write( fav.toLatin1() ) ;

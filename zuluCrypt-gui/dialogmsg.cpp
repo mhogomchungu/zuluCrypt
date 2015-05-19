@@ -50,7 +50,6 @@ bool DialogMsg::eventFilter( QObject * watched,QEvent * event )
 	}
 }
 
-
 void DialogMsg::pbNo()
 {
 	m_status = ( int ) QMessageBox::No ;
@@ -201,7 +200,7 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 
 	auto _trancate_long_path = []( QString e ){
 
-		const int len    = 45 ;
+		const int len    = 40 ;
 		const int length = e.length() ;
 
 		if( length <= len ){

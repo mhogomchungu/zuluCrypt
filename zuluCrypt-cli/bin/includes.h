@@ -51,6 +51,11 @@
 extern uid_t global_variable_user_uid ;
 
 /*
+ * this function is defined in security.c
+ */
+int zuluCryptSecurityConvertUID( uid_t uid,const char * u_id ) ;
+
+/*
  * this function is defined in volumes.c
  */
 int zuluCryptVolumeIsInSystemVolumeList( const char * device ) ;

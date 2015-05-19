@@ -54,7 +54,8 @@ SOURCES += main.cpp\
     createvolumedialog.cpp \
     favorites.cpp \
     managevolumeheader.cpp \
-    tcrypt.cpp
+    tcrypt.cpp \
+    readonlywarning.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -97,7 +98,8 @@ HEADERS  += zulucrypt.h \
     walletconfiginput.h \
     favorites.h \
     managevolumeheader.h \
-    tcrypt.h
+    tcrypt.h \
+    readonlywarning.h
 
 
 FORMS    += zulucrypt.ui password.ui \
@@ -119,7 +121,8 @@ FORMS    += zulucrypt.ui password.ui \
     walletconfiginput.ui \
     favorites.ui \
     managevolumeheader.ui \
-    tcrypt.ui
+    tcrypt.ui \
+    readonlywarning.ui
 
 TRANSLATIONS = ../translations/zuluCrypt/messages.ts
 

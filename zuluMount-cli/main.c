@@ -41,7 +41,7 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 	int c ;
 	int k = 0 ;
 
-	while( ( c = getopt( argc,argv,"cEMLnASNshlPmuDd:z:e:Y:p:f:G:o:F:t:B:b:" ) ) != -1 ) {
+	while( ( c = getopt( argc,argv,"cEMLnASNshlPmuDd:z:e:Y:p:f:G:o:F:t:B:b:K:" ) ) != -1 ) {
 		switch( c ){
 			case 'M' : args->share   = 1      ; break ;
 			case 'n' : args->mpo     = 1      ; break ;
@@ -66,6 +66,7 @@ static int _mount_get_opts( int argc,char * argv[],ARGS * args )
 			case 'd' : args->device  = optarg ; break ;
 			case 'z' : args->m_point = optarg ; break ;
 			case 'e' : args->m_opts  = optarg ; break ;
+			case 'K' : args->u_id    = optarg ; break ;
 			case 'Y' : args->fs_opts = optarg ; break ;
 			case 'p' : args->key     = optarg ;
 				   args->key_source = "-p"; break ;
@@ -304,6 +305,7 @@ static int _zuluMountExe( ARGS * args )
 	const char * offset = args->offset ;
 	size_t       uid    = args->uid    ;
 
+
 	if( StringsAreEqual( action,"-L" ) ){
 		return zuluMountPrintDeviceProperties( device,uuid,uid ) ;
 	}
@@ -412,9 +414,10 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 	 * zuluCryptGetDeviceFileProperties is defined in ../zuluCrypt-lib/file_path_security.c
 	 */
 	switch( zuluCryptGetDeviceFileProperties( args->device,&fd,&fd1,&dev,args->uid ) ){
+
 		case 0 : args->device = dev ;
 			 /*
-			  * zuluCryptDeviceIsSupported() is defined in ../zuluCrypt-cli/bin/partitions.c
+			  * zuluCryptDeviceIsSupported() is defined in ../zuluCrypt-cli/bin/volumes.c
 			  */
 			 if( zuluCryptDeviceIsSupported( dev,args->uid ) ){
 				status = _zuluMountExe( args ) ;
@@ -548,17 +551,27 @@ int main( int argc,char * argv[] )
 
 	memset( &args,'\0',sizeof( args ) ) ;
 
-	args.uid = uid ;
-
 	/*
 	 * setgroups() requires seteuid(0) ;
 	 */
 	seteuid( 0 ) ;
 	if( setgroups( 1,&gid ) != 0 ){
-		_privilegeEvelationError( "ERROR: setgroups() failed" ) ;
+		_privilegeEvelationError( gettext( "ERROR: setgroups() failed" ) ) ;
 	}
 	if( setegid( uid ) != 0 ){
-		_privilegeEvelationError( "ERROR: setegid() failed" ) ;
+		_privilegeEvelationError( gettext( "ERROR: setegid() failed" ) ) ;
+	}
+	if( _mount_get_opts( argc,argv,&args ) != 0 ){
+		return _mount_help() ;
+	}
+
+	i = zuluCryptSecurityConvertUID( uid,args.u_id ) ;
+
+	if( i == -1 ){
+		puts( gettext( "ERROR: user is not root privileged" ) ) ;
+		return 255 ;
+	}else{
+		args.uid = uid = i ;
 	}
 
 	/*
@@ -575,7 +588,7 @@ int main( int argc,char * argv[] )
 
 	/*
 	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ../zuluCrypt-cli/bin/security.c
-	 * _privilegeEvelationError() function will be called when functions that elevate or drop privilges fail
+	 * _privilegeEvelationError() function will be called when functions that elevate or drop privileges fail
 	 */
 	zuluCryptSecuritySetPrivilegeElevationErrorFunction( _privilegeEvelationError ) ;
 
@@ -592,10 +605,6 @@ int main( int argc,char * argv[] )
 	StringListExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	SocketExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	ProcessExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
-
-	if( _mount_get_opts( argc,argv,&args ) != 0 ){
-		return _mount_help() ;
-	}
 
 	stl = StringListInit() ;
 	/*

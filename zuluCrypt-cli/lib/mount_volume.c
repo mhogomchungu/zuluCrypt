@@ -50,7 +50,7 @@ static inline int zuluExit( int st,int fd,string_t x,string_t y,string_t z )
 
 static inline int fs_family( const char * fs )
 {
-	if( StringAtLeastOneMatch_1( fs,"ntfs,","vfat","fat","msdos","umsdos","exfat",NULL ) ){
+	if( StringAtLeastOneMatch_1( fs,"ntfs","vfat","fat","msdos","umsdos","exfat",NULL ) ){
 		return 1 ;
 	}else if( StringAtLeastOneMatch_1( fs,"affs","hfs",NULL ) ){
 		return 2 ;
@@ -316,7 +316,7 @@ static int mount_FUSEfs_0( m_struct * mst )
 	if( StringsAreEqual( mst->fs,"ntfs" ) ){
 
 		if( StringHasComponent( opts,"ignore_case" ) ){
-			
+
 			ProcessSetArgumentList( p,"-n","-t","lowntfs-3g","-o",opts,mst->device,mst->m_point,NULL ) ;
 		}else{
 			ProcessSetArgumentList( p,"-n","-t","ntfs-3g","-o",opts,mst->device,mst->m_point,NULL ) ;

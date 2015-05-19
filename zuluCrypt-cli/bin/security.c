@@ -127,6 +127,21 @@ int zuluCryptSecurityGainElevatedPrivileges( void )
 	return  0  ;
 }
 
+int zuluCryptSecurityConvertUID( uid_t uid,const char * u_id )
+{
+	if( u_id != NULL ){
+
+		if( uid == 0 ){
+
+			return StringConvertToInt( u_id ) ;
+		}else{
+			return -1 ;
+		}
+	}else{
+		return uid ;
+	}
+}
+
 uid_t global_variable_user_uid ;
 void zuluCryptSetUserUIDForPrivilegeManagement( uid_t uid )
 {

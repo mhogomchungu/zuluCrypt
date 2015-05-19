@@ -22,22 +22,21 @@
 #include <QCloseEvent>
 #include <QFile>
 
-static QString _optionPath()
-{
-	return QDir::homePath() + "/.zuluCrypt/doNotshowWarning.option" ;
-}
-
-cryptoinfo::cryptoinfo( QWidget * parent ) :
-	QWidget( parent ),
-	m_ui( new Ui::cryptoinfo )
+cryptoinfo::cryptoinfo( QWidget * parent,QString path,QString msg ) :
+	QWidget( parent ),m_ui( new Ui::cryptoinfo ),m_path( path ),m_msg( msg )
 {
 	m_ui->setupUi( this ) ;
+
+	if( !m_msg.isEmpty() ){
+
+		m_ui->label->setText( m_msg ) ;
+	}
 
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 
-	m_ui->checkBox->setChecked( utility::pathExists( _optionPath() ) ) ;
+	m_ui->checkBox->setChecked( false ) ;
 
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->checkBox,SIGNAL( clicked( bool ) ),this,SLOT( checkBoxChecked( bool ) ) ) ;
@@ -48,6 +47,7 @@ cryptoinfo::cryptoinfo( QWidget * parent ) :
 bool cryptoinfo::eventFilter( QObject * watched,QEvent * event )
 {
 	if( utility::eventFilter( this,watched,event ) ){
+
 		this->HideUI() ;
 		return true ;
 	}else{
@@ -58,7 +58,7 @@ bool cryptoinfo::eventFilter( QObject * watched,QEvent * event )
 void cryptoinfo::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	HideUI() ;
+	this->HideUI() ;
 }
 
 void cryptoinfo::HideUI()
@@ -72,14 +72,19 @@ void cryptoinfo::pbOK()
 	this->HideUI() ;
 }
 
-bool cryptoinfo::Show()
+void cryptoinfo::Show()
 {
-	return utility::pathExists( _optionPath() ) == false ;
+	if( utility::pathExists( m_path ) ){
+
+		this->deleteLater() ;
+	}else{
+		this->show() ;
+	}
 }
 
 void cryptoinfo::checkBoxChecked( bool checked )
 {
-	QFile f( _optionPath() ) ;
+	QFile f( m_path ) ;
 
 	if( checked ){
 

@@ -266,7 +266,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 * This is an exception to avoid some udev bad behaviors on udev enabled build
 		 */
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
-			return zuluExit( 22,device,mount_point,stl ) ; ;
+			return zuluExit( 22,device,mount_point,stl ) ;
 		}
 	}
 	if( m_opts == NULL ){

@@ -196,7 +196,7 @@ void mountPartition::pbMount()
 		exe += " -Y " + m_options ;
 	}
 
-	auto s = utility::Task::run( exe ).await() ;
+	auto s = utility::Task::run( utility::appendUserUID( exe ) ).await() ;
 
 	if( s.success() ){
 

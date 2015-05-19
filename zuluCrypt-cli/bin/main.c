@@ -270,6 +270,9 @@ static void _forceTerminateOnSeriousError( int sig )
 
 static int _clear_dead_mappers( uid_t uid )
 {
+	/*
+	 * zuluCryptClearDeadMappers() is defined in ../zuluCrypt-cli/bin/clear_dead_mappers.c
+	 */
 	zuluCryptClearDeadMappers( uid ) ;
 	return 0 ;
 }
@@ -299,18 +302,18 @@ int main( int argc,char * argv[] )
 	char * dev ;
 	char action ;
 	int st ;
-	char * const * env ;
+	char * const * env = NULL ;
 	ssize_t i ;
 
 	string_t q = StringVoid ;
 
-	stringList_t stl ;
-	stringList_t stx ;
+	stringList_t stl = StringListVoid ;
+	stringList_t stx = StringListVoid ;
 
 	struct_opts clargs ;
 
 	uid_t uid = getuid() ;
-	gid_t gid = getgid() ;
+	gid_t gid = uid ;
 
 	struct sigaction sa ;
 	memset( &sa,'\0',sizeof( struct sigaction ) ) ;
@@ -337,7 +340,27 @@ int main( int argc,char * argv[] )
 
 	setlocale( LC_ALL,"" );
 	bindtextdomain( "zuluCrypt-cli",TRANSLATION_PATH ) ;
-	textdomain( "zuluCrypt-cli" );
+	textdomain( "zuluCrypt-cli" ) ;
+
+	memset( &clargs,'\0',sizeof( struct_opts ) ) ;
+
+	/*
+	 * zuluCryptEXEGetOpts() is defined in ./get_opts.c
+	 */
+	zuluCryptEXEGetOpts( argc,argv,&clargs ) ;
+
+	/*
+	 * zuluCryptSecurityConvertUID() is defined in security.c
+	 */
+	st = zuluCryptSecurityConvertUID( uid,clargs.uid ) ;
+
+	if( st == -1 ){
+
+		printf( gettext( "User is not root\n" ) ) ;
+		return 114 ;
+	}else{
+		uid = st ;
+	}
 
 	/*
 	 * Run with higher priority to speed things up
@@ -348,17 +371,15 @@ int main( int argc,char * argv[] )
 	seteuid( uid ) ;
 
 	/*
-	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ./security.c
-	 * _privilegeEvelationError() function will be called when functions that elevate or drop privilges fail
-	 */
-	zuluCryptSecuritySetPrivilegeElevationErrorFunction( _privilegeEvelationError ) ;
-
-	/*
 	 * zuluCryptSetUserUIDForPrivilegeManagement() is defined in ./security.c
 	 */
 	zuluCryptSetUserUIDForPrivilegeManagement( uid ) ;
 
-	memset( &clargs,'\0',sizeof( struct_opts ) ) ;
+	/*
+	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ./security.c
+	 * _privilegeEvelationError() function will be called when functions that elevate or drop privilges fail
+	 */
+	zuluCryptSecuritySetPrivilegeElevationErrorFunction( _privilegeEvelationError ) ;
 
 	StringExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
 	StringListExitOnMemoryExaustion( ExitOnMemoryExaustion ) ;
@@ -385,11 +406,6 @@ int main( int argc,char * argv[] )
 			return 0 ;
 		}
 	}
-
-	/*
-	 * zuluCryptEXEGetOpts() is defined in ./get_opts.c
-	 */
-	zuluCryptEXEGetOpts( argc,argv,&clargs );
 
 	/*
 	 * this object is used as a form of memory management.It collects all string objects to make them easily deletable
@@ -472,7 +488,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * below tests are here because they do not use -d option
 	 *
-	 * zuluCryptPrintPartitions() function is defined in partitions.c
+	 * zuluCryptPrintPartitions() function is defined in volumes.c
 	 * zuluCryptSecurityCheckPartitionPermissions() is defined in security.c
 	 */
 	switch( action ){
@@ -485,10 +501,7 @@ int main( int argc,char * argv[] )
 			  return zuluExit( st,stl,stx,env,NULL ) ;
 	}
 
-	/*
-	 * zuluCryptClearDeadMappers() is defined in clear_dead_mapper.c
-	 */
-	zuluCryptClearDeadMappers( uid ) ;
+	_clear_dead_mappers( uid ) ;
 
 	if( action == '\0' ){
 		return zuluExit( 130,stl,stx,env,gettext( "ERROR: \"action\" argument is missing" ) ) ;

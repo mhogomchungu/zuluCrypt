@@ -170,6 +170,7 @@ private:
 	QString m_openPath ;
 	bool m_startHidden ;
 	LxQt::Wallet::Wallet * m_wallet ;
+	int m_userID ;
 };
 
 #endif // ZULUCRYPT_H

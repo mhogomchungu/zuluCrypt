@@ -125,6 +125,7 @@ private:
 	QString m_sharedFolderPath ;
 	bool m_autoOpenFolderOnMount ;
 	bool m_removeAllVolumes = false ;
+	QString m_env ;
 };
 
 #endif // MAINWINDOW_H

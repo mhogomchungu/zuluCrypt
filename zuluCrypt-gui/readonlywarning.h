@@ -1,12 +1,12 @@
 /*
  *
- *  Copyright ( c ) 2012
+ *  Copyright (c) 2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation, either version 2 of the License, or
- *  ( at your option ) any later version.
+ *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,41 +17,47 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CRYPTOINFO_H
-#define CRYPTOINFO_H
+#ifndef READONLYWARNING_H
+#define READONLYWARNING_H
 
-#include <QWidget>
+#include <QDialog>
 #include <QString>
 
-#include <functional>
-
-#include "utility.h"
-
+class QWidget ;
 class QCloseEvent ;
 
 namespace Ui {
-class cryptoinfo ;
+class readOnlyWarning ;
 }
 
-class cryptoinfo : public QWidget
+class readOnlyWarning : public QDialog
 {
 	Q_OBJECT
 public:
-	cryptoinfo( QWidget * parent,QString path,QString msg ) ;
-	void Show( void ) ;
-	~cryptoinfo() ;
-signals:
-	void closeUISignal( void ) ;
+	static bool showWarning( QWidget * parent = 0,bool checked = false,const QString& app = QString() )
+	{
+		auto w = new readOnlyWarning( parent,checked,app ) ;
+		w->ShowUI() ;
+		return checked ;
+	}
+	static bool getOpenVolumeReadOnlyOption( const QString& app ) ;
+	explicit readOnlyWarning( QWidget * parent = 0,bool checked = false,const QString& app = QString() ) ;
+	~readOnlyWarning() ;
+	void ShowUI( void ) ;
+	void HideUI( void ) ;
 private slots:
 	void pbOK( void ) ;
 	void checkBoxChecked( bool ) ;
 private:
+	void setReadOnlyOption( bool ) ;
+	bool showUIwarning( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void HideUI( void ) ;
-	Ui::cryptoinfo * m_ui ;
-	QString m_path ;
-	QString m_msg ;
+	Ui::readOnlyWarning * m_ui ;
+	bool m_checked ;
+	QString m_app ;
+	QString m_configPathReadOnly ;
+	QString m_configPathShowUI ;
 };
 
-#endif // CRYPTOINFO_H
+#endif // READONLYWARNING_H

@@ -180,7 +180,7 @@ void cryptfiles::HideUI()
 	if( m_OperationInProgress ){
 		m_task->terminate() ;
 	}else{
-		emit this->HideUISignal() ;
+		emit HideUISignal() ;
 		this->hide() ;
 	}
 }
@@ -332,6 +332,8 @@ void cryptfiles::cryptFile( const char * s,const char * d,const char * k,unsigne
 	}else if( r == lxqt_wallet_no_error ){
 
 		if( m_ui->progressBar->value() == 100 ){
+
+			utility::changeFileOwner( d ) ;
 
 			if( encrypt ){
 

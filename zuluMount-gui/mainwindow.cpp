@@ -497,6 +497,11 @@ void MainWindow::Show()
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 
+	if( utility::userIsRoot() ){
+
+		utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
+	}
+
 	QString volume = utility::cmdArgumentValue( l,"-d" ) ;
 
 	auto instance = new oneinstance( this,"zuluMount-gui.socket","startGUI",volume ) ;
@@ -627,7 +632,7 @@ void MainWindow::slotOpenFolder()
 
 void MainWindow::openMountPoint( const QString& m_point )
 {
-	utility::openMountPoint( m_point,m_folderOpener ).then( [ this ]( bool failed ){
+	utility::openMountPoint( m_point,m_folderOpener,m_env ).then( [ this ]( bool failed ){
 
 		if( failed ){
 			QString x = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;

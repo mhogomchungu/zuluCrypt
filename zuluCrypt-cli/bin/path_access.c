@@ -56,7 +56,7 @@ static int has_device_access( const char * path,int c )
 static int path_is_accessible( const char * path,uid_t uid,int action )
 {
 	int st ;
-	char * xt ;
+	char * e ;
 
 	if( uid ){;}
 
@@ -68,10 +68,10 @@ static int path_is_accessible( const char * path,uid_t uid,int action )
 			/*
 			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
 			 */
-			xt = zuluCryptLoopDeviceAddress_1( path ) ;
-			if( xt != NULL ){
-				st = has_device_access( xt,action ) ;
-				free( xt ) ;
+			e = zuluCryptLoopDeviceAddress_1( path ) ;
+			if( e != NULL ){
+				st = has_device_access( e,action ) ;
+				StringFree( e ) ;
 			}else{
 				return 4 ;
 			}

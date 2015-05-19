@@ -801,11 +801,12 @@ void createvolume::pbCreateClicked()
 		exe += " -V \"" + e + "\"" ;
 	}
 
+	exe = utility::appendUserUID( exe ) ;
+
 	if( type == createvolume::normal_veracrypt || type == createvolume::normal_and_hidden_veracrypt ){
 
 		m_veraCryptWarning.show( tr( "Please be patient as creating a VeraCrypt volume may take a very long time.\n\n" ) ) ;
 	}
-
 
 	m_isWindowClosable = false ;
 

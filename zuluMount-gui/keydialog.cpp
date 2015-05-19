@@ -588,7 +588,7 @@ void keyDialog::openVolume()
 
 	m_working = true ;
 
-	auto s = utility::Task::run( exe ).await() ;
+	auto s = utility::Task::run( utility::appendUserUID( exe ) ).await() ;
 
 	m_working = false ;
 

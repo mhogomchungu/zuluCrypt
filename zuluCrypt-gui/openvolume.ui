@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>751</width>
+    <width>740</width>
     <height>357</height>
    </rect>
   </property>
@@ -38,9 +38,9 @@
   <widget class="QPushButton" name="pbHelp">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>180</x>
      <y>320</y>
-     <width>75</width>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
@@ -54,9 +54,9 @@
   <widget class="QPushButton" name="pbUUID">
    <property name="geometry">
     <rect>
-     <x>330</x>
+     <x>310</x>
      <y>320</y>
-     <width>75</width>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
@@ -70,9 +70,9 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>410</x>
+     <x>440</x>
      <y>320</y>
-     <width>75</width>
+     <width>121</width>
      <height>31</height>
     </rect>
    </property>
@@ -91,7 +91,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>731</width>
+     <width>721</width>
      <height>311</height>
     </rect>
    </property>
@@ -103,7 +103,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>711</width>
+      <width>701</width>
       <height>291</height>
      </rect>
     </property>

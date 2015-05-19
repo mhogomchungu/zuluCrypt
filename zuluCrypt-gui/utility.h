@@ -51,6 +51,16 @@ class QEvent ;
 
 namespace utility
 {
+	void setUID( int ) ;
+	int getUID() ;
+	int getUserID() ;
+	QString getStringUserID() ;
+	QString appendUserUID( const QString& ) ;
+	void changeFileOwner( const char * path ) ;
+}
+
+namespace utility
+{
 	struct wallet
 	{
 		bool opened ;
@@ -68,8 +78,7 @@ namespace utility
 
 	wallet getKeyFromWallet( LxQt::Wallet::walletBackEnd,const QString& keyID,const QString& pwd = QString() ) ;
 
-	QString cmdArgumentValue( const QStringList&,const QString& arg,
-				  const QString& defaulT = QString() ) ;
+	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
 	void addToFavorite( const QString& dev,const QString& m_point ) ;
 	QStringList readFavorites( void ) ;
@@ -113,7 +122,7 @@ namespace utility
 	::Task::future< QStringList >& luksEmptySlots( const QString& volumePath ) ;
 	::Task::future< QString >& getUUIDFromPath( const QString& ) ;
 	::Task::future<QString>& getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& volumeID ) ;
-	::Task::future< bool >& openMountPoint( const QString& path,const QString& opener ) ;
+	::Task::future< bool >& openMountPoint( const QString& path,const QString& opener,const QString& env = QString() ) ;
 }
 
 namespace utility
