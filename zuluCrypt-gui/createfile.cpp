@@ -197,6 +197,8 @@ void createfile::pbCreate()
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
 	}
 
+	utility::changeFileOwner( file ) ;
+
 	file.close() ;
 
 	m_exit = false ;

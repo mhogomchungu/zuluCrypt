@@ -230,11 +230,12 @@ QVector<LxQt::Wallet::walletKeyValues> LxQt::Wallet::internalWallet::readAllKeyV
 
 	iter.iter_pos = 0 ;
 
+	#define e QByteArray( iter.entry.key,iter.entry.key_size - 1 )
+	#define f QByteArray( iter.entry.key_value,iter.entry.key_value_size )
+
 	while( lxqt_wallet_iter_read_value( m_wallet,&iter ) ){
 
-		LxQt::Wallet::walletKeyValues s( QByteArray( iter.entry.key,iter.entry.key_size - 1 ),
-						 QByteArray( iter.entry.key_value,iter.entry.key_value_size ) ) ;
-		w.append( s ) ;
+		w.append( LxQt::Wallet::walletKeyValues( e,f ) ) ;
 	}
 
 	return w ;

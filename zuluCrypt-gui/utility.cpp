@@ -108,16 +108,6 @@ QString utility::appendUserUID( const QString& e )
 	}
 }
 
-void utility::changeFileOwner( const char * path )
-{
-	int uid = utility::getUID() ;
-
-	if( uid != -1 ){
-
-		chown( path,uid,uid ) ;
-	}
-}
-
 static passwd * _getPassWd()
 {
 	return getpwuid( utility::getUserID() ) ;

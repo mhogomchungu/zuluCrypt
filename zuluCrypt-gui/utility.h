@@ -52,12 +52,35 @@ class QEvent ;
 namespace utility
 {
 	void setUID( int ) ;
+
 	int getUID() ;
 	int getUserID() ;
+
 	QString getStringUserID() ;
 	QString appendUserUID( const QString& ) ;
-	void changeFileOwner( const char * path ) ;
 	QString homePath() ;
+
+	template< typename T >
+	void changeFileOwner( const T& f )
+	{
+		int uid = utility::getUID() ;
+		int fd = f.handle() ;
+
+		if( uid != -1 && fd != -1 ){
+
+			fchown( fd,uid,uid ) ;
+		}
+	}
+
+	static inline void changeFileOwner( const char * path )
+	{
+		int uid = utility::getUID() ;
+
+		if( uid != -1 ){
+
+			chown( path,uid,uid ) ;
+		}
+	}
 }
 
 namespace utility
@@ -154,7 +177,7 @@ namespace utility
 		{
 			return this->open( filePath.toLatin1().constData(),ro ) ;
 		}
-		int handle()
+		int handle() const
 		{
 			return m_fd ;
 		}

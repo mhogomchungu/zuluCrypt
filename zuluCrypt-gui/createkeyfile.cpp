@@ -190,6 +190,8 @@ void createkeyfile::pbCreate()
 
 				m_stop = true ;
 			}else{
+				utility::changeFileOwner( sink ) ;
+
 				for( int i = 0 ; i < 64 ; i++ ){
 
 					if( m_stop ){
