@@ -369,12 +369,12 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="926"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="912"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="470"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="465"/>
         <source>if the option is checked,a primary private mount point will be created in &quot;/run/media/private/$USER/&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;/run/media/public/&quot;</source>
         <translation type="unfinished"></translation>
@@ -706,23 +706,23 @@ Wrong password or not an encfs volume</source>
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="326"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="350"/>
         <source>Elapsed time: 0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="334"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="358"/>
         <source>Elapsed time: %0 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="336"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="360"/>
         <source>Elapsed time: %0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="347"/>
-        <source>please be patient as unlocking a VeraCrypt volume may take a very long time.
+        <location filename="../../zuluCrypt-gui/utility.h" line="371"/>
+        <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>
         <translation type="unfinished"></translation>

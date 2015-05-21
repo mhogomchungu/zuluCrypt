@@ -78,16 +78,6 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 	}
 }
 
-static string_t zuluExit_1( string_t e,DIR * dir )
-{
-	if( dir != NULL ){
-
-		closedir( dir ) ;
-	}
-
-	return e ;
-}
-
 /*
  * given a path of something like "/dev/mapper/zuluCrypt-500-NAAN-header-image-file.img-2244846319",
  * this routine will look for its corresponding entry in "/dev/disk/by-id/" and we will find
@@ -105,12 +95,10 @@ string_t _get_mapper_property_from_udev( const char * mapper,size_t position )
 
 	stringList_t stl ;
 
-	string_t st ;
+	string_t st = StringVoid ;
 
-	if( dir == NULL ){
+	if( dir != NULL ){
 
-		return StringVoid ;
-	}else{
 		while( ( e = readdir( dir ) ) != NULL ){
 
 			if( StringStartsAndEndsWith( e->d_name,"dm-uuid-CRYPT-LUKS",f ) ){
@@ -121,12 +109,14 @@ string_t _get_mapper_property_from_udev( const char * mapper,size_t position )
 
 				StringListDelete( &stl ) ;
 
-				return zuluExit_1( st,dir ) ;
+				break ;
 			}
 		}
+
+		closedir( dir ) ;
 	}
 
-	return zuluExit_1( StringVoid,dir ) ;
+	return st ;
 }
 
 static char * _get_uuid_from_udev( const char * mapper )

@@ -33,7 +33,6 @@
 
 LxQt::Wallet::kwallet::kwallet() : m_kwallet( 0 )
 {
-
 }
 
 LxQt::Wallet::kwallet::~kwallet()
@@ -51,8 +50,7 @@ void LxQt::Wallet::kwallet::setImage( const QString& image )
 
 bool LxQt::Wallet::kwallet::addKey( const QString& key,const QByteArray& value )
 {
-	m_kwallet->writePassword( key,value ) ;
-	return true ;
+	return m_kwallet->writePassword( key,value ) == 0 ;
 }
 
 bool LxQt::Wallet::kwallet::await_open( const QString& walletName,const QString& applicationName,
@@ -141,9 +139,9 @@ QVector<LxQt::Wallet::walletKeyValues> LxQt::Wallet::kwallet::readAllKeyValues( 
 
 	for( int i = 0 ; i < j ; i++ ){
 
-		m_kwallet->readPassword( l.at( i ),value ) ;
-		LxQt::Wallet::walletKeyValues q( l.at( i ),value.toLatin1() ) ;
-		p.append( q ) ;
+		auto& e = l.at( i ) ;
+		m_kwallet->readPassword( e,value ) ;
+		p.append( LxQt::Wallet::walletKeyValues( e,value.toLatin1() ) ) ;
 	}
 	return p ;
 }
@@ -186,7 +184,7 @@ void LxQt::Wallet::kwallet::setInterfaceObject( QWidget * interfaceObject )
 
 QObject * LxQt::Wallet::kwallet::qObject( void )
 {
-	return static_cast< QObject * >( this ) ;
+	return this ;
 }
 
 QString LxQt::Wallet::kwallet::storagePath()

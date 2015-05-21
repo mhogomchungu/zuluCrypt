@@ -181,7 +181,7 @@ namespace utility
 		{
 			return m_fd ;
 		}
-		char getChar()
+		char getChar() const
 		{
 			char z ;
 
@@ -201,7 +201,7 @@ namespace utility
 
 			return z ;
 		}
-		void writeChar( char r )
+		void writeChar( char r ) const
 		{
 			::write( m_fd,&r,1 ) ;
 		}
@@ -368,7 +368,7 @@ namespace utility
 		QLabel * m_label ;
 		QTimer m_timer ;
 		float m_time = 0 ;
-		QString m_warning = tr( "please be patient as unlocking a VeraCrypt volume may take a very long time.\n\n" ) ;
+		QString m_warning = tr( "Please be patient as unlocking a VeraCrypt volume may take a very long time.\n\n" ) ;
 	};
 }
 #endif // MISCFUNCTIONS_H

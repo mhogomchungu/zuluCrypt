@@ -817,8 +817,6 @@ void createvolume::pbCreateClicked()
 
 void createvolume::taskFinished( int st )
 {
-	m_veraCryptWarning.hide() ;
-
 	DialogMsg msg( this ) ;
 	m_isWindowClosable = true ;
 	QString x = tr( "Volume created successfully." ) ;
@@ -856,6 +854,7 @@ only root user or members of group zulucrypt can do that" ) ) ;									break  ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
 	}
 
+	m_veraCryptWarning.hide() ;
 	this->enableAll() ;
 }
 

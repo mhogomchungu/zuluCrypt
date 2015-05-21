@@ -289,7 +289,7 @@ static stringList_t _remove_root_devices( stringList_t stl )
 
 static int _supported_device( const char * device )
 {
-	return StringAtLeastOnePrefixMatch( device,"/dev/sd","/dev/hd","/dev/loop","/dev/sr","/dev/md","/dev/mmc",NULL ) ;
+	return StringAtLeastOnePrefixMatch( device,"/dev/sd","/dev/hd","/dev/loop","/dev/sr","/dev/md",NULL ) ;
 }
 
 static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )

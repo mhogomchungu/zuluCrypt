@@ -547,7 +547,7 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 					return _delete_encfs_m_point( m ) ;
 				}
 			}else{
-				return _delete_encfs_m_point( m ) ;
+				return false ;
 			}
 		} ;
 

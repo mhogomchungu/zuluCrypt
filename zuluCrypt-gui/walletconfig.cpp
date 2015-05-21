@@ -121,18 +121,50 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 	m_volumeID = volumeID ;
 	m_key      = key ;
 
-	Task::run( [ this ](){
+	Task::run< bool>( [ this ](){
 
-		m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ;
-		m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ;
+		auto _add = [ this ](){
 
-	} ).then( [ this ](){
+			if( m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ){
 
-		QStringList entry ;
-		entry.append( m_volumeID ) ;
-		entry.append( m_comment ) ;
+				if( m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ){
 
-		tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+					return true ;
+				}else{
+					m_wallet->deleteKey( m_volumeID ) ;
+					return false ;
+				}
+			}else{
+				return false ;
+			}
+		} ;
+
+		for( int i = 0 ; i < 3 ; i++ ){
+
+			if( _add() ){
+
+				return true ;
+			}else{
+				utility::Task::waitForTwoSeconds() ;
+			}
+		}
+
+		return false ;
+
+	} ).then( [ this ]( bool success ){
+
+		if( success ){
+
+			QStringList entry ;
+			entry.append( m_volumeID ) ;
+			entry.append( m_comment ) ;
+
+			tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+		}else{
+
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed To Add the Key In The Wallet." ) ) ;
+		}
 
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
@@ -157,10 +189,13 @@ void walletconfig::ShowUI( LxQt::Wallet::walletBackEnd backEnd )
 {
 	this->disableAll() ;
 	this->show() ;
+
 	m_wallet = LxQt::Wallet::getWalletBackend( backEnd ) ;
 	m_wallet->setInterfaceObject( this ) ;
+
 	if( backEnd == LxQt::Wallet::kwalletBackEnd ){
-		m_wallet->open( m_wallet->localDefaultWalletName(),utility::applicationName() ) ;
+
+		m_wallet->open( "default",utility::applicationName() ) ;
 	}else{
 		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
 	}
@@ -201,7 +236,6 @@ void walletconfig::walletIsOpen( bool opened )
 				 *
 				 * This allows to store a a volume volume,a comment about the volume and the passphrase.
 				 *
-				 * COMMENT is defined in task.h
 				 */
 
 				QStringList s ;
