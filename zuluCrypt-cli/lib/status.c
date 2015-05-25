@@ -30,6 +30,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "tcplay_support.h"
+
 /*
  * 64 byte buffer is more than enough because the API that will produce the largest number is crypt_get_data_offset()
  * and it produces a uint64_t number and this type has a maximum digit count is 19.
@@ -86,7 +88,7 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
  *
  */
 
-string_t _get_mapper_property_from_udev( const char * mapper,size_t position )
+string_t _get_mapper_property_from_udev( const char * mapper,const char * prefix,size_t position )
 {
 	DIR * dir = opendir( "/dev/disk/by-id/" ) ;
 	struct dirent * e ;
@@ -101,7 +103,7 @@ string_t _get_mapper_property_from_udev( const char * mapper,size_t position )
 
 		while( ( e = readdir( dir ) ) != NULL ){
 
-			if( StringStartsAndEndsWith( e->d_name,"dm-uuid-CRYPT-LUKS",f ) ){
+			if( StringStartsAndEndsWith( e->d_name,prefix,f ) ){
 
 				stl = StringListSplit( e->d_name,'-' ) ;
 
@@ -121,13 +123,13 @@ string_t _get_mapper_property_from_udev( const char * mapper,size_t position )
 
 static char * _get_uuid_from_udev( const char * mapper )
 {
-	string_t st = _get_mapper_property_from_udev( mapper,UUID ) ;
+	string_t st = _get_mapper_property_from_udev( mapper,"dm-uuid-CRYPT-LUKS",UUID ) ;
 	return StringDeleteHandle( &st ) ;
 }
 
 static char * _get_type_from_udev( const char * mapper )
 {
-	string_t st = _get_mapper_property_from_udev( mapper,TYPE ) ;
+	string_t st = _get_mapper_property_from_udev( mapper,"dm-uuid-CRYPT-",TYPE ) ;
 
 	if( st == StringVoid ){
 
@@ -141,14 +143,14 @@ static char * _get_type_from_udev( const char * mapper )
 
 static string_t _get_type_from_udev_1( const char * mapper )
 {
-	string_t st = _get_mapper_property_from_udev( mapper,TYPE ) ;
+	string_t st = _get_mapper_property_from_udev( mapper,"dm-uuid-CRYPT-",TYPE ) ;
 
 	if( st == StringVoid ){
 
 		/*
-		 * failed to discover volume type,assume its luks1
+		 * failed to discover volume type
 		 */
-		return String( "luks1" ) ;
+		return String( "Nil" ) ;
 	}else{
 		StringToLowerCase( st ) ;
 
@@ -378,8 +380,9 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	return r ;
 }
 
-static char * zuluExit( string_t st,struct crypt_device * cd )
+static char * zuluExit( string_t st,struct crypt_device * cd,char * e )
 {
+	StringFree( e ) ;
 	crypt_free( cd ) ;
 	return StringDeleteHandle( &st ) ;
 }
@@ -390,11 +393,12 @@ static char * _volume_status( const char * mapper )
 	char * buffer = buff ;
 	const char * z ;
 	const char * type ;
-	const char * device_name ;
 	char * path ;
 	int i ;
 	int j ;
 	int k ;
+
+	char * device_name = NULL ;
 
 	struct crypt_device * cd ;
 	struct crypt_active_device cad ;
@@ -408,14 +412,17 @@ static char * _volume_status( const char * mapper )
 	}
 	if( crypt_get_active_device( NULL,mapper,&cad ) != 0 ){
 
-		return zuluExit( p,cd ) ;
+		return zuluExit( p,cd,device_name ) ;
 	}
 
-	device_name = crypt_get_device_name( cd ) ;
+	/*
+	 * zuluCryptVolumeDeviceName() is defined in this source file
+	 */
+	device_name = zuluCryptVolumeDeviceName( mapper ) ;
 
 	if( device_name == NULL ){
 
-		return zuluExit( p,cd ) ;
+		return zuluExit( p,cd,device_name ) ;
 	}
 
 	p = String( mapper ) ;
@@ -423,10 +430,10 @@ static char * _volume_status( const char * mapper )
 	switch( crypt_status( cd,mapper ) ){
 	case CRYPT_INACTIVE :
 		StringAppend( p," is inactive.\n" ) ;
-		return zuluExit( p,cd ) ;
+		return zuluExit( p,cd,device_name ) ;
 	case CRYPT_INVALID  :
 		StringAppend( p," is invalid.\n" ) ;
-		return zuluExit( p,cd ) ;
+		return zuluExit( p,cd,device_name ) ;
 	case CRYPT_ACTIVE   :
 		StringAppend( p," is active.\n" ) ;
 		break ;
@@ -435,7 +442,7 @@ static char * _volume_status( const char * mapper )
 		break ;
 	default :
 		StringAppend( p," is invalid.\n" ) ;
-		return zuluExit( p,cd ) ;
+		return zuluExit( p,cd,device_name ) ;
 	}
 
 	StringAppend( p," type:   \t" ) ;
@@ -555,7 +562,7 @@ static char * _volume_status( const char * mapper )
 		StringFree( path ) ;
 	}
 
-	return zuluExit( p,cd ) ;
+	return zuluExit( p,cd,device_name ) ;
 }
 
 char * zuluCryptVolumeStatus( const char * mapper )
@@ -592,23 +599,123 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	return e ;
 }
 
+/*
+ * here,we are exploiting a simple observation that mapper will contain something like
+ * "zuluCrypt-500-NAAN-sdc1-2091885911" and prepending "/dev/" infront of the 3rd component
+ * will give us what we are looking for(/dev/sdc1). Hope this will always work.
+ */
+static char * _get_device_name( const char * mapper )
+{
+	string_t st ;
+
+	char * e ;
+
+	stringList_t stl = StringListSplit( mapper,'-' ) ;
+
+	st = StringListStringAt( stl,3 ) ;
+
+	e = StringCopy_2( StringPrepend( st,"/dev/" ) ) ;
+
+	StringListDelete( &stl ) ;
+
+	return e ;
+}
+
+static char * _device_name( const char * mapper )
+{
+	tc_api_task task ;
+
+	char * e = NULL ;
+
+	int64_t block_offset = 0 ;
+
+	char device[ PATH_MAX + 1 ] ;
+
+	mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
+
+	if( tc_api_init( 0 ) == TC_OK ){
+
+		task = tc_api_task_init( "info_mapped" ) ;
+
+		if( task != 0 ){
+
+			tc_api_task_set( task,"map_name",mapper ) ;
+
+			tc_api_task_do( task ) ;
+
+			tc_api_task_info_get( task,"block_offset",sizeof( block_offset ),&block_offset ) ;
+			tc_api_task_info_get( task,"device",sizeof( device ),device ) ;
+
+			tc_api_task_uninit( task ) ;
+
+			/*
+			 * 32256 is derived from 63(sectors) * 512(block size)
+			 */
+			if( block_offset == 32256 ){
+
+				/*
+				 * This is a hacky code path.
+				 *
+				 *  Given a device with a node address of something like "/dev/sdc1",
+				 *  the device will be reported as "/dev/sdc" if the device is a TrueCrypt
+				 *  system volume and this code path tries to figure out "/dev/sdc1" from "/dev/sdc".
+				 */
+
+				if( StringPrefixEqual( device,"/dev/sd" ) || StringPrefixEqual( device,"/dev/hd" ) ){
+
+					e = _get_device_name( mapper ) ;
+				}else{
+					/*
+					 * devices with particions do not seem to suffer the above problem
+					 */
+					e = zuluCryptResolvePath_3( device ) ;
+				}
+			}else{
+				e = zuluCryptResolvePath_3( device ) ;
+			}
+		}
+	}
+
+	return e ;
+}
+
+int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
+{
+	int e ;
+
+	char * f =  zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
+
+	e = StringsAreEqual( f,"crypto_TCRYPT" ) || StringsAreEqual( f,"crypto_VCRYPT" ) ;
+
+	StringFree( f ) ;
+
+	return e ;
+}
+
 char * zuluCryptVolumeDeviceName( const char * mapper )
 {
 	struct crypt_device * cd ;
 	const char * e = crypt_get_dir() ;
 	char * f = NULL ;
 
-	if( StringPrefixEqual( mapper,e ) && crypt_init_by_name( &cd,mapper ) == 0 ){
+	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
 
-		e = crypt_get_device_name( cd ) ;
+		return _device_name( mapper ) ;
+	}else{
+		if( crypt_init_by_name( &cd,mapper ) == 0 ){
 
-		if( e != NULL ){
-			/*
-			 * zuluCryptResolvePath_3() is defined in resolve_path.c
-			*/
-			f = zuluCryptResolvePath_3( e ) ;
+			e = crypt_get_device_name( cd ) ;
+
+			if( e != NULL ){
+				/*
+				* zuluCryptResolvePath_3() is defined in resolve_path.c
+				*/
+				f = zuluCryptResolvePath_3( e ) ;
+			}
+
+			crypt_free( cd ) ;
 		}
-		crypt_free( cd ) ;
+
+		return f ;
 	}
-	return f ;
 }

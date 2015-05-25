@@ -20,6 +20,8 @@
 #include <unistd.h>
 #include <stddef.h>
 #include <libcryptsetup.h>
+#include "includes.h"
+#include "tcplay_support.h"
 
 int zuluCryptCloseMapper( const char * mapper )
 {
@@ -29,30 +31,54 @@ int zuluCryptCloseMapper( const char * mapper )
 
 	struct crypt_device * cd ;
 
-	if( crypt_init_by_name( &cd,mapper ) == 0 ){
+	tc_api_task task ;
 
-		for( j = 0 ; j < 3 ; j++ ) {
+	/*
+	 * zuluCryptTrueCryptOrVeraCryptVolume() is defined in status.c
+	 */
+	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
 
-			/*
-			 * try multiple times to close the mapper just in case
-			 */
+		if( tc_api_init( 0 ) == TC_OK ){
 
-			r = crypt_deactivate( cd,mapper ) ;
+			task = tc_api_task_init( "unmap" ) ;
 
-			if( r == 0 ){
+			if( task != 0 ){
 
-				break ;
-			}else{
-				sleep( 1 ) ;
+				mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
+
+				tc_api_task_set( task,"map_name",mapper ) ;
+
+				r = tc_api_task_do( task ) ;
+
+				tc_api_task_uninit( task ) ;
 			}
 		}
-
-		crypt_free( cd ) ;
 	}else{
-		/*
-		 * we shouldnt get here
-		 */
-		;
+		if( crypt_init_by_name( &cd,mapper ) == 0 ){
+
+			for( j = 0 ; j < 3 ; j++ ) {
+
+				/*
+				* try multiple times to close the mapper just in case
+				*/
+
+				r = crypt_deactivate( cd,mapper ) ;
+
+				if( r == 0 ){
+
+					break ;
+				}else{
+					sleep( 1 ) ;
+				}
+			}
+
+			crypt_free( cd ) ;
+		}else{
+			/*
+			* we shouldnt get here
+			*/
+			;
+		}
 	}
 
 	return r ;

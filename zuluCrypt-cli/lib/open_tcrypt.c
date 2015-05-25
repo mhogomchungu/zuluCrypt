@@ -31,6 +31,7 @@
  */
 #include "truecrypt_support.h"
 #include "veracrypt_support.h"
+#include "tcplay_support.h"
 
 /*
  * TRIM support for truecrypt volume is off due to recommendation from the following wiki page:
@@ -95,7 +96,7 @@ static inline int zuluExit( int st,struct crypt_device * cd )
  */
 int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source )
 {
-	struct crypt_device * cd = NULL;
+	struct crypt_device * cd = NULL ;
 	struct crypt_params_tcrypt params ;
 
 	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
@@ -116,6 +117,71 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 		}
 	}
 }
+
+#if TCPLAY_OPEN
+
+static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
+{
+	tc_api_task task ;
+	int r = !TC_OK ;
+
+	size_t i ;
+	size_t k ;
+
+	const char * const * z ;
+
+	const char * e ;
+
+	string_t st = StringVoid ;
+
+	if( tc_api_init( 0 ) == TC_OK ){
+
+		task = tc_api_task_init( "map" ) ;
+
+		if( task != 0 ){
+
+			tc_api_task_set( task,"veracrypt_mode",opts->veraCrypt_volume ) ;
+			tc_api_task_set( task,"map_name",opts->mapper_name ) ;
+
+			if( opts->tcrypt_system ){
+
+				if( StringPrefixEqual( device,"/dev/loop" ) ){
+					
+					tc_api_task_set( task,"dev",device ) ;
+					tc_api_task_set( task,"sys",device ) ;
+				}else{
+					st = String( device ) ;
+					e = StringRemoveDigits( st ) ;
+					tc_api_task_set( task,"dev",e ) ;
+					tc_api_task_set( task,"sys",e ) ;
+				}
+			}else{
+				tc_api_task_set( task,"dev",device ) ;
+			}
+
+			k = opts->tcrypt_keyfiles_count ;
+			z = opts->tcrypt_keyfiles ;
+
+			tc_api_task_set( task,"passphrase",opts->key ) ;
+
+			for( i = 0 ; i < k ; i++ ){
+				tc_api_task_set( task,"keyfiles",*( z + i ) ) ;
+			}
+
+			r = tc_api_task_do( task ) ;
+
+			tc_api_task_uninit( task ) ;
+
+			StringDelete( &st ) ;
+		}
+
+		tc_api_uninit() ;
+	}
+
+	return r ;
+}
+
+#else
 
 static uint32_t _tcrypt_flags( int volume_type )
 {
@@ -212,6 +278,8 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 		}
 	}
 }
+
+#endif
 
 static int _open_tcrypt_0( const open_struct_t * opt )
 {

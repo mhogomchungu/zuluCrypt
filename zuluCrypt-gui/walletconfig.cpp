@@ -161,7 +161,6 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 
 			tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
 		}else{
-
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed To Add the Key In The Wallet." ) ) ;
 		}

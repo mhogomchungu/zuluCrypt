@@ -160,6 +160,8 @@ struct tcplay_info {
 	off_t skip;	/* IV offset (in blk_sz blocks) */
 	off_t offset;	/* Block offset (in blk_sz blocks) */
 
+	off_t off_set;
+	
 	/* Populated by dm_setup */
 	uuid_t uuid;
 

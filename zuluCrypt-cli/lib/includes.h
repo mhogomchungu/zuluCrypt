@@ -153,8 +153,15 @@ int zuluCryptOpenTcrypt_1( const open_struct_t * ) ;
  */
 int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_struct_t * ) ;
 
-
+/*
+ * this function is defined in create_loop_device.c
+ */
 int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loop,int mode,string_t * loop_device ) ;
+
+/*
+ * this function is defined in status.c
+ */
+int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper ) ;
 
 /*
  * this function is defined in status.c
