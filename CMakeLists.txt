@@ -118,6 +118,7 @@ file( APPEND ${PROJECT_BINARY_DIR}/truecrypt_support_1.h "\n#define VERACRYPT_CR
 
 file( WRITE ${PROJECT_BINARY_DIR}/tcplay_support.h "\n#define TCPLAY_OPEN 1\n#include \"tcplay_api.h\"\n" )
 file( WRITE ${PROJECT_BINARY_DIR}/veracrypt_support.h "\n#define VERACRYPT_SUPPORT 1\n" )
+file( WRITE  ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 1\n#define TRUECRYPT_TCPLAY 1" )
 
 ADD_SUBDIRECTORY( external_libraries/tc-play )
 add_definitions( -I${PROJECT_SOURCE_DIR}/external_libraries/tc-play )
@@ -237,48 +238,13 @@ if( NOT UDEVSUPPORT )
 	message( STATUS "udev support\n" )
 endif( NOT UDEVSUPPORT )
 
-if( NOT BUILD_TCPLAY )
-	#message( STATUS "cryptsetup version is too old(<1.6.0)" )
-	#message( STATUS "You wont be able to create truecrypt compatible encrypted containers" )
-	#message( STATUS "tcplay project is hosted at: https://github.com/bwalex/tc-play\n" )
-endif( NOT BUILD_TCPLAY )
-
-if( NOT CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-	message( STATUS "version of cryptsetup is less than 1.6.0,support for opening of truecrypt compatible containers is disabled" )
-endif( NOT CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "\n" )
-
-if( BUILD_TCPLAY )
-	if( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-		file( WRITE  ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 1\n#define TRUECRYPT_TCPLAY 1" )
-#		message ( STATUS "truecrypt volumes will be opened using cryptsetup\n" )
-	else( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-		file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 0\n#define TRUECRYPT_TCPLAY 1" )
-#		message ( STATUS "truecrypt volumes will be opened using tcplay\n" )
-	endif( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-	file( APPEND ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#include <tcplay_api.h>" )
-else( BUILD_TCPLAY )
-	if( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-		file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 1\n#define TRUECRYPT_TCPLAY 0" )
-#		message ( STATUS "truecrypt volumes will be opened using cryptsetup\n" )
-	else( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-		file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 0\n#define TRUECRYPT_TCPLAY 0" )
-	endif( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-endif( BUILD_TCPLAY )
-
-#overdide the above for now
-if( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 1\n#define TRUECRYPT_TCPLAY 0\n" )
-else( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
-	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 0\n#define TRUECRYPT_TCPLAY 0\n" )
-endif( CRYPTSETUP_VERSION VERSION_GREATER "1.5.1" )
 
 if( CRYPTSETUP_VERSION VERSION_GREATER "1.4.0" )
 	file( WRITE ${PROJECT_BINARY_DIR}/luks_external_header.h "\n#define LUKS_EXTERNAL_HEADER 1\n" )
 else( CRYPTSETUP_VERSION VERSION_GREATER "1.4.0" )
-	file( WRITE ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define LUKS_EXTERNAL_HEADER 0\n" )
+	file( WRITE ${PROJECT_BINARY_DIR}/luks_external_header.h "\n#define LUKS_EXTERNAL_HEADER 0\n" )
 endif( CRYPTSETUP_VERSION VERSION_GREATER "1.4.0" )
 
 if( UDEVSUPPORT )

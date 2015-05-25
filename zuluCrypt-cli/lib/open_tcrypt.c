@@ -145,15 +145,15 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 			if( opts->tcrypt_system ){
 
-				if( StringPrefixEqual( device,"/dev/loop" ) ){
-					
-					tc_api_task_set( task,"dev",device ) ;
-					tc_api_task_set( task,"sys",device ) ;
-				}else{
+				if( StringPrefixEqual( device,"/dev/sd" ) || StringPrefixEqual( device,"/dev/hd" ) ){
+
 					st = String( device ) ;
 					e = StringRemoveDigits( st ) ;
 					tc_api_task_set( task,"dev",e ) ;
 					tc_api_task_set( task,"sys",e ) ;
+				}else{
+					tc_api_task_set( task,"dev",device ) ;
+					tc_api_task_set( task,"sys",device ) ;
 				}
 			}else{
 				tc_api_task_set( task,"dev",device ) ;

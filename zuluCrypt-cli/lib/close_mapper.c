@@ -23,10 +23,8 @@
 #include "includes.h"
 #include "tcplay_support.h"
 
-int zuluCryptCloseMapper( const char * mapper )
+static int _close_mapper( const char * mapper )
 {
-	int j ;
-
 	int r = 1 ;
 
 	struct crypt_device * cd ;
@@ -56,30 +54,29 @@ int zuluCryptCloseMapper( const char * mapper )
 	}else{
 		if( crypt_init_by_name( &cd,mapper ) == 0 ){
 
-			for( j = 0 ; j < 3 ; j++ ) {
-
-				/*
-				* try multiple times to close the mapper just in case
-				*/
-
-				r = crypt_deactivate( cd,mapper ) ;
-
-				if( r == 0 ){
-
-					break ;
-				}else{
-					sleep( 1 ) ;
-				}
-			}
+			r = crypt_deactivate( cd,mapper ) ;
 
 			crypt_free( cd ) ;
-		}else{
-			/*
-			* we shouldnt get here
-			*/
-			;
 		}
 	}
 
 	return r ;
+}
+
+int zuluCryptCloseMapper( const char * mapper )
+{
+	int i ;
+
+	for( i = 0 ; i < 3 ; i++ ){
+
+		if( _close_mapper( mapper ) == 0 ){
+
+			return 0 ;
+		}else{
+			sleep( 1 ) ;
+		}
+
+	}
+
+	return 1 ;
 }
