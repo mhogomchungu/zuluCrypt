@@ -221,6 +221,12 @@ else()
 	file( WRITE ${PROJECT_BINARY_DIR}/support_whirlpool.h "\n#define SUPPORT_WHIRLPOOL 0\n" )
 endif()
 
+if( CRYPTSETUP_VERSION VERSION_GREATER "1.6.0" )
+	file( WRITE ${PROJECT_BINARY_DIR}/check_tcrypt.h "\n#define CHECK_TCRYPT 1\n" )
+else()
+	file( WRITE ${PROJECT_BINARY_DIR}/check_tcrypt.h "\n#define CHECK_TCRYPT 0\n" )
+endif()
+
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "optional functionality that will NOT be build" )

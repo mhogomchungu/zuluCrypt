@@ -26,17 +26,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-/*
- * these headers are created at config time
- */
-#include "truecrypt_support.h"
-#include "veracrypt_support.h"
 #include "tcplay_support.h"
-
-/*
- * TRIM support for truecrypt volume is off due to recommendation from the following wiki page:
- * https://wiki.archlinux.org/index.php/dm-crypt_with_LUKS#Discard.2FTRIM_support_for_solid_state_disks_.28SSD.29
- */
+#include "check_tcrypt.h"
 
 string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fileName )
 {
@@ -82,43 +73,11 @@ string_t zuluCryptCreateKeyFile_1( string_t st,const char * fileName )
 	return zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),fileName ) ;
 }
 
-#if TRUECRYPT_CRYPTSETUP
-
 static inline int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd ) ;
 	return st ;
 }
-
-/*
- * 1 is returned if a volume is a truecrypt volume.
- * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
- */
-int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source )
-{
-	struct crypt_device * cd = NULL ;
-	struct crypt_params_tcrypt params ;
-
-	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
-
-	if( key_source ){;}
-
-	if( crypt_init( &cd,device ) < 0 ){
-		return 0 ;
-	}else{
-		params.passphrase      = key ;
-		params.passphrase_size = StringSize( key ) ;
-		params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
-
-		if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
-			return zuluExit( 1,cd ) ;
-		}else{
-			return zuluExit( 0,cd ) ;
-		}
-	}
-}
-
-#if TCPLAY_OPEN
 
 static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 {
@@ -145,7 +104,8 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 			if( opts->tcrypt_system ){
 
-				if( StringPrefixEqual( device,"/dev/sd" ) || StringPrefixEqual( device,"/dev/hd" ) ){
+				if( StringPrefixEqual( device,"/dev/sd" ) ||
+					StringPrefixEqual( device,"/dev/hd" ) ){
 
 					st = String( device ) ;
 					e = StringRemoveDigits( st ) ;
@@ -180,106 +140,6 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 	return r ;
 }
-
-#else
-
-static uint32_t _tcrypt_flags( int volume_type )
-{
-	if( volume_type == TCRYPT_HIDDEN ){
-
-		return CRYPT_TCRYPT_LEGACY_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
-	}else{
-		return CRYPT_TCRYPT_LEGACY_MODES ;
-	}
-}
-
-#if VERACRYPT_SUPPORT
-
-static uint32_t _set_flags( const open_struct_t * opts )
-{
-	if( opts->veraCrypt_volume ){
-
-		if( opts->volume_type == TCRYPT_HIDDEN ){
-
-			return CRYPT_TCRYPT_VERA_MODES | CRYPT_TCRYPT_HIDDEN_HEADER ;
-		}else{
-			return CRYPT_TCRYPT_VERA_MODES ;
-		}
-	}else{
-		return _tcrypt_flags( opts->volume_type ) ;
-	}
-}
-
-#else
-
-static uint32_t _set_flags( const open_struct_t * opts )
-{
-	return _tcrypt_flags( opts->volume_type ) ;
-}
-
-#endif
-
-static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
-{
-	uint32_t flags ;
-
-	int r ;
-
-	struct crypt_device * cd = NULL ;
-	struct crypt_params_tcrypt params ;
-
-	if( opts->veraCrypt_volume && !VERACRYPT_SUPPORT ){
-		return 1 ;
-	}
-
-	if( crypt_init( &cd,device ) < 0 ){
-		return 1 ;
-	}else{
-		memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
-
-		params.keyfiles_count   = opts->tcrypt_keyfiles_count ;
-		params.keyfiles         = ( const char ** )opts->tcrypt_keyfiles ;
-
-		params.passphrase       = opts->key ;
-		params.passphrase_size  = opts->key_len ;
-
-		if( params.passphrase_size > 64 ){
-			/*
-			 * truecrypt passphrase is limited to 64 characters
-			 */
-			params.passphrase_size = 64 ;
-		}
-
-		params.flags = _set_flags( opts ) ;
-
-		if( opts->tcrypt_system ){
-
-			params.flags |= CRYPT_TCRYPT_SYSTEM_HEADER ;
-		}
-
-		if( crypt_load( cd,CRYPT_TCRYPT,&params ) != 0 ){
-
-			return zuluExit( 1,cd ) ;
-		}
-
-		if( StringHasComponent( opts->m_opts,"ro" ) ){
-
-			flags = CRYPT_ACTIVATE_READONLY ;
-		}else{
-			flags = 0 ;
-		}
-
-		r = crypt_activate_by_volume_key( cd,opts->mapper_name,NULL,0,flags ) ;
-
-		if( r == 0 ){
-			return zuluExit( 0,cd ) ;
-		}else{
-			return zuluExit( 1,cd ) ;
-		}
-	}
-}
-
-#endif
 
 static int _open_tcrypt_0( const open_struct_t * opt )
 {
@@ -376,38 +236,41 @@ int zuluCryptOpenTcrypt_1( const open_struct_t * opts )
 	return zuluCryptOpenVolume_0( _open_tcrypt_0,opts ) ;
 }
 
-#else
-
-/*
- * We wil get here if truecrypt support is not enabled through cryptsetup or tcplay
- */
-
+#if CHECK_TCRYPT
 /*
  * 1 is returned if a volume is a truecrypt volume.
  * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
  */
 int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source )
 {
+	struct crypt_device * cd = NULL;
+	struct crypt_params_tcrypt params ;
+
+	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
+
+	if( key_source ){;}
+
+	if( crypt_init( &cd,device ) < 0 ){
+		return 0 ;
+	}else{
+		params.passphrase      = key ;
+		params.passphrase_size = StringSize( key ) ;
+		params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
+
+		if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
+			return zuluExit( 1,cd ) ;
+		}else{
+			return zuluExit( 0,cd ) ;
+		}
+	}
+}
+
+#else
+
+int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source )
+{
 	if( 0 && device && key && key_source ){;}
-	return 0 ;
-}
 
-/*
- * 0 is returned if a volume was successfully opened.
- * 1 is returned if a volume was not successfully opened or functionality is not supported
- */
-int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * key,size_t key_len,
-			 int key_source,int volume_type,const char * m_point,
-			 uid_t id,unsigned long m_opts,const char * fs_opts )
-{
-	if( 0 && device && mapper && key && key_source && volume_type
-		&& m_point && id && m_opts && fs_opts && key_len ){;}
-	return 1 ;
-}
-
-int zuluCryptOpenTcrypt_1( const open_struct_t * opts )
-{
-	if( 0 && opts ){;}
 	return 1 ;
 }
 
