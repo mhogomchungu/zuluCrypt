@@ -431,6 +431,8 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 		opts->state_change_fn = sc_fn;
 		vp = va_arg(ap, void *);
 		opts->api_ctx = vp;
+	} else if (_match(key, "read_only")) {
+		opts->read_only = 1;
 	} else {
 		r = TC_ERR_UNIMPL;
 	}

@@ -702,9 +702,7 @@ static char * _volume_device_name( const char * mapper,char * ( *function )( con
 			e = crypt_get_device_name( cd ) ;
 
 			if( e != NULL ){
-				/*
-				* zuluCryptResolvePath_3() is defined in resolve_path.c
-				*/
+
 				f = function( e ) ;
 			}
 

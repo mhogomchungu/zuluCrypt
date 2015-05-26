@@ -1198,6 +1198,8 @@ map_volume(struct tcplay_opts *opts)
 		}
 	}
 
+	info->read_only = opts->read_only ;
+
 	if ((error = dm_setup(opts->map_name, info)) != 0) {
 		tc_log(1, "Could not set up mapping %s\n", opts->map_name);
 		free_info(info);
@@ -1837,6 +1839,9 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 		}
 
 		free(uu);
+
+		if (info->read_only)
+			dm_task_set_ro(dmt);
 
 		if (TC_FLAG_SET(info->flags, FDE)) {
 			/*

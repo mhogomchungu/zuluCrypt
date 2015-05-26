@@ -102,6 +102,11 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 			tc_api_task_set( task,"veracrypt_mode",opts->veraCrypt_volume ) ;
 			tc_api_task_set( task,"map_name",opts->mapper_name ) ;
 
+			if( StringHasComponent( opts->m_opts,"ro" ) ){
+
+				tc_api_task_set( task,"read_only" ) ;
+			}
+
 			if( opts->tcrypt_system ){
 
 				if( StringPrefixEqual( device,"/dev/sd" ) ||
