@@ -218,9 +218,9 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 		m_ui->labelType->setText( stl.at( 0 ) ) ;
 		m_ui->labelCipher->setText( stl.at( 1 ) ) ;
 		m_ui->labelKeySize->setText( stl.at( 2 ) ) ;
-		m_ui->labelDevice->setText( _trancate_long_path( stl.at( 3 ) ) ) ;
-		m_ui->labelLoop->setText( _trancate_long_path( stl.at( 4 ) ) ) ;
-		m_ui->labelOffset->setText( stl.at( 5 ) ) ;
+		m_ui->labelOffset->setText( stl.at( 3 ) ) ;
+		m_ui->labelDevice->setText( _trancate_long_path( stl.at( 4 ) ) ) ;
+		m_ui->labelLoop->setText( _trancate_long_path( stl.at( 5 ) ) ) ;
 		m_ui->labelSize->setText( stl.at( 6 ) ) ;
 		m_ui->labelMode->setText( stl.at( 7 ) ) ;
 		m_ui->labelActiveSlots->setText( stl.at( 8 ) ) ;

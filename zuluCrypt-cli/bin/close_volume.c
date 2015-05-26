@@ -53,30 +53,16 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 
 	 if( uid ){;}
 	 /*
-	  * zuluCryptCreateMapperName_1() defined in ../lib/create_mapper_name.c
-	  * zuluCryptMapperPrefix() defined in ../lib/create_mapper_name.c
+	  * ZULUCRYPTlongMapperPath is set in ../constants.h
+	  * zuluCryptCreateMapperName() defined in ../lib/create_mapper_name.c
 	  */
-	 p = zuluCryptCreateMapperName_1( dev,mapping_name,uid ) ;
+	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
 
-	 mapper = StringMultiplePrepend( p,"/",zuluCryptMapperPrefix(),NULL ) ;
+	 mapper = StringContent( p ) ;
 
 	 if( stat( mapper,&xt ) != 0 ){
 
-		 /*
-		  * mapper path doesnt exist,check again assuming its veracrypt mapper path
-		  */
-		 StringDelete( &p ) ;
-		/*
-		* zuluCryptCreateMapperName_0() defined in ../lib/create_mapper_name.c
-		*/
-		 p = zuluCryptCreateMapperName_0( dev,mapping_name,uid ) ;
-
-		 mapper = StringMultiplePrepend( p,"/",zuluCryptMapperPrefix(),NULL ) ;
-
-		 if( stat( mapper,&xt ) != 0 ){
-
-			return zuluExit( 1,p ) ;
-		}
+		 return zuluExit( 1,p ) ;
 	 }
 
 	 /*

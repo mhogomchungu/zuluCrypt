@@ -63,6 +63,9 @@ or in terabytes if the entry ends with &quot;t&quot;</string>
       <height>31</height>
      </rect>
     </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
+    </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">

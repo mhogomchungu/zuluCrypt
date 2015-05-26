@@ -397,17 +397,17 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/deviceoffset.ui" line="77"/>
+        <location filename="../../zuluMount-gui/deviceoffset.ui" line="80"/>
         <source>Enter The Password Below To A Volume At The Above Offset.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/deviceoffset.ui" line="106"/>
+        <location filename="../../zuluMount-gui/deviceoffset.ui" line="109"/>
         <source>&amp;ok</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/deviceoffset.ui" line="119"/>
+        <location filename="../../zuluMount-gui/deviceoffset.ui" line="122"/>
         <source>&amp;Cancel</source>
         <translation type="unfinished"></translation>
     </message>

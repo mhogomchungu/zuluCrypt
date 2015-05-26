@@ -333,15 +333,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 
 	/*
-	 * zuluCryptCreateMapperName_0() is defined at ../lib/create_mapper_name.c
-	 * zuluCryptCreateMapperName_1() is defined at ../lib/create_mapper_name.c
+	 * zuluCryptCreateMapperName() is defined in ../lib/create_mapper_name.c
 	 */
-	if( veraCrypt_volume ){
-
-		*m_name = zuluCryptCreateMapperName_0( device,mapping_name,uid ) ;
-	}else{
-		*m_name = zuluCryptCreateMapperName_1( device,mapping_name,uid ) ;
-	}
+	*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
 
 	*mapper = StringCopy( *m_name ) ;
 	mapper_name = StringContent( *m_name ) ;

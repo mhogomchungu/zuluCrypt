@@ -265,44 +265,71 @@ int zuluCryptModifyTcryptHeader( const info_t * e )
 	return r ;
 }
 
-static const char * _set_cipher_chain( char * const * q )
+struct crypto_pair{
+	const char * first ;
+	const char * second;
+} pair[] = {
+	{ "aes"                ,"AES-256-XTS" },
+	{ "twofish"            ,"TWOFISH-256-XTS" },
+	{ "serpent"            ,"SERPENT-256-XTS" },
+	{ "twofish:aes"        ,"TWOFISH-256-XTS,AES-256-XTS" },
+	{ "aes:serpent"        ,"AES-256-XTS,SERPENT-256-XTS" },
+	{ "serpent:twofish"    ,"SERPENT-256-XTS,TWOFISH-256-XTS" },
+	{ "aes:twofish:serpent","AES-256-XTS,TWOFISH-256-XTS,SERPENT-256-XTS" },
+	{ "serpent:twofish:aes","SERPENT-256-XTS,TWOFISH-256-XTS,AES-256-XTS" },
+	{ NULL                 ,NULL }
+} ;
+
+const char * zuluCryptConvertCipher( const char * p )
 {
-	const char * e = *q ;
+	int i = 0 ;
 
-	if( StringsAreEqual( e,"aes" ) ){
+	const char * q ;
 
-		return "AES-256-XTS" ;
+	while( 1 ){
 
-	}else if( StringsAreEqual( e,"twofish" ) ){
+		q = pair[ i ].second ;
 
-		return "TWOFISH-256-XTS" ;
+		if( q == NULL ){
 
-	}else if( StringsAreEqual( e,"serpent" ) ){
+			break ;
 
-		return "SERPENT-256-XTS" ;
+		}else if( StringsAreEqual( p,q ) ){
 
-	}else if( StringsAreEqual( e,"twofish:aes" ) ){
+			return pair[ i ].first ;
+		}
 
-		return "TWOFISH-256-XTS,AES-256-XTS" ;
-
-	}else if( StringsAreEqual( e,"aes:serpent" ) ){
-
-		return "AES-256-XTS,SERPENT-256-XTS" ;
-
-	}else if( StringsAreEqual( e,"serpent:twofish" ) ){
-
-		return "SERPENT-256-XTS,TWOFISH-256-XTS" ;
-
-	}else if( StringsAreEqual( e,"aes:twofish:serpent" ) ){
-
-		return "AES-256-XTS,TWOFISH-256-XTS,SERPENT-256-XTS" ;
-
-	}else if( StringsAreEqual( e,"serpent:twofish:aes" ) ){
-
-		return "SERPENT-256-XTS,TWOFISH-256-XTS,AES-256-XTS" ;
-	}else{
-		return NULL ;
+		i++ ;
 	}
+
+	return "Nil" ;
+}
+
+static const char * _set_cipher_chain( char * const * z )
+{
+	int i = 0 ;
+
+	const char * q ;
+
+	const char * p = *z ;
+
+	while( 1 ){
+
+		q = pair[ i ].first ;
+
+		if( q == NULL ){
+
+			break ;
+
+		}else if( StringsAreEqual( p,q ) ){
+
+			return pair[ i ].second ;
+		}
+
+		i++ ;
+	}
+
+	return NULL ;
 }
 
 static const char * _set_hash( char * const * q )

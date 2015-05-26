@@ -36,7 +36,7 @@
  * 64 byte buffer is more than enough because the API that will produce the largest number is crypt_get_data_offset()
  * and it produces a uint64_t number and this type has a maximum digit count is 19.
  */
-#define SIZE 64
+#define SIZE 1024
 
 #define TYPE 3
 
@@ -47,6 +47,8 @@
  */
 
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
+
+static char * _volume_device_name( const char *,char * (*)( const char * ) ) ;
 
 static void convert( char * buffer,int buffer_size,const char * s,u_int64_t y,u_int64_t z )
 {
@@ -293,45 +295,17 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	StringDelete( &q ) ;
 }
 
-/*
- * This function needs an explanation.
- * a VeraCrypt mapper will be in a format of: /dev/mapper/zuluCrypt-500-VERA-xxx-yyy.
- * other mappers will be in a format of:      /dev/mapper/zuluCrypt-500-NAAN-xxx-yyy or
- * in a format of:                            /dev/mapper/zuluCrypt-500-UUID-xxx-yyy
- *
- * the "500" is the UID of the user that unlocked the volume.
- *
- * to check if a volume is a VeraCrypt volume,we first strip the digits to end up with
- * something like "/dev/mapper/zuluCrypt--VERA-" and then we check if the volume is a
- * VeraCrypt volume by comparing it with "/dev/mapper/zuluCrypt--VERA-"
- */
-static int _veraCrypt_volume( const char * mapper )
+int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
 {
-	int r ;
+	int e ;
 
-	/*
-	 * st will hold a string like: /dev/mapper/zuluCrypt-500-VERA-xxx-yyy
-	 */
-	string_t st = String( mapper ) ;
+	char * f =  zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
 
-	/*
-	 * xt will hold a string like: /dev/mapper/zuluCrypt--VERA-
-	 */
-	string_t xt = String_1( crypt_get_dir(),"/zuluCrypt--VERA-",NULL ) ;
+	e = StringsAreEqual( f,"crypto_TCRYPT" ) || StringsAreEqual( f,"crypto_VCRYPT" ) ;
 
-	/*
-	 * strip the digits from st to end up with a string like: /dev/mapper/zuluCrypt--VERA-xxx-yyy
-	 */
-	StringRemoveDigits( st ) ;
+	StringFree( f ) ;
 
-	/*
-	 * check if st(/dev/mapper/zuluCrypt--VERA-xxx-yyy) starts with xt(/dev/mapper/zuluCrypt--VERA-)
-	 */
-	r = StringStartsWith_1( st,xt ) ;
-
-	StringMultipleDelete( &st,&xt,NULL ) ;
-
-	return r ;
+	return e ;
 }
 
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
@@ -344,11 +318,6 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	if( StringPrefixNotEqual( mapper,crypt_get_dir() ) ){
 
 		return StringCopy_2( "Nil" ) ;
-	}
-
-	if( _veraCrypt_volume( mapper ) ){
-
-		return StringCopy_2( "crypto_VCRYPT" ) ;
 	}
 
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
@@ -367,7 +336,6 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 		}else if( StringHasComponent( mapper,"truecrypt" ) ){
 
 			r = StringCopy_2( "crypto_TCRYPT" ) ;
-
 		}else{
 			r = _get_type_from_udev( mapper ) ;
 		}
@@ -387,10 +355,121 @@ static char * zuluExit( string_t st,struct crypt_device * cd,char * e )
 	return StringDeleteHandle( &st ) ;
 }
 
-static char * _volume_status( const char * mapper )
+static void _get_crypto_info_from_cryptsetup( string_t p,struct crypt_device * cd )
 {
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
+	const char * z ;
+
+	uint64_t e ;
+
+	z = crypt_get_cipher( cd ) ;
+
+	if( z != NULL ){
+
+		StringMultipleAppend( p,"\n cipher:\t",z,"-",NULL ) ;
+	}else{
+		StringAppend( p,"\n cipher:\tNil-" ) ;
+	}
+
+	z = crypt_get_cipher_mode( cd ) ;
+
+	if( z != NULL ){
+
+		StringAppend( p,z ) ;
+	}else{
+		StringAppend( p,"Nil" ) ;
+	}
+
+	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
+	StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
+
+	e = crypt_get_data_offset( cd ) ;
+
+	z = StringIntToString_1( buffer,SIZE,e ) ;
+	StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
+
+	zuluCryptFormatSize( e * 512,buffer,SIZE ) ;
+	StringMultipleAppend( p," / ",buffer,NULL ) ;
+}
+
+static int _get_crypto_info_from_tcplay( string_t p,const char * mapper )
+{
+	int key_size ;
+
+	int64_t offset ;
+
+	tc_api_task task ;
+
+	int r = 1 ;
+
+	char buff[ SIZE ] ;
+	char * buffer = buff ;
+
+	const char * z ;
+
+	if( tc_api_init( 0 ) == TC_OK ){
+
+		task = tc_api_task_init( "info_mapped" ) ;
+
+		if( task != 0 ){
+
+			mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
+
+			tc_api_task_set( task,"map_name",mapper ) ;
+
+			tc_api_task_do( task ) ;
+
+			tc_api_task_info_get( task,"cipher",sizeof( buff ),buff ) ;
+
+			/*
+			 * zuluCryptConvertCipher() is defined in create_tcrypt.c
+			 */
+			StringMultipleAppend( p,"\n cipher:\t",zuluCryptConvertCipher( buff ),"-xts-plain64",NULL ) ;
+
+			tc_api_task_info_get( task,"key_bits",sizeof( key_size ),&key_size ) ;
+
+			z = StringIntToString_1( buffer,SIZE,key_size ) ;
+
+			StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
+
+			tc_api_task_info_get( task,"block_offset",sizeof( offset ),&offset ) ;
+
+			z = StringIntToString_1( buffer,SIZE,offset / 512 ) ;
+
+			StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
+
+			zuluCryptFormatSize( offset,buffer,SIZE ) ;
+
+			StringMultipleAppend( p," / ",buffer,NULL ) ;
+
+			tc_api_task_uninit( task ) ;
+
+			r = 0 ;
+		}
+	}
+
+	return r ;
+}
+
+static void _get_crypto_info( string_t p,struct crypt_device * cd,const char * mapper )
+{
+	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
+
+		if( _get_crypto_info_from_tcplay( p,mapper ) ){
+
+			_get_crypto_info_from_cryptsetup( p,cd ) ;
+		}
+	}else{
+		_get_crypto_info_from_cryptsetup( p,cd ) ;
+	}
+}
+
+char * zuluCryptVolumeStatus( const char * mapper )
+{
+	char buff[ SIZE ] ;
+	char * buffer = buff ;
+
 	const char * z ;
 	const char * type ;
 	char * path ;
@@ -416,9 +495,9 @@ static char * _volume_status( const char * mapper )
 	}
 
 	/*
-	 * zuluCryptVolumeDeviceName() is defined in this source file
+	 * zuluCryptResolvePath_4() is defined in resolve_path.c
 	 */
-	device_name = zuluCryptVolumeDeviceName( mapper ) ;
+	device_name = _volume_device_name( mapper,zuluCryptResolvePath_4 ) ;
 
 	if( device_name == NULL ){
 
@@ -451,20 +530,9 @@ static char * _volume_status( const char * mapper )
 
 	if( type != NULL ){
 
-		if( StringsAreEqual( type,"TCRYPT" ) ){
-
-			if( _veraCrypt_volume( mapper ) ){
-
-				StringAppend( p,"vcrypt" ) ;
-			}else{
-				StringAppend( p,"tcrypt" ) ;
-			}
-		}else{
-			q = String( type ) ;
-			StringAppend( p,StringToLowerCase( q ) ) ;
-			StringDelete( &q ) ;
-		}
-
+		q = String( type ) ;
+		StringAppend( p,StringToLowerCase( q ) ) ;
+		StringDelete( &q ) ;
 	}else{
 		q = _get_type_from_udev_1( mapper ) ;
 
@@ -473,53 +541,27 @@ static char * _volume_status( const char * mapper )
 		StringDelete( &q ) ;
 	}
 
-	z = crypt_get_cipher( cd ) ;
-
-	if( z != NULL ){
-
-		StringMultipleAppend( p,"\n cipher:\t",z,"-",NULL ) ;
-	}else{
-		StringAppend( p,"\n cipher:\tNil-" ) ;
-	}
-
-	z = crypt_get_cipher_mode( cd ) ;
-
-	if( z != NULL ){
-
-		StringAppend( p,z ) ;
-	}else{
-		StringAppend( p,"Nil" ) ;
-	}
-
-	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
-	StringMultipleAppend( p,"\n keysize:\t",z," bits\n device:\t",NULL ) ;
+	_get_crypto_info( p,cd,mapper ) ;
 
 	if( StringPrefixEqual( device_name,"/dev/loop" ) ){
 
-		StringMultipleAppend( p,device_name,"\n loop:   \t",NULL ) ;
 		path = zuluCryptLoopDeviceAddress_1( device_name ) ;
 
 		if( path != NULL ){
 
-			StringAppend( p,path ) ;
+			StringMultipleAppend( p,"\n device:   \t",device_name,"\n loop:   \t",path,NULL ) ;
 			StringFree( path ) ;
 		}else{
-			StringAppend( p,"Nil" ) ;
+			StringMultipleAppend( p,"\n device:   \t",device_name,"\n loop:   \tNil",NULL ) ;
 		}
 	}else{
 		/*
 		 * zuluCryptResolvePath() is defined in resolve_path.c
 		 */
 		z = zuluCryptResolvePath( device_name ) ;
-		StringMultipleAppend( p,z,"\n loop:   \tNil",NULL ) ;
+		StringMultipleAppend( p,"\n device:   \t",z,"\n loop:   \tNil",NULL ) ;
 		StringFree( z ) ;
 	}
-
-	z = StringIntToString_1( buffer,SIZE,crypt_get_data_offset( cd ) ) ;
-	StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
-
-	zuluCryptFormatSize( crypt_get_data_offset( cd ) * 512,buffer,SIZE ) ;
-	StringMultipleAppend( p," / ",buffer,NULL ) ;
 
 	if( cad.flags == 1 ){
 
@@ -565,40 +607,6 @@ static char * _volume_status( const char * mapper )
 	return zuluExit( p,cd,device_name ) ;
 }
 
-char * zuluCryptVolumeStatus( const char * mapper )
-{
-	ssize_t r ;
-
-	char * s ;
-
-	char * e = _volume_status( mapper ) ;
-
-	if( e == NULL ){
-
-		/*
-		 * we failed,lets try again assuming its a VeraCrypt volume by just substituting
-		 * "NAAN" with "VERA"
-		 */
-		r = StringHasComponent_1( mapper,"-NAAN-" ) ;
-
-		if( r != -1 ){
-
-			s = StringCopy_2( mapper ) ;
-
-			*( s + r + 1 ) = 'V' ;
-			*( s + r + 2 ) = 'E' ;
-			*( s + r + 3 ) = 'R' ;
-			*( s + r + 4 ) = 'A' ;
-
-			e = _volume_status( s ) ;
-
-			StringFree( s ) ;
-		}
-	}
-
-	return e ;
-}
-
 /*
  * here,we are exploiting a simple observation that mapper will contain something like
  * "zuluCrypt-500-NAAN-sdc1-2091885911" and prepending "/dev/" infront of the 3rd component
@@ -621,7 +629,7 @@ static char * _get_device_name( const char * mapper )
 	return e ;
 }
 
-static char * _device_name( const char * mapper )
+static char * _device_name( const char * mapper,char * ( *function )( const char * ) )
 {
 	tc_api_task task ;
 
@@ -666,12 +674,12 @@ static char * _device_name( const char * mapper )
 					e = _get_device_name( mapper ) ;
 				}else{
 					/*
-					 * devices with particions do not seem to suffer the above problem
+					 * devices with no partitions do not seem to have the above problem
 					 */
-					e = zuluCryptResolvePath_3( device ) ;
+					e = function( device ) ;
 				}
 			}else{
-				e = zuluCryptResolvePath_3( device ) ;
+				e = function( device ) ;
 			}
 		}
 	}
@@ -679,20 +687,7 @@ static char * _device_name( const char * mapper )
 	return e ;
 }
 
-int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
-{
-	int e ;
-
-	char * f =  zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
-
-	e = StringsAreEqual( f,"crypto_TCRYPT" ) || StringsAreEqual( f,"crypto_VCRYPT" ) ;
-
-	StringFree( f ) ;
-
-	return e ;
-}
-
-char * zuluCryptVolumeDeviceName( const char * mapper )
+static char * _volume_device_name( const char * mapper,char * ( *function )( const char * ) )
 {
 	struct crypt_device * cd ;
 	const char * e = crypt_get_dir() ;
@@ -700,7 +695,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 
 	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
 
-		return _device_name( mapper ) ;
+		return _device_name( mapper,function ) ;
 	}else{
 		if( crypt_init_by_name( &cd,mapper ) == 0 ){
 
@@ -710,7 +705,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 				/*
 				* zuluCryptResolvePath_3() is defined in resolve_path.c
 				*/
-				f = zuluCryptResolvePath_3( e ) ;
+				f = function( e ) ;
 			}
 
 			crypt_free( cd ) ;
@@ -718,4 +713,12 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 
 		return f ;
 	}
+}
+
+char * zuluCryptVolumeDeviceName( const char * mapper )
+{
+	/*
+	 * zuluCryptResolvePath_3() is defined in resolve_path.c
+	 */
+	return _volume_device_name( mapper,zuluCryptResolvePath_3 ) ;
 }

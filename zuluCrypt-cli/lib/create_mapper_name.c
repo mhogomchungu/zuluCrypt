@@ -39,7 +39,7 @@
  * A successfully constructed "ZULUCRYPTshortMapperPath mapper path" will look like "zuluCrypt-500-NAAN-mdraid-2355849641"
  */
 
-static string_t _create( const char * device,const char * mapping_name,uid_t uid,int i,int veraCrypt_volume )
+static string_t _create( const char * device,const char * mapping_name,uid_t uid,int i )
 {
 	string_t p ;
 	unsigned long z ;
@@ -63,12 +63,7 @@ static string_t _create( const char * device,const char * mapping_name,uid_t uid
 		StringMultipleAppend( p,"-",mapping_name,"-",NULL ) ;
 		z = StringJenkinsOneAtATimeHash( mapping_name ) ;
 	}else{
-		if( veraCrypt_volume ){
-
-			StringMultipleAppend( p,"-VERA-",mapping_name,"-",NULL ) ;
-		}else{
-			StringMultipleAppend( p,"-NAAN-",mapping_name,"-",NULL ) ;
-		}
+		StringMultipleAppend( p,"-NAAN-",mapping_name,"-",NULL ) ;
 
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
 
@@ -101,17 +96,7 @@ static string_t _create( const char * device,const char * mapping_name,uid_t uid
 
 string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i )
 {
-	return _create( device,mapping_name,uid,i,0 ) ;
-}
-
-string_t zuluCryptCreateMapperName_0( const char * device,const char * mapping_name,uid_t uid )
-{
-	return _create( device,mapping_name,uid,ZULUCRYPTshortMapperPath,1 ) ;
-}
-
-string_t zuluCryptCreateMapperName_1( const char * device,const char * mapping_name,uid_t uid )
-{
-	return _create( device,mapping_name,uid,ZULUCRYPTshortMapperPath,0 ) ;
+	return _create( device,mapping_name,uid,i ) ;
 }
 
 static const char * _zuluCryptMapperPrefix = NULL ;
@@ -125,4 +110,3 @@ const char * zuluCryptMapperPrefix( void )
 		return _zuluCryptMapperPrefix ;
 	}
 }
-

@@ -2997,12 +2997,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/walletconfig.cpp" line="166"/>
+        <location filename="../../zuluCrypt-gui/walletconfig.cpp" line="165"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/walletconfig.cpp" line="166"/>
+        <location filename="../../zuluCrypt-gui/walletconfig.cpp" line="165"/>
         <source>Failed To Add the Key In The Wallet.</source>
         <translation type="unfinished"></translation>
     </message>
