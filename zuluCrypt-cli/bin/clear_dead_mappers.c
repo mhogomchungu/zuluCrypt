@@ -97,11 +97,21 @@ void zuluCryptClearDeadMappers( uid_t uid )
 
 			e = StringAppendAt( z,len1,entry->d_name ) ;
 
+			/*
+			 * zuluCryptTrueCryptOrVeraCryptVolume() is defined in ../lib/status.c
+			 */
+			if( zuluCryptTrueCryptOrVeraCryptVolume( e ) ){
+
+				/*
+				 * Below code seems to only work with cryptsetup created mappers
+				 */
+				continue ;
+			}
 			if( crypt_init_by_name( &cd,e ) == 0 ){
 
 				if( crypt_get_device_name( cd ) == NULL ){
 					/*
-					 * we will get here if PLAIN or TRUECRYPT mapper is active but the underlying device is gone
+					 * we will get here if none LUKS mapper is active but the underlying device is gone
 					 */
 					_remove_mapper( e,stl,uid ) ;
 				}
