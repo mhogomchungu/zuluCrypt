@@ -158,13 +158,11 @@ int zuluCryptOpenVolume_1( const open_struct_t * opts )
 	return zuluCryptOpenVolume_0( _open_mapper,opts ) ;
 }
 
-static int _open_tcrypt_0( open_struct_t * opts,int system )
+static int _open_tcrypt( open_struct_t * opts )
 {
 	int r ;
 
-	opts->volume_type = TCRYPT_NORMAL ;
-
-	opts->tcrypt_system = system ;
+	opts->tcrypt_system = 0 ;
 	/*
 	 * zuluCryptOpenTcrypt_1() is defined in open_tcrypt.c
 	 */
@@ -172,20 +170,12 @@ static int _open_tcrypt_0( open_struct_t * opts,int system )
 
 	if( r != 0 ){
 
-		opts->volume_type = TCRYPT_HIDDEN ;
+		opts->tcrypt_system = 1 ;
+
 		r = zuluCryptOpenTcrypt_1( opts ) ;
 	}
+
 	return r ;
-}
-
-static int _open_tcrypt( open_struct_t * opts )
-{
-	if( _open_tcrypt_0( opts,0 ) ){
-
-		return _open_tcrypt_0( opts,1 ) ;
-	}else{
-		return 0 ;
-	}
 }
 
 /*
