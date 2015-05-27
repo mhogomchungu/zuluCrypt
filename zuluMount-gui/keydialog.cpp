@@ -592,7 +592,7 @@ void keyDialog::openVolume()
 
 	m_working = false ;
 
-	m_veraCryptWarning.hide() ;
+	m_veraCryptWarning.stopTimer() ;
 
 	if( s.success() ){
 
@@ -613,6 +613,8 @@ void keyDialog::openVolume()
 		}
 		this->HideUI() ;
 	}else{
+		m_veraCryptWarning.hide() ;
+
 		if( s.exitCode() == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
 			/*
 			 * A user cancelled the plugin

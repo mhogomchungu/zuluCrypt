@@ -408,11 +408,11 @@ static int _get_crypto_info_from_tcplay( string_t p,const char * mapper )
 
 	const char * z ;
 
-	if( tc_api_init( 0 ) == TC_OK ){
+	if( tc_api_initialize() ){
 
 		task = tc_api_task_init( "info_mapped" ) ;
 
-		if( task != 0 ){
+		if( tc_api_task_initialized( task ) ){
 
 			mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
 
@@ -447,6 +447,8 @@ static int _get_crypto_info_from_tcplay( string_t p,const char * mapper )
 
 			r = 0 ;
 		}
+
+		tc_api_uninit() ;
 	}
 
 	return r ;
@@ -641,11 +643,11 @@ static char * _device_name( const char * mapper,char * ( *function )( const char
 
 	mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
 
-	if( tc_api_init( 0 ) == TC_OK ){
+	if( tc_api_initialize() ){
 
 		task = tc_api_task_init( "info_mapped" ) ;
 
-		if( task != 0 ){
+		if( tc_api_task_initialized( task ) ){
 
 			tc_api_task_set( task,"map_name",mapper ) ;
 
@@ -682,6 +684,8 @@ static char * _device_name( const char * mapper,char * ( *function )( const char
 				e = function( device ) ;
 			}
 		}
+
+		tc_api_uninit() ;
 	}
 
 	return e ;

@@ -334,6 +334,10 @@ namespace utility
 			m_warning = std::move( w ) ;
 			this->show( true ) ;
 		}
+		void stopTimer()
+		{
+			m_timer.stop() ;
+		}
 		void show( bool show )
 		{
 			if( show ){

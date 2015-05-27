@@ -641,13 +641,15 @@ void passwordDialog::openVolume()
 
 	m_working = false ;
 
-	m_veraCryptWarning.hide() ;
+	m_veraCryptWarning.stopTimer() ;
 
 	if( r.success() ){
 
 		this->success( r.output() ) ;
 	}else{
 		this->failed( r.exitCode() ) ;
+
+		m_veraCryptWarning.hide() ;
 	}
 }
 

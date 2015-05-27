@@ -59,7 +59,6 @@ int tc_api_has(const char *feature);
 int tc_api_cipher_iterate(tc_api_cipher_iterator_fn fn, void *priv);
 int tc_api_prf_iterate(tc_api_prf_iterator_fn fn, void *priv);
 
-
 tc_api_task tc_api_task_init(const char *op);
 int tc_api_task_uninit(tc_api_task task);
 int tc_api_task_set(tc_api_task task, const char *key, ...);
@@ -67,6 +66,16 @@ int tc_api_task_do(tc_api_task task);
 
 int tc_api_task_info_get(tc_api_task task, const char *key, ...);
 const char *tc_api_task_get_error(tc_api_task task);
+
+static inline int tc_api_initialize(void)
+{
+	return tc_api_init(0) == TC_OK;
+}
+
+static inline int tc_api_task_initialized(tc_api_task task)
+{
+	return task != 0;
+}
 
 #ifdef __cplusplus
 }

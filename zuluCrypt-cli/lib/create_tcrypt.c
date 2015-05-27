@@ -33,8 +33,6 @@
  */
 #include "truecrypt_support_1.h"
 
-#if TRUECRYPT_CREATE
-
 static const int TRUE  = 1 ;
 static const int FALSE = 0 ;
 
@@ -176,11 +174,11 @@ static int _modify_tcrypt_header( const char * device,const info_t * info )
 	if( info->device == NULL ){
 		return r ;
 	}
-	if( tc_api_init( 0 ) == TC_OK ){
+	if( tc_api_initialize() ){
 
 		task = tc_api_task_init( "modify" ) ;
 
-		if( task != 0 ){
+		if( tc_api_task_initialized( task ) ){
 
 			if( StringsAreEqual( info->opt,"sys" ) ){
 
@@ -233,6 +231,7 @@ static int _modify_tcrypt_header( const char * device,const info_t * info )
 
 			tc_api_task_uninit( task ) ;
 		}
+
 		tc_api_uninit() ;
 	}
 	StringDelete( &st ) ;
@@ -265,7 +264,7 @@ int zuluCryptModifyTcryptHeader( const info_t * e )
 	return r ;
 }
 
-struct crypto_pair{
+struct{
 	const char * first ;
 	const char * second;
 } pair[] = {
@@ -282,11 +281,11 @@ struct crypto_pair{
 
 const char * zuluCryptConvertCipher( const char * p )
 {
-	int i = 0 ;
+	int i ;
 
 	const char * q ;
 
-	while( 1 ){
+	for( i = 0 ; ; i++ ){
 
 		q = pair[ i ].second ;
 
@@ -298,8 +297,6 @@ const char * zuluCryptConvertCipher( const char * p )
 
 			return pair[ i ].first ;
 		}
-
-		i++ ;
 	}
 
 	return "Nil" ;
@@ -307,13 +304,13 @@ const char * zuluCryptConvertCipher( const char * p )
 
 static const char * _set_cipher_chain( char * const * z )
 {
-	int i = 0 ;
+	int i ;
 
 	const char * q ;
 
 	const char * p = *z ;
 
-	while( 1 ){
+	for( i = 0 ; ; i++ ){
 
 		q = pair[ i ].first ;
 
@@ -325,8 +322,6 @@ static const char * _set_cipher_chain( char * const * z )
 
 			return pair[ i ].second ;
 		}
-
-		i++ ;
 	}
 
 	return NULL ;
@@ -436,11 +431,11 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 		return _zuluExit( !TC_OK,options,stl ) ;
 	}
 
-	if( tc_api_init( 0 ) == TC_OK ){
+	if( tc_api_initialize() ){
 
 		task = tc_api_task_init( "create" ) ;
 
-		if( task != 0 ){
+		if( tc_api_task_initialized( task ) ){
 
 			tc_api_task_set( task,"veracrypt_mode",e->veraCrypt_volume ) ;
 			tc_api_task_set( task,"dev",device ) ;
@@ -575,31 +570,3 @@ int zuluCryptCreateTCrypt( const char * device,const char * file_system,const ch
 
 	return r ;
 }
-
-#else
-
-/*
- * tcplay < 2.0.0 or tcplay not found
- */
-int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
-{
-	if( e ){;}
-	return 1 ;
-}
-
-int zuluCryptModifyTcryptHeader( const info_t * info )
-{
-	if( info ){;}
-	return 1 ;
-}
-
-int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,
-			   const char * key,size_t key_len,int key_source,
-			   u_int64_t hidden_volume_size,const char * file_system_h,
-			   const char * key_h,size_t key_len_h,int key_source_h )
-{
-	if( 0 && device && file_system && rng && key_len && key_source && key
-		&& hidden_volume_size && key_len_h && key_h && key_source_h && file_system_h ){;}
-	return 3 ;
-}
-#endif

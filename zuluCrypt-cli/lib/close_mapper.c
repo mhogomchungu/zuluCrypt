@@ -36,11 +36,11 @@ static int _close_mapper( const char * mapper )
 	 */
 	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
 
-		if( tc_api_init( 0 ) == TC_OK ){
+		if( tc_api_initialize() ){
 
 			task = tc_api_task_init( "unmap" ) ;
 
-			if( task != 0 ){
+			if( tc_api_task_initialized( task ) ){
 
 				mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
 
@@ -50,6 +50,8 @@ static int _close_mapper( const char * mapper )
 
 				tc_api_task_uninit( task ) ;
 			}
+
+			tc_api_uninit() ;
 		}
 	}else{
 		if( crypt_init_by_name( &cd,mapper ) == 0 ){

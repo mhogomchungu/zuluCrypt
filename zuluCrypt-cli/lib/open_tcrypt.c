@@ -93,11 +93,11 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 	string_t st = StringVoid ;
 
-	if( tc_api_init( 0 ) == TC_OK ){
+	if( tc_api_initialize() ){
 
 		task = tc_api_task_init( "map" ) ;
 
-		if( task != 0 ){
+		if( tc_api_task_initialized( task ) ){
 
 			tc_api_task_set( task,"veracrypt_mode",opts->veraCrypt_volume ) ;
 			tc_api_task_set( task,"map_name",opts->mapper_name ) ;

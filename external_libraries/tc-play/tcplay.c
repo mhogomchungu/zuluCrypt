@@ -1190,15 +1190,15 @@ map_volume(struct tcplay_opts *opts)
 	if (info == NULL)
 		return -1;
 
-	info->off_set = 0 ;
+	info->off_set = 0;
 
 	if (opts->dev && opts->sys_dev){
 		if (strcmp(opts->dev, opts->sys_dev) == 0 ){
-			info->off_set = 63 ;
+			info->off_set = 63;
 		}
 	}
 
-	info->read_only = opts->read_only ;
+	info->read_only = opts->read_only;
 
 	if ((error = dm_setup(opts->map_name, info)) != 0) {
 		tc_log(1, "Could not set up mapping %s\n", opts->map_name);
@@ -1866,7 +1866,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 		}
 
 		if (info->off_set)
-			offset = info->off_set ;
+			offset = info->off_set;
 
 		/* aes-cbc-essiv:sha256 7997f8af... 0 /dev/ad0s0a 8 <opts> */
 		/*			   iv off---^  block off--^ <opts> */

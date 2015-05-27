@@ -818,6 +818,7 @@ void createvolume::pbCreateClicked()
 void createvolume::taskFinished( int st )
 {
 	DialogMsg msg( this ) ;
+	m_veraCryptWarning.stopTimer() ;
 	m_isWindowClosable = true ;
 	QString x = tr( "Volume created successfully." ) ;
 	if( m_volumeType.contains( "luks" ) || m_volumeType.contains( "truecrypt" ) || m_volumeType.contains( "veracrypt" ) ){

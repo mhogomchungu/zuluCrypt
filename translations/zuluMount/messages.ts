@@ -432,7 +432,7 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="58"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="128"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="663"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="665"/>
         <source>Key</source>
         <translation type="unfinished"></translation>
     </message>
@@ -463,7 +463,7 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="486"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="495"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="611"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="628"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="630"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
@@ -561,12 +561,12 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="653"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="655"/>
         <source>Plugin name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="673"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="675"/>
         <source>Keyfile path</source>
         <translation type="unfinished"></translation>
     </message>
@@ -587,7 +587,7 @@ Wrong password or not an encfs volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="624"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="626"/>
         <source>ERROR: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -706,22 +706,22 @@ Wrong password or not an encfs volume</source>
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="350"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="354"/>
         <source>Elapsed time: 0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="358"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="362"/>
         <source>Elapsed time: %0 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="360"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="364"/>
         <source>Elapsed time: %0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="371"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="375"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>
