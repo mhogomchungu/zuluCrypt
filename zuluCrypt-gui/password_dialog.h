@@ -71,6 +71,7 @@ private slots :
 	void keys( QString key,QStringList keyFiles ) ;
 	void tcryptCancelled( void ) ;
 private :
+	void setTitle( void ) ;
 	void addTcryptVcryptKeyOption( void ) ;
 	void tcryptGui( void ) ;
 	void openVolume( void ) ;

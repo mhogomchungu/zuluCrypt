@@ -41,6 +41,8 @@ favorites::favorites( QWidget * parent ) :
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 
+	this->setFixedSize( this->size() ) ;
+
 	connect( m_ui->pbDeviceAddress,SIGNAL( clicked() ),this,SLOT( deviceAddress() ) ) ;
 	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( add() ) ) ;
 	connect( m_ui->pbFileAddress,SIGNAL( clicked() ),this,SLOT( fileAddress() ) ) ;
@@ -51,7 +53,7 @@ favorites::favorites( QWidget * parent ) :
 		SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->lineEditDeviceAddress,SIGNAL( textChanged( QString ) ),this,SLOT( devicePathTextChange( QString ) ) ) ;
 
-	m_ui->pbFileAddress->setIcon( QIcon( ":/keyfile.png" ) ) ;
+	m_ui->pbFileAddress->setIcon( QIcon( ":/file.png" ) ) ;
 	m_ui->pbDeviceAddress->setIcon( QIcon( ":/partition.png" ) ) ;
 
 	m_ac = new QAction( this ) ;

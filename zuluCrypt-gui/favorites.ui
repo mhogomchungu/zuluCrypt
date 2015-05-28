@@ -137,7 +137,7 @@
   <widget class="QPushButton" name="pbDeviceAddress">
    <property name="geometry">
     <rect>
-     <x>470</x>
+     <x>500</x>
      <y>230</y>
      <width>31</width>
      <height>31</height>
@@ -153,7 +153,7 @@
   <widget class="QPushButton" name="pbFileAddress">
    <property name="geometry">
     <rect>
-     <x>500</x>
+     <x>470</x>
      <y>230</y>
      <width>31</width>
      <height>31</height>

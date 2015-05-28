@@ -226,8 +226,22 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 	this->show() ;
 }
 
+void passwordDialog::setTitle()
+{
+	if( m_veraCryptVolume ){
+
+		this->setWindowTitle( tr( "Unlock VeraCrypt Volume" ) ) ;
+	}else{
+		this->setWindowTitle( tr( "Unlock Encrypted Volume" ) ) ;
+	}
+}
+
 void passwordDialog::ShowUI( QString dev )
 {
+	this->addTcryptVcryptKeyOption() ;
+
+	this->setTitle() ;
+
 	QString m_point = utility::homePath() + "/" + dev.split( "/" ).last() ;
 	this->ShowUI( dev,m_point ) ;
 }
@@ -235,6 +249,8 @@ void passwordDialog::ShowUI( QString dev )
 void passwordDialog::ShowUI()
 {
 	this->addTcryptVcryptKeyOption() ;
+
+	this->setTitle() ;
 
 	this->passphraseOption() ;
 	m_ui->OpenVolumePath->setFocus() ;
