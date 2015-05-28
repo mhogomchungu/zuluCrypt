@@ -23,7 +23,7 @@
 #include "includes.h"
 #include "tcplay_support.h"
 
-static int _close_mapper( const char * mapper )
+static int _close_mapper( const char * mapper,int TrueCryptOrVeraCryptVolume )
 {
 	int r = 1 ;
 
@@ -31,10 +31,7 @@ static int _close_mapper( const char * mapper )
 
 	tc_api_task task ;
 
-	/*
-	 * zuluCryptTrueCryptOrVeraCryptVolume() is defined in status.c
-	 */
-	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
+	if( TrueCryptOrVeraCryptVolume ){
 
 		if( tc_api_initialize() ){
 
@@ -69,9 +66,14 @@ int zuluCryptCloseMapper( const char * mapper )
 {
 	int i ;
 
+	/*
+	 * zuluCryptTrueCryptOrVeraCryptVolume() is defined in status.c
+	 */
+	int e = zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ;
+
 	for( i = 0 ; i < 3 ; i++ ){
 
-		if( _close_mapper( mapper ) == 0 ){
+		if( _close_mapper( mapper,e ) == 0 ){
 
 			return 0 ;
 		}else{
