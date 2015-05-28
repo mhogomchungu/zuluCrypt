@@ -71,6 +71,8 @@
 
 #include "../zuluCrypt-cli/utility/process/process.h"
 
+#include "plugin_path.h"
+
 static int staticGlobalUserId = -1 ;
 
 void utility::setUID( int uid )
@@ -181,6 +183,50 @@ void utility::keySend( const QString& path,const QString& key )
 			::zuluCryptPluginManagerCloseConnection( handle ) ;
 		}
 	} ) ;
+}
+
+void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,const QString& c,bool addPlugIns )
+{
+	QStringList l ;
+	QStringList e ;
+
+	l.append( a ) ;
+
+	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
+		l.append( b ) ;
+	}
+	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
+		l.append( c ) ;
+	}
+
+	if( addPlugIns ){
+
+		QDir dir( ZULUCRYPTpluginPath ) ;
+
+		if( dir.exists() ){
+
+			e = dir.entryList() ;
+
+			e.removeOne( "zuluCrypt-testKey" ) ;
+			e.removeOne( "." ) ;
+			e.removeOne( ".." ) ;
+			e.removeOne( "keyring" ) ;
+			e.removeOne( "kwallet" ) ;
+		}
+	}
+
+	menu->clear() ;
+
+	auto _add_actions = [ menu ]( const QStringList& r ){
+
+		for( const auto& it : r ){
+
+			menu->addAction( it ) ;
+		}
+	} ;
+
+	_add_actions( l ) ;
+	_add_actions( e ) ;
 }
 
 ::Task::future<int>& utility::exec( const QString& exe )

@@ -672,7 +672,7 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 
 	StringDelete( &p ) ;
 
-	p = String( "\n type:   \tNil\n cipher:   \tNil\n keysize:   \tNil\n" ) ;
+	p = String( "\n type:   \tNil\n cipher:   \tNil\n keysize:   \tNil\n offset:    \tNil\n" ) ;
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
@@ -684,14 +684,14 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 		 */
 		z = zuluCryptGetLoopDeviceAddress( device ) ;
 		if( e != NULL && z != NULL ){
-			StringMultipleAppend( p," device:   \t",z,"\n loop:   \t",e,"\n offset:    \tNil",NULL ) ;
+			StringMultipleAppend( p," device:   \t",z,"\n loop:   \t",e,NULL ) ;
 		}else{
-			StringMultipleAppend( p," device:   \t","Nil","\n loop:   \t","Nil","\n offset:    \tNil",NULL ) ;
+			StringMultipleAppend( p," device:   \t","Nil","\n loop:   \tNil",NULL ) ;
 		}
 		StringFree( e ) ;
 		StringFree( z ) ;
 	}else{
-		StringMultipleAppend( p," device:   \t",device," \n loop:   \tNil\n offset:    \tNil",NULL ) ;
+		StringMultipleAppend( p," device:   \t",device," \n loop:   \tNil",NULL ) ;
 	}
 
 	if( StringHasAtLeastOneComponent( StringListStringAt( stl,3 ),"ro,",",ro,",",ro",NULL ) ){

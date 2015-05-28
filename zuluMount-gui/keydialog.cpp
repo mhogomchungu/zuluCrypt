@@ -311,40 +311,8 @@ void keyDialog::pbkeyOption()
 
 void keyDialog::Plugin()
 {
-	QStringList list ;
-
-	list.append( tr( INTERNAL_WALLET ) ) ;
-
-	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
-		list.append( tr( GNOME_WALLET ) ) ;
-	}
-	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
-		list.append( tr( KWALLET ) ) ;
-	}
-
-	if( !m_volumeIsEncFs ){
-
-		QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
-
-		if( dir.exists() ){
-
-			list = dir.entryList() ;
-
-			list.removeOne( "zuluCrypt-testKey" ) ;
-			list.removeOne( "." ) ;
-			list.removeOne( ".." ) ;
-			list.removeOne( "keyring" ) ;
-			list.removeOne( "kwallet" ) ;
-		}
-	}
-
-	m_menu->clear() ;
-
-	int j = list.size()  ;
-
-	for( int i = 0 ; i < j ; i++ ){
-		m_menu->addAction( list.at( i ) ) ;
-	}
+	utility::createPlugInMenu( m_menu,tr( INTERNAL_WALLET ),
+				   tr( GNOME_WALLET ),tr( KWALLET ),!m_volumeIsEncFs ) ;
 
 	m_menu->addSeparator() ;
 

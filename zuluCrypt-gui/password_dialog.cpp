@@ -121,52 +121,8 @@ bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
 
 void passwordDialog::pbPlugin()
 {
-	QStringList list ;
-
-	// ZULUCRYPTpluginPath is set at config time and it equals $prefix/lib(64)/zuluCrypt
-
-	QDir dir( QString( ZULUCRYPTpluginPath ) ) ;
-
-	if( dir.exists() ){
-		list = dir.entryList() ;
-
-		list.removeOne( "zuluCrypt-testKey" ) ;
-		list.removeOne( "." ) ;
-		list.removeOne( ".." ) ;
-		list.removeOne( "keyring" ) ;
-		list.removeOne( "kwallet" ) ;
-
-		list.insert( 0,tr( INTERNAL_WALLET ) ) ;
-
-		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
-			list.insert( 1,tr( KWALLET ) ) ;
-		}
-		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
-			list.insert( 2,tr( GNOME_WALLET ) ) ;
-		}
-	}else{
-		list.append( tr( INTERNAL_WALLET ) ) ;
-
-		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
-			list.append( tr( KWALLET ) ) ;
-		}
-		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
-			list.append( tr( GNOME_WALLET ) ) ;
-		}
-	}
-
-	m_pluginMenu->clear() ;
-
-	int j = list.size()  ;
-
-	if( j == 0 ){
-		DialogMsg msg( this ) ;
-		return	msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not find any plugin installed" ) ) ;
-	}
-
-	for( int i = 0 ; i < j ; i++ ){
-		m_pluginMenu->addAction( list.at( i ) ) ;
-	}
+	utility::createPlugInMenu( m_pluginMenu,tr( INTERNAL_WALLET ),
+				   tr( GNOME_WALLET ),tr( KWALLET ),true ) ;
 
 	m_pluginMenu->addSeparator() ;
 

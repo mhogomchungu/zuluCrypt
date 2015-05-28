@@ -31,6 +31,7 @@
 #include <QWidget>
 #include <QEventLoop>
 #include <QTimer>
+#include <QMenu>
 
 #include <functional>
 #include <utility>
@@ -140,6 +141,8 @@ namespace utility
 	QStringList split( const QByteArray&,char token = '\n' ) ;
 	bool userHasGoodVersionOfWhirlpool( void ) ;
 	void licenseInfo( QWidget * ) ;
+
+	void createPlugInMenu( QMenu *,const QString&,const QString&,const QString&,bool ) ;
 
 	::Task::future< int >& clearVolume( const QString& volumePath,bool * exit,std::function< void( int ) > ) ;
 	::Task::future< int >& exec( const QString& ) ;
