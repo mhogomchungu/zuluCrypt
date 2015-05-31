@@ -530,13 +530,15 @@ void zuluCrypt::closeAllVolumes()
 
 			QString exe = utility::appendUserUID( "%1 -q -d \"%2\"" ) ;
 
-			for( QTableWidgetItem * it : tableItems ){
+			for( int i = tableItems.count() - 1 ; i >= 0 ; i-- ){
 
-				QString device = it->text().replace( "\"","\"\"\"" ) ;
+				QTableWidgetItem * e = *( it + i ) ;
+
+				QString device = e->text().replace( "\"","\"\"\"" ) ;
 
 				auto r = utility::Task( exe.arg( ZULUCRYPTzuluCrypt,device ) ) ;
 
-				emit closeVolume( it,r.exitCode() ) ;
+				emit closeVolume( e,r.exitCode() ) ;
 
 				utility::Task::waitForOneSecond() ; ; // for ui effect
 			}

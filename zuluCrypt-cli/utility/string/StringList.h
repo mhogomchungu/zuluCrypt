@@ -189,6 +189,11 @@ static __inline__ const char * StringListContentAtSecondPlace( stringList_t stl 
 	return StringListContentAt( stl,1 ) ;
 }
 
+static __inline__ const char * StringListContentAtThirdPlace( stringList_t stl )
+{
+	return StringListContentAt( stl,2 ) ;
+}
+
 /*
  * strcmp() a strinf at index with cstring
  */

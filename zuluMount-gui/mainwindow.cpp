@@ -510,7 +510,7 @@ void MainWindow::Show()
 
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
-		
+
 		this->setUpApp( volume ) ;
 	}
 }
@@ -1004,9 +1004,7 @@ void MainWindow::unMountAll()
 
 			utility::Task::waitForOneSecond() ;
 		}else{
-			int r = p.size() ;
-
-			for( int i = 0 ; i < r ; i++ ){
+			for( int i = p.size() - 1 ; i >= 0 ; i-- ){
 
 				const QString& e = q.at( i ) ;
 

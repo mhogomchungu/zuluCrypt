@@ -64,11 +64,18 @@ static int _unmount( int( *function )( const char * m_dir ),const char * m_dir )
 
 int zuluCryptUnmountVolume( const char * device,char ** m_point )
 {
-	char * m ;
-
 	int h = 3 ;
 
 	char * loop_path = NULL ;
+
+	string_t st ;
+
+	stringList_t stl ;
+
+	StringListIterator it ;
+
+	const char * fs ;
+	const char * mout_point ;
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
@@ -81,42 +88,50 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			return h ;
 		}else{
 			/*
-			 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
+			 * zuluCryptGetMountEntry() is defined in ./process_mountinfo.c
 			 */
-			m = zuluCryptGetMountPointFromPath( loop_path ) ;
+			st = zuluCryptGetMountEntry( loop_path ) ;
 			StringFree( loop_path ) ;
 		}
 	}else{
 		/*
-		 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
+		 * zuluCryptGetMountEntry() is defined in ./process_mountinfo.c
 		 */
-		m = zuluCryptGetMountPointFromPath( device ) ;
+		st = zuluCryptGetMountEntry( device ) ;
 	}
 
-	if( m != NULL ){
+	if( st != StringVoid ){
+
+		stl = StringListStringSplit( st,' ' ) ;
+
+		it = StringListBegin( stl ) ;
+
+		fs = StringContent( *( it + 2 ) ) ;
+
 		/*
-		 * zuluCryptFileSystemIsFUSEbased() is defined in blkid_evaluate_tag.c
+		 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
 		 */
-		if( zuluCryptFileSystemIsFUSEbased( device ) ){
+		mout_point = zuluCryptDecodeMountEntry( *( it + 1 ) ) ;
+
+		if( StringHasComponent( fs,"fuse" ) ){
+
 			/*
 			 * Dont know whats going on but FUSE based file systems do not seem to work with umount()
 			 */
-			h = _unmount( _unmount_fuse,m ) ;
+			h = _unmount( _unmount_fuse,mout_point ) ;
 		}else{
-			h = _unmount( _unmount_rest,m ) ;
+			h = _unmount( _unmount_rest,mout_point ) ;
 		}
 
 		if( h == 0 ){
 
 			if( m_point != NULL ){
 
-				*m_point = m ;
-			}else{
-				StringFree( m ) ;
+				*m_point = StringCopy_2( mout_point ) ;
 			}
-		}else{
-			StringFree( m ) ;
 		}
+
+		StringListDelete( &stl ) ;
 	}
 
 	if( h != 0 && h != 3 && h != 4 ){

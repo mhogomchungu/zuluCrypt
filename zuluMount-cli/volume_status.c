@@ -225,7 +225,7 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 		return ;
 	}
 
-	fs = StringListContentAt( stx,2 ) ;
+	fs = StringListContentAtThirdPlace( stx ) ;
 
 	q = StringListContentAtFirstPlace( stx ) ;
 
