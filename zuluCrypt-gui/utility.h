@@ -47,6 +47,9 @@
 #include <QObject>
 #include <QLabel>
 
+#include <poll.h>
+#include <fcntl.h>
+
 class QByteArray ;
 class QEvent ;
 
@@ -184,6 +187,10 @@ namespace utility
 		{
 			return m_fd ;
 		}
+		bool opened() const
+		{
+			return m_fd != -1 ;
+		}
 		char getChar() const
 		{
 			char z ;
@@ -222,6 +229,32 @@ namespace utility
 			}
 		} ;
 	} ;
+}
+
+namespace utility
+{
+	class monitor_mountinfo
+	{
+	public:
+		monitor_mountinfo()
+		{
+			m_handle.open( "/proc/self/mountinfo" ) ;
+			m_monitor.fd     = m_handle.handle() ;
+			m_monitor.events = POLLPRI ;
+		}
+		bool canMonitor() const
+		{
+			return m_handle.opened() ;
+		}
+		bool gotEvent()
+		{
+			poll( &m_monitor,1,-1 ) ;
+			return true ;
+		}
+	private:
+		utility::fileHandle m_handle ;
+		struct pollfd m_monitor ;
+	};
 }
 
 namespace utility

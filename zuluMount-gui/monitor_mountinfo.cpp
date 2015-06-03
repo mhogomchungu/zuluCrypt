@@ -23,9 +23,6 @@
 #include <QStringList>
 #include <QDebug>
 
-#include <poll.h>
-#include <fcntl.h>
-
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/task.h"
 #include "zulumounttask.h"
@@ -78,23 +75,14 @@ void monitor_mountinfo::run()
 	connect( this,SIGNAL( volumeRemoved( QString ) ),
 		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 
-	utility::fileHandle f ;
+	utility::monitor_mountinfo monitor ;
 
-	if( !f.open( "/proc/self/mountinfo" ) ){
-		return this->failedToStart() ;
-	}else{
+	if( monitor.canMonitor() ){
+
 		m_running = true ;
-	}
-
-	struct pollfd monitor ;
-
-	monitor.fd     = f.handle() ;
-	monitor.events = POLLPRI ;
-
-	auto _loop = [&](){
-		poll( &monitor,1,-1 ) ;
-		return 1 ;
-	} ;
+	}else{
+		return this->failedToStart() ;
+	}	
 
 	auto _unmountProperty = [&]( const QString& volume ){
 
@@ -137,7 +125,7 @@ void monitor_mountinfo::run()
 		return !oldMountList.contains( e ) ;
 	} ;
 
-	while( _loop() ){
+	while( monitor.gotEvent() ){
 
 		newMountList = zuluMountTask::mountedVolumeList() ;
 

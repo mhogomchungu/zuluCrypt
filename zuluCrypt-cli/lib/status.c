@@ -90,7 +90,7 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
  *
  */
 
-string_t _get_mapper_property_from_udev( const char * mapper,const char * prefix,size_t position )
+static string_t _get_mapper_property_from_udev( const char * mapper,const char * prefix,size_t position )
 {
 	DIR * dir = opendir( "/dev/disk/by-id/" ) ;
 	struct dirent * e ;
