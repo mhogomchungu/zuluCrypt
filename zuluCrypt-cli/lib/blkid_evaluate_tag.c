@@ -138,7 +138,7 @@ int zuluCryptDeviceHasEncryptedFileSystem( const char * device )
 
 			r = 1 ;
 		}else{
-			r = StringsAreEqual( cf,"crypto_LUKS" ) ;
+			r = StringPrefixEqual( cf,"crypto_LUKS" ) ;
 		}
 
 		blkid_free_probe( blkid ) ;
