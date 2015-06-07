@@ -121,3 +121,28 @@ int zuluCryptDeviceHasAgivenFileSystem( const char * device,const char * fs )
 	}
 	return r ;
 }
+
+int zuluCryptDeviceHasEncryptedFileSystem( const char * device )
+{
+	const char * cf = NULL ;
+	int r = 0 ;
+
+	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+
+	if( blkid != NULL ){
+
+		blkid_do_probe( blkid ) ;
+		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
+
+		if( cf == NULL ){
+
+			r = 1 ;
+		}else{
+			r = StringsAreEqual( cf,"crypto_LUKS" ) ;
+		}
+
+		blkid_free_probe( blkid ) ;
+	}
+
+	return r ;
+}

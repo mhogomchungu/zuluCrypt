@@ -102,10 +102,7 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 			tc_api_task_set( task,"veracrypt_mode",opts->veraCrypt_volume ) ;
 			tc_api_task_set( task,"map_name",opts->mapper_name ) ;
 
-			if( StringHasComponent( opts->m_opts,"ro" ) ){
-
-				tc_api_task_set( task,"read_only" ) ;
-			}
+			tc_api_task_set( task,"read_only",StringHasComponent( opts->m_opts,"ro" ) ) ;
 
 			if( opts->tcrypt_system ){
 
@@ -114,7 +111,7 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 					st = String( device ) ;
 					e = StringRemoveDigits( st ) ;
-					tc_api_task_set( task,"dev",e ) ;
+					tc_api_task_set( task,"dev",device ) ;
 					tc_api_task_set( task,"sys",e ) ;
 				}else{
 					tc_api_task_set( task,"dev",device ) ;

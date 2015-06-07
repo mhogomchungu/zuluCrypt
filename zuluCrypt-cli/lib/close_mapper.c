@@ -79,7 +79,6 @@ int zuluCryptCloseMapper( const char * mapper )
 		}else{
 			sleep( 1 ) ;
 		}
-
 	}
 
 	return 1 ;

@@ -432,7 +432,11 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 		vp = va_arg(ap, void *);
 		opts->api_ctx = vp;
 	} else if (_match(key, "read_only")) {
-		opts->read_only = 1;
+		i = va_arg(ap, int);
+		if (i)
+			opts->flags |= TC_FLAG_READ_ONLY_MODE;
+		else
+			opts->flags &= ~TC_FLAG_READ_ONLY_MODE;
 	} else {
 		r = TC_ERR_UNIMPL;
 	}

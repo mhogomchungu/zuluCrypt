@@ -161,34 +161,23 @@ static int _zuluMountMountedList( uid_t uid )
 
 static int _zuluPartitionHasCryptoFs( const char * device )
 {
-	int st ;
-	string_t fs = StringVoid ;
+	int r ;
 	/*
-	* zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
-	*/
-	zuluCryptSecurityGainElevatedPrivileges() ;
-	/*
-	 * zuluCryptGetFileSystemFromDevice() is defined in ../zuluCrypt-cli/lib/blkid_evaluate_tag.c
+	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	fs = zuluCryptGetFileSystemFromDevice( device ) ;
+	zuluCryptSecurityGainElevatedPrivileges() ;
+
+	/*
+	 * zuluCryptDeviceHasEncryptedFileSystem() is defined in ../zuluCrypt-cli/lib/blkid_evaluate_tag.c
+	 */
+	r = zuluCryptDeviceHasEncryptedFileSystem( device ) ;
+
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
 	zuluCryptSecurityDropElevatedPrivileges() ;
-	if( fs == StringVoid ){
-		/*
-		 * no file system is found,assuming it is a non LUKS encrypted volume
-		 */
-		return 1 ;
-	}else{
-		/*
-		 * st == 1 means the volume is cryto_LUKS
-		 * st == 0 means the volume has a regular file system
-		 */
-		st = StringEqual( fs,"crypto_LUKS" ) ;
-		StringDelete( &fs ) ;
-		return st ;
-	}
+
+	return r ;
 }
 
 static int _zuluMountPrintVolumeDeviceName( const char * device )

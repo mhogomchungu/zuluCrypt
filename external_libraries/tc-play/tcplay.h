@@ -75,6 +75,7 @@
 #define TC_FLAG_HDR_FROM_FILE	0x0040
 #define TC_FLAG_H_HDR_FROM_FILE	0x0080
 #define TC_FLAG_VERACRYPT_MODE	0x0100
+#define TC_FLAG_READ_ONLY_MODE	0x0200
 
 #define TC_FLAG_SET(f, x)	((f & TC_FLAG_##x) == TC_FLAG_##x)
 
@@ -152,8 +153,6 @@ struct tcplay_info {
 	int flags;
 	int volflags;
 
-	int read_only;
-
 	uint32_t blk_sz;
 
 	off_t start;	/* Logical volume offset in table (in blk_sz blocks) */
@@ -161,8 +160,6 @@ struct tcplay_info {
 
 	off_t skip;	/* IV offset (in blk_sz blocks) */
 	off_t offset;	/* Block offset (in blk_sz blocks) */
-
-	off_t off_set;
 
 	/* Populated by dm_setup */
 	uuid_t uuid;
@@ -202,8 +199,6 @@ struct tcplay_opts {
 	const char	*h_passphrase;
 	int		interactive;
 	int		weak_keys_and_salt;
-
-	int read_only;
 
 	/* Options for create */
 	int		hidden;

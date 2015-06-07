@@ -366,6 +366,15 @@ print_info(struct tcplay_info *info)
 }
 
 static
+int
+_not_a_device_with_partitions(const char *dev)
+{
+	if (strncmp(dev, "/dev/sd",7) == 0 || strncmp(dev, "/dev/hd",7) == 0)
+		return 0 ;
+	return 1 ;
+}
+
+static
 struct tcplay_info *
 new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
     struct pbkdf_prf_algo *prf, struct tchdr_dec *hdr, off_t start)
@@ -374,9 +383,9 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 	struct tcplay_info *info;
 	int i;
 	int error;
-
+	
 	chain_start = cipher_chain;
-
+	
 	if ((info = (struct tcplay_info *)alloc_safe_mem(sizeof(*info))) == NULL) {
 		tc_log(1, "could not allocate safe info memory\n");
 		return NULL;
@@ -391,18 +400,62 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 	info->size = hdr->sz_mk_scope / hdr->sec_sz;	/* volume size */
 	info->skip = hdr->off_mk_scope / hdr->sec_sz;	/* iv skip */
 
+	if (TC_FLAG_SET(flags, SYS)){
+		
+		if (_not_a_device_with_partitions(info->dev)){
+			
+			/*
+			 * This device could be loop device or an lvm volume or a raid device or
+			 * any other device that does not spell out partition information.
+			 */
+			
+			/*
+			 * this is a tricky device since it has no visible partitions and we
+			 * handle it by simply mapping starting at the beginning of the first partition.
+			 */
+			info->offset = 63;
+			
+			/*
+			 * here,we are supposed to set the size of the first partition but we dont have it
+			 * so we set wrong info by setting the size of the disk as it was read from the header.
+			 * Net result is that the created mapper will be of size larger than what it was supposed to be.
+			 */
+			info->size = hdr->sz_mk_scope / hdr->sec_sz;
+		} else {
+			
+			/*
+			 * We have a device that has old fashioned partitions
+			 */
+			
+			info->offset = 0; /* offset is 0 for system volumes */
+		
+			/*
+			 * probe the partition itself to get its size.
+			 */
+			if (get_disk_info(dev, &info->size, NULL) != 0) {
+				tc_log(1, "could not get disk information\n");
+				free_safe_mem(info);
+				return NULL;
+			}
+		}
+	} else {
+		info->offset = hdr->off_mk_scope / hdr->sec_sz;	/* block offset */
+		
+		/*
+		 * use volume size as reported by the header since the entire device
+		 * is going to be mapped.
+		 */
+		info->size = hdr->sz_mk_scope / hdr->sec_sz;		
+	}
+		
 	info->volflags = hdr->flags;
 	info->flags = flags;
-
-	if (TC_FLAG_SET(flags, SYS))
-		info->offset = 0; /* offset is 0 for system volumes */
-	else
-		info->offset = hdr->off_mk_scope / hdr->sec_sz;	/* block offset */
 
 	/* Associate a key out of the key pool with each cipher in the chain */
 	error = tc_cipher_chain_populate_keys(cipher_chain, hdr->keys);
 	if (error) {
 		tc_log(1, "could not populate keys in cipher chain\n");
+		free_safe_mem(info);
 		return NULL;
 	}
 
@@ -464,7 +517,7 @@ process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
 	else {
 		veracrypt_mode = 0;
 	}
-
+	
 	if (((TC_FLAG_SET(flags, SYS)) || (TC_FLAG_SET(flags, FDE))) && !hidden_header) {
 		// use only PRF with iterations count for boot encryption
 		// except in case of hidden operating system which uses normal iterations count
@@ -474,7 +527,7 @@ process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
 		// use only PRF with iterations count for standard encryption
 		pbkdf_prf_algos = veracrypt_mode? pbkdf_prf_algos_standard_vc : pbkdf_prf_algos_standard_tc;
 	}
-
+	
 	/* Start search for correct algorithm combination */
 	found = 0;
 	for (i = 0; !found && pbkdf_prf_algos[i].name != NULL; i++) {
@@ -566,7 +619,7 @@ create_volume(struct tcplay_opts *opts)
 	ehdr = hehdr = NULL;
 	ehdr_backup = hehdr_backup = NULL;
 	ret = -1; /* Default to returning error */
-
+	
 	if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE))
 		veracrypt_mode = 1;
 
@@ -1190,16 +1243,6 @@ map_volume(struct tcplay_opts *opts)
 	if (info == NULL)
 		return -1;
 
-	info->off_set = 0;
-
-	if (opts->dev && opts->sys_dev){
-		if (strcmp(opts->dev, opts->sys_dev) == 0 ){
-			info->off_set = 63;
-		}
-	}
-
-	info->read_only = opts->read_only;
-
 	if ((error = dm_setup(opts->map_name, info)) != 0) {
 		tc_log(1, "Could not set up mapping %s\n", opts->map_name);
 		free_info(info);
@@ -1743,6 +1786,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 	}
 
 	strcpy(dev, info->dev);
+
 	/*
 	 * Device Mapper blocks are always 512-byte blocks, so convert
 	 * from the "native" block size to the dm block size here.
@@ -1827,8 +1871,8 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 			snprintf(uu, 1024, "CRYPT-VCRYPT-%s-%s", uu_temp ,map);
 		} else {
 			snprintf(uu, 1024, "CRYPT-TCRYPT-%s-%s", uu_temp,map);
-		}
-
+		}		
+		
 		free(uu_temp);
 
 		if ((dm_task_set_uuid(dmt, uu)) == 0) {
@@ -1840,9 +1884,9 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 
 		free(uu);
 
-		if (info->read_only)
+		if (TC_FLAG_SET(info->flags, READ_ONLY_MODE))
 			dm_task_set_ro(dmt);
-
+		
 		if (TC_FLAG_SET(info->flags, FDE)) {
 			/*
 			 * When the full disk encryption (FDE) flag is set,
@@ -1864,9 +1908,6 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 
 			start = INFO_TO_DM_BLOCKS(info, offset);
 		}
-
-		if (info->off_set)
-			offset = info->off_set;
 
 		/* aes-cbc-essiv:sha256 7997f8af... 0 /dev/ad0s0a 8 <opts> */
 		/*			   iv off---^  block off--^ <opts> */
@@ -2071,7 +2112,7 @@ struct pbkdf_prf_algo *
 check_prf_algo(int veracrypt_mode, const char *algo, int quiet)
 {
 	int i, found = 0;
-	struct pbkdf_prf_algo *pbkdf_prf_algos =
+	struct pbkdf_prf_algo *pbkdf_prf_algos = 
 		(veracrypt_mode)? pbkdf_prf_algos_standard_vc : pbkdf_prf_algos_standard_tc;
 
 	for (i = 0; pbkdf_prf_algos[i].name != NULL; i++) {

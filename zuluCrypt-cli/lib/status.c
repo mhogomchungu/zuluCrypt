@@ -433,7 +433,7 @@ static int _get_crypto_info_from_tcplay( string_t p,const char * mapper )
 
 			StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
 
-			tc_api_task_info_get( task,"block_offset",sizeof( offset ),&offset ) ;
+			tc_api_task_info_get( task,"iv_offset",sizeof( offset ),&offset ) ;
 
 			z = StringIntToString_1( buffer,SIZE,offset / 512 ) ;
 
@@ -609,37 +609,13 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	return zuluExit( p,cd,device_name ) ;
 }
 
-/*
- * here,we are exploiting a simple observation that mapper will contain something like
- * "zuluCrypt-500-NAAN-sdc1-2091885911" and prepending "/dev/" infront of the 3rd component
- * will give us what we are looking for(/dev/sdc1). Hope this will always work.
- */
-static char * _get_device_name( const char * mapper )
-{
-	string_t st ;
-
-	char * e ;
-
-	stringList_t stl = StringListSplit( mapper,'-' ) ;
-
-	st = StringListStringAt( stl,3 ) ;
-
-	e = StringCopy_2( StringPrepend( st,"/dev/" ) ) ;
-
-	StringListDelete( &stl ) ;
-
-	return e ;
-}
-
 static char * _device_name( const char * mapper,char * ( *function )( const char * ) )
 {
 	tc_api_task task ;
 
 	char * e = NULL ;
 
-	int64_t block_offset = 0 ;
-
-	char device[ PATH_MAX + 1 ] ;
+	char device[ PATH_MAX + 1 ] = { '\0' } ;
 
 	mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
 
@@ -653,36 +629,11 @@ static char * _device_name( const char * mapper,char * ( *function )( const char
 
 			tc_api_task_do( task ) ;
 
-			tc_api_task_info_get( task,"block_offset",sizeof( block_offset ),&block_offset ) ;
 			tc_api_task_info_get( task,"device",sizeof( device ),device ) ;
 
 			tc_api_task_uninit( task ) ;
-
-			/*
-			 * 32256 is derived from 63(sectors) * 512(block size)
-			 */
-			if( block_offset == 32256 ){
-
-				/*
-				 * This is a hacky code path.
-				 *
-				 *  Given a device with a node address of something like "/dev/sdc1",
-				 *  the device will be reported as "/dev/sdc" if the device is a TrueCrypt
-				 *  system volume and this code path tries to figure out "/dev/sdc1" from "/dev/sdc".
-				 */
-
-				if( StringPrefixEqual( device,"/dev/sd" ) || StringPrefixEqual( device,"/dev/hd" ) ){
-
-					e = _get_device_name( mapper ) ;
-				}else{
-					/*
-					 * devices with no partitions do not seem to have the above problem
-					 */
-					e = function( device ) ;
-				}
-			}else{
-				e = function( device ) ;
-			}
+	
+			e = function( device ) ;
 		}
 
 		tc_api_uninit() ;

@@ -246,14 +246,14 @@ namespace utility
 		{
 			return m_handle.opened() ;
 		}
-		bool gotEvent()
+		bool gotEvent() const
 		{
 			poll( &m_monitor,1,-1 ) ;
 			return true ;
 		}
 	private:
 		utility::fileHandle m_handle ;
-		struct pollfd m_monitor ;
+		mutable struct pollfd m_monitor ;
 	};
 }
 

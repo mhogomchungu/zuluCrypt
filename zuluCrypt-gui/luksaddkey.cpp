@@ -49,7 +49,7 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 
 	m_isWindowClosable = true ;
 
-	m_ui->textEditPathToVolume->setText( QString( "" ) ) ;
+	m_ui->textEditPathToVolume->setText( QString() ) ;
 
 	m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Password ) ;
 	m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Password ) ;

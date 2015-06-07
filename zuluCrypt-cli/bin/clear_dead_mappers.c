@@ -63,6 +63,9 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	struct dirent * entry ;
 	const char * m ;
 	const char * e ;
+	
+	char * r ;
+	
 	size_t len ;
 	size_t len1 ;
 
@@ -103,25 +106,37 @@ void zuluCryptClearDeadMappers( uid_t uid )
 			if( zuluCryptTrueCryptOrVeraCryptVolume( e ) ){
 
 				/*
-				 * Below code seems to only work with cryptsetup created mappers
+				 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
 				 */
-				continue ;
-			}
-			if( crypt_init_by_name( &cd,e ) == 0 ){
-
-				if( crypt_get_device_name( cd ) == NULL ){
+				r = zuluCryptVolumeDeviceName( e ) ;
+				
+				if( StringPrefixNotEqual( r,"/dev/" ) ){
+					
 					/*
-					 * we will get here if none LUKS mapper is active but the underlying device is gone
+					 * tcplay seems to report device name as something like "8:33"
+					 * when a mapper exists but its underlying device is gone
 					 */
 					_remove_mapper( e,stl,uid ) ;
 				}
-				crypt_free( cd ) ;
-			}else{
-				/*
-				 * we will get here if the LUKS mapper is active but the underlying device is gone
-				 */
-				_remove_mapper( e,stl,uid ) ;
-			}
+				
+				StringFree( r ) ;
+			}else{				
+				if( crypt_init_by_name( &cd,e ) == 0 ){
+
+					if( crypt_get_device_name( cd ) == NULL ){
+						/*
+						* we will get here if none LUKS mapper is active but the underlying device is gone
+						*/
+						_remove_mapper( e,stl,uid ) ;
+					}
+					crypt_free( cd ) ;
+				}else{
+					/*
+					* we will get here if the LUKS mapper is active but the underlying device is gone
+					*/
+					_remove_mapper( e,stl,uid ) ;
+				}
+			}				
 		}
 	}
 

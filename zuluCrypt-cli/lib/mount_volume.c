@@ -171,8 +171,13 @@ static string_t set_mount_options( m_struct * mst )
 	const char * e ;
 
 	if( opt == StringVoid ){
-		opt = String( "" ) ;
-		StringAppend( opt,mst->fs_flags ) ;
+		
+		if( mst->fs_flags != NULL ){
+
+			opt = String( mst->fs_flags ) ;
+		}else{
+			opt = StringEmpty() ;
+		}
 	}else{
 		if( StringContains( opt,"ro" ) ){
 			mst->m_flags |= MS_RDONLY ;

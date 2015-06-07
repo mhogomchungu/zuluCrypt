@@ -485,6 +485,13 @@ int main( int argc,char * argv[] )
 	action = clargs.action ;
 	device = clargs.device ;
 
+	if( action == 'C' ){
+		
+		return zuluExit( _clear_dead_mappers( uid ),stl,stx,env,NULL ) ;
+	}else{
+		_clear_dead_mappers( uid ) ;
+	}
+	
 	/*
 	 * below tests are here because they do not use -d option
 	 *
@@ -492,7 +499,6 @@ int main( int argc,char * argv[] )
 	 * zuluCryptSecurityCheckPartitionPermissions() is defined in security.c
 	 */
 	switch( action ){
-		case 'C': return zuluExit( _clear_dead_mappers( uid ),stl,stx,env,NULL ) ;
 		case 'A':
 		case 'N':
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type,uid ) ;
@@ -500,8 +506,6 @@ int main( int argc,char * argv[] )
 		case 'L': st = _printOpenedVolumes( uid ) ;
 			  return zuluExit( st,stl,stx,env,NULL ) ;
 	}
-
-	_clear_dead_mappers( uid ) ;
 
 	if( action == '\0' ){
 		return zuluExit( 130,stl,stx,env,gettext( "ERROR: \"action\" argument is missing" ) ) ;

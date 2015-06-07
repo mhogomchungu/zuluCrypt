@@ -265,6 +265,11 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device ) ;
 /*
  * this function is defined in ./blkid_evaluate_tag.c
  */
+int zuluCryptDeviceHasEncryptedFileSystem( const char * device ) ;
+
+/*
+ * this function is defined in ./blkid_evaluate_tag.c
+ */
 int zuluCryptDeviceHasAgivenFileSystem( const char * device,const char * fs ) ;
 
 /*

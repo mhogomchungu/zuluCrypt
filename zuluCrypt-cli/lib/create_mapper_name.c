@@ -39,7 +39,7 @@
  * A successfully constructed "ZULUCRYPTshortMapperPath mapper path" will look like "zuluCrypt-500-NAAN-mdraid-2355849641"
  */
 
-static string_t _create( const char * device,const char * mapping_name,uid_t uid,int i )
+string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i )
 {
 	string_t p ;
 	unsigned long z ;
@@ -92,11 +92,6 @@ static string_t _create( const char * device,const char * mapping_name,uid_t uid
 	 */
 	StringReplaceCharString( p,'_',BASH_SPECIAL_CHARS ) ;
 	return p ;
-}
-
-string_t zuluCryptCreateMapperName( const char * device,const char * mapping_name,uid_t uid,int i )
-{
-	return _create( device,mapping_name,uid,i ) ;
 }
 
 static const char * _zuluCryptMapperPrefix = NULL ;
