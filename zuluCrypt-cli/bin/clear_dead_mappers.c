@@ -48,9 +48,9 @@ static void _remove_mapper( const char * path,stringList_t stl,uid_t uid )
 	r = zuluCryptCloseVolume( path,&m_point ) ;
 
 	if( r == 0 && m_point != NULL ){
-		
+
 		remove( m_point ) ;
-		StringFree( m_point ) ;		
+		StringFree( m_point ) ;
 	}
 }
 
@@ -62,9 +62,9 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	struct dirent * entry ;
 	const char * m ;
 	const char * e ;
-	
+
 	char * r ;
-	
+
 	size_t len ;
 	size_t len1 ;
 
@@ -110,18 +110,18 @@ void zuluCryptClearDeadMappers( uid_t uid )
 				r = zuluCryptVolumeDeviceName( e ) ;
 
 				if( *( r + 0 ) != '/' ){
-					
+
 					/*
 					 * tcplay seems to report device name as something like "8:33"
-					 * when a mapper exists but its underlying device is gone and exploit
+					 * when a mapper exists but its underlying device is gone and we exploit
 					 * this behavior by checking if path starts with "/" and we assume the
 					 * device is gone if it isnt.
 					 */
 					_remove_mapper( e,stl,uid ) ;
 				}
-				
+
 				StringFree( r ) ;
-			}else{				
+			}else{
 				if( crypt_init_by_name( &cd,e ) == 0 ){
 
 					if( crypt_get_device_name( cd ) == NULL ){
@@ -137,7 +137,7 @@ void zuluCryptClearDeadMappers( uid_t uid )
 					*/
 					_remove_mapper( e,stl,uid ) ;
 				}
-			}				
+			}
 		}
 	}
 

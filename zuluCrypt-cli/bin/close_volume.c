@@ -82,11 +82,10 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	  */
 	 st = zuluCryptCloseVolume( mapper,&m_point ) ;
 
-	 if( st == 0 ){
-		if( m_point != NULL ){
-			remove( m_point ) ;
-			StringFree( m_point ) ;
-		}
+	 if( st == 0 && m_point != NULL ){
+
+		remove( m_point ) ;
+		StringFree( m_point ) ;
 	 }
 
 	 zuluCryptSecurityDropElevatedPrivileges() ;

@@ -123,12 +123,9 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			h = _unmount( _unmount_rest,mout_point ) ;
 		}
 
-		if( h == 0 ){
+		if( h == 0 && m_point != NULL ){
 
-			if( m_point != NULL ){
-
-				*m_point = StringCopy_2( mout_point ) ;
-			}
+			*m_point = StringCopy_2( mout_point ) ;
 		}
 
 		StringListDelete( &stl ) ;
