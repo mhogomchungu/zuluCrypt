@@ -431,7 +431,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 
 	if( tc_api_initialize() ){
 
-		if( tc_api_task_initialize( task,"create" ) ){
+		if( tc_api_task_initialize( &task,"create" ) ){
 
 			tc_api_task_set( task,"veracrypt_mode",e->veraCrypt_volume ) ;
 			tc_api_task_set( task,"dev",device ) ;
