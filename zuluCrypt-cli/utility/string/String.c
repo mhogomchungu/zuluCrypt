@@ -580,7 +580,7 @@ const char * StringRemoveDigits( string_t st )
 {
 	char * e ;
 	char * f ;
-	int k ;
+	char k ;
 	size_t z ;
 
 	if( st == StringVoid ){

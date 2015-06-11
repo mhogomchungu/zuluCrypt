@@ -95,9 +95,7 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 	if( tc_api_initialize() ){
 
-		task = tc_api_task_init( "map" ) ;
-
-		if( tc_api_task_initialized( task ) ){
+		if( tc_api_task_initialize( &task,"map" ) ){
 
 			tc_api_task_set( task,"veracrypt_mode",opts->veraCrypt_volume ) ;
 			tc_api_task_set( task,"map_name",opts->mapper_name ) ;
@@ -121,10 +119,10 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 				tc_api_task_set( task,"dev",device ) ;
 			}
 
+			tc_api_task_set( task,"passphrase",opts->key ) ;
+
 			k = opts->tcrypt_keyfiles_count ;
 			z = opts->tcrypt_keyfiles ;
-
-			tc_api_task_set( task,"passphrase",opts->key ) ;
 
 			for( i = 0 ; i < k ; i++ ){
 				tc_api_task_set( task,"keyfiles",*( z + i ) ) ;

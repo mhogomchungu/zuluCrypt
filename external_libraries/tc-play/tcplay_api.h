@@ -72,9 +72,10 @@ static inline int tc_api_initialize(void)
 	return tc_api_init(0) == TC_OK;
 }
 
-static inline int tc_api_task_initialized(tc_api_task task)
+static inline int tc_api_task_initialize(tc_api_task *task, const char *op)
 {
-	return task != 0;
+	*task = tc_api_task_init(op);
+	return *task != 0;
 }
 
 #ifdef __cplusplus

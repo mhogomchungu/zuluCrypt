@@ -176,9 +176,7 @@ static int _modify_tcrypt_header( const char * device,const info_t * info )
 	}
 	if( tc_api_initialize() ){
 
-		task = tc_api_task_init( "modify" ) ;
-
-		if( tc_api_task_initialized( task ) ){
+		if( tc_api_task_initialize( &task,"modify" ) ){
 
 			if( StringsAreEqual( info->opt,"sys" ) ){
 
@@ -433,9 +431,7 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 
 	if( tc_api_initialize() ){
 
-		task = tc_api_task_init( "create" ) ;
-
-		if( tc_api_task_initialized( task ) ){
+		if( tc_api_task_initialize( task,"create" ) ){
 
 			tc_api_task_set( task,"veracrypt_mode",e->veraCrypt_volume ) ;
 			tc_api_task_set( task,"dev",device ) ;

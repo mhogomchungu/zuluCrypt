@@ -35,9 +35,7 @@ static int _close_mapper( const char * mapper,int TrueCryptOrVeraCryptVolume )
 
 		if( tc_api_initialize() ){
 
-			task = tc_api_task_init( "unmap" ) ;
-
-			if( tc_api_task_initialized( task ) ){
+			if( tc_api_task_initialize( &task,"unmap" ) ){
 
 				mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
 

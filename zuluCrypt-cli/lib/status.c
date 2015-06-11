@@ -297,11 +297,9 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
 {
-	int e ;
-
 	char * f =  zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
 
-	e = StringsAreEqual( f,"crypto_TCRYPT" ) || StringsAreEqual( f,"crypto_VCRYPT" ) ;
+	int e = StringsAreEqual( f,"crypto_TCRYPT" ) || StringsAreEqual( f,"crypto_VCRYPT" ) ;
 
 	StringFree( f ) ;
 
@@ -410,9 +408,7 @@ static int _get_crypto_info_from_tcplay( string_t p,const char * mapper )
 
 	if( tc_api_initialize() ){
 
-		task = tc_api_task_init( "info_mapped" ) ;
-
-		if( tc_api_task_initialized( task ) ){
+		if( tc_api_task_initialize( &task,"info_mapped" ) ){
 
 			mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
 
@@ -621,9 +617,7 @@ static char * _device_name( const char * mapper,char * ( *function )( const char
 
 	if( tc_api_initialize() ){
 
-		task = tc_api_task_init( "info_mapped" ) ;
-
-		if( tc_api_task_initialized( task ) ){
+		if( tc_api_task_initialize( &task,"info_mapped" ) ){
 
 			tc_api_task_set( task,"map_name",mapper ) ;
 
@@ -632,7 +626,7 @@ static char * _device_name( const char * mapper,char * ( *function )( const char
 			tc_api_task_info_get( task,"device",sizeof( device ),device ) ;
 
 			tc_api_task_uninit( task ) ;
-	
+
 			e = function( device ) ;
 		}
 
