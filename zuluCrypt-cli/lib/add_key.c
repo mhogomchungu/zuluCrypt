@@ -22,16 +22,25 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-static inline int zuluExit( int st,struct crypt_device * cd )
+typedef struct{
+
+	const char * key_0 ;
+	size_t       key_0_len ;
+	const char * key_1 ;
+	size_t       key_1_len ;
+}arguments ;
+
+static int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd ) ;
 	return st ;
 }
 
-static int _add_key( const char * device,const char * existingkey,
-		     size_t existingkey_size,const char * newkey,size_t newkey_size )
+static int _add_key( const char * device,const resolve_path_t * opts )
 {
 	struct crypt_device * cd ;
+
+	const arguments * args = opts->args ;
 
 	if( zuluCryptVolumeIsNotLuks( device ) ){
 		return 3 ;
@@ -42,8 +51,8 @@ static int _add_key( const char * device,const char * existingkey,
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
 		return zuluExit( 2,cd ) ;
 	}
-	if( crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,existingkey,
-		existingkey_size,newkey,newkey_size ) < 0 ){
+	if( crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,args->key_0,
+		args->key_0_len,args->key_1,args->key_1_len ) < 0 ){
 		return zuluExit( 1,cd ) ;
 	}else{
 		return zuluExit( 0,cd ) ;
@@ -53,29 +62,27 @@ static int _add_key( const char * device,const char * existingkey,
 int zuluCryptAddKey( const char * device,const char * existingkey,
 		     size_t existingkey_size,const char * newkey,size_t newkey_size )
 {
-	string_t st ;
-	int fd ;
-	int r ;
-	if( StringPrefixEqual( device,"/dev/" ) ){
-		
-		return _add_key( device,existingkey,existingkey_size,newkey,newkey_size ) ;
-	}else{
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&st ) ){
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
+	arguments args ;
 
-			device = StringContent( st ) ;
+	memset( &opts,'\0',sizeof( opts ) ) ;
+	memset( &args,'\0',sizeof( args ) ) ;
 
-			r = _add_key( device,existingkey,existingkey_size,newkey,newkey_size ) ;
+	args.key_0        = existingkey ;
+	args.key_0_len    = existingkey_size ;
+	args.key_1        = newkey ;
+	args.key_1_len    = newkey_size ;
 
-			StringDelete( &st ) ;
+	opts.device       = device ;
+	opts.args         = &args ;
+	opts.open_mode    = O_RDWR ;
+	opts.error_value  = 1 ;
 
-			close( fd ) ;
-
-			return r ;
-		}else{
-			return 1 ;
-		}
-	}
+	/*
+	 * zuluCryptResolveDevicePath() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath( _add_key,&opts ) ;
 }

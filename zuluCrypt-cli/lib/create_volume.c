@@ -26,7 +26,7 @@
 #include <signal.h>
 #include <stdio.h>
 
-static inline int zuluExit( int st,string_t m )
+static int zuluExit( int st,string_t m )
 {
 	StringDelete( &m ) ;
 	return st ;
@@ -95,24 +95,35 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 	return r ;
 }
 
-static int _create_volume( const char * dev,const char * fs,const char * type,const char * pass,size_t pass_size,const char * rng )
+typedef struct{
+
+	const char * fs ;
+	const char * type ;
+	const char * pass ;
+	size_t       pass_size ;
+	const char * rng ;
+}arguments ;
+
+static int _create_volume( const char * device,const resolve_path_t * opts )
 {
 	int r ;
 
 	const char * mapper ;
 
+	const arguments * args = opts->args ;
+
 	string_t m = String( "/zuluCrypt-create-volume-" ) ;
 	mapper = StringAppendInt( m,syscall( SYS_gettid ) ) + 1 ;
 
-	if( StringsAreEqual( type,"luks" ) ){
+	if( StringsAreEqual( args->type,"luks" ) ){
 
-		if( StringAtLeastOnePrefixMatch( rng,"/dev/random","/dev/urandom",NULL ) ){
+		if( StringAtLeastOnePrefixMatch( args->rng,"/dev/random","/dev/urandom",NULL ) ){
 
-			if( zuluCryptCreateLuks( dev,pass,pass_size,rng ) != 0 ){
+			if( zuluCryptCreateLuks( device,args->pass,args->pass_size,args->rng ) != 0 ){
 
 				return zuluExit( 3,m ) ;
 			}
-			if( zuluCryptOpenLuks( dev,mapper,"rw",pass,pass_size ) != 0 ){
+			if( zuluCryptOpenLuks( device,mapper,"rw",args->pass,args->pass_size ) != 0 ){
 
 				return zuluExit( 3,m ) ;
 			}
@@ -120,9 +131,9 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 			return zuluExit( 2,m ) ;
 		}
 
-	}else if( StringsAreEqual( type,"plain" ) ){
+	}else if( StringsAreEqual( args->type,"plain" ) ){
 
-		if( zuluCryptOpenPlain( dev,mapper,"rw",pass,pass_size ) != 0 ){
+		if( zuluCryptOpenPlain( device,mapper,"rw",args->pass,args->pass_size ) != 0 ){
 
 			return zuluExit( 3,m ) ;
 		}
@@ -132,7 +143,7 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 
 	mapper = StringPrepend( m,crypt_get_dir() ) ;
 
-	r = zuluCryptCreateFileSystemInAVolume( fs,mapper ) ;
+	r = zuluCryptCreateFileSystemInAVolume( args->fs,mapper ) ;
 	/*
 	 * zuluCryptCloseMapper() is defined in close_mapper.c
 	 */
@@ -145,26 +156,32 @@ static int _create_volume( const char * dev,const char * fs,const char * type,co
 	}
 }
 
-int zuluCryptCreateVolume( const char * dev,const char * fs,
+int zuluCryptCreateVolume( const char * device,const char * fs,
 			   const char * type,const char * pass,
 			   size_t pass_size,const char * rng )
 {
-	string_t st ;
-	int fd ;
-	int r ;
-	if( StringPrefixEqual( dev,"/dev/" ) ){
-		return _create_volume( dev,fs,type,pass,pass_size,rng ) ;
-	}else{
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( dev,O_RDWR,&fd,&st ) ){
-			r = _create_volume( StringContent( st ),fs,type,pass,pass_size,rng ) ;
-			StringDelete( &st ) ;
-			close( fd ) ;
-			return r ;
-		}else{
-			return 3 ;
-		}
-	}
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
+	arguments args ;
+
+	memset( &opts,'\0',sizeof( opts ) ) ;
+	memset( &args,'\0',sizeof( args ) ) ;
+
+	args.fs        = fs ;
+	args.type      = type ;
+	args.pass      = pass ;
+	args.pass_size = pass_size ;
+	args.rng       = rng ;
+
+	opts.device       = device ;
+	opts.args         = &args ;
+	opts.open_mode    = O_RDWR ;
+	opts.error_value  = 3 ;
+
+	/*
+	 * zuluCryptResolveDevicePath() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath( _create_volume,&opts ) ;
 }

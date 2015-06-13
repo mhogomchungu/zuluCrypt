@@ -161,13 +161,15 @@ static string_t _root_device( const char * device,const char ** sys_device )
 	return st ;
 }
 
-static int _modify_tcrypt_header( const char * device,const info_t * info )
+static int _modify_tcrypt_header( const char * device,const resolve_path_t * opts )
 {
 	tc_api_task task ;
 
 	int r = !TC_OK ;
 
 	const char * sys_device = NULL ;
+
+	const info_t * info = opts->args ;
 
 	string_t st = StringVoid ;
 
@@ -236,30 +238,24 @@ static int _modify_tcrypt_header( const char * device,const info_t * info )
 	return r ;
 }
 
-int zuluCryptModifyTcryptHeader( const info_t * e )
+int zuluCryptModifyTcryptHeader( const info_t * info )
 {
-	int fd ;
-	string_t q = StringVoid ;
-	int r ;
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
 
-	if( StringPrefixEqual( e->device,"/dev/" ) ){
+	memset( &opts,'\0',sizeof( resolve_path_t ) ) ;
 
-		r = _modify_tcrypt_header( e->device,e ) ;
-	}else{
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( e->device,O_RDWR,&fd,&q ) ){
+	opts.device      = info->device ;
+	opts.args        = info ;
+	opts.error_value = 3 ;
+	opts.open_mode   = O_RDWR ;
 
-			r = _modify_tcrypt_header( StringContent( q ),e ) ;
-			StringDelete( &q ) ;
-			close( fd ) ;
-		}else{
-			r = 3 ;
-		}
-	}
-
-	return r ;
+	/*
+	 * zuluCryptResolveDevicePath() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath( _modify_tcrypt_header,&opts ) ;
 }
 
 struct{
@@ -373,7 +369,7 @@ static int _zuluExit( int r,char * const * options,stringList_t stl )
  *
  * key size field and cipher mode field are currently not in use
  */
-static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e )
+static int _create_tcrypt_volume( const char * device,const resolve_path_t * opts )
 {
 	tc_api_task task ;
 	int r = !TC_OK ;
@@ -389,6 +385,8 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 	size_t options_count = 0 ;
 
 	stringList_t stl ;
+
+	const create_tcrypt_t * e = opts->args ;
 
 	if( e->veraCrypt_volume && !VERACRYPT_CREATE ){
 
@@ -478,30 +476,24 @@ static int _create_tcrypt_volume( const char * device,const create_tcrypt_t * e 
 	return _zuluExit( r,options,stl ) ;
 }
 
-int zuluCryptCreateTCryptVolume( const create_tcrypt_t * e )
+int zuluCryptCreateTCryptVolume( const create_tcrypt_t * tcrypt )
 {
-	int fd ;
-	string_t q = StringVoid ;
-	int r ;
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
 
-	if( StringPrefixEqual( e->device,"/dev/" ) ){
+	memset( &opts,'\0',sizeof( resolve_path_t ) ) ;
 
-		r = _create_tcrypt_volume( e->device,e ) ;
-	}else{
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( e->device,O_RDWR,&fd,&q ) ){
+	opts.device      = tcrypt->device ;
+	opts.args        = tcrypt ;
+	opts.error_value = 3 ;
+	opts.open_mode   = O_RDWR ;
 
-			r = _create_tcrypt_volume( StringContent( q ),e ) ;
-			StringDelete( &q ) ;
-			close( fd ) ;
-		}else{
-			r = 3 ;
-		}
-	}
-
-	return r ;
+	/*
+	 * zuluCryptResolveDevicePath() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath( _create_tcrypt_volume,&opts ) ;
 }
 
 int zuluCryptCreateTCrypt( const char * device,const char * file_system,const char * rng,

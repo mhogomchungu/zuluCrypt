@@ -22,16 +22,25 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+typedef struct{
+
+	const char * key ;
+	size_t       key_len ;
+}arguments ;
+
 static int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd ) ;
 	return st ;
 }
 
-static int _remove_key( const char * device ,const char * pass,size_t pass_size )
+static int _remove_key( const char * device,const resolve_path_t * opts )
 {
 	int slot ;
+
 	struct crypt_device * cd ;
+
+	const arguments * args = opts->args ;
 
 	if( zuluCryptVolumeIsNotLuks( device ) ){
 		return 1 ;
@@ -43,7 +52,7 @@ static int _remove_key( const char * device ,const char * pass,size_t pass_size 
 		return zuluExit( 3,cd ) ;
 	}
 
-	slot = crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,pass,pass_size,0 ) ;
+	slot = crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,args->key,args->key_len,0 ) ;
 
 	if( slot < 0 ){
 		return zuluExit( 2,cd ) ;
@@ -57,25 +66,25 @@ static int _remove_key( const char * device ,const char * pass,size_t pass_size 
 
 int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size )
 {
-	string_t st ;
-	int fd ;
-	int r ;
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
+	arguments args ;
 
-	if( StringPrefixEqual( device,"/dev/" ) ){
+	memset( &opts,'\0',sizeof( opts ) ) ;
+	memset( &args,'\0',sizeof( args ) ) ;
 
-		return _remove_key( device,pass,pass_size ) ;
-	}else{
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( device,O_RDWR,&fd,&st ) ){
+	args.key          = pass ;
+	args.key_len      = pass_size ;
 
-			r = _remove_key( StringContent( st ),pass,pass_size ) ;
-			StringDelete( &st ) ;
-			close( fd ) ;
-			return r ;
-		}else{
-			return 2 ;
-		}
-	}
+	opts.device       = device ;
+	opts.args         = &args  ;
+	opts.open_mode    = O_RDWR ;
+	opts.error_value  = 2 ;
+
+	/*
+	 * zuluCryptResolveDevicePath() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath( _remove_key,&opts ) ;
 }

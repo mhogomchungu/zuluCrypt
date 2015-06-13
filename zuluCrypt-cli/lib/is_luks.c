@@ -23,10 +23,12 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-static int _is_luks( const char * dev )
+static int _is_luks( const char * dev,const resolve_path_t * opts )
 {
-	struct crypt_device * cd;
+	struct crypt_device * cd ;
 	int st ;
+
+	if( opts ){;}
 
 	if( crypt_init( &cd,dev ) != 0 ){
 		return 0 ;
@@ -34,31 +36,27 @@ static int _is_luks( const char * dev )
 
 	st = crypt_load( cd,NULL,NULL ) ;
 
-	crypt_free( cd );
+	crypt_free( cd ) ;
 
 	return st == 0 ;
 }
 
-int zuluCryptVolumeIsLuks( const char * dev )
+int zuluCryptVolumeIsLuks( const char * device )
 {
-	string_t st ;
-	int fd ;
-	int r ;
-	if( StringPrefixEqual( dev,"/dev/" ) ){
-		return _is_luks( dev ) ;
-	}else{
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( dev,O_RDWR,&fd,&st ) ){
-			r = _is_luks( StringContent( st ) ) ;
-			StringDelete( &st ) ;
-			close( fd ) ;
-			return r ;
-		}else{
-			return 0 ;
-		}
-	}
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
+
+	memset( &opts,'\0',sizeof( opts ) ) ;
+
+	opts.device       = device ;
+	opts.error_value  = 0 ;
+
+	/*
+	 * zuluCryptResolveDevicePath() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath( _is_luks,&opts ) ;
 }
 
 int zuluCryptVolumeIsNotLuks( const char * dev )

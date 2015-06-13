@@ -27,13 +27,13 @@
  */
 #include "luks_external_header.h"
 
-static inline int zuluExit( int st,struct crypt_device * cd )
+static int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd ) ;
 	return st ;
 }
 
-static inline int zuluExit_1( int r,struct crypt_device * cd,string_t st )
+static int zuluExit_1( int r,struct crypt_device * cd,string_t st )
 {
 	crypt_free( cd ) ;
 	/*
@@ -44,11 +44,16 @@ static inline int zuluExit_1( int r,struct crypt_device * cd,string_t st )
 	return r ;
 }
 
-static int _open_luks_2( const char * device,const open_struct_t * opts )
+static int _open_luks_2( const char * device,const resolve_path_t * opt )
 {
 	struct crypt_device * cd ;
 	uint32_t flags ;
 	int st ;
+
+	/*
+	 * open_struct_t is defined in includes.h
+	 */
+	const open_struct_t * opts = opt->args ;
 
 	if( zuluCryptPathIsNotValid( device ) ){
 		return 3 ;
@@ -59,13 +64,14 @@ static int _open_luks_2( const char * device,const open_struct_t * opts )
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
 		return zuluExit( 2,cd ) ;
 	}
-	if( StringHasComponent( opts->m_opts,"ro" ) ){
+	if( opt->open_mode == O_RDONLY ){
 		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
 	}
 
-	st = crypt_activate_by_passphrase( cd,opts->mapper_name,CRYPT_ANY_SLOT,opts->key,opts->key_len,flags ) ;
+	st = crypt_activate_by_passphrase( cd,opts->mapper_name,CRYPT_ANY_SLOT,
+					   opts->key,opts->key_len,flags ) ;
 
 	if( st >= 0 ){
 		return zuluExit( 0,cd ) ;
@@ -80,7 +86,7 @@ static int _open_luks_2( const char * device,const open_struct_t * opts )
 /*
  * This functionality is enabled with cryptsetup >= 1.4.0
  */
-static int _open_luks_1( const char * device,const open_struct_t * opts )
+static int _open_luks_1( const char * device,const resolve_path_t * opt )
 {
 	u_int32_t key_len ;
 	u_int32_t flags ;
@@ -90,6 +96,11 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	string_t st ;
 
 	struct crypt_device * cd = NULL ;
+
+	/*
+	 * open_struct_t is defined in includes.h
+	 */
+	const open_struct_t * opts = opt->args ;
 
 	int r ;
 
@@ -152,7 +163,7 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 	if( crypt_set_data_device( cd,device ) != 0 ){
 		return zuluExit_1( 1,cd,st ) ;
 	}
-	if( StringHasComponent( opts->m_opts,"ro" ) ){
+	if( opt->open_mode == O_RDONLY ){
 		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
@@ -175,35 +186,6 @@ static int _open_luks_1( const char * device,const open_struct_t * opts )
 }
 #endif
 
-static int _open_luks_0( int( *function )( const char *,const open_struct_t * ),const open_struct_t * opts )
-{
-	int lmode ;
-	string_t st ;
-	int fd ;
-	int r ;
-
-	if( StringPrefixEqual( opts->device,"/dev/" ) ){
-		return function( opts->device,opts ) ;
-	}else{
-		if( StringHasComponent( opts->m_opts,"ro" ) ){
-			lmode = O_RDONLY ;
-		}else{
-			lmode = O_RDWR ;
-		}
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( opts->device,lmode,&fd,&st ) ){
-			r = function( StringContent( st ),opts ) ;
-			StringDelete( &st ) ;
-			close( fd ) ;
-			return r ;
-		}else{
-			return 2 ;
-		}
-	}
-}
-
 int zuluCryptOpenLuks( const char * device,const char * mapper,
 		       const char * mode,const char * key,size_t key_len )
 {
@@ -222,10 +204,16 @@ int zuluCryptOpenLuks( const char * device,const char * mapper,
 
 int zuluCryptOpenLuks_1( const open_struct_t * opts )
 {
-	return _open_luks_0( _open_luks_1,opts ) ;
+	/*
+	 * zuluCryptResolveDevicePath_0() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath_0( _open_luks_1,opts,2 ) ;
 }
 
 int zuluCryptOpenLuks_2( const open_struct_t * opts )
 {
-	return _open_luks_0( _open_luks_2,opts ) ;
+	/*
+	 * zuluCryptResolveDevicePath_0() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath_0( _open_luks_2,opts,2 ) ;
 }

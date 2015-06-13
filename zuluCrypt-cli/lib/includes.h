@@ -98,6 +98,14 @@ typedef struct{
 	int veraCrypt_volume ;
 }create_tcrypt_t ;
 
+typedef struct{
+	const char * device ;
+	int          error_value ;
+	char       * error_value_1 ;
+	int          open_mode ;
+	const void * args ;
+}resolve_path_t ;
+
 /*
  * we only support whirlpool with cryptsetup >= 1.6.4 and libgcrypt >= 1.6.1
  *
@@ -112,6 +120,23 @@ static inline int zuluCryptWhirlpoolIsSupported()
 	return SUPPORT_WHIRLPOOL ;
 #endif
 }
+
+/*
+ * zuluCryptResolveDevicePath() is defined in resolve_path.c
+ */
+int zuluCryptResolveDevicePath( int( * )( const char *,const resolve_path_t * ),
+				const resolve_path_t * ) ;
+
+/*
+ * zuluCryptResolveDevicePath_1() is defined in resolve_path.c
+ */
+char * zuluCryptResolveDevicePath_1( char *( * )( const char *,const resolve_path_t * ),
+				     const resolve_path_t * ) ;
+/*
+ * zuluCryptResolveDevicePath_0() is defined in resolve_path.c
+ */
+int zuluCryptResolveDevicePath_0( int( * )( const char *,const resolve_path_t * ),
+				  const open_struct_t *,int ) ;
 
 /*
  * zuluCryptCreateTCryptVolume() is defined in create_tcrypt.c

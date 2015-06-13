@@ -22,6 +22,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 static char * _zuluCryptResolveDevRoot( void )
 {
@@ -292,4 +293,127 @@ char * zuluCryptResolvePath_4( const char * path )
 	}else{
 		return zuluCryptResolvePath( path ) ;
 	}
+}
+
+typedef struct{
+
+	const resolve_path_t * opts ;
+
+	int result_0 ;
+	int( *function_0 )( const char *,const resolve_path_t * ) ;
+	int error_0 ;
+
+	char * result_1 ;
+	char *( *function_1 )( const char *,const resolve_path_t * ) ;
+	char * error_1 ;
+
+} arguments;
+
+static void _get_result_0( const char * device,arguments * args )
+{
+	if( args->function_0 != NULL ){
+
+		args->result_0 = args->function_0( device,args->opts ) ;
+	}else{
+		args->result_1 = args->function_1( device,args->opts ) ;
+	}
+}
+
+static void _get_error( arguments * args )
+{
+	if( args->function_0 != NULL ){
+
+		args->result_0 = args->error_0 ;
+	}else{
+		args->result_1 = args->error_1 ;
+	}
+}
+
+static void _get_result( arguments * args )
+{
+	string_t st ;
+
+	int fd ;
+
+	const char * device = args->opts->device ;
+
+	if( StringPrefixEqual( device,"/dev/" ) ){
+
+		_get_result_0( device,args ) ;
+	}else{
+		/*
+		 * zuluCryptAttachLoopDeviceToFile() is defined in create_loop_device.c
+		 */
+		if( zuluCryptAttachLoopDeviceToFile( device,args->opts->open_mode,&fd,&st ) ){
+
+			_get_result_0( StringContent( st ),args ) ;
+
+			StringDelete( &st ) ;
+
+			close( fd ) ;
+		}else{
+			_get_error( args ) ;
+		}
+	}
+}
+
+static int _get_result_1( int( *function )( const char *,const resolve_path_t * ),
+			  const resolve_path_t * opts,int error )
+{
+	arguments args ;
+
+	memset( &args,'\0',sizeof( args ) ) ;
+
+	args.function_0 = function ;
+	args.error_0    = error ;
+	args.opts       = opts ;
+
+	_get_result( &args ) ;
+
+	return args.result_0 ;
+}
+
+int zuluCryptResolveDevicePath( int( *function )( const char *,const resolve_path_t * ),
+				const resolve_path_t * opts )
+{
+	return _get_result_1( function,opts,opts->error_value ) ;
+}
+
+int zuluCryptResolveDevicePath_0( int( *function )( const char *,const resolve_path_t * ),
+				  const open_struct_t * opt,int error )
+{
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
+
+	memset( &opts,'\0',sizeof( opts ) ) ;
+
+	opts.args   = opt ;
+	opts.device = opt->device ;
+
+	if( StringHasComponent( opt->m_opts,"ro" ) ){
+
+		opts.open_mode = O_RDONLY ;
+	}else{
+		opts.open_mode = O_RDWR ;
+	}
+
+	return _get_result_1( function,&opts,error ) ;
+}
+
+char * zuluCryptResolveDevicePath_1( char * ( *function )( const char *,const resolve_path_t * ),
+				     const resolve_path_t * opts )
+{
+	arguments args ;
+
+	memset( &args,'\0',sizeof( args ) ) ;
+
+	args.function_1 = function ;
+	args.error_1    = opts->error_value_1 ;
+	args.opts       = opts ;
+
+	_get_result( &args ) ;
+
+	return args.result_1 ;
 }

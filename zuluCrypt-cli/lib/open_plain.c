@@ -22,7 +22,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-static inline int zuluExit( int st,struct crypt_device * cd )
+static int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd ) ;
 	return st ;
@@ -75,12 +75,17 @@ static u_int64_t _offset( const char * offset )
 	return r ;
 }
 
-static int _open_plain( const char * device,const open_struct_t * opt )
+static int _open_plain( const char * device,const resolve_path_t * opts )
 {
 	uint32_t flags ;
 
 	struct crypt_device * cd ;
 	struct crypt_params_plain params ;
+
+	/*
+	 * open_struct_t is defined in includes.h
+	 */
+	const open_struct_t * opt = opts->args ;
 
 	memset( &params,'\0',sizeof( struct crypt_params_plain ) ) ;
 
@@ -95,7 +100,7 @@ static int _open_plain( const char * device,const open_struct_t * opt )
 
 	params.offset = _offset( opt->offset ) ;
 
-	if( StringHasComponent( opt->m_opts,"ro" ) ){
+	if( opts->open_mode == O_RDONLY ){
 		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
@@ -113,34 +118,10 @@ static int _open_plain( const char * device,const open_struct_t * opt )
 
 int zuluCryptOpenPlain_1( const open_struct_t * opt )
 {
-	int mode ;
-	string_t st ;
-	int fd ;
-	int r ;
-
-	if( StringPrefixEqual( opt->device,"/dev/" ) ){
-
-		return _open_plain( opt->device,opt ) ;
-	}else{
-		if( StringHasComponent( opt->m_opts,"ro" ) ){
-			mode = O_RDONLY ;
-		}else{
-			mode = O_RDWR ;
-		}
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( opt->device,mode,&fd,&st ) ){
-
-			r = _open_plain( StringContent( st ),opt ) ;
-			StringDelete( &st ) ;
-			close( fd ) ;
-
-			return r ;
-		}else{
-			return 2 ;
-		}
-	}
+	/*
+	 * zuluCryptResolveDevicePath_0() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath_0( _open_plain,opt,2 ) ;
 }
 
 int zuluCryptOpenPlain( const char * device,const char * mapper,

@@ -23,6 +23,13 @@
 
 #include <libcryptsetup.h>
 
+typedef struct{
+
+	const char * key ;
+	size_t       key_len ;
+	const char * options ;
+}arguments ;
+
 static int zuluExit( int st,struct crypt_device * cd,stringList_t stl,char * const * options )
 {
 	StringFree( options ) ;
@@ -86,7 +93,7 @@ static int _not_supported_argument_encountered( char * const * options )
  * opts is structure expected to be in a format of:
  * rng.mode.cipher.keysize.hash
  */
-static int _create_luks( const char * dev,const char * pass,size_t pass_size,const char * opts )
+static int _create_luks( const char * device,const resolve_path_t * opts )
 {
 	struct crypt_device * cd = NULL ;
 	struct crypt_params_luks1 params ;
@@ -100,21 +107,20 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 	char * const * options = NULL ;
 	size_t options_count = 0 ;
 
+	const arguments * args = opts->args ;
+
 	u_int64_t iterations = 0 ;
 
 	stringList_t stl ;
 
-	if( zuluCryptPathIsNotValid( dev ) ){
-		return 4 ;
-	}
-	if( crypt_init( &cd,dev ) != 0 ){
+	if( crypt_init( &cd,device ) != 0 ){
 		return 1 ;
 	}
-	if( StringHasNothing( opts ) ){
+	if( StringHasNothing( args->options ) ){
 
 		stl = StringList( "/dev/urandom" ) ;
 	}else{
-		stl = StringListSplit( opts,'.' ) ;
+		stl = StringListSplit( args->options,'.' ) ;
 	}
 
 	StringListStringArray_1( &options,&options_count,stl ) ;
@@ -166,31 +172,36 @@ static int _create_luks( const char * dev,const char * pass,size_t pass_size,con
 		return zuluExit( 2,cd,stl,options ) ;
 	}
 
-	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,keySize,pass,pass_size ) < 0 ){
+	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,keySize,
+		args->key,args->key_len ) < 0 ){
 		return zuluExit( 3,cd,stl,options ) ;
 	}else{
 		return zuluExit( 0,cd,stl,options ) ;
 	}
 }
 
-int zuluCryptCreateLuks( const char * dev,const char * pass,size_t pass_size,const char * opts )
+int zuluCryptCreateLuks( const char * device,const char * pass,size_t pass_size,const char * options )
 {
-	string_t st ;
-	int fd ;
-	int r ;
-	if( StringPrefixEqual( dev,"/dev/" ) ){
-		return _create_luks( dev,pass,pass_size,opts ) ;
-	}else{
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( dev,O_RDWR,&fd,&st ) ){
-			r = _create_luks( StringContent( st ),pass,pass_size,opts ) ;
-			StringDelete( &st ) ;
-			close( fd ) ;
-			return r ;
-		}else{
-			return 2 ;
-		}
-	}
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
+	arguments args ;
+
+	memset( &opts,'\0',sizeof( opts ) ) ;
+	memset( &args,'\0',sizeof( args ) ) ;
+
+	args.key          = pass ;
+	args.key_len      = pass_size ;
+	args.options      = options ;
+
+	opts.device       = device ;
+	opts.args         = &args ;
+	opts.open_mode    = O_RDWR ;
+	opts.error_value  = 2 ;
+
+	/*
+	 * zuluCryptResolveDevicePath() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath( _create_luks,&opts ) ;
 }

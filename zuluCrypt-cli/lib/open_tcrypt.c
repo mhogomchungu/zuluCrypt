@@ -73,13 +73,7 @@ string_t zuluCryptCreateKeyFile_1( string_t st,const char * fileName )
 	return zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),fileName ) ;
 }
 
-static inline int zuluExit( int st,struct crypt_device * cd )
-{
-	crypt_free( cd ) ;
-	return st ;
-}
-
-static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
+static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 {
 	tc_api_task task ;
 	int r = !TC_OK ;
@@ -90,6 +84,11 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 	const char * const * z ;
 
 	const char * e ;
+
+	/*
+	 * open_struct_t is defined in includes.h
+	 */
+	const open_struct_t * opts = opt->args ;
 
 	string_t st = StringVoid ;
 
@@ -143,31 +142,10 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 static int _open_tcrypt_0( const open_struct_t * opt )
 {
-	int mode ;
-	string_t st ;
-	int fd ;
-	int r ;
-
-	if( StringPrefixEqual( opt->device,"/dev/" ) ){
-		return _open_tcrypt_volume( opt->device,opt ) ;
-	}else{
-		if( StringHasComponent( opt->m_opts,"ro" ) ){
-			mode = O_RDONLY ;
-		}else{
-			mode = O_RDWR ;
-		}
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( opt->device,mode,&fd,&st ) ){
-			r = _open_tcrypt_volume( StringContent( st ),opt ) ;
-			StringDelete( &st ) ;
-			close( fd ) ;
-			return r ;
-		}else{
-			return 1 ;
-		}
-	}
+	/*
+	 * zuluCryptResolveDevicePath_0() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath_0( _open_tcrypt_volume,opt,1 ) ;
 }
 
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * key,size_t key_len,

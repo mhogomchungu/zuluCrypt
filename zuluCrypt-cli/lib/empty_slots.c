@@ -22,15 +22,15 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-static inline char * zuluExit( char * c,struct crypt_device * cd )
+static char * zuluExit( char * c,struct crypt_device * cd )
 {
 	if( cd != NULL ){
-		crypt_free( cd );
+		crypt_free( cd ) ;
 	}
 	return c ;
 }
 
-static char * _empty_slots( const char * device )
+static char * _empty_slots( const char * device,const resolve_path_t * opts )
 {
 	struct crypt_device * cd;
 
@@ -39,6 +39,8 @@ static char * _empty_slots( const char * device )
 	const char * type ;
 
 	string_t p ;
+
+	if( opts ){;}
 
 	if( crypt_init( &cd,device ) != 0 ){
 		return zuluExit( NULL,NULL ) ;
@@ -76,24 +78,19 @@ static char * _empty_slots( const char * device )
 
 char * zuluCryptEmptySlots( const char * device )
 {
-	string_t st ;
-	int fd ;
-	char * r ;
-	if( StringPrefixEqual( device,"/dev/" ) ){
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
 
-		return _empty_slots( device ) ;
-	}else{
-		/*
-		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop.c
-		 */
-		if( zuluCryptAttachLoopDeviceToFile( device,O_RDONLY,&fd,&st ) ){
-			
-			r = _empty_slots( StringContent( st ) ) ;
-			StringDelete( &st ) ;
-			close( fd ) ;
-			return r ;
-		}else{
-			return NULL ;
-		}
-	}
+	memset( &opts,'\0',sizeof( opts ) ) ;
+
+	opts.device        = device ;
+	opts.open_mode     = O_RDONLY ;
+	opts.error_value_1 = NULL ;
+
+	/*
+	 * zuluCryptResolveDevicePath_1() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath_1( _empty_slots,&opts ) ;
 }
