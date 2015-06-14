@@ -53,6 +53,7 @@ signals:
 	void cancel( void ) ;
 	void openMountPoint( QString ) ;
 private slots:
+	void setVeraCryptPIMValue( int ) ;
 	void cbActicated( int ) ;
 	void pbkeyOption( void ) ;
 	void pbMountPointPath( void ) ;
@@ -95,6 +96,7 @@ private :
 	bool m_working ;
 	bool m_volumeIsEncFs = false ;
 	enum{ Key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
+	int m_veraCryptPIMValue = 0 ;
 };
 
 #endif // KEYDIALOG_H

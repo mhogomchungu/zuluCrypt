@@ -200,6 +200,8 @@ struct tcplay_opts {
 	int		interactive;
 	int		weak_keys_and_salt;
 
+	int iteration_count;
+
 	/* Options for create */
 	int		hidden;
 	disksz_t	hidden_size_bytes;
@@ -304,7 +306,7 @@ char *tc_cipher_chain_sprint(char *buf, size_t bufsz,
 int free_info(struct tcplay_info *info);
 void print_info(struct tcplay_info *info);
 int adjust_info(struct tcplay_info *info, struct tcplay_info *hinfo);
-int process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
+int process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int passlen,
     struct tchdr_enc *ehdr, int hidden_header, struct tcplay_info **pinfo);
 int create_volume(struct tcplay_opts *opts);
 struct tcplay_info *info_map_common(struct tcplay_opts *opts,

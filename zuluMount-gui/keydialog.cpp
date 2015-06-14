@@ -43,6 +43,7 @@
 #include "zulumounttask.h"
 #include "veracrypt_support.h"
 #include "truecrypt_support.h"
+#include "veracryptpimdialog.h"
 
 #define KWALLET         "kde wallet"
 #define INTERNAL_WALLET "internal wallet"
@@ -124,6 +125,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	_add_action( tr( "Set File System Options" ) ) ;
 	_add_action( tr( "Set Volume Offset" ) ) ;
 	_add_action( tr( "Set Volume As VeraCrypt Volume" ) ) ;
+	_add_action( tr( "Set VeraCrypt PIM value" ) ) ;
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Keyfile" ) ) ;
@@ -216,7 +218,20 @@ void keyDialog::doAction( QAction * ac )
 		this->showOffSetWindowOption() ;
 	}else if( e == tr( "Set Volume As VeraCrypt Volume" ) ){
 		m_veraCryptVolume = true ;
+	}else if( e == tr( "Set VeraCrypt PIM value" ) ){
+
+		auto v = new VeraCryptPIMDialog( this ) ;
+
+		connect( v,SIGNAL( setValue( int ) ),this,SLOT( setVeraCryptPIMValue( int ) ) ) ;
+
+		v->Show() ;
 	}
+}
+
+void keyDialog::setVeraCryptPIMValue( int e )
+{
+	m_veraCryptPIMValue = e ;
+	m_veraCryptVolume = e > 0 ;
 }
 
 void keyDialog::deviceOffSet( QString deviceOffSet,QString key )
@@ -547,7 +562,12 @@ void keyDialog::openVolume()
 
 	if( m_veraCryptVolume ){
 
-		exe += " -t vera " + m ;
+		if( m_veraCryptPIMValue > 0 ){
+
+			exe += " -t veracrypt." + QString::number( m_veraCryptPIMValue ) + " " + m ;
+		}else{
+			exe += " -t veracrypt " + m ;
+		}
 	}else{
 		exe += " " + m ;
 	}

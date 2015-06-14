@@ -207,7 +207,6 @@ static int _open_volume( const open_struct_t * volume )
 
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
-	int veraCrypt_volume = StringAtLeastOneMatch_1( opts->type,"vcrypt","veracrypt","vera",NULL ) ;
 	int share                = opts->share ;
 	int open_mount           = opts->open_mount ;
 	const char * device      = opts->device ;
@@ -242,6 +241,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	size_t key_len = 0 ;
 	int st = 0 ;
+
+	size_t v ;
 
 	unsigned long m_flags ;
 
@@ -428,7 +429,26 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.uid         = uid ;
 	volume.m_opts      = m_opts ;
 	volume.m_flags     = m_flags ;
-	volume.veraCrypt_volume = veraCrypt_volume ;
+
+	stz = StringListSplit( opts->type,'.' ) ;
+
+	v = StringListSize( stz ) ;
+
+	if( v > 0 ){
+
+		e = StringListContentAt( stz,0 ) ;
+
+		volume.veraCrypt_volume = StringAtLeastOneMatch_1( e,"vcrypt","veracrypt","vera",NULL ) ;
+
+		if( v >= 2 ){
+
+			e = StringListContentAt( stz,1 ) ;
+			
+			volume.iteration_count = ( int )StringConvertToInt( e ) ;
+		}
+	}
+
+	StringListDelete( &stz ) ;
 
 	plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
 

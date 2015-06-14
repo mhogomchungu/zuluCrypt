@@ -383,9 +383,9 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 	struct tcplay_info *info;
 	int i;
 	int error;
-	
+
 	chain_start = cipher_chain;
-	
+
 	if ((info = (struct tcplay_info *)alloc_safe_mem(sizeof(*info))) == NULL) {
 		tc_log(1, "could not allocate safe info memory\n");
 		return NULL;
@@ -401,20 +401,20 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 	info->skip = hdr->off_mk_scope / hdr->sec_sz;	/* iv skip */
 
 	if (TC_FLAG_SET(flags, SYS)){
-		
+
 		if (_not_a_device_with_partitions(info->dev)){
-			
+
 			/*
 			 * This device could be loop device or an lvm volume or a raid device or
 			 * any other device that does not spell out partition information.
 			 */
-			
+
 			/*
 			 * this is a tricky device since it has no visible partitions and we
 			 * handle it by simply mapping starting at the beginning of the first partition.
 			 */
 			info->offset = 63;
-			
+
 			/*
 			 * here,we are supposed to set the size of the first partition but we dont have it
 			 * so we set wrong info by setting the size of the disk as it was read from the header.
@@ -422,13 +422,13 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 			 */
 			info->size = hdr->sz_mk_scope / hdr->sec_sz;
 		} else {
-			
+
 			/*
 			 * We have a device that has old fashioned partitions
 			 */
-			
+
 			info->offset = 0; /* offset is 0 for system volumes */
-		
+
 			/*
 			 * probe the partition itself to get its size.
 			 */
@@ -440,14 +440,14 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 		}
 	} else {
 		info->offset = hdr->off_mk_scope / hdr->sec_sz;	/* block offset */
-		
+
 		/*
 		 * use volume size as reported by the header since the entire device
 		 * is going to be mapped.
 		 */
-		info->size = hdr->sz_mk_scope / hdr->sec_sz;		
+		info->size = hdr->sz_mk_scope / hdr->sec_sz;
 	}
-		
+
 	info->volflags = hdr->flags;
 	info->flags = flags;
 
@@ -494,7 +494,7 @@ adjust_info(struct tcplay_info *info, struct tcplay_info *hinfo)
 }
 
 int
-process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
+process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int passlen,
     struct tchdr_enc *ehdr, int hidden_header, struct tcplay_info **pinfo)
 {
 	struct tchdr_dec *dhdr;
@@ -503,6 +503,9 @@ process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
 	struct pbkdf_prf_algo* pbkdf_prf_algos = NULL;
 	unsigned char *key;
 	int i, j, found, error, veracrypt_mode;
+
+	int flags = opts->flags ;
+	int iteration_count = opts->iteration_count;
 
 	*pinfo = NULL;
 
@@ -517,7 +520,7 @@ process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
 	else {
 		veracrypt_mode = 0;
 	}
-	
+
 	if (((TC_FLAG_SET(flags, SYS)) || (TC_FLAG_SET(flags, FDE))) && !hidden_header) {
 		// use only PRF with iterations count for boot encryption
 		// except in case of hidden operating system which uses normal iterations count
@@ -527,10 +530,13 @@ process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
 		// use only PRF with iterations count for standard encryption
 		pbkdf_prf_algos = veracrypt_mode? pbkdf_prf_algos_standard_vc : pbkdf_prf_algos_standard_tc;
 	}
-	
+
 	/* Start search for correct algorithm combination */
 	found = 0;
 	for (i = 0; !found && pbkdf_prf_algos[i].name != NULL; i++) {
+
+		if(iteration_count > 0)
+			pbkdf_prf_algos[i].iteration_count = iteration_count;
 #ifdef DEBUG
 		printf("\nTrying PRF algo %s (%d)\n", pbkdf_prf_algos[i].name,
 		    pbkdf_prf_algos[i].iteration_count);
@@ -619,7 +625,7 @@ create_volume(struct tcplay_opts *opts)
 	ehdr = hehdr = NULL;
 	ehdr_backup = hehdr_backup = NULL;
 	ret = -1; /* Default to returning error */
-	
+
 	if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE))
 		veracrypt_mode = 1;
 
@@ -1092,7 +1098,7 @@ info_map_common(struct tcplay_opts *opts, char *passphrase_out)
 			hehdr = NULL;
 		}
 
-		error = process_hdr(opts->dev, opts->flags, (unsigned char *)pass,
+		error = process_hdr(opts->dev, opts, (unsigned char *)pass,
 		    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass),
 		    ehdr, 0, &info);
 
@@ -1103,12 +1109,12 @@ info_map_common(struct tcplay_opts *opts, char *passphrase_out)
 		 */
 		if (hehdr && (error || opts->protect_hidden)) {
 			if (error) {
-				error2 = process_hdr(opts->dev, opts->flags, (unsigned char *)pass,
+				error2 = process_hdr(opts->dev, opts, (unsigned char *)pass,
 				    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass), hehdr, 1,
 				    &info);
 				is_hidden = !error2;
 			} else if (opts->protect_hidden) {
-				error2 = process_hdr(opts->dev, opts->flags, (unsigned char *)h_pass,
+				error2 = process_hdr(opts->dev, opts, (unsigned char *)h_pass,
 				    (opts->n_hkeyfiles > 0)?MAX_PASSSZ:strlen(h_pass), hehdr, 1,
 				    &hinfo);
 			}
@@ -1871,8 +1877,8 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 			snprintf(uu, 1024, "CRYPT-VCRYPT-%s-%s", uu_temp ,map);
 		} else {
 			snprintf(uu, 1024, "CRYPT-TCRYPT-%s-%s", uu_temp,map);
-		}		
-		
+		}
+
 		free(uu_temp);
 
 		if ((dm_task_set_uuid(dmt, uu)) == 0) {
@@ -1886,7 +1892,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 
 		if (TC_FLAG_SET(info->flags, READ_ONLY_MODE))
 			dm_task_set_ro(dmt);
-		
+
 		if (TC_FLAG_SET(info->flags, FDE)) {
 			/*
 			 * When the full disk encryption (FDE) flag is set,
@@ -2112,7 +2118,7 @@ struct pbkdf_prf_algo *
 check_prf_algo(int veracrypt_mode, const char *algo, int quiet)
 {
 	int i, found = 0;
-	struct pbkdf_prf_algo *pbkdf_prf_algos = 
+	struct pbkdf_prf_algo *pbkdf_prf_algos =
 		(veracrypt_mode)? pbkdf_prf_algos_standard_vc : pbkdf_prf_algos_standard_tc;
 
 	for (i = 0; pbkdf_prf_algos[i].name != NULL; i++) {

@@ -73,6 +73,7 @@ typedef struct{
 	uid_t        uid ;
 	int          volume_type ;
 	int          key_source ;
+	int iteration_count ;
 	int luks_detached_header ;
 	int tcrypt_keyfiles_count ;
 	int veraCrypt_volume ;

@@ -97,6 +97,7 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 		if( tc_api_task_initialize( &task,"map" ) ){
 
 			tc_api_task_set( task,"veracrypt_mode",opts->veraCrypt_volume ) ;
+			tc_api_task_set( task,"iteration_count",opts->iteration_count ) ;
 			tc_api_task_set( task,"map_name",opts->mapper_name ) ;
 
 			tc_api_task_set( task,"read_only",StringHasComponent( opts->m_opts,"ro" ) ) ;
@@ -215,6 +216,12 @@ int zuluCryptOpenTcrypt_1( const open_struct_t * opts )
 }
 
 #if CHECK_TCRYPT
+
+static int zuluExit( int st,struct crypt_device * cd )
+{
+	crypt_free( cd ) ;
+	return st ;
+}
 /*
  * 1 is returned if a volume is a truecrypt volume.
  * 0 is returned if a volume is not a truecrypt volume or functionality is not supported

@@ -7,6 +7,7 @@ set (UI_FILES 	mainwindow.ui
 		mountpartition.ui
 		deviceoffset.ui
 		mountoptions.ui
+		veracryptpimdialog.ui
 		../zuluCrypt-gui/tcrypt.ui
 )
 
@@ -18,6 +19,7 @@ set(MOC_FILES 	mainwindow.h
 		monitor_mountinfo.h
 		deviceoffset.h
 		mountoptions.h
+		veracryptpimdialog.h
 		../zuluCrypt-gui/tcrypt.h
 		../zuluCrypt-gui/utility.h
  )
@@ -34,7 +36,7 @@ set(SRC 	main.cpp
 		mountoptions.cpp
 		volumeentryproperties.cpp
 		../zuluCrypt-gui/tcrypt.cpp
-
+		veracryptpimdialog.cpp
 )
 
 if( QT5 )
