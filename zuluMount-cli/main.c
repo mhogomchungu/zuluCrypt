@@ -617,6 +617,13 @@ int main( int argc,char * argv[] )
 		args.key = StringContent( *k ) ;
 	}
 
+	if( args.type != NULL ){
+		k = StringListAssign( stl ) ;
+		*k = String( args.type ) ;
+		_hide( args.type ) ;
+		args.type = StringContent( *k ) ;
+	}
+	
 	for( i = 0 ; args.tcrypt_multiple_keyfiles[ i ] != NULL ; i++ ){
 
 		k = StringListAssign( stl ) ;

@@ -404,16 +404,16 @@ and a secondary publicly accessible &quot;mirror&quot; mount point will be creat
     </message>
     <message>
         <location filename="../../zuluMount-gui/veracryptpimdialog.cpp" line="40"/>
-        <source>Set VeraCrypt dynamic mode magic number below</source>
+        <source>Set VeraCrypt dynamic mode magic number below.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/veracryptpimdialog.cpp" line="88"/>
+        <location filename="../../zuluMount-gui/veracryptpimdialog.cpp" line="89"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/veracryptpimdialog.cpp" line="88"/>
+        <location filename="../../zuluMount-gui/veracryptpimdialog.cpp" line="89"/>
         <source>Failed to convert the value to digits only </source>
         <translation type="unfinished"></translation>
     </message>

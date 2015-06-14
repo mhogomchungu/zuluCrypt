@@ -97,6 +97,7 @@ typedef struct{
 	const char * fs ;
 	const char * fs_h ;
 	int veraCrypt_volume ;
+	int iteration_count ;
 }create_tcrypt_t ;
 
 typedef struct{
@@ -121,6 +122,11 @@ static inline int zuluCryptWhirlpoolIsSupported()
 	return SUPPORT_WHIRLPOOL ;
 #endif
 }
+
+/*
+ * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
+ */
+int zuluCryptVeraCryptPIM( int e ) ;
 
 /*
  * zuluCryptResolveDevicePath() is defined in resolve_path.c

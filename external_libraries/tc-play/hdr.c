@@ -209,7 +209,7 @@ create_hdr(unsigned char *pass, int passlen, struct pbkdf_prf_algo *prf_algo,
 		goto error;
 	}
 
-	if (veracrypt_mode == 0) {	
+	if (veracrypt_mode == 0) {
 		memcpy(dhdr->tc_str, TC_SIG, 4);
 		dhdr->tc_ver = 5;
 		dhdr->tc_min_ver = 0x0700;

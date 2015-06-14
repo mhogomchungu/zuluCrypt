@@ -356,6 +356,15 @@ static int _zuluExit( int r,char * const * options,stringList_t stl )
 	return r ;
 }
 
+int zuluCryptVeraCryptPIM( int e )
+{
+	if( e > 0 ){
+		return 15000 + ( e * 1000 ) ;
+	}else{
+		return 0 ;
+	}
+}
+
 /*
  * e->encryption_options will contain a structure in the following format:
  * rng.algorithm.cipher mode.key size in bits.hash function
@@ -432,6 +441,7 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 		if( tc_api_task_initialize( &task,"create" ) ){
 
 			tc_api_task_set( task,"veracrypt_mode",e->veraCrypt_volume ) ;
+			tc_api_task_set( task,"iteration_count",zuluCryptVeraCryptPIM( e->iteration_count ) ) ;
 			tc_api_task_set( task,"dev",device ) ;
 			tc_api_task_set( task,"secure_erase",FALSE ) ;
 			tc_api_task_set( task,"prf_algo",hash ) ;

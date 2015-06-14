@@ -465,6 +465,11 @@ int main( int argc,char * argv[] )
 		hide( clargs.device ) ;
 		clargs.device = StringContent( q ) ;
 	}
+	if( clargs.type != NULL ){
+		q = StringListAssignString( stl,String( clargs.type ) ) ;
+		hide( clargs.type ) ;
+		clargs.type = StringContent( q ) ;
+	}
 
 	for( i = 0 ; clargs.tcrypt_multiple_keyfiles[ i ] != NULL ; i++ ){
 
@@ -486,12 +491,12 @@ int main( int argc,char * argv[] )
 	device = clargs.device ;
 
 	if( action == 'C' ){
-		
+
 		return zuluExit( _clear_dead_mappers( uid ),stl,stx,env,NULL ) ;
 	}else{
 		_clear_dead_mappers( uid ) ;
 	}
-	
+
 	/*
 	 * below tests are here because they do not use -d option
 	 *

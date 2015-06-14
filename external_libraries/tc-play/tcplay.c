@@ -856,6 +856,12 @@ create_volume(struct tcplay_opts *opts)
 	if (opts->state_change_fn)
 		opts->state_change_fn(opts->api_ctx, "create_header", 1);
 
+	if (opts->iteration_count > 0){
+		opts->prf_algo->iteration_count = opts->iteration_count;
+		if (opts->h_prf_algo)
+			opts->h_prf_algo->iteration_count = opts->iteration_count;
+	}
+
 	/* create encrypted headers */
 	ehdr = create_hdr((unsigned char *)pass,
 	    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass),

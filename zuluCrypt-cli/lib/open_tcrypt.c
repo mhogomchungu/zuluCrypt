@@ -97,10 +97,13 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 		if( tc_api_task_initialize( &task,"map" ) ){
 
 			tc_api_task_set( task,"veracrypt_mode",opts->veraCrypt_volume ) ;
-			tc_api_task_set( task,"iteration_count",opts->iteration_count ) ;
 			tc_api_task_set( task,"map_name",opts->mapper_name ) ;
-
 			tc_api_task_set( task,"read_only",StringHasComponent( opts->m_opts,"ro" ) ) ;
+
+			/*
+			 * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
+			 */
+			tc_api_task_set( task,"iteration_count",zuluCryptVeraCryptPIM( opts->iteration_count ) ) ;
 
 			if( opts->tcrypt_system ){
 

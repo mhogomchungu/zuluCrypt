@@ -64,14 +64,15 @@ only root user or members of group zulucrypt-system can do that\n" ) ) ;						br
 
 static int zuluExit_1( const char * type,stringList_t stl )
 {
-	StringListClearDelete( &stl ) ;
-
 	printf( gettext( "SUCCESS: Volume created successfully\n" ) ) ;
 
 	if( StringAtLeastOneMatch_1( type,"luks","tcrypt","truecrypt","veracrypt","vera","vcrypt",NULL ) ){
 		printf( gettext( "\nCreating a backup of the \"%s\" volume header is strongly adviced.\n" ),type ) ;
 		printf( gettext( "Please read documentation on why this is important\n\n" ) ) ;
 	}
+
+	StringListClearDelete( &stl ) ;
+
 	return 0 ;
 }
 
@@ -93,16 +94,18 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * code deleting blocks to take into account different exit points.
 	 */
 	stringList_t stl  ;
-	string_t * stringArray  = StringListArray( &stl,6 ) ;
+	string_t * stringArray  = StringListArray( &stl,7 ) ;
 	string_t * pass_1  = &stringArray[ 0 ] ;
 	string_t * pass_2  = &stringArray[ 1 ] ;
 	string_t * confirm = &stringArray[ 2 ] ;
 	string_t * mapper  = &stringArray[ 3 ] ;
 	string_t * pass_3  = &stringArray[ 4 ] ;
 	string_t * pass_4  = &stringArray[ 5 ] ;
+	string_t * type_1  = &stringArray[ 6 ] ;
 
 	stringList_t stz = StringListVoid ;
 	stringList_t stk = StringListVoid ;
+	stringList_t stn = StringListVoid ;
 
 	string_t p = StringVoid ;
 
@@ -110,6 +113,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	size_t       volkeysize = 0 ;
 	const char * volkey_h = "" ;
 	size_t       volkeysize_h = 0 ;
+
+	const char * e ;
 
 	int tcrypt_source   = TCRYPT_PASSPHRASE ;
 	int tcrypt_source_h = TCRYPT_PASSPHRASE ;
@@ -121,6 +126,9 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 
 	int truecrypt_volume = 0 ;
 	int veracrypt_volume = 0 ;
+
+	int iteration_count = 0 ;
+	size_t v ;
 
 	u_int64_t hidden_volume_size = 0 ;
 
@@ -221,8 +229,30 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		}
 	}
 
-	truecrypt_volume = StringAtLeastOneMatch_1( type,"tcrypt","truecrypt",NULL ) ;
-	veracrypt_volume = StringAtLeastOneMatch_1( type,"vcrypt","veracrypt","vera",NULL ) ;
+	stn = StringListSplit( type,'.' ) ;
+
+	v = StringListSize( stn ) ;
+
+	if( v > 0 ){
+
+		e = StringListContentAt( stn,0 ) ;
+
+		truecrypt_volume = StringAtLeastOneMatch_1( e,"tcrypt","truecrypt",NULL ) ;
+		veracrypt_volume = StringAtLeastOneMatch_1( e,"vcrypt","veracrypt","vera",NULL ) ;
+
+		if( veracrypt_volume && v >= 2 ){
+
+			*type_1 = String( e ) ;
+
+			type = StringContent( *type_1 ) ;
+
+			e = StringListContentAt( stn,1 ) ;
+
+			iteration_count = ( int )StringConvertToInt( e ) ;
+		}
+	}
+
+	StringListDelete( &stn ) ;
 
 	if( key_source == NULL ){
 		printf( gettext( "Enter passphrase: " ) ) ;
@@ -342,6 +372,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		tcrypt.encryption_options = rng ;
 		tcrypt.hidden_volume_size = hidden_volume_size ;
 		tcrypt.veraCrypt_volume   = veracrypt_volume ;
+		tcrypt.iteration_count    = iteration_count ;
 
 		if( tcrypt_keyfiles[ 0 ] != NULL ){
 			/*

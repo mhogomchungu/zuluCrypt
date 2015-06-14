@@ -37,7 +37,9 @@ VeraCryptPIMDialog::VeraCryptPIMDialog( QWidget * parent ) :
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbSet,SIGNAL( clicked() ),this,SLOT( pbSet() ) ) ;
 
-	m_ui->label->setText( tr( "Set VeraCrypt dynamic mode magic number below" ) ) ;
+	m_ui->label->setText( tr( "Set VeraCrypt dynamic mode magic number below." ) ) ;
+
+	m_ui->lineEditPIM->setFocus() ;
 }
 
 bool VeraCryptPIMDialog::eventFilter( QObject * watched,QEvent * event )
@@ -79,8 +81,7 @@ void VeraCryptPIMDialog::pbSet()
 	int e = m_ui->lineEditPIM->text().toInt( &ok ) ;
 
 	if( ok ){
-
-		emit setValue( 15000 + ( e * 1000 ) ) ;
+		emit setValue( e ) ;
 		this->Hide() ;
 	}else{
 		DialogMsg msg( this ) ;
