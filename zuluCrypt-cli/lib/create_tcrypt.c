@@ -72,6 +72,7 @@ static int _create_file_system( const create_tcrypt_t * e )
 	}
 
 	opts.veraCrypt_volume = e->veraCrypt_volume ;
+	opts.iteration_count  = e->iteration_count ;
 
 	/*
 	 * zuluCryptOpenTcrypt_1 is defined in open_tcrypt.c
