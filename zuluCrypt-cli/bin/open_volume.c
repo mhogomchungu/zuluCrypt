@@ -440,10 +440,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 		volume.veraCrypt_volume = StringAtLeastOneMatch_1( e,"vcrypt","veracrypt","vera",NULL ) ;
 
-		if( v >= 2 ){
+		if( volume.veraCrypt_volume && v >= 2 ){
 
 			e = StringListContentAt( stz,1 ) ;
-			
+
 			volume.iteration_count = ( int )StringConvertToInt( e ) ;
 		}
 	}

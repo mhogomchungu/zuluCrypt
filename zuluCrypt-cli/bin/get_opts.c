@@ -26,7 +26,6 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 	memset( stopts,'\0',sizeof( struct_opts ) ) ;
 
 	stopts->fs = "ext4" ;
-	stopts->type = "luks" ;
 	stopts->rng = "/dev/urandom" ;
 
 	stopts->open_mount = 1 ;
