@@ -178,7 +178,7 @@ stringList_t StringList( const char * cstring )
 	stl->stp[0] = String( cstring ) ;
 
 	if( stl->stp[0] == StringVoid ){
-		free( stl->stp );
+		free( stl->stp ) ;
 		free( stl ) ;
 		return _StringListError() ;
 	}else{
@@ -233,7 +233,7 @@ string_t * StringListAssign( stringList_t stl )
 	}else{
 		stl->stp = p ;
 		stl->stp[ stl->size ] = StringVoid ;
-		p = &stl->stp[ stl->size ]  ;
+		p = &stl->stp[ stl->size ] ;
 
 		stl->size = stl->size + 1 ;
 
@@ -327,7 +327,7 @@ stringList_t StringListWithSize( char ** c, size_t s,size_t t )
 	}
 	stl->stp[0] = StringInheritWithSize( c,s,t ) ;
 	if( stl->stp[0] == StringVoid ){
-		free( stl->stp );
+		free( stl->stp ) ;
 		free( stl ) ;
 		return _StringListError() ;
 	}else{

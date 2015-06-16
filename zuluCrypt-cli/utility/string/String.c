@@ -115,7 +115,7 @@ const char * StringToLowerCase( string_t st )
 static inline char * __StringExpandMemory( string_t st,size_t new_size )
 {
 	char * p ;
-	if( new_size >= st->length ) {
+	if( new_size >= st->length ){
 		st->length = new_size * FACTOR ;
 		p = realloc( st->string,st->length ) ;
 		if( p == NULL ){
@@ -344,7 +344,7 @@ string_t String( const char * cstring )
 			return _StringError() ;
 		}else{
 			memcpy( st->string,cstring,size + 1 ) ;
-			st->size = size  ;
+			st->size = size ;
 			st->length = size + 1 ;
 			st->owned = 0 ;
 			return st ;
@@ -1072,14 +1072,19 @@ int StringStartsWithAtLeastOne( string_t st,... )
 	va_list list ;
 	va_start( list,st ) ;
 
-	while( 1 ){
-		entry = va_arg( list,const char * ) ;
-		if( entry == NULL ){
-			break ;
-		}else{
-			if( strncmp( st->string,entry,strlen( entry ) ) == 0 ){
-				r = 1 ;
+	if( st != StringVoid ){
+
+		while( 1 ){
+
+			entry = va_arg( list,const char * ) ;
+
+			if( entry == NULL ){
 				break ;
+			}else{
+				if( strncmp( st->string,entry,strlen( entry ) ) == 0 ){
+					r = 1 ;
+					break ;
+				}
 			}
 		}
 	}

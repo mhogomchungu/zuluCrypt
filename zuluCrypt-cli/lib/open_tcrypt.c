@@ -104,6 +104,7 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 			 * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
 			 */
 			tc_api_task_set( task,"iteration_count",zuluCryptVeraCryptPIM( opts->iteration_count ) ) ;
+			tc_api_task_set( task,"dev",device ) ;
 
 			if( opts->tcrypt_system ){
 
@@ -112,14 +113,10 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 
 					st = String( device ) ;
 					e = StringRemoveDigits( st ) ;
-					tc_api_task_set( task,"dev",device ) ;
 					tc_api_task_set( task,"sys",e ) ;
 				}else{
-					tc_api_task_set( task,"dev",device ) ;
 					tc_api_task_set( task,"sys",device ) ;
 				}
-			}else{
-				tc_api_task_set( task,"dev",device ) ;
 			}
 
 			tc_api_task_set( task,"passphrase",opts->key ) ;
