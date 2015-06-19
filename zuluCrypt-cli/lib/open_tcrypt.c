@@ -108,8 +108,7 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 
 			if( opts->tcrypt_system ){
 
-				if( StringPrefixEqual( device,"/dev/sd" ) ||
-					StringPrefixEqual( device,"/dev/hd" ) ){
+				if( StringAtLeastOnePrefixMatch( device,"/dev/sd","/dev/hd",NULL ) ){
 
 					st = String( device ) ;
 					e = StringRemoveDigits( st ) ;

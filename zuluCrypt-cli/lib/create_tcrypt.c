@@ -198,34 +198,10 @@ static int _modify_tcrypt_header( const char * device,const resolve_path_t * opt
 			}
 
 			tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
-
-			if( info->header_source && info->tmp_path ){
-				/*
-				* below line may look like one of the following two lines:
-				* tc_api_task_set( task,"header_from_file","/home/ink/tc.headerbackup" ) ;
-				* tc_api_task_set( task,"save_header_to_file","/home/ink/tc.headerbackup" ) ;
-				*/
-				tc_api_task_set( task,info->header_source,info->tmp_path ) ;
-			}
-
-			if( info->header_key_source && info->header_key ){
-				/*
-				* below line may look like one of the following two lines:
-				* tc_api_task_set( task,"passphrase","xxx" ) ;
-				* tc_api_task_set( task,"keyfiles","/home/ink/keyfile" ) ;
-				*/
-				tc_api_task_set( task,info->header_key_source,info->header_key ) ;
-			}
-
-			if( info->header_new_key_source && info->header_new_key ){
-				/*
-				* below line may look like one of the following two lines:
-				* tc_api_task_set( task,"new_passphrase","xxx" ) ;
-				* tc_api_task_set( task,"new_keyfiles","/home/ink/keyfile" ) ;
-				*/
-				tc_api_task_set( task,info->header_new_key_source,info->header_new_key ) ;
-			}
-
+			tc_api_task_set( task,info->header_source,info->tmp_path ) ;
+			tc_api_task_set( task,info->header_key_source,info->header_key ) ;
+			tc_api_task_set( task,info->header_new_key_source,info->header_new_key ) ;
+			
 			tc_api_task_set( task,"weak_keys_and_salt",StringsAreEqual( info->rng,"/dev/urandom" ) ) ;
 
 			r = tc_api_task_do( task ) ;
