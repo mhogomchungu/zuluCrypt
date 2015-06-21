@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2011
+ *  Copyright (c) 2011-2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -74,7 +74,6 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 
 	StringListIterator it ;
 
-	const char * fs ;
 	const char * mout_point ;
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
@@ -106,14 +105,12 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 
 		it = StringListBegin( stl ) ;
 
-		fs = StringContent( *( it + 2 ) ) ;
-
 		/*
 		 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
 		 */
 		mout_point = zuluCryptDecodeMountEntry( *( it + 1 ) ) ;
 
-		if( StringHasComponent( fs,"fuse" ) ){
+		if( StringContains( *( it + 2 ),"fuse" ) ){
 
 			/*
 			 * Dont know whats going on but FUSE based file systems do not seem to work with umount()

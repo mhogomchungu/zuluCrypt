@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2012
+ *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -623,7 +623,7 @@ int main( int argc,char * argv[] )
 		_hide( args.type ) ;
 		args.type = StringContent( *k ) ;
 	}
-	
+
 	for( i = 0 ; args.tcrypt_multiple_keyfiles[ i ] != NULL ; i++ ){
 
 		k = StringListAssign( stl ) ;

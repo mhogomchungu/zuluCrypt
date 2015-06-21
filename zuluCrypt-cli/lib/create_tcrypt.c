@@ -1,7 +1,7 @@
 
  /*
   *
-  *  Copyright (c) 2013
+  *  Copyright (c) 2013-2015
   *  name : Francis Banyikwa
   *  email: mhogomchungu@gmail.com
   *  This program is free software: you can redistribute it and/or modify
@@ -201,7 +201,7 @@ static int _modify_tcrypt_header( const char * device,const resolve_path_t * opt
 			tc_api_task_set( task,info->header_source,info->tmp_path ) ;
 			tc_api_task_set( task,info->header_key_source,info->header_key ) ;
 			tc_api_task_set( task,info->header_new_key_source,info->header_new_key ) ;
-			
+
 			tc_api_task_set( task,"weak_keys_and_salt",StringsAreEqual( info->rng,"/dev/urandom" ) ) ;
 
 			r = tc_api_task_do( task ) ;

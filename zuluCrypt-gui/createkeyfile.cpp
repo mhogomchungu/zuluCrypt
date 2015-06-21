@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright ( c ) 2011
+ *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -56,7 +56,7 @@ createkeyfile::createkeyfile( QWidget * parent ) :
 	connect( m_ui->lineEditFileName,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChange( QString ) ) ) ;
 
 	this->installEventFilter( this ) ;
-	
+
 	m_running = false ;
 }
 

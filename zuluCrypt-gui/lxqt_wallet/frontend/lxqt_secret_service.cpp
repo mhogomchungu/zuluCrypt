@@ -1,5 +1,5 @@
 /*
- * copyright: 2013
+ * copyright: 2013-2015
  * name : Francis Banyikwa
  * email: mhogomchungu@gmail.com
  *
@@ -146,7 +146,7 @@ QByteArray LxQt::Wallet::secretService::readValue( const QString& key )
 		QByteArray r ;
 
 		char * e = lxqt_secret_service_get_value( key.toLatin1().constData(),m_schema ) ;
-		
+
 		if( e ){
 
 			r = QByteArray( e ) ;

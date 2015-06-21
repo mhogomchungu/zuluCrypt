@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2012
+ *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -82,7 +82,7 @@ void monitor_mountinfo::run()
 		m_running = true ;
 	}else{
 		return this->failedToStart() ;
-	}	
+	}
 
 	auto _unmountProperty = [&]( const QString& volume ){
 

@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2013
+ *  Copyright (c) 2013-2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -187,7 +187,7 @@ void events::run()
 
 				end          = buffer + s ;
 				currentEvent = buffer ;
-				
+
 				return true ;
 			}
 		}

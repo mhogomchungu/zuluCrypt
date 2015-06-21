@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2011
+ *  Copyright (c) 2011-2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -171,7 +171,7 @@ static string_t set_mount_options( m_struct * mst )
 	const char * e ;
 
 	if( opt == StringVoid ){
-		
+
 		if( mst->fs_flags != NULL ){
 
 			opt = String( mst->fs_flags ) ;

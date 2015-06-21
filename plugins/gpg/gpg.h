@@ -1,7 +1,7 @@
 
 /*
  *
- *  Copyright (c) 2014
+ *  Copyright (c) 2014-2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 auto gpg = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 
 	QString arg ;
-	
+
 	if( password.isEmpty() ){
 		arg = QString( "%1 --no-tty --yes --no-mdc-warning --no-verbose -d %2" ).arg( exe.first(),keyFile ) ;
 	}else{
