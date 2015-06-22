@@ -238,7 +238,7 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 struct{
 	const char * first ;
 	const char * second;
-} pair[] = {
+} const pair[] = {
 	{ "aes"                ,"AES-256-XTS" },
 	{ "twofish"            ,"TWOFISH-256-XTS" },
 	{ "serpent"            ,"SERPENT-256-XTS" },
