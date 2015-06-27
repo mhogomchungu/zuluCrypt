@@ -206,7 +206,7 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 
 	if( mount_point.isEmpty() ){
 		m_point = utility::mountPathPostFix( volumePath.split( "/" ).last() ) ;
-	}else {
+	}else{
 		m_point = utility::mountPathPostFix( mount_point.split( "/" ).last() ) ;
 	}
 
@@ -600,7 +600,7 @@ void passwordDialog::openVolume()
 
 	if( m_veraCryptVolume ){
 
-		exe += " -t vera" ;
+		exe += " -t vcrypt" ;
 	}
 
 	this->disableAll() ;

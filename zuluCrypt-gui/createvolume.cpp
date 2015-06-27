@@ -240,7 +240,7 @@ void createvolume::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	if( m_isWindowClosable ){
-		pbCancelClicked() ;
+		this->pbCancelClicked() ;
 	}
 }
 

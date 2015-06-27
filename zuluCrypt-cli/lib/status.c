@@ -82,14 +82,6 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 	}
 }
 
-/*
- * given a path of something like "/dev/mapper/zuluCrypt-500-NAAN-header-image-file.img-2244846319",
- * this routine will look for its corresponding entry in "/dev/disk/by-id/" and we will find
- * "dm-uuid-CRYPT-LUKS1-LUKS_UUID-zuluCrypt-500-NAAN-header-image-file.img-2244846319" and will
- * return desired component of the path when separated by "-" character.
- *
- */
-
 static string_t _get_mapper_property_from_udev( const char * mapper,const char * prefix,size_t position )
 {
 	DIR * dir = opendir( "/dev/disk/by-id/" ) ;
