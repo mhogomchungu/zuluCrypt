@@ -28,9 +28,6 @@
 #include <sys/wait.h>
 #include <fcntl.h>
 
-#define FAT_FAMILY_FS 1
-#define OTHER_FAMILY_FS 2
-
 /*
  * These functions are moved to parse_fstab.c
  *
@@ -39,7 +36,9 @@
  * stringList_t zuluCryptGetFstabEntryList( const char * device )
  */
 
-static inline int zuluExit( int st,int fd,string_t x,string_t y,string_t z )
+typedef enum { FAT_FAMILY_FS,OTHER_FAMILY_FS,READ_ONLY_FS,DEFAULT_FS_TYPE } FS_TYPE ;
+
+static int zuluExit( int st,int fd,string_t x,string_t y,string_t z )
 {
 	StringMultipleDelete( &x,&y,&z,NULL ) ;
 	if( fd != -1 ){
@@ -48,16 +47,21 @@ static inline int zuluExit( int st,int fd,string_t x,string_t y,string_t z )
 	return st ;
 }
 
-static inline int fs_family( const char * fs )
+static FS_TYPE fs_family( const char * fs )
 {
 	if( StringAtLeastOneMatch_1( fs,"ntfs","vfat","fat","msdos","umsdos","exfat",NULL ) ){
-		return 1 ;
+
+		return FAT_FAMILY_FS ;
+
 	}else if( StringAtLeastOneMatch_1( fs,"affs","hfs",NULL ) ){
-		return 2 ;
+
+		return OTHER_FAMILY_FS ;
+
 	}else if( StringAtLeastOneMatch_1( fs,"iso9660","udf","squashfs",NULL ) ){
-		return 3 ;
+
+		return READ_ONLY_FS ;
 	}else{
-		return 0 ;
+		return DEFAULT_FS_TYPE ;
 	}
 }
 
@@ -83,13 +87,21 @@ static void _get_file_system_options_from_config_file_1( const char * fs,string_
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end  ){
+
 		zt = *it ;
+
 		it++ ;
+
 		if( StringStartsWith( zt,fs ) ){
+
 			stz = StringListStringSplit( zt,' ' ) ;
+
 			e = StringListContentAtSecondPlace( stz ) ;
+
 			StringMultipleAppend( st,",",e,NULL ) ;
+
 			StringListDelete( &stz ) ;
+
 			break ;
 		}
 	}
@@ -124,14 +136,23 @@ static void _get_file_system_options_from_config_file( const char * device,strin
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end  ){
+
 		e = StringRemoveString( *it,"\"" ) ;
+
 		it++ ;
+
 		if( StringPrefixMatch( e,"UUID=",5 ) ){
+
 			if( StringPrefixEqual( e + 5,f ) ){
+
 				stz = StringListSplit( e,' ' ) ;
+
 				e = StringListContentAtSecondPlace( stz ) ;
+
 				StringMultipleAppend( st,",",e,NULL ) ;
+
 				StringListDelete( &stz ) ;
+
 				break ;
 			}
 		}
@@ -144,10 +165,14 @@ static void _get_file_system_options_from_config_file( const char * device,strin
 static const char * _remove_duplicates( string_t st )
 {
 	const char ** z = StringPointer( st ) ;
+
 	while( StringHasComponent( *z,",," ) ){
+
 		StringReplaceString( st,",,","," ) ;
 	}
+
 	if( StringEndsWithChar( st,',' ) ){
+
 		return StringRemoveRight( st,1 ) ;
 	}else{
 		return StringContent( st ) ;
@@ -161,7 +186,7 @@ static string_t set_mount_options( m_struct * mst )
 	 */
 	string_t opt = zuluCryptGetMountOptionsFromFstab( mst->device,MOUNTOPTIONS,mst->uid ) ;
 
-	int fsFamily = fs_family( mst->fs ) ;
+	FS_TYPE fsFamily = fs_family( mst->fs ) ;
 
 	const char * f[] = { "nouser","users","user","defaults","noauto","auto","nodev","dev",
 		"noexec","exec","nosuid","suid","bind","mandlock","move","noatime","nodiratime","remount","silent",
@@ -180,8 +205,10 @@ static string_t set_mount_options( m_struct * mst )
 		}
 	}else{
 		if( StringContains( opt,"ro" ) ){
+
 			mst->m_flags |= MS_RDONLY ;
 		}
+
 		StringMultipleAppend( opt,",",mst->fs_flags,NULL ) ;
 	}
 
@@ -189,42 +216,55 @@ static string_t set_mount_options( m_struct * mst )
 
 	_get_file_system_options_from_config_file( mst->device,opt ) ;
 
-	if( fsFamily == 1 ){
-		if( !StringContains( opt,"dmask=" ) ){
+	if( fsFamily == FAT_FAMILY_FS ){
+
+		if( StringDoesNotContain( opt,"dmask=" ) ){
+
 			StringAppend( opt,",dmask=0000" ) ;
 		}
-		if( !StringContains( opt,"umask=" ) ){
+		if( StringDoesNotContain( opt,"umask=" ) ){
+
 			StringAppend( opt,",umask=0000" ) ;
 		}
-		if( !StringContains( opt,"uid=" ) ){
+		if( StringDoesNotContain( opt,"uid=" ) ){
+
 			StringAppend( opt,",uid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
 		}
-		if( !StringContains( opt,"gid=" ) ){
+		if( StringDoesNotContain( opt,"gid=" ) ){
+
 			StringAppend( opt,",gid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
 		}
-		if( !StringContains( opt,"fmask=" ) ){
+		if( StringDoesNotContain( opt,"fmask=" ) ){
+
 			StringAppend( opt,",fmask=0111" ) ;
 		}
 		if( StringsAreEqual( mst->fs,"vfat" ) ){
-			if( !StringContains( opt,"flush" ) ){
+
+			if( StringDoesNotContain( opt,"flush" ) ){
+
 				StringAppend( opt,",flush" ) ;
 			}
-			if( !StringContains( opt,"shortname=" ) ){
+			if( StringDoesNotContain( opt,"shortname=" ) ){
+
 				StringAppend( opt,",shortname=mixed" ) ;
 			}
 		}
-	}else if( fsFamily == 2 ){
-		if( !StringContains( opt,"uid=" ) ){
+	}else if( fsFamily == OTHER_FAMILY_FS ){
+
+		if( StringDoesNotContain( opt,"uid=" ) ){
+
 			StringAppend( opt,",uid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
 		}
-		if( !StringContains( opt,"gid=" ) ){
+		if( StringDoesNotContain( opt,"gid=" ) ){
+
 			StringAppend( opt,",gid=" ) ;
 			StringAppendInt( opt,mst->uid ) ;
 		}
-	}else if( fsFamily == 3 ){
+	}else if( fsFamily == READ_ONLY_FS ){
+
 		mst->m_flags |= MS_RDONLY ;
 	}else{
 		/*
@@ -254,13 +294,14 @@ static string_t set_mount_options( m_struct * mst )
 	StringRemoveString( opt,"rw" ) ;
 
 	if( mst->m_flags & MS_RDONLY ){
+		
 		StringPrepend( opt,"ro," ) ;
 	}else{
 		StringPrepend( opt,"rw," ) ;
 	}
 
 	mst->opts = _remove_duplicates( opt ) ;
-	return opt;
+	return opt ;
 }
 
 static const char * _mount_options( unsigned long flags,string_t st )
@@ -308,15 +349,11 @@ static const char * _mount_options( unsigned long flags,string_t st )
 	return _remove_duplicates( st ) ;
 }
 
-static int mount_FUSEfs_0( m_struct * mst )
+static int _mount_FUSEfs( const m_struct * mst,string_t st )
 {
-	int r ;
-	const char * opts ;
-
 	process_t p = Process( ZULUCRYPTmount,NULL ) ;
-	string_t st = set_mount_options( mst ) ;
 
-	opts = _mount_options( mst->m_flags,st ) ;
+	const char * opts = _mount_options( mst->m_flags,st ) ;
 
 	if( StringsAreEqual( mst->fs,"ntfs" ) ){
 
@@ -332,40 +369,39 @@ static int mount_FUSEfs_0( m_struct * mst )
 
 	ProcessStart( p ) ;
 
-	r = ProcessWaitUntilFinished( &p ) ;
-
-	StringDelete( &st ) ;
-
-	return r ;
+	return ProcessWaitUntilFinished( &p ) ;
 }
 
-static int mount_FUSEfs( m_struct * mst )
-{
-	int r = mount_FUSEfs_0( mst ) ;
-	if( r != 0 ){
-		/*
-		 * mount failed for some reason,wait for 2 second and then try again
-		 */
-		sleep( 2 ) ;
-		r = mount_FUSEfs_0( mst ) ;
-	}
-	return r ;
-}
-
-static int mount_volume( const m_struct * mst )
+static int _mount( const m_struct * mst,string_t st )
 {
 	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
-	if( h != 0 ){
+
+	if( st ){;}
+
+	if( h == 0 && mst->m_flags != MS_RDONLY ){
+
+		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
+	}
+
+	return h ;
+}
+
+static int _mount_volume( int ( *function )( const m_struct *,string_t ),
+			  const m_struct * m,string_t st )
+{
+	int e = function( m,st ) ;
+
+	if( e != 0 ){
+
 		/*
 		 * mount failed for some reason,wait 2 second and then try again
 		 */
 		sleep( 2 ) ;
-		h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
+
+		e = function( m,st ) ;
 	}
-	if( h == 0 && mst->m_flags != MS_RDONLY ){
-		chmod( mst->m_point,S_IRWXU|S_IRWXG|S_IRWXO ) ;
-	}
-	return h ;
+
+	return e ;
 }
 
 const char * zuluCryptDecodeMountEntry( string_t st )
@@ -446,17 +482,20 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	 * zuluCryptFileSystemIsFUSEbased() is defined in blkid_evaluate_tag.c
 	 */
 	if( zuluCryptFileSystemIsFUSEbased( path ) ){
+
 		/*
 		 * These file systems dont see to work with mount() command for some reason.
 		 * Them being FUSE based could be a reason.
 		 */
-		switch( mount_FUSEfs( &mst ) ){
+
+		switch( _mount_volume( _mount_FUSEfs,&mst,opts ) ){
+
 			case 0  : return zuluExit( 0,fd,opts,fs,loop )  ;
 			case 16 : return zuluExit( 12,fd,opts,fs,loop ) ;
 			default : return zuluExit( 1,fd,opts,fs,loop )  ;
 		}
 	}else{
-		h = mount_volume( &mst ) ;
+		h = _mount_volume( _mount,&mst,opts ) ;
 	}
 
 	return zuluExit( h,fd,opts,fs,loop ) ;

@@ -117,6 +117,16 @@ const char * StringAppendString( string_t st,string_t xt )  ;
 int StringContains( string_t st,const char * str ) ;
 
 /*
+ * check if a string handled by st has str in it
+ * return 0 if str is found
+ * return 1 if str is not found
+ */
+static __inline__ int StringDoesNotContain( string_t st,const char * str )
+{
+	return !StringContains( st,str ) ;
+}
+
+/*
  * Append multiple string_t to a string handled by handle st .
  * Same requirement as StringMultipleAppend apply
  * NOTE:The series must be NULL terminated.
