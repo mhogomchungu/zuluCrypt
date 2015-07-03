@@ -276,7 +276,6 @@ void zuluCrypt::setupUIElements()
 {
 	m_ui->setupUi( this ) ;
 
-	this->setFixedSize( this->size() ) ;
 	this->setWindowIcon( QIcon( ":/zuluCrypt.png" ) ) ;
 
 	m_trayIcon = new QSystemTrayIcon( this ) ;

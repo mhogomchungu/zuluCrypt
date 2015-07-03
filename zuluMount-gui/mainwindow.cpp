@@ -82,8 +82,6 @@ void MainWindow::setUpApp( const QString& volume )
 	m_ui = new Ui::MainWindow ;
 	m_ui->setupUi( this ) ;
 
-	this->setFixedSize( this->size() ) ;
-
 	m_ui->tableWidget->setColumnWidth( 0,220 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,320 ) ;
 	m_ui->tableWidget->setColumnWidth( 2,145 ) ;
