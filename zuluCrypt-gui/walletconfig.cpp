@@ -121,7 +121,7 @@ void walletconfig::add( QString volumeID,QString comment,QString key )
 	m_volumeID = volumeID ;
 	m_key      = key ;
 
-	Task::run< bool>( [ this ](){
+	Task::run< bool >( [ this ](){
 
 		auto _add = [ this ](){
 

@@ -146,7 +146,7 @@
    </item>
   </layout>
  </widget>
- <layoutdefault spacing="6" margin="11"/>
+ <layoutdefault spacing="6" margin="5"/>
  <tabstops>
   <tabstop>pbclose</tabstop>
  </tabstops>

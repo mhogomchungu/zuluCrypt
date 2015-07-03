@@ -82,6 +82,11 @@ void MainWindow::setUpApp( const QString& volume )
 	m_ui = new Ui::MainWindow ;
 	m_ui->setupUi( this ) ;
 
+	m_ui->pbunlockencfs->setMinimumHeight( 31 ) ;
+	m_ui->pbclose->setMinimumHeight( 31 ) ;
+	m_ui->pbmount->setMinimumHeight( 31 ) ;
+	m_ui->pbupdate->setMinimumHeight( 31 ) ;
+
 	m_ui->tableWidget->setColumnWidth( 0,220 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,320 ) ;
 	m_ui->tableWidget->setColumnWidth( 2,145 ) ;
