@@ -217,3 +217,4 @@ version 4.7.6
 
 version 4.7.7
 -- add support for creating and opening VeraCrypt volumes that use dynamic mode.
+-- make zuluCrypt-gui window and zuluMount-gui window resizable with the new sizes surviving restarts.

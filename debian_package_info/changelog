@@ -1,7 +1,8 @@
 zulucrypt (4.7.7-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features
-     -- add ability to create and open VeraCrypt volumes in dynamic mode
+     -- add ability to create and open VeraCrypt volumes in dynamic mode.
+     -- make zuluCrypt-gui window and zuluMount-gui window resizable with the new sizes surviving restarts.
 
  -- Mhogo Mchungu <mhogomchungu@gmail.com>  Mon, 30 Nov 2015 16:38:48 +0000
 
