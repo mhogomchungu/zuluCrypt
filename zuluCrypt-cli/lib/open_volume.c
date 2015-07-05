@@ -158,6 +158,26 @@ int zuluCryptOpenVolume_1( const open_struct_t * opts )
 	return zuluCryptOpenVolume_0( _open_mapper,opts ) ;
 }
 
+static int _open_tcrypt( open_struct_t * opts )
+{
+	int r ;
+
+	opts->tcrypt_system = 0 ;
+	/*
+	 * zuluCryptOpenTcrypt_1() is defined in open_tcrypt.c
+	 */
+	r = zuluCryptOpenTcrypt_1( opts ) ;
+
+	if( r != 0 ){
+
+		opts->tcrypt_system = 1 ;
+
+		r = zuluCryptOpenTcrypt_1( opts ) ;
+	}
+
+	return r ;
+}
+
 /*
  * this function tries to unlock luks,plain and truecrypt volumes
  */
@@ -193,7 +213,7 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 					opts_1.key = "" ;
 					opts_1.key_len = 0 ;
 
-					r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
+					r = _open_tcrypt( &opts_1 ) ;
 					/*
 					 * zuluCryptDeleteFile() is defined in file_path_security.c
 					 */
@@ -203,7 +223,7 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 					r = -1 ;
 				}
 			}else{
-				r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
+				r = _open_tcrypt( &opts_1 ) ;
 			}
 		}
 		if( r == 0 || r == -1 ){
