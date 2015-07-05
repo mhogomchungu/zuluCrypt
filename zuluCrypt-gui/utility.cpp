@@ -958,8 +958,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>." ).arg( VE
 	m.ShowUIInfo( QObject::tr( "about zuluCrypt" ),license ) ;
 }
 
-static QVector<int> _dimensions( QVector<int> * defaultDimensions,QVector<int> * customDimensions,
-				  const QString& path,const char * defaults,int size )
+static QVector<int> _default_dimensions( const char * defaults )
+{
+	QStringList l = QString( defaults ).split( ' ' ) ;
+
+	QVector<int> e ;
+
+	for( const auto& it : l ){
+
+		e.append( it.toInt() ) ;
+	}
+
+	return e ;
+}
+
+static QVector<int> _dimensions( const QString& path,const char * defaults,int size )
 {
 	QFile f( path ) ;
 
@@ -972,7 +985,7 @@ static QVector<int> _dimensions( QVector<int> * defaultDimensions,QVector<int> *
 			f.close() ;
 		}else{
 			qDebug() << "failed to open config file" ;
-			return *defaultDimensions ;
+			return _default_dimensions( defaults ) ;
 		}
 	}
 
@@ -983,8 +996,10 @@ static QVector<int> _dimensions( QVector<int> * defaultDimensions,QVector<int> *
 		if( l.size() != size ){
 
 			qDebug() << "failed to parse config file" ;
-			return *defaultDimensions ;
+			return _default_dimensions( defaults ) ;
 		}
+
+		QVector<int> customDimensions ;
 
 		for( const auto& it : l ){
 
@@ -994,36 +1009,29 @@ static QVector<int> _dimensions( QVector<int> * defaultDimensions,QVector<int> *
 
 			if( ok ){
 
-				*customDimensions << e ;
+				customDimensions.append( e ) ;
 			}else{
 				qDebug() << "failed to parse config file option" ;
-				return *defaultDimensions ;
+				return _default_dimensions( defaults ) ;
 			}
 		}
 
-		return *customDimensions ;
+		return customDimensions ;
 	}else{
 		qDebug() << "failed to open config file" ;
-		return *defaultDimensions ;
+		return _default_dimensions( defaults ) ;
 	}
-
 }
 
 QVector<int> utility::getWindowDimensions( const QString& application )
 {
 	QString path = QDir::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
 
-	QVector<int> dimensions ;
-
 	if( application == "zuluCrypt" ){
 
-		QVector<int> default_dimensions{ 0,0,782,419,298,336,100 } ;
-
-		return _dimensions( &default_dimensions,&dimensions,path,"0 0 782 419 298 336 100",7 ) ;
+		return _dimensions( path,"0 0 782 419 298 336 100",7 ) ;
 	}else{
-		QVector<int> default_dimensions{ 0,0,910,477,220,320,145,87,87 } ;
-
-		return _dimensions( &default_dimensions,&dimensions,path,"0 0 910 477 220 320 145 87 87",9 ) ;
+		return _dimensions( path,"0 0 910 477 220 320 145 87 87",9 ) ;
 	}
 }
 
