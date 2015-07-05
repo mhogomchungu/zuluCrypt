@@ -288,9 +288,17 @@ void zuluCrypt::setupUIElements()
 
 	m_trayIcon->setContextMenu( trayMenu ) ;
 
-	m_ui->tableWidget->setColumnWidth( 0,298 ) ;
-	m_ui->tableWidget->setColumnWidth( 1,336 ) ;
-	//m_ui->tableWidget->setColumnWidth( 2,70 ) ;
+	QVector<int> f = utility::getWindowDimensions( "zuluCrypt" ) ;
+
+	int * e = f.data() ;
+
+	this->window()->setGeometry( *( e + 0 ),*( e + 1 ),*( e + 2 ),*( e + 3 ) ) ;
+
+	QTableWidget * table = m_ui->tableWidget ;
+
+	table->setColumnWidth( 0,*( e + 4 ) ) ;
+	table->setColumnWidth( 1,*( e + 5 ) ) ;
+	table->setColumnWidth( 2,*( e + 6 ) ) ;
 }
 
 void zuluCrypt::itemEntered( QTableWidgetItem * item )
@@ -1157,6 +1165,22 @@ void zuluCrypt::decryptFile( const QString& e )
 
 zuluCrypt::~zuluCrypt()
 {
+	QVector<int> e ;
+
+	auto q = m_ui->tableWidget ;
+
+	const QRect& r = this->window()->geometry() ;
+
+	e << r.x()
+	  << r.y()
+	  << r.width()
+	  << r.height()
+	  << q->columnWidth( 0 )
+	  << q->columnWidth( 1 )
+	  << q->columnWidth( 2 ) ;
+
+	utility::setWindowDimensions( e,"zuluCrypt" ) ;
+
 	delete m_ui ;
 	delete m_trayIcon ;
 }

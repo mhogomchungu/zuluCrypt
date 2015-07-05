@@ -32,6 +32,7 @@
 #include <QEventLoop>
 #include <QTimer>
 #include <QMenu>
+#include <QVector>
 
 #include <functional>
 #include <utility>
@@ -144,6 +145,9 @@ namespace utility
 	QStringList split( const QByteArray&,char token = '\n' ) ;
 	bool userHasGoodVersionOfWhirlpool( void ) ;
 	void licenseInfo( QWidget * ) ;
+
+	QVector<int> getWindowDimensions( const QString& application ) ;
+	void setWindowDimensions( const QVector<int>&,const QString& application ) ;
 
 	void createPlugInMenu( QMenu *,const QString&,const QString&,const QString&,bool ) ;
 

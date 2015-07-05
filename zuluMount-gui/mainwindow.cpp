@@ -87,11 +87,20 @@ void MainWindow::setUpApp( const QString& volume )
 	m_ui->pbmount->setMinimumHeight( 31 ) ;
 	m_ui->pbupdate->setMinimumHeight( 31 ) ;
 
-	m_ui->tableWidget->setColumnWidth( 0,220 ) ;
-	m_ui->tableWidget->setColumnWidth( 1,320 ) ;
-	m_ui->tableWidget->setColumnWidth( 2,145 ) ;
-	m_ui->tableWidget->setColumnWidth( 4,87 ) ;
-	m_ui->tableWidget->setColumnWidth( 5,87 ) ;
+	QVector<int> f = utility::getWindowDimensions( "zuluMount" ) ;
+
+	int * e = f.data() ;
+
+	this->window()->setGeometry( *( e + 0 ),*( e + 1 ),*( e + 2 ),*( e + 3 ) ) ;
+
+	QTableWidget * table = m_ui->tableWidget ;
+
+	table->setColumnWidth( 0,*( e + 4 ) ) ;
+	table->setColumnWidth( 1,*( e + 5 ) ) ;
+	table->setColumnWidth( 2,*( e + 6 ) ) ;
+	table->setColumnWidth( 4,*( e + 7 ) ) ;
+	table->setColumnWidth( 5,*( e + 8 ) ) ;
+
 	m_ui->tableWidget->hideColumn( 3 ) ;
 
 #if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
@@ -1183,4 +1192,22 @@ MainWindow::~MainWindow()
 			f.remove() ;
 		}
 	}
+
+	QVector<int> e ;
+
+	auto q = m_ui->tableWidget ;
+
+	const QRect& r = this->window()->geometry() ;
+
+	e << r.x()
+	  << r.y()
+	  << r.width()
+	  << r.height()
+	  << q->columnWidth( 0 )
+	  << q->columnWidth( 1 )
+	  << q->columnWidth( 2 )
+	  << q->columnWidth( 4 )
+	  << q->columnWidth( 5 ) ;
+
+	utility::setWindowDimensions( e,"zuluMount" ) ;
 }

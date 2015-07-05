@@ -957,3 +957,87 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>." ).arg( VE
 	DialogMsg m( parent ) ;
 	m.ShowUIInfo( QObject::tr( "about zuluCrypt" ),license ) ;
 }
+
+static QVector<int> _dimensions( QVector<int> * defaultDimensions,QVector<int> * customDimensions,
+				  const QString& path,const char * defaults,int size )
+{
+	QFile f( path ) ;
+
+	if( !f.exists() ){
+
+		if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+
+			f.write( defaults ) ;
+
+			f.close() ;
+		}else{
+			qDebug() << "failed to open config file" ;
+			return *defaultDimensions ;
+		}
+	}
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		QStringList l = QString( f.readAll() ).split( ' ',QString::SkipEmptyParts ) ;
+
+		if( l.size() != size ){
+
+			qDebug() << "failed to parse config file" ;
+			return *defaultDimensions ;
+		}
+
+		for( const auto& it : l ){
+
+			bool ok ;
+
+			int e = it.toInt( &ok ) ;
+
+			if( ok ){
+
+				*customDimensions << e ;
+			}else{
+				qDebug() << "failed to parse config file option" ;
+				return *defaultDimensions ;
+			}
+		}
+
+		return *customDimensions ;
+	}else{
+		qDebug() << "failed to open config file" ;
+		return *defaultDimensions ;
+	}
+
+}
+
+QVector<int> utility::getWindowDimensions( const QString& application )
+{
+	QString path = QDir::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
+
+	QVector<int> dimensions ;
+
+	if( application == "zuluCrypt" ){
+
+		QVector<int> default_dimensions{ 0,0,782,419,298,336,100 } ;
+
+		return _dimensions( &default_dimensions,&dimensions,path,"0 0 782 419 298 336 100",7 ) ;
+	}else{
+		QVector<int> default_dimensions{ 0,0,910,477,220,320,145,87,87 } ;
+
+		return _dimensions( &default_dimensions,&dimensions,path,"0 0 910 477 220 320 145 87 87",9 ) ;
+	}
+}
+
+void utility::setWindowDimensions( const QVector<int>& e,const QString& application )
+{
+	QString path = QDir::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
+
+	QFile f( path ) ;
+
+	if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+
+		for( const auto& it : e ){
+
+			f.write( QString( QString::number( it ) + " " ).toLatin1() ) ;
+		}
+	}
+}
