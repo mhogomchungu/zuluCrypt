@@ -872,9 +872,12 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	QFile f( QDir::homePath() + "/.zuluCrypt/favorites" ) ;
 
-	f.open( QIODevice::ReadOnly ) ;
+	QByteArray data ;
 
-	QByteArray data = f.readAll() ;
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		data = f.readAll() ;
+	}
 
 	QAction * ac = m.addAction( tr( "Add To Favorite" ) ) ;
 

@@ -268,10 +268,15 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 			if( it.startsWith( "loop" ) ){
 
 				e = QString( "/sys/block/%1/loop/backing_file" ).arg( it ) ;
+
 				f.setFileName( e ) ;
-				f.open( QIODevice::ReadOnly ) ;
-				s = f.readAll() ;
-				f.close() ;
+
+				if( f.open( QIODevice::ReadOnly ) ){
+
+					s = f.readAll() ;
+
+					f.close() ;
+				}
 
 				if( s == dev ){
 
