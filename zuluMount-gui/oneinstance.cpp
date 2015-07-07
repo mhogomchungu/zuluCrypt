@@ -104,6 +104,7 @@ void oneinstance::gotConnection()
 
 void oneinstance::errorOnConnect( QLocalSocket::LocalSocketError e )
 {
+	Q_UNUSED( e ) ;
 	qDebug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
 	QFile::remove( m_serverPath ) ;
 	this->startInstance() ;
