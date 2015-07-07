@@ -37,6 +37,8 @@
 
 #include <signal.h>
 
+#define _ignore_result( x ) if( x ){;}
+
 static int __exit_as_requested ;
 static int __sig_caught ;
 
@@ -225,8 +227,8 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	d = zuluCryptRealPath( cmapper ) ;
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		if( d != NULL ){
-			chown( d,uid,0 ) ;
-			chmod( d,S_IRWXU ) ;
+			_ignore_result( chown( d,uid,0 ) ) ;
+			_ignore_result( chmod( d,S_IRWXU ) ) ;
 			StringFree( d ) ;
 		}
 		zuluCryptSecurityDropElevatedPrivileges() ;

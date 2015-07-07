@@ -516,15 +516,13 @@ void MainWindow::Show()
 
 	QString volume = utility::cmdArgumentValue( l,"-d" ) ;
 
-	auto instance = new oneinstance( this,"zuluMount-gui.socket","startGUI",volume ) ;
-
-	if( instance->onlyInstance() ){
+	new oneinstance( this,"zuluMount-gui.socket","startGUI",volume,[ this,volume ]( QObject * instance ){
 
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
 
 		this->setUpApp( volume ) ;
-	}
+	} ) ;
 }
 
 void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )

@@ -30,6 +30,16 @@
 #include <unistd.h>
 #include <grp.h>
 
+static void _seteuid( uid_t uid )
+{
+	if( seteuid( uid ) ){;}
+}
+
+static void _setuid( uid_t uid )
+{
+	if( setuid( uid ) ){;}
+}
+
 static int zuluCryptEXEGetDevice( const char * device )
 {
 	/*
@@ -330,7 +340,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * setgroups() requires seteuid(0) ;
 	 */
-	seteuid( 0 ) ;
+	_seteuid( 0 ) ;
 	if( setgroups( 1,&gid ) != 0 ){
 		_privilegeEvelationError( gettext( "ERROR: setgroups() failed" ) ) ;
 	}
@@ -367,8 +377,8 @@ int main( int argc,char * argv[] )
 	 */
 	setpriority( PRIO_PROCESS,0,-15 ) ;
 
-	setuid( 0 ) ;
-	seteuid( uid ) ;
+	_setuid( 0 ) ;
+	_seteuid( uid ) ;
 
 	/*
 	 * zuluCryptSetUserUIDForPrivilegeManagement() is defined in ./security.c

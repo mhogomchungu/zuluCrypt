@@ -73,7 +73,7 @@ namespace utility
 
 		if( uid != -1 && fd != -1 ){
 
-			fchown( fd,uid,uid ) ;
+			if( fchown( fd,uid,uid ) ){;}
 		}
 	}
 
@@ -83,7 +83,7 @@ namespace utility
 
 		if( uid != -1 ){
 
-			chown( path,uid,uid ) ;
+			if( chown( path,uid,uid ) ){;}
 		}
 	}
 }
@@ -201,7 +201,7 @@ namespace utility
 
 			while( true ){
 
-				::read( m_fd,&z,1 ) ;
+				while( ::read( m_fd,&z,1 ) > 0 ){;}
 
 				if( z > ' ' && z < '~' ){
 
@@ -217,7 +217,7 @@ namespace utility
 		}
 		void writeChar( char r ) const
 		{
-			::write( m_fd,&r,1 ) ;
+			if( ::write( m_fd,&r,1 ) ){;}
 		}
 		~fileHandle()
 		{

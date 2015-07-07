@@ -20,8 +20,12 @@
 
 #include "oneinstance.h"
 #include <QDebug>
+#include "../zuluCrypt-gui/utility.h"
+#include <memory>
+#include <utility>
 
-oneinstance::oneinstance( QObject * parent,const char * socketPath,const char * methodName,const QString& device )
+oneinstance::oneinstance( QObject * parent,const char * socketPath,const char * methodName,
+			  const QString& device,std::function<void( QObject * )> start ) : m_firstInstance( std::move( start ) )
 {
 	m_device = device ;
 
@@ -39,43 +43,37 @@ oneinstance::oneinstance( QObject * parent,const char * socketPath,const char * 
 
 	if( QFile::exists( m_serverPath ) ){
 
-		m_localSocket = new QLocalSocket( this ) ;
+		m_localSocket = new QLocalSocket() ;
 
+		connect( m_localSocket,SIGNAL( destroyed( QObject * ) ),this,SLOT( Exit( QObject * ) ) ) ;
 		connect( m_localSocket,SIGNAL( connected() ),this,SLOT( connected() ) ) ;
+		connect( m_localSocket,SIGNAL( error( QLocalSocket::LocalSocketError ) ),
+			 this,SLOT( errorOnConnect( QLocalSocket::LocalSocketError ) ) ) ;
 
 		m_localSocket->connectToServer( m_serverPath ) ;
-
-		if( m_localSocket->waitForConnected( 10000 ) ){
-
-			m_onlyInstance = false ;
-			qDebug() << tr( "There seem to be another instance running,exiting this one" ) ;
-		}else{
-			m_onlyInstance = true ;
-			qDebug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
-			QFile::remove( m_serverPath ) ;
-			this->startInstance() ;
-		}
 	}else{
-		m_onlyInstance = true ;
 		this->startInstance() ;
 	}
 }
 
 void oneinstance::startInstance()
 {
+	m_firstInstance( this ) ;
+
 	QMetaObject::invokeMethod( this->parent(),m_methodName,Qt::QueuedConnection ) ;
 
-	m_onlyInstance = true ;
-	m_localServer = new QLocalServer( this ) ;
+	m_localServer = new QLocalServer() ;
 
 	connect( m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
 
 	m_localServer->listen( QString( m_serverPath ) ) ;
 }
 
-void oneinstance::Exit()
+void oneinstance::Exit( QObject * e )
 {
-	QCoreApplication::exit( 200 ) ;
+	Q_UNUSED( e ) ;
+	//QCoreApplication::exit( 200 ) ;
+	exit( 200 ) ;
 }
 
 void oneinstance::setDevice( QString device )
@@ -90,15 +88,11 @@ void oneinstance::killProcess()
 
 void oneinstance::gotConnection()
 {
-	QLocalSocket * s = m_localServer->nextPendingConnection() ;
+	std::unique_ptr<QLocalSocket> s( m_localServer->nextPendingConnection() ) ;
 
 	s->waitForReadyRead() ;
 
 	QByteArray data = s->readAll() ;
-
-	s->close() ;
-
-	s->deleteLater() ;
 
 	if( data.isEmpty() ){
 
@@ -108,30 +102,33 @@ void oneinstance::gotConnection()
 	}
 }
 
+void oneinstance::errorOnConnect( QLocalSocket::LocalSocketError e )
+{
+	qDebug() << tr( "Previous instance seem to have crashed,trying to clean up before starting" ) ;
+	QFile::remove( m_serverPath ) ;
+	this->startInstance() ;
+}
+
 void oneinstance::connected()
 {
+	qDebug() << tr( "There seem to be another instance running,exiting this one" ) ;
+
 	if( !m_device.isEmpty() ){
 
 		m_localSocket->write( m_device.toLatin1() ) ;
 		m_localSocket->waitForBytesWritten() ;
 	}
 
-	this->killProcess() ;
-}
+	m_localSocket->close() ;
 
-bool oneinstance::onlyInstance()
-{
-	return m_onlyInstance ;
+	m_localSocket->deleteLater() ;
 }
 
 oneinstance::~oneinstance()
 {
-	if( m_onlyInstance ){
+	if( m_localServer ){
 		m_localServer->close() ;
 		delete m_localServer ;
 		QFile::remove( m_serverPath ) ;
-	}else{
-		m_localSocket->close() ;
-		delete m_localSocket ;
 	}
 }

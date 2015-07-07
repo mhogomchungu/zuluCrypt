@@ -36,6 +36,19 @@
 #include "bin_path.h"
 #include "plugin_path.h"
 
+static void _write( int x,const void * y,size_t z )
+{
+	if( write( x,y,z ) ){;}
+}
+static void _close( int x )
+{
+	if( close( x ) ){;}
+}
+static void _chmod( const char * x,mode_t y )
+{
+	if( chmod( x,y ) ){;}
+}
+
 const char * luksTestVolume   = "/tmp/zuluCrypt-luksTestVolume" ;
 const char * plainTestVolume  = "/tmp/zuluCrypt-plainTestVolume" ;
 const char * headerBackUp     = "/tmp/zuluCrypt-HeaderBackUp" ;
@@ -134,7 +147,7 @@ void createTestImages( void )
 		EXIT( 1,NULL ) ;
 	}else{
 		for( i = 0 ; i < size ; i++ ){
-			write( f,buffer,1024 ) ;
+			_write( f,buffer,1024 ) ;
 		}
 		close( f ) ;
 		chmod( luksTestVolume,S_IRWXU ) ;
@@ -149,10 +162,10 @@ void createTestImages( void )
 		EXIT( 1,NULL ) ;
 	}else{
 		for( i = 0 ; i < size ; i++ ){
-			write( f,buffer,1024 ) ;
+			_write( f,buffer,1024 ) ;
 		}
-		close( f ) ;
-		chmod( plainTestVolume,S_IRWXU ) ;
+		_close( f ) ;
+		_chmod( plainTestVolume,S_IRWXU ) ;
 	}
 }
 
@@ -392,12 +405,14 @@ int zuluCryptRunTest( void )
 	uid_t uid  = getuid() ;
 	struct stat st ;
 
-	seteuid( 0 ) ;
+	int r = seteuid( 0 ) ;
 
-	setgid( uid ) ;
-	setgroups( 1,&uid ) ;
-	setegid( uid ) ;
-	setuid( uid ) ;
+	r = setgid( uid ) ;
+	r = setgroups( 1,&uid ) ;
+	r = setegid( uid ) ;
+	r = setuid( uid ) ;
+
+	if( r ){;}
 
 	if( _loop_device_module_is_not_present() ){
 		printf( "\nWARNING: \"loop\" kernel module does not appear to be loaded\n" ) ;

@@ -23,11 +23,20 @@
 #include <unistd.h>
 #include "mount_prefix_path.h"
 
+static void _chown( const char * x,uid_t y,gid_t z )
+{
+	if( chown( x,y,z ) ){;}
+}
+static void _chmod( const char * x,mode_t y )
+{
+	if( chmod( x,y ) ){;}
+}
+
 static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 {
 	if( mkdir( m_point,S_IRWXU ) == 0 ){
 
-		chown( m_point,uid,uid ) ;
+		_chown( m_point,uid,uid ) ;
 	}else{
 		StringDelete( &path ) ;
 	}
@@ -215,35 +224,35 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run/",mode ) ;
 	}else{
-		chmod( "/run",st.st_mode | S_IXOTH | S_IROTH ) ;
+		_chmod( "/run",st.st_mode | S_IXOTH | S_IROTH ) ;
 	}
 
-	chown( "/run",0,0 ) ;
+	_chown( "/run",0,0 ) ;
 
 	if( path_does_not_exist( "/run/media" ) ){
 		mkdir( "/run/media",mode ) ;
 	}else{
-		chmod( "/run/media",st.st_mode | S_IXOTH | S_IROTH ) ;
+		_chmod( "/run/media",st.st_mode | S_IXOTH | S_IROTH ) ;
 	}
 
-	chown( "/run/media",0,0 ) ;
+	_chown( "/run/media",0,0 ) ;
 
 	if( path_does_not_exist( "/run/media/private" ) ){
 		mkdir( "/run/media/private",mode ) ;
 	}else{
-		chmod( "/run/media/private",st.st_mode | S_IXOTH | S_IROTH ) ;
+		_chmod( "/run/media/private",st.st_mode | S_IXOTH | S_IROTH ) ;
 	}
 
-	chown( "/run/media/private",0,0 ) ;
+	_chown( "/run/media/private",0,0 ) ;
 
 	m_point = StringPrepend( path,"/run/media/private/" ) ;
 
 	if( path_does_not_exist( m_point ) ){
 		mkdir( m_point,S_IRUSR | S_IXUSR ) ;
-		chown( m_point,uid,uid ) ;
+		_chown( m_point,uid,uid ) ;
 	}else{
-		chown( m_point,uid,uid ) ;
-		chmod( m_point,S_IRUSR | S_IXUSR ) ;
+		_chown( m_point,uid,uid ) ;
+		_chmod( m_point,S_IRUSR | S_IXUSR ) ;
 	}
 
 	zuluCryptSecurityDropElevatedPrivileges() ;

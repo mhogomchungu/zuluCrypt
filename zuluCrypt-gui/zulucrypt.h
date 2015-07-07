@@ -165,11 +165,11 @@ private:
 	void closeStatusErrorMessage( int ) ;
 	void setUpApp( const QString& ) ;
 	void decryptFile( const QString& ) ;
-	Ui::zuluCrypt * m_ui ;
-	QSystemTrayIcon * m_trayIcon ;
+	Ui::zuluCrypt * m_ui = nullptr ;
+	QSystemTrayIcon * m_trayIcon = nullptr ;
 	QString m_openPath ;
 	bool m_startHidden ;
-	LxQt::Wallet::Wallet * m_wallet ;
+	LxQt::Wallet::Wallet * m_wallet = nullptr ;
 	int m_userID ;
 };
 

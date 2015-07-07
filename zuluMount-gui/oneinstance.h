@@ -31,32 +31,33 @@
 #include <QString>
 #include <QMetaObject>
 #include <QDir>
+#include <functional>
+#include <QObject>
 
 class oneinstance : public QObject
 {
 	Q_OBJECT
 public:
-	explicit oneinstance( QObject *,const char *,const char *,const QString& ) ;
+	explicit oneinstance( QObject *,const char *,const char *,const QString&,std::function<void( QObject * )> ) ;
 	~oneinstance() ;
-	bool onlyInstance( void ) ;
 	void setDevice( QString ) ;
 signals:
 	void raise( void ) ;
 	void raiseWithDevice( QString ) ;
-public slots:
+private slots:
 	void connected( void ) ;
 	void gotConnection( void ) ;
-private slots:
-	void Exit( void ) ;
+	void errorOnConnect( QLocalSocket::LocalSocketError ) ;
+	void Exit( QObject * ) ;
 private:
 	void startInstance( void ) ;
 	void killProcess( void ) ;
-	QLocalServer * m_localServer ;
-	QLocalSocket * m_localSocket ;
+	QLocalServer * m_localServer = nullptr ;
+	QLocalSocket * m_localSocket = nullptr ;
 	QString m_serverPath ;
-	bool m_onlyInstance ;
 	const char * m_methodName ;
 	QString m_device ;
+	std::function<void( QObject * )> m_firstInstance ;
 };
 
 #endif // ONEINSTANCE_H

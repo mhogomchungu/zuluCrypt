@@ -126,7 +126,11 @@
 	TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${TCPLAY_LIB} -lgcrypt ${TCPLAY_LIBRARIES} )
  endif()
 
+ set_target_properties( zuluCrypt PROPERTIES LINK_FLAGS "-pie -Wl,-z,relro -Wl,-z,now" )
+
  TARGET_LINK_LIBRARIES( zuluCrypt-exe zuluCrypt zuluCryptPluginManager )
+
+ set_target_properties( zuluCrypt-exe PROPERTIES LINK_FLAGS "-pie -Wl,-z,relro -Wl,-z,now" )
 
  #TARGET_LINK_LIBRARIES( zuluCrypt-static String StringList Process )
  #TARGET_LINK_LIBRARIES( zuluCrypt-exe-static zuluCrypt-static zuluCryptPluginManager-static )
@@ -136,12 +140,12 @@
  add_executable( zuluMount-cli ../zuluMount-cli ${BINMount} )
 
  set_target_properties( zuluMount-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
- set_target_properties( zuluMount-cli PROPERTIES LINK_FLAGS "-pie" )
+ set_target_properties( zuluMount-cli PROPERTIES LINK_FLAGS "-pie -Wl,-z,relro -Wl,-z,now" )
  TARGET_LINK_LIBRARIES( zuluMount-cli zuluCrypt-exe zuluCrypt )
 
  add_executable( zuluCrypt-cli  bin/main.c  )
  set_target_properties( zuluCrypt-cli PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIE -pthread  -pedantic " )
- set_target_properties( zuluCrypt-cli PROPERTIES LINK_FLAGS "-pie" )
+ set_target_properties( zuluCrypt-cli PROPERTIES LINK_FLAGS "-pie -Wl,-z,relro -Wl,-z,now" )
 
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe zuluCrypt )
 

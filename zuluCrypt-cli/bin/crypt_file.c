@@ -29,6 +29,8 @@
 #define DECRYPT 1
 #define ENCRYPT 0
 
+#define _ignore_result( x ) if( x ){;}
+
 static int zuluExit( int st )
 {
 	switch( st ){
@@ -167,8 +169,8 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 		case 2 : return zuluExit( 11 ) ;
 	}
 
-	chmod( dest,S_IRUSR | S_IWUSR ) ;
-	chown( dest,uid,uid ) ;
+	_ignore_result( chmod( dest,S_IRUSR | S_IWUSR ) ) ;
+	_ignore_result( chown( dest,uid,uid ) ) ;
 
 	if( opt == 1 ){
 		return zuluExit( 1 ) ;

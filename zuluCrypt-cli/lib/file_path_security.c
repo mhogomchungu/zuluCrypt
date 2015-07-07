@@ -28,13 +28,15 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
+#define _ignore_result( x ) if( x ){;}
+
 int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t uid )
 {
 	int st ;
 	int f = -1 ;
 	uid_t org = geteuid() ;
 	char * dev ;
-	seteuid( uid ) ;
+	_ignore_result( seteuid( uid ) ) ;
 	f = open( path,O_RDONLY ) ;
 	if( f != -1 ){
 		dev = zuluCryptGetFileNameFromFileDescriptor( f ) ;
@@ -44,7 +46,7 @@ int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t ui
 	}else{
 		st = 0  ;
 	}
-	seteuid( org ) ;
+	_ignore_result( seteuid( org ) ) ;
 	return st ;
 }
 
@@ -77,12 +79,12 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 {
 	string_t fs ;
 	if( st == 0 ){
-		seteuid( 0 ) ;
+		_ignore_result( seteuid( 0 ) ) ;
 		/*
 		* zuluCryptGetFileSystemFromDevice() is defined in blkid_evaluate_tag.c
 		*/
 		fs = zuluCryptGetFileSystemFromDevice( *dev ) ;
-		seteuid( uid ) ;
+		_ignore_result( seteuid( uid ) ) ;
 		if( fs != StringVoid ){
 			if( StringHasAtLeastOneComponent( fs,"member","swap",NULL ) ){
 				st = 100 ;
@@ -113,7 +115,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 	/*
 	 * try to open the device with user privileges
 	 */
-	seteuid( uid ) ;
+	_ignore_result( seteuid( uid ) ) ;
 
 	*dev = NULL ;
 
@@ -145,35 +147,35 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				if( stat_st.st_dev == stat_st_1.st_dev && stat_st.st_ino == stat_st_1.st_ino ){
 					close( *fd_path ) ;
 					*fd_path = lfd ;
-					seteuid( 0 ) ;
+					_ignore_result( seteuid( 0 ) ) ;
 					/*
 					 * zuluCryptAttachLoopDeviceToFileUsingFileDescriptor() is defined in ./create_loop_device.c
 					 */
 					xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDWR,&st_dev ) ;
-					seteuid( uid ) ;
+					_ignore_result( seteuid( uid ) ) ;
 					*dev = StringDeleteHandle( &st_dev ) ;
 				}
 			}else{
 				/*
 				 * we can not open the file in write mode,continue with read only access
 				 */
-				seteuid( 0 ) ;
+				_ignore_result( seteuid( 0 ) ) ;
 				/*
 				 * zuluCryptAttachLoopDeviceToFileUsingFileDescriptor() is defined in ./create_loop_device.c
 				 */
 				xt = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( *fd_path,fd_loop,O_RDONLY,&st_dev ) ;
-				seteuid( uid ) ;
+				_ignore_result( seteuid( uid ) ) ;
 				*dev = StringDeleteHandle( &st_dev ) ;
 			}
 			if( xt != 1 ){
 				st = 100 ;
-				close( *fd_path ) ;
+				_ignore_result( close( *fd_path ) ) ;
 				*fd_path = -1 ;
 			}else{
 				dev_1 = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
 				if( StringPrefixEqual( dev_1,"/dev/shm/" ) ){
 					st =1 ;
-					close( *fd_path ) ;
+					_ignore_result( close( *fd_path ) ) ;
 					*fd_path = -1 ;
 				}else{
 					st = 0 ;
@@ -208,7 +210,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 				 */
 				st = 100 ;
 			}
-			close( *fd_path ) ;
+			_ignore_result( close( *fd_path ) ) ;
 			*fd_path = -1 ;
 		}
 	}else{
@@ -216,7 +218,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 		 * failed to open above with users privileges,try to open the device with root's privileges.
 		 * We should only accept block devices in "/dev/" but not in "/dev/shm".
 		 */
-		seteuid( 0 ) ;
+		_ignore_result( seteuid( 0 ) ) ;
 
 		*fd_path = open( file,O_RDONLY ) ;
 
@@ -254,7 +256,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 			 * We are closing the file because we dont need to hold on to it as paths in "/dev/" can not be moved under us by
 			 * normal users.
 			 */
-			close( *fd_path ) ;
+			_ignore_result( close( *fd_path ) ) ;
 			*fd_path = -1 ;
 		}else{
 			/*
@@ -263,7 +265,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 			st = 100 ;
 		}
 
-		seteuid( uid ) ;
+		_ignore_result( seteuid( uid ) ) ;
 	}
 
 	return _check_if_device_is_supported( st,uid,dev ) ;

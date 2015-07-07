@@ -35,6 +35,14 @@
 
 #define SIZE 512
 
+static void _write( int x,const void * y,size_t z )
+{
+	if( write( x,y,z ) ){;}
+}
+static void _read( int x,void * y,size_t z )
+{
+	if( read( x,y,z ) ){;}
+}
 
 /*
  *  routines for encrypting and decrypting stand alone files.
@@ -144,7 +152,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	 * 100 bytes from offset 100 and 100 bytes from offset 200 are supposed to be te same if
 	 * the right key is used.
 	 */
-	read( f_in,buffer,SIZE ) ;
+	_read( f_in,buffer,SIZE ) ;
 
 	if( memcmp( buffer + 100,buffer + 200,100 ) != 0 ){
 		return zuluExit( 2,f_in,f_out,p ) ;
@@ -173,21 +181,21 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	f_out = open( dest,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 
 	if( size <= SIZE ){
-		read( f_in,buffer,size ) ;
-		write( f_out,buffer,size ) ;
+		_read( f_in,buffer,size ) ;
+		_write( f_out,buffer,size ) ;
 	}else{
 		len = size / SIZE ;
 
 		for( i = 0 ; i < len ; i++ ){
 
-			read( f_in,buffer,SIZE ) ;
-			write( f_out,buffer,SIZE ) ;
+			_read( f_in,buffer,SIZE ) ;
+			_write( f_out,buffer,SIZE ) ;
 		}
 
 		len = size - ( i * SIZE ) ;
 
-		read( f_in,buffer,len ) ;
-		write( f_out,buffer,len ) ;
+		_read( f_in,buffer,len ) ;
+		_write( f_out,buffer,len ) ;
 	}
 
 	return zuluExit( 0,f_in,f_out,p ) ;
@@ -241,7 +249,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	 * create a file to be used to store encrypted data.
 	 */
 	while( 1 ){
-		write( f_out,buffer,SIZE );
+		_write( f_out,buffer,SIZE );
 
 		size_1 += SIZE ;
 
@@ -272,20 +280,20 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	 * because it tells us how much padding was applied if any.
 	 *
 	 */
-	write( f_out,StringContent( q ),StringLength( q ) ) ;
-	write( f_out,&r,1 ) ;
+	_write( f_out,StringContent( q ),StringLength( q ) ) ;
+	_write( f_out,&r,1 ) ;
 
 	/*
 	 * write the same 100 byte random data in two locations to be used to check the decrypting key during decryption.	 *
 	 */
 	f_in = open( "/dev/urandom",O_RDONLY ) ;
-	read( f_in,buffer,100 ) ;
+	_read( f_in,buffer,100 ) ;
 	close( f_in ) ;
 
 	lseek( f_out,100,SEEK_SET ) ;
 
-	write( f_out,buffer,100 ) ;
-	write( f_out,buffer,100 ) ;
+	_write( f_out,buffer,100 ) ;
+	_write( f_out,buffer,100 ) ;
 
 	/*
 	 * set the beginning of the payload,The cypher text will start at byte 512.
@@ -298,7 +306,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 	 * Copy over plain text data to the "shell" file through the mapper, creating an encrypted file.
 	 */
 	while( read( f_in,buffer,SIZE ) > 0 ){
-		write( f_out,buffer,SIZE ) ;
+		_write( f_out,buffer,SIZE ) ;
 	}
 	close( f_in ) ;
 	close( f_out ) ;

@@ -29,6 +29,23 @@
 #include "tcplay_support.h"
 #include "check_tcrypt.h"
 
+static void _chown( const char * x,uid_t y,gid_t z )
+{
+	if( chown( x,y,z ) ){;}
+}
+static void _chmod( const char * x,mode_t y )
+{
+	if( chmod( x,y ) ){;}
+}
+static void _write( int x,const void * y,size_t z )
+{
+	if( write( x,y,z ) ){;}
+}
+static void _close( int x )
+{
+	if( close( x ) ){;}
+}
+
 string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fileName )
 {
 	string_t st = StringVoid ;
@@ -45,11 +62,11 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 
 	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
-		chown( "/run",0,0 ) ;
+		_chown( "/run",0,0 ) ;
 	}
 	if( path_does_not_exist( "/run/zuluCrypt" ) ){
 		mkdir( "/run/zuluCrypt",S_IRWXU ) ;
-		chown( "/run/zuluCrypt",0,0 ) ;
+		_chown( "/run/zuluCrypt",0,0 ) ;
 	}
 
 	st = String_1( "/run/zuluCrypt/",fileName,NULL ) ;
@@ -59,10 +76,10 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	if( fd == -1 ){
 		StringDelete( &st ) ;
 	}else{
-		write( fd,key,key_len ) ;
-		close( fd ) ;
-		chown( file,0,0 ) ;
-		chmod( file,S_IRWXU ) ;
+		_write( fd,key,key_len ) ;
+		_close( fd ) ;
+		_chown( file,0,0 ) ;
+		_chmod( file,S_IRWXU ) ;
 	}
 
 	return st ;

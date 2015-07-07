@@ -34,6 +34,8 @@
 #include <termios.h>
 #include <sys/mman.h>
 
+#define ignore_result( x ) if( x ){;}
+
 /*
  * a string memory block gows by below factor when it expands
  */
@@ -1756,7 +1758,7 @@ string_t StringRandomString( size_t size )
 	}
 
 	while( g < size ){
-		read( f,&c,1 ) ;
+		ignore_result( read( f,&c,1 ) ) ;
 		if( c >= ' ' && c <= '~' ){
 			*( e + g ) = c ;
 			g++ ;
@@ -1990,11 +1992,11 @@ void StringWriteToFile( string_t st,const char * path,int mode )
 		return ;
 	}
 
-	write( fd,st->string,st->size ) ;
+	ignore_result( write( fd,st->string,st->size ) ) ;
 
 	close( fd ) ;
 
-	chown( path,getuid(),getgid() ) ;
+	ignore_result( chown( path,getuid(),getgid() ) ) ;
 	chmod( path,S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH ) ;
 }
 

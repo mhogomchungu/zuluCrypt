@@ -36,6 +36,8 @@
 #include <sys/resource.h>
 #include <grp.h>
 
+#define _ignore_result( x ) if( x ){;}
+
 struct ProcessType_t{
 	pid_t pid ;
 	int fd_0[ 2 ] ; /* this variable is used to write to child process      */
@@ -351,11 +353,11 @@ pid_t ProcessStart( process_t p )
 			/*
 			 * drop privileges permanently
 			 */
-			seteuid( 0 ) ;
-			setgid( p->str.user_id ) ;
-			setgroups( 1,&p->str.user_id ) ;
-			setegid( p->str.user_id ) ;
-			setuid( p->str.user_id ) ;
+			_ignore_result( seteuid( 0 ) ) ;
+			_ignore_result( setgid( p->str.user_id ) ) ;
+			_ignore_result( setgroups( 1,&p->str.user_id ) ) ;
+			_ignore_result( setegid( p->str.user_id ) ) ;
+			_ignore_result( setuid( p->str.user_id ) ) ;
 		}
 
 		dup2( p->fd_0[ 0 ],0 ) ;
@@ -390,9 +392,9 @@ pid_t ProcessStart( process_t p )
 	/*
 	 * parent process continues from here
 	 */
-	close( p->fd_0[ 0 ] ) ;
-	close( p->fd_1[ 1 ] ) ;
-	close( p->fd_2[ 1 ] ) ;
+	( void ) close( p->fd_0[ 0 ] ) ;
+	( void ) close( p->fd_1[ 1 ] ) ;
+	( void ) close( p->fd_2[ 1 ] ) ;
 
 	p->state = ProcessIsStillRunning ;
 
@@ -518,7 +520,7 @@ size_t ProcessWrite( process_t p,const char * data,size_t len )
 
 void ProcessCloseStdWrite( process_t p )
 {
-	close( p->fd_0[ 0 ] ) ;
+	( void ) close( p->fd_0[ 0 ] ) ;
 	p->fd_0[ 0 ] = -1 ;
 }
 
@@ -537,8 +539,8 @@ static void _ProcessDelete( process_t px )
 		free( px->thread ) ;
 	}
 
-	close( px->fd_2[ 1 ] ) ;
-	close( px->fd_1[ 1 ] ) ;
+	( void ) close( px->fd_2[ 1 ] ) ;
+	( void ) close( px->fd_1[ 1 ] ) ;
 
 	if( px->fd_0[ 0 ] != -1 ){
 		close( px->fd_0[ 0 ] ) ;

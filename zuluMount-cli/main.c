@@ -32,6 +32,16 @@
 #include <unistd.h>
 #include <grp.h>
 
+static void _seteuid( uid_t uid )
+{
+	if( seteuid( uid ) ){;}
+}
+
+static void _setuid( uid_t uid )
+{
+	if( setuid( uid ) ){;}
+}
+
 /*
  * All functions with "EXE" in their names are defined somewhere in ../zuluCrypt-cli/bin
  */
@@ -543,7 +553,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * setgroups() requires seteuid(0) ;
 	 */
-	seteuid( 0 ) ;
+	_seteuid( 0 ) ;
 	if( setgroups( 1,&gid ) != 0 ){
 		_privilegeEvelationError( gettext( "ERROR: setgroups() failed" ) ) ;
 	}
@@ -567,8 +577,8 @@ int main( int argc,char * argv[] )
 	 * Run with higher priority to speed things up
 	 */
 	setpriority( PRIO_PROCESS,0,-15 ) ;
-	setuid( 0 ) ;
-	seteuid( uid ) ;
+	_setuid( 0 ) ;
+	_seteuid( uid ) ;
 
 	/*
 	 * zuluCryptClearDeadMappers() is defined in ../zuluCrypt-cli/bin/clear_dead_mapper.c

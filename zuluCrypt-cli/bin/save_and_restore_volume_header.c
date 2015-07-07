@@ -34,6 +34,8 @@
 
 #define SIZE 512
 
+#define ignore_result( x ) if( x ){;}
+
 static int zuluExit( int st,const char * dev )
 {
 	switch( st ){
@@ -102,11 +104,11 @@ static string_t _create_work_directory( void )
 
 	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run",mode ) ;
-		chown( "/run",0,0 ) ;
+		ignore_result( chown( "/run",0,0 ) ) ;
 	}
 	if( path_does_not_exist( temp_path ) ){
 		mkdir( temp_path,S_IRWXU ) ;
-		chown( temp_path,0,0 ) ;
+		ignore_result( chown( temp_path,0,0 ) ) ;
 	}
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
@@ -162,10 +164,10 @@ static int _secure_file_path( const char ** path,const char * source )
 	while( 1 ){
 		len = read( fd_source,buffer,SIZE ) ;
 		if( len < SIZE ){
-			write( fd_temp,buffer,len ) ;
+			ignore_result( write( fd_temp,buffer,len ) ) ;
 			break ;
 		}else{
-			write( fd_temp,buffer,len ) ;
+			ignore_result( write( fd_temp,buffer,len ) ) ;
 		}
 	}
 
@@ -219,14 +221,14 @@ static int _secure_copy_file( const char * source,const char * dest,uid_t uid )
 		while( 1 ){
 			len = read( fd_source,buffer,SIZE ) ;
 			if( len < SIZE ){
-				write( fd_dest,buffer,len ) ;
+				ignore_result( write( fd_dest,buffer,len ) ) ;
 				break ;
 			}else{
-				write( fd_dest,buffer,len ) ;
+				ignore_result( write( fd_dest,buffer,len ) ) ;
 			}
 		}
-		chmod( dest,S_IRUSR ) ;
-		chown( dest,uid,uid ) ;
+		ignore_result( chmod( dest,S_IRUSR ) ) ;
+		ignore_result( chown( dest,uid,uid ) ) ;
 		st = 0 ;
 	}
 

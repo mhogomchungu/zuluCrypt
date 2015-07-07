@@ -32,6 +32,8 @@
 #include "../bin/includes.h"
 #include "../bin/libzuluCrypt-exe.h"
 
+#define _ignore_result( x ) if( x ){;}
+
 /*
  * below header file is created at config time.
  */
@@ -84,7 +86,7 @@ void zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 
 	if( SocketBind( server ) ){
 
-		chown( sockpath,uid,uid ) ;
+		_ignore_result( chown( sockpath,uid,uid ) ) ;
 		chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
 
 		if( SocketListen( server ) ){
@@ -177,8 +179,8 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 
 		mkdir( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
-		chown( sockpath,uid,uid ) ;
-		chmod( sockpath,S_IRWXU ) ;
+		_ignore_result( chown( sockpath,uid,uid ) ) ;
+		_ignore_result( chmod( sockpath,S_IRWXU ) ) ;
 
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
 

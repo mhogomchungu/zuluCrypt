@@ -45,6 +45,15 @@
 #define StringsAreEqual( x,y ) strcmp( x,y ) == 0
 #define StringsAreNotEqual( x,y ) strcmp( x,y ) != 0
 
+static void _write( int x,const void * y,size_t z )
+{
+	if( write( x,y,z ) ){;}
+}
+static void _read( int x,void * y,size_t z )
+{
+	if( read( x,y,z ) ){;}
+}
+
 static void _help( void )
 {
 	const char * help2 ;
@@ -224,7 +233,7 @@ static int _addFileToWallet_1( lxqt_wallet_t wallet,int fd,const char * filePath
 		puts( gettext( "failed to allocate memory" ) ) ;
 		return 1 ;
 	}else{
-		read( fd,e,st->st_size ) ;
+		_read( fd,e,st->st_size ) ;
 		r = lxqt_wallet_add_key( wallet,_file( fileName ),e,st->st_size ) ;
 		free( e ) ;
 		if( r != lxqt_wallet_no_error ){
@@ -304,7 +313,7 @@ static int _getFileFromWallet( lxqt_wallet_t wallet,const char * filePath )
 				puts( gettext( "failed to open file for writing" ) ) ;
 				return 1 ;
 			}else{
-				write( fd,k.key_value,k.key_value_size ) ;
+				_write( fd,k.key_value,k.key_value_size ) ;
 				close( fd ) ;
 				return 0 ;
 			}

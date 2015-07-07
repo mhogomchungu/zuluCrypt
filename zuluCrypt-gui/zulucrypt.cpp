@@ -73,8 +73,6 @@
 
 zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 {
-	this->setLocalizationLanguage() ;
-	m_ui = new Ui::zuluCrypt ;
 }
 
 void zuluCrypt::setLocalizationLanguage()
@@ -97,6 +95,9 @@ void zuluCrypt::setLocalizationLanguage()
 
 void zuluCrypt::setUpApp( const QString& volume )
 {
+	this->setLocalizationLanguage() ;
+	m_ui = new Ui::zuluCrypt ;
+
 	this->setupUIElements() ;
 	this->setupConnections() ;
 	this->initFont() ;
@@ -232,15 +233,13 @@ void zuluCrypt::start()
 		utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 	}
 
-	auto instance = new oneinstance( this,"zuluCrypt-gui.socket","raiseWindow",e ) ;
+	new oneinstance( this,"zuluCrypt-gui.socket","raiseWindow",e,[ this,e ]( QObject * instance ){
 
-	if( instance->onlyInstance() ){
+		this->setUpApp( e ) ;
 
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
-
-		this->setUpApp( e ) ;
-	}
+	} ) ;
 }
 
 void zuluCrypt::initTray()

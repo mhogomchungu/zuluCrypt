@@ -24,6 +24,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+static void _chown( const char * x,uid_t y,gid_t z )
+{
+	if( chown( x,y,z ) ){;}
+}
+
 int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 {
 	stringList_t stl ;
@@ -232,15 +237,15 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 
 	if( path_does_not_exist( "/run" ) ){
 		mkdir( "/run",mode ) ;
-		chown( "/run",0,0 ) ;
+		_chown( "/run",0,0 ) ;
 	}
 	if( path_does_not_exist( "/run/media" ) ){
 		mkdir( "/run/media",mode ) ;
-		chown( "/run/media",0,0 ) ;
+		_chown( "/run/media",0,0 ) ;
 	}
 	if( path_does_not_exist( "/run/media/public" ) ){
 		mkdir( "/run/media/public",mode ) ;
-		chown( "/run/media/public",0,0 ) ;
+		_chown( "/run/media/public",0,0 ) ;
 	}
 	if( path_does_exist( m_path ) ){
 		/*
@@ -264,7 +269,7 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		StringDelete( &tmp ) ;
 	}else{
 		mkdir( m_path,S_IRWXU | S_IRWXG | S_IRWXG ) ;
-		chown( m_path,0,0 ) ;
+		_chown( m_path,0,0 ) ;
 		xt = mount( o_path,m_path,"",flags|MS_BIND,"" ) ;
 		if( xt != 0 ){
 			rmdir( m_path ) ;
