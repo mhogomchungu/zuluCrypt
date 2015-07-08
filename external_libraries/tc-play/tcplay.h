@@ -165,6 +165,11 @@ struct tcplay_info {
 	uuid_t uuid;
 
 	int hidden;
+
+	char type[PATH_MAX];
+	char status[PATH_MAX];
+
+	int read_only;
 };
 
 #define INFO_TO_DM_BLOCKS(info, memb) \

@@ -1637,6 +1637,27 @@ error:
 	return NULL;
 }
 
+static int _string_ends_with(const char *e, size_t ee, const char *s,size_t ss)
+{
+	if (ee >= ss)
+		return memcmp(e + ee - ss, s, ss) == 0;
+	else
+		return 0;
+}
+
+static int _string_starts_and_ends_with(const char *a, const char *b, const char * c)
+{
+	if (strncmp(a, b, strlen(b)) == 0)
+		return _string_ends_with( a, strlen(a), c,strlen(c));
+	else
+		return 0;
+}
+
+static int _string_starts_with(const char *a,const char *b)
+{
+	return strncmp( a, b, strlen(b)) == 0;
+}
+
 struct tcplay_info *
 dm_info_map(const char *map_name)
 {
@@ -1648,6 +1669,10 @@ dm_info_map(const char *map_name)
 	char map[PATH_MAX];
 	char ciphers[512];
 	int i, outermost = -1;
+
+	DIR *dir;
+	struct dirent *e;
+	struct dm_info *info_dm;
 
 	memset(dm_table, 0, sizeof(dm_table));
 
@@ -1715,6 +1740,38 @@ dm_info_map(const char *map_name)
 	info->skip = dm_table[outermost]->skip;
 	info->offset = dm_table[outermost]->offset;
 	info->blk_sz = 512;
+
+	strcpy(info->type, "Nil");
+
+	dir = opendir("/dev/disk/by-id/");
+
+	if (dir != NULL){
+
+		while ((e = readdir (dir)) != NULL){
+			if (_string_starts_and_ends_with(e->d_name, "dm-uuid-CRYPT-", map_name)){
+				if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-TCRYPT")){
+					strcpy( info->type,"TCRYPT" );
+				}else if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-VCRYPT")){
+					strcpy( info->type,"VCRYPT" );
+				}
+				break ;
+			}
+		}
+		closedir(dir);
+	}
+
+	info_dm = &dmi[outermost];
+
+	info->read_only = info_dm->read_only;
+
+	if (info_dm->inactive_table)
+		strcpy(info->status, "inactive");
+	else if (info_dm->open_count > 0)
+		strcpy(info->status, "active and is in use");
+	else if (info_dm->open_count == 0)
+		strcpy(info->status, "active");
+	else
+		strcpy(info->status, "invalid");
 
 	return info;
 

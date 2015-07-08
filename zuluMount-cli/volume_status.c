@@ -424,7 +424,7 @@ static void  _zuluMountprintAListOfMountedVolumes( string_t st,const char * mapp
 			/*
 			 * volume is probably an encrypted one
 			 */
-			if( StringHasAtLeastOneComponent( q,"-NAAN-","-VERA-",NULL ) ){
+			if( StringContains( q,"-NAAN-" ) ){
 				zuluCryptSecurityGainElevatedPrivileges() ;
 				/*
 				 * zuluCryptVolumeDeviceName() is defined in ../zuluCrypt-cli/lib/status.c

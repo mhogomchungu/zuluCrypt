@@ -817,7 +817,20 @@ tc_api_task_info_get(tc_api_task task, const char *key, ...)
 			*i64p = (int64_t)info->offset * (int64_t)info->hdr->sec_sz;
 		else
 			*i64p = (int64_t)info->offset * (int64_t)info->blk_sz;
-	} else {
+	} else if (_match(key, "type")) {
+		s = va_arg(ap, char *);
+		strncpy(s, info->type, sz);
+	} else if (_match(key, "status")) {
+		s = va_arg(ap, char *);
+		strncpy(s, info->status, sz);
+	} else if (_match(key, "mode")) {
+		if (sz != sizeof(int)) {
+			errno = EFAULT;
+			r = TC_ERR;
+			goto out;
+		}
+		*ip = info->read_only;
+	}else {
 		r = TC_ERR_UNIMPL;
 	}
 

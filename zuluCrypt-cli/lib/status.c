@@ -338,20 +338,99 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	return r ;
 }
 
-static char * zuluExit( string_t st,struct crypt_device * cd,char * e )
+string_t zuluExit( string_t st,struct crypt_device * cd )
 {
-	StringFree( e ) ;
 	crypt_free( cd ) ;
-	return StringDeleteHandle( &st ) ;
+	return st ;
 }
 
-static void _get_crypto_info_from_cryptsetup( string_t p,struct crypt_device * cd )
+static void _device_info( string_t p,const char * device )
+{
+	char * path ;
+
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
+
+		path = zuluCryptLoopDeviceAddress_1( device ) ;
+
+		if( path != NULL ){
+
+			StringMultipleAppend( p,"\n device:   \t",device,"\n loop:   \t",path,NULL ) ;
+			StringFree( path ) ;
+		}else{
+			StringMultipleAppend( p,"\n device:   \t",device,"\n loop:   \tNil",NULL ) ;
+		}
+	}else{
+		/*
+		 * zuluCryptResolvePath() is defined in resolve_path.c
+		 */
+		path = zuluCryptResolvePath( device ) ;
+		StringMultipleAppend( p,"\n device:   \t",path,"\n loop:   \tNil",NULL ) ;
+		StringFree( path ) ;
+	}
+}
+
+static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 {
 	char buff[ SIZE ] ;
 	char * buffer = buff ;
+
 	const char * z ;
+	const char * type ;
 
 	uint64_t e ;
+
+	string_t q ;
+	string_t p ;
+
+	int k ;
+	int i = 0 ;
+	int j ;
+
+	struct crypt_device * cd ;
+
+	struct crypt_active_device cad ;
+
+	if( crypt_init_by_name( &cd,mapper ) != 0 ){
+
+		return StringVoid ;
+	}
+
+	p = String( mapper ) ;
+
+	switch( crypt_status( cd,mapper ) ){
+	case CRYPT_INACTIVE :
+		StringAppend( p," is inactive.\n" ) ;
+		return zuluExit( p,cd ) ;
+	case CRYPT_INVALID  :
+		StringAppend( p," is invalid.\n" ) ;
+		return zuluExit( p,cd ) ;
+	case CRYPT_ACTIVE   :
+		StringAppend( p," is active.\n" ) ;
+		break ;
+	case CRYPT_BUSY     :
+		StringAppend( p," is active and is in use.\n" ) ;
+		break ;
+	default :
+		StringAppend( p," is invalid.\n" ) ;
+		return zuluExit( p,cd ) ;
+	}
+
+	StringAppend( p," type:   \t" ) ;
+
+	type = crypt_get_type( cd ) ;
+
+	if( type != NULL ){
+
+		q = String( type ) ;
+		StringAppend( p,StringToLowerCase( q ) ) ;
+		StringDelete( &q ) ;
+	}else{
+		q = _get_type_from_udev_1( mapper ) ;
+
+		StringAppendString( p,q ) ;
+
+		StringDelete( &q ) ;
+	}
 
 	z = crypt_get_cipher( cd ) ;
 
@@ -381,177 +460,10 @@ static void _get_crypto_info_from_cryptsetup( string_t p,struct crypt_device * c
 
 	zuluCryptFormatSize( e * 512,buffer,SIZE ) ;
 	StringMultipleAppend( p," / ",buffer,NULL ) ;
-}
 
-static int _get_crypto_info_from_tcplay( string_t p,const char * mapper )
-{
-	int key_size ;
+	_device_info( p,crypt_get_device_name( cd ) ) ;
 
-	int64_t offset ;
-
-	tc_api_task task ;
-
-	int r = 1 ;
-
-	char buff[ SIZE ] ;
-	char * buffer = buff ;
-
-	const char * z ;
-
-	if( tc_api_initialize() ){
-
-		if( tc_api_task_initialize( &task,"info_mapped" ) ){
-
-			mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
-
-			tc_api_task_set( task,"map_name",mapper ) ;
-
-			tc_api_task_do( task ) ;
-
-			tc_api_task_info_get( task,"cipher",sizeof( buff ),buff ) ;
-
-			/*
-			 * zuluCryptConvertCipher() is defined in create_tcrypt.c
-			 */
-			StringMultipleAppend( p,"\n cipher:\t",zuluCryptConvertCipher( buff ),"-xts-plain64",NULL ) ;
-
-			tc_api_task_info_get( task,"key_bits",sizeof( key_size ),&key_size ) ;
-
-			z = StringIntToString_1( buffer,SIZE,key_size ) ;
-
-			StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
-
-			tc_api_task_info_get( task,"iv_offset",sizeof( offset ),&offset ) ;
-
-			z = StringIntToString_1( buffer,SIZE,offset / 512 ) ;
-
-			StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
-
-			zuluCryptFormatSize( offset,buffer,SIZE ) ;
-
-			StringMultipleAppend( p," / ",buffer,NULL ) ;
-
-			tc_api_task_uninit( task ) ;
-
-			r = 0 ;
-		}
-
-		tc_api_uninit() ;
-	}
-
-	return r ;
-}
-
-static void _get_crypto_info( string_t p,struct crypt_device * cd,const char * mapper )
-{
-	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
-
-		if( _get_crypto_info_from_tcplay( p,mapper ) ){
-
-			_get_crypto_info_from_cryptsetup( p,cd ) ;
-		}
-	}else{
-		_get_crypto_info_from_cryptsetup( p,cd ) ;
-	}
-}
-
-char * zuluCryptVolumeStatus( const char * mapper )
-{
-	char buff[ SIZE ] ;
-	char * buffer = buff ;
-
-	const char * z ;
-	const char * type ;
-	char * path ;
-	int i ;
-	int j ;
-	int k ;
-
-	char * device_name = NULL ;
-
-	struct crypt_device * cd ;
-	struct crypt_active_device cad ;
-
-	string_t p = StringVoid ;
-	string_t q ;
-
-	if( crypt_init_by_name( &cd,mapper ) != 0 ){
-
-		return NULL ;
-	}
-	if( crypt_get_active_device( NULL,mapper,&cad ) != 0 ){
-
-		return zuluExit( p,cd,device_name ) ;
-	}
-
-	/*
-	 * zuluCryptResolvePath_4() is defined in resolve_path.c
-	 */
-	device_name = _volume_device_name( mapper,zuluCryptResolvePath_4 ) ;
-
-	if( device_name == NULL ){
-
-		return zuluExit( p,cd,device_name ) ;
-	}
-
-	p = String( mapper ) ;
-
-	switch( crypt_status( cd,mapper ) ){
-	case CRYPT_INACTIVE :
-		StringAppend( p," is inactive.\n" ) ;
-		return zuluExit( p,cd,device_name ) ;
-	case CRYPT_INVALID  :
-		StringAppend( p," is invalid.\n" ) ;
-		return zuluExit( p,cd,device_name ) ;
-	case CRYPT_ACTIVE   :
-		StringAppend( p," is active.\n" ) ;
-		break ;
-	case CRYPT_BUSY     :
-		StringAppend( p," is active and is in use.\n" ) ;
-		break ;
-	default :
-		StringAppend( p," is invalid.\n" ) ;
-		return zuluExit( p,cd,device_name ) ;
-	}
-
-	StringAppend( p," type:   \t" ) ;
-
-	type = crypt_get_type( cd ) ;
-
-	if( type != NULL ){
-
-		q = String( type ) ;
-		StringAppend( p,StringToLowerCase( q ) ) ;
-		StringDelete( &q ) ;
-	}else{
-		q = _get_type_from_udev_1( mapper ) ;
-
-		StringAppendString( p,q ) ;
-
-		StringDelete( &q ) ;
-	}
-
-	_get_crypto_info( p,cd,mapper ) ;
-
-	if( StringPrefixEqual( device_name,"/dev/loop" ) ){
-
-		path = zuluCryptLoopDeviceAddress_1( device_name ) ;
-
-		if( path != NULL ){
-
-			StringMultipleAppend( p,"\n device:   \t",device_name,"\n loop:   \t",path,NULL ) ;
-			StringFree( path ) ;
-		}else{
-			StringMultipleAppend( p,"\n device:   \t",device_name,"\n loop:   \tNil",NULL ) ;
-		}
-	}else{
-		/*
-		 * zuluCryptResolvePath() is defined in resolve_path.c
-		 */
-		z = zuluCryptResolvePath( device_name ) ;
-		StringMultipleAppend( p,"\n device:   \t",z,"\n loop:   \tNil",NULL ) ;
-		StringFree( z ) ;
-	}
+	crypt_get_active_device( NULL,mapper,&cad ) ;
 
 	if( cad.flags == 1 ){
 
@@ -560,7 +472,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		StringAppend( p,"\n mode:   \tread and write" ) ;
 	}
 
-	k = crypt_keyslot_max( type ) ;
+	k = crypt_keyslot_max( crypt_get_type( cd ) ) ;
 
 	if( k > 0 ){
 
@@ -583,18 +495,132 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		StringAppend( p,"\n active slots:\tNil" ) ;
 	}
 
-	/*
-	 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
-	 */
-	path = zuluCryptGetMountPointFromPath( mapper ) ;
+	return zuluExit( p,cd ) ;
+}
 
-	if( path != NULL ){
+static string_t _get_crypto_info_from_tcplay( const char * mapper )
+{
+	int key_size ;
 
-		zuluCryptFileSystemProperties( p,mapper,path ) ;
-		StringFree( path ) ;
+	int ro ;
+
+	int64_t offset ;
+
+	tc_api_task task ;
+
+	char buff[ SIZE ] ;
+	char * buffer = buff ;
+
+	const char * z ;
+
+	string_t p = StringVoid ;
+
+	string_t q ;
+
+	if( tc_api_initialize() ){
+
+		if( tc_api_task_initialize( &task,"info_mapped" ) ){
+
+			p = String( mapper ) ;
+
+			mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
+
+			tc_api_task_set( task,"map_name",mapper ) ;
+
+			tc_api_task_do( task ) ;
+
+			tc_api_task_info_get( task,"status",sizeof( buff ),buff ) ;
+
+			StringMultipleAppend( p," is ",buff,".",NULL ) ;
+
+			if( StringAtLeastOneMatch_1( buff,"active","active and is in use",NULL ) ){
+
+				tc_api_task_info_get( task,"type",sizeof( buff ),buff ) ;
+
+				q = String( buff ) ;
+
+				StringMultipleAppend( p," \n type:   \t",StringToLowerCase( q ),NULL ) ;
+
+				StringDelete( &q ) ;
+
+				tc_api_task_info_get( task,"cipher",sizeof( buff ),buff ) ;
+
+				/*
+				* zuluCryptConvertCipher() is defined in create_tcrypt.c
+				*/
+				StringMultipleAppend( p,"\n cipher:\t",zuluCryptConvertCipher( buff ),"-xts-plain64",NULL ) ;
+
+				tc_api_task_info_get( task,"key_bits",sizeof( key_size ),&key_size ) ;
+
+				z = StringIntToString_1( buffer,SIZE,key_size ) ;
+
+				StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
+
+				tc_api_task_info_get( task,"iv_offset",sizeof( offset ),&offset ) ;
+
+				z = StringIntToString_1( buffer,SIZE,offset / 512 ) ;
+
+				StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
+
+				zuluCryptFormatSize( offset,buffer,SIZE ) ;
+
+				StringMultipleAppend( p," / ",buffer,NULL ) ;
+
+				tc_api_task_info_get( task,"device",sizeof( buff ),buff ) ;
+
+				_device_info( p,buff ) ;
+
+				tc_api_task_info_get( task,"mode",sizeof( ro ),&ro ) ;
+
+				if( ro ){
+
+					StringAppend( p,"\n mode:   \tread only" ) ;
+				}else{
+					StringAppend( p,"\n mode:   \tread and write" ) ;
+				}
+
+				StringAppend( p,"\n active slots:\tNil" ) ;
+			}
+
+			tc_api_task_uninit( task ) ;
+		}
+
+		tc_api_uninit() ;
 	}
 
-	return zuluExit( p,cd,device_name ) ;
+	return p ;
+}
+
+char * zuluCryptVolumeStatus( const char * mapper )
+{
+	char * path ;
+
+	string_t p ;
+
+	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
+
+		p = _get_crypto_info_from_tcplay( mapper ) ;
+	}else{
+		p = _get_crypto_info_from_cryptsetup( mapper ) ;
+	}
+
+	if( p == StringVoid ){
+
+		return NULL ;
+	}else{
+		/*
+		* zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
+		*/
+		path = zuluCryptGetMountPointFromPath( mapper ) ;
+
+		if( path != NULL ){
+
+			zuluCryptFileSystemProperties( p,mapper,path ) ;
+			StringFree( path ) ;
+		}
+
+		return StringDeleteHandle( &p ) ;
+	}
 }
 
 static char * _device_name( const char * mapper,char * ( *function )( const char * ) )
