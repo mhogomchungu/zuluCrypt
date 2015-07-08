@@ -829,6 +829,7 @@ tc_api_task_info_get(tc_api_task task, const char *key, ...)
 			r = TC_ERR;
 			goto out;
 		}
+		ip = va_arg(ap, int *);
 		*ip = info->read_only;
 	}else {
 		r = TC_ERR_UNIMPL;
