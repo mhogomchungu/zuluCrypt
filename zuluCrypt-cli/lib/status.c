@@ -552,8 +552,8 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 				tc_api_task_info_get( task,"cipher",sizeof( buff ),buff ) ;
 
 				/*
-				* zuluCryptConvertCipher() is defined in create_tcrypt.c
-				*/
+				 * zuluCryptConvertCipher() is defined in create_tcrypt.c
+				 */
 				StringMultipleAppend( p,"\n cipher:\t",zuluCryptConvertCipher( buff ),"-xts-plain64",NULL ) ;
 
 				tc_api_task_info_get( task,"key_bits",sizeof( key_size ),&key_size ) ;
@@ -615,8 +615,8 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		return NULL ;
 	}else{
 		/*
-		* zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
-		*/
+		 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
+		 */
 		path = zuluCryptGetMountPointFromPath( mapper ) ;
 
 		if( path != NULL ){
