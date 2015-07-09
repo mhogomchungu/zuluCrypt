@@ -338,17 +338,15 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	return r ;
 }
 
-string_t zuluExit( string_t st,struct crypt_device * cd )
-{
-	crypt_free( cd ) ;
-	return st ;
-}
-
 static void _device_info( string_t p,const char * device )
 {
 	char * path ;
 
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
+	if( device == NULL ){
+
+		StringMultipleAppend( p,"\n device:   \t","Nil","\n loop:   \t","Nil",NULL ) ;
+
+	}else if( StringPrefixEqual( device,"/dev/loop" ) ){
 
 		path = zuluCryptLoopDeviceAddress_1( device ) ;
 
@@ -386,6 +384,8 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 	int i = 0 ;
 	int j ;
 
+	crypt_status_info info ;
+
 	struct crypt_device * cd ;
 
 	struct crypt_active_device cad ;
@@ -397,13 +397,15 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 
 	p = String( mapper ) ;
 
-	switch( crypt_status( cd,mapper ) ){
+	info = crypt_status( cd,mapper ) ;
+
+	switch( info ){
 	case CRYPT_INACTIVE :
 		StringAppend( p," is inactive.\n" ) ;
-		return zuluExit( p,cd ) ;
+		break ;
 	case CRYPT_INVALID  :
 		StringAppend( p," is invalid.\n" ) ;
-		return zuluExit( p,cd ) ;
+		break ;
 	case CRYPT_ACTIVE   :
 		StringAppend( p," is active.\n" ) ;
 		break ;
@@ -412,90 +414,94 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 		break ;
 	default :
 		StringAppend( p," is invalid.\n" ) ;
-		return zuluExit( p,cd ) ;
 	}
 
-	StringAppend( p," type:   \t" ) ;
+	if( info == CRYPT_ACTIVE || info == CRYPT_BUSY ){
 
-	type = crypt_get_type( cd ) ;
+		StringAppend( p," type:   \t" ) ;
 
-	if( type != NULL ){
+		type = crypt_get_type( cd ) ;
 
-		q = String( type ) ;
-		StringAppend( p,StringToLowerCase( q ) ) ;
-		StringDelete( &q ) ;
-	}else{
-		q = _get_type_from_udev_1( mapper ) ;
+		if( type != NULL ){
 
-		StringAppendString( p,q ) ;
+			q = String( type ) ;
+			StringAppend( p,StringToLowerCase( q ) ) ;
+			StringDelete( &q ) ;
+		}else{
+			q = _get_type_from_udev_1( mapper ) ;
 
-		StringDelete( &q ) ;
-	}
+			StringAppendString( p,q ) ;
 
-	z = crypt_get_cipher( cd ) ;
-
-	if( z != NULL ){
-
-		StringMultipleAppend( p,"\n cipher:\t",z,"-",NULL ) ;
-	}else{
-		StringAppend( p,"\n cipher:\tNil-" ) ;
-	}
-
-	z = crypt_get_cipher_mode( cd ) ;
-
-	if( z != NULL ){
-
-		StringAppend( p,z ) ;
-	}else{
-		StringAppend( p,"Nil" ) ;
-	}
-
-	z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
-	StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
-
-	e = crypt_get_data_offset( cd ) ;
-
-	z = StringIntToString_1( buffer,SIZE,e ) ;
-	StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
-
-	zuluCryptFormatSize( e * 512,buffer,SIZE ) ;
-	StringMultipleAppend( p," / ",buffer,NULL ) ;
-
-	_device_info( p,crypt_get_device_name( cd ) ) ;
-
-	crypt_get_active_device( NULL,mapper,&cad ) ;
-
-	if( cad.flags == 1 ){
-
-		StringAppend( p,"\n mode:   \tread only" ) ;
-	}else{
-		StringAppend( p,"\n mode:   \tread and write" ) ;
-	}
-
-	k = crypt_keyslot_max( crypt_get_type( cd ) ) ;
-
-	if( k > 0 ){
-
-		i = 0 ;
-
-		for( j = 0 ; j < k ; j++ ){
-
-			switch( crypt_keyslot_status( cd,j ) ){
-
-				case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
-				case CRYPT_SLOT_ACTIVE      : i++ ; break ;
-				default : ;
-			}
+			StringDelete( &q ) ;
 		}
 
-		StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,i ),NULL ) ;
+		z = crypt_get_cipher( cd ) ;
 
-		StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,k ),NULL ) ;
-	}else{
-		StringAppend( p,"\n active slots:\tNil" ) ;
+		if( z != NULL ){
+
+			StringMultipleAppend( p,"\n cipher:\t",z,"-",NULL ) ;
+		}else{
+			StringAppend( p,"\n cipher:\tNil-" ) ;
+		}
+
+		z = crypt_get_cipher_mode( cd ) ;
+
+		if( z != NULL ){
+
+			StringAppend( p,z ) ;
+		}else{
+			StringAppend( p,"Nil" ) ;
+		}
+
+		z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
+		StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
+
+		e = crypt_get_data_offset( cd ) ;
+
+		z = StringIntToString_1( buffer,SIZE,e ) ;
+		StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
+
+		zuluCryptFormatSize( e * 512,buffer,SIZE ) ;
+		StringMultipleAppend( p," / ",buffer,NULL ) ;
+
+		_device_info( p,crypt_get_device_name( cd ) ) ;
+
+		crypt_get_active_device( NULL,mapper,&cad ) ;
+
+		if( cad.flags == 1 ){
+
+			StringAppend( p,"\n mode:   \tread only" ) ;
+		}else{
+			StringAppend( p,"\n mode:   \tread and write" ) ;
+		}
+
+		k = crypt_keyslot_max( crypt_get_type( cd ) ) ;
+
+		if( k > 0 ){
+
+			i = 0 ;
+
+			for( j = 0 ; j < k ; j++ ){
+
+				switch( crypt_keyslot_status( cd,j ) ){
+
+					case CRYPT_SLOT_ACTIVE_LAST : i++ ; break ;
+					case CRYPT_SLOT_ACTIVE      : i++ ; break ;
+					default : ;
+				}
+			}
+
+			StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,i ),NULL ) ;
+
+			StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,k ),NULL ) ;
+		}else{
+			StringAppend( p,"\n active slots:\tNil" ) ;
+		}
 	}
 
-	return zuluExit( p,cd ) ;
+	crypt_free( cd ) ;
+
+	return p ;
 }
 
 static string_t _get_crypto_info_from_tcplay( const char * mapper )
