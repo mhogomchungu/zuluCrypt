@@ -166,8 +166,8 @@ struct tcplay_info {
 
 	int hidden;
 
-	char type[PATH_MAX];
-	char status[PATH_MAX];
+	char type[64];
+	char status[64];
 
 	int read_only;
 };

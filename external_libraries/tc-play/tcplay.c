@@ -392,6 +392,7 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 	}
 
 	strncpy(info->dev, dev, sizeof(info->dev));
+	info->dev[sizeof(info->dev)-1] = '\0';
 	info->cipher_chain = cipher_chain;
 	info->pbkdf_prf = prf;
 	info->start = start;
@@ -1637,7 +1638,7 @@ error:
 	return NULL;
 }
 
-static int _string_ends_with(const char *e, size_t ee, const char *s,size_t ss)
+static int _string_ends_with(const char *e, size_t ee, const char *s, size_t ss)
 {
 	if (ee >= ss)
 		return memcmp(e + ee - ss, s, ss) == 0;
@@ -1645,7 +1646,7 @@ static int _string_ends_with(const char *e, size_t ee, const char *s,size_t ss)
 		return 0;
 }
 
-static int _string_starts_and_ends_with(const char *a, const char *b, const char * c)
+static int _string_starts_and_ends_with(const char *a, const char *b, const char *c)
 {
 	if (strncmp(a, b, strlen(b)) == 0)
 		return _string_ends_with( a, strlen(a), c,strlen(c));
@@ -1653,7 +1654,7 @@ static int _string_starts_and_ends_with(const char *a, const char *b, const char
 		return 0;
 }
 
-static int _string_starts_with(const char *a,const char *b)
+static int _string_starts_with(const char *a, const char *b)
 {
 	return strncmp( a, b, strlen(b)) == 0;
 }
@@ -1731,6 +1732,7 @@ dm_info_map(const char *map_name)
 
 	/* Copy over the name */
 	strncpy(info->dev, dm_table[outermost]->device, sizeof(info->dev));
+	info->dev[sizeof(info->dev)-1] = '\0';
 
 	/* Other fields */
 	info->hdr = NULL;
@@ -1746,15 +1748,14 @@ dm_info_map(const char *map_name)
 	dir = opendir("/dev/disk/by-id/");
 
 	if (dir != NULL){
-
-		while ((e = readdir (dir)) != NULL){
+		while ((e = readdir(dir)) != NULL){
 			if (_string_starts_and_ends_with(e->d_name, "dm-uuid-CRYPT-", map_name)){
 				if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-TCRYPT")){
-					strcpy( info->type,"TCRYPT" );
+					strcpy(info->type, "TCRYPT");
 				}else if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-VCRYPT")){
-					strcpy( info->type,"VCRYPT" );
+					strcpy(info->type, "VCRYPT");
 				}
-				break ;
+				break;
 			}
 		}
 		closedir(dir);
