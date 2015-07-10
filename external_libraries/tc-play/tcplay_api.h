@@ -67,6 +67,8 @@ int tc_api_task_do(tc_api_task task);
 int tc_api_task_info_get(tc_api_task task, const char *key, ...);
 const char *tc_api_task_get_error(tc_api_task task);
 
+void tc_api_get_volume_type(char *buffer, size_t size, const char*);
+
 static inline int tc_api_initialize(void)
 {
 	return tc_api_init(0) == TC_OK;

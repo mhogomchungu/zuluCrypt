@@ -32,10 +32,6 @@
 
 #include "tcplay_support.h"
 
-/*
- * 64 byte buffer is more than enough because the API that will produce the largest number is crypt_get_data_offset()
- * and it produces a uint64_t number and this type has a maximum digit count is 19.
- */
 #define SIZE 1024
 
 #define TYPE 3
@@ -289,13 +285,13 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
 {
-	char * f =  zuluCryptGetVolumeTypeFromMapperPath( mapper ) ;
+	char buffer[ 1024 ] ;
 
-	int e = StringsAreEqual( f,"crypto_TCRYPT" ) || StringsAreEqual( f,"crypto_VCRYPT" ) ;
+	mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
 
-	StringFree( f ) ;
+	tc_api_get_volume_type( buffer,sizeof( buffer ),mapper ) ;
 
-	return e ;
+	return StringsAreEqual( buffer,"TCRYPT" ) || StringsAreEqual( buffer,"VCRYPT" ) ;
 }
 
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )

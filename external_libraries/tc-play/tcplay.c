@@ -57,7 +57,7 @@
 #include "crc32.h"
 #include "tcplay.h"
 #include "humanize.h"
-
+#include "tcplay_api.h"
 
 /* XXX TODO:
  *  - LRW-benbi support? needs further work in dm-crypt and even opencrypto
@@ -1659,6 +1659,28 @@ static int _string_starts_with(const char *a, const char *b)
 	return strncmp( a, b, strlen(b)) == 0;
 }
 
+void tc_api_get_volume_type(char *buffer, size_t size, const char *map_name)
+{
+	DIR *dir = opendir("/dev/disk/by-id/");
+	struct dirent *e;
+
+	snprintf(buffer, size, "Nil");
+
+	if (dir != NULL){
+		while ((e = readdir(dir)) != NULL){
+			if (_string_starts_and_ends_with(e->d_name, "dm-uuid-CRYPT-", map_name)){
+				if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-TCRYPT")){
+					snprintf(buffer, size, "TCRYPT");
+				}else if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-VCRYPT")){
+					snprintf(buffer, size, "VCRYPT");
+				}
+				break;
+			}
+		}
+		closedir(dir);
+	}
+}
+
 struct tcplay_info *
 dm_info_map(const char *map_name)
 {
@@ -1671,8 +1693,6 @@ dm_info_map(const char *map_name)
 	char ciphers[512];
 	int i, outermost = -1;
 
-	DIR *dir;
-	struct dirent *e;
 	struct dm_info *info_dm;
 
 	memset(dm_table, 0, sizeof(dm_table));
@@ -1742,25 +1762,7 @@ dm_info_map(const char *map_name)
 	info->skip = dm_table[outermost]->skip;
 	info->offset = dm_table[outermost]->offset;
 	info->blk_sz = 512;
-
-	strcpy(info->type, "Nil");
-
-	dir = opendir("/dev/disk/by-id/");
-
-	if (dir != NULL){
-		while ((e = readdir(dir)) != NULL){
-			if (_string_starts_and_ends_with(e->d_name, "dm-uuid-CRYPT-", map_name)){
-				if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-TCRYPT")){
-					strcpy(info->type, "TCRYPT");
-				}else if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-VCRYPT")){
-					strcpy(info->type, "VCRYPT");
-				}
-				break;
-			}
-		}
-		closedir(dir);
-	}
-
+	
 	info_dm = &dmi[outermost];
 
 	info->read_only = info_dm->read_only;
@@ -1773,6 +1775,8 @@ dm_info_map(const char *map_name)
 		strcpy(info->status, "active");
 	else
 		strcpy(info->status, "invalid");
+
+	tc_api_get_volume_type((char*)&info->type, sizeof(info->type), map_name);
 
 	return info;
 
