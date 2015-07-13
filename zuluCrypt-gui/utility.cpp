@@ -73,6 +73,8 @@
 
 #include "plugin_path.h"
 
+#include "../zuluCrypt-cli/utility/process/process.h"
+
 static int staticGlobalUserId = -1 ;
 
 void utility::setUID( int uid )
@@ -311,18 +313,64 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 	} ) ;
 }
 
+bool utility::ProcessExecute( const QString& m,const QString& e,const QString& env,int uid )
+{
+	QByteArray exe     = e.toLatin1() ;
+	QByteArray m_point = m.toLatin1() ;
+
+	if( !exe.startsWith( "/" ) ){
+
+		auto e = utility::Task( "which " + exe ) ;
+
+		if( e.failed() ){
+
+			return false ;
+		}
+
+		exe = e.splitOutput( '\n' ).first().toLatin1() ;
+	}
+
+	process_t p = Process( exe.constData(),m_point.constData(),nullptr ) ;
+
+	if( uid != -1 && !env.isEmpty() ){
+
+		QStringList l = utility::split( env ) ;
+
+		QList< QByteArray > r ;
+
+		for( const auto& it : l ){
+
+			r.append( it.toLatin1() ) ;
+		}
+
+		QVector< const char * > e( r.size() + 1 ) ;
+
+		const char ** z = e.data() ;
+
+		for( int i = 0 ; i < r.size() ; i++ ){
+
+			*( z + i ) = r.at( i ).constData() ;
+		}
+
+		*( z + r.size() ) = nullptr ;
+
+		ProcessSetOptionUser( p,uid ) ;
+
+		ProcessSetEnvironmentalVariable( p,( char * const * ) z ) ;
+
+		ProcessStart( p ) ;
+	}else{
+		ProcessStart( p ) ;
+	}
+
+	return ProcessWaitUntilFinished( &p ) != 0 ;
+}
+
 ::Task::future<bool>& utility::openMountPoint( const QString& path,const QString& opener,const QString& env )
 {
-	Q_UNUSED( env ) ;
+	return ::Task::run<bool>( [ env,path,opener ](){
 
-	return ::Task::run<bool>( [ path,opener ](){
-
-		QString e = path ;
-		e.replace( "\"","\"\"\"" ) ;
-
-		auto r = utility::Task( QString( "%1 \"%2\"" ).arg( opener,e ) ) ;
-
-		return r.exitCode() != 0 || r.exitStatus() != 0 ;
+		return utility::ProcessExecute( path,opener,env,utility::getUID() ) ;
 	} ) ;
 }
 
@@ -702,7 +750,7 @@ QStringList utility::split( const QString& str,char token )
 	return str.split( token,QString::SkipEmptyParts ) ;
 }
 
-QStringList utility::split(const QByteArray& str,char token )
+QStringList utility::split( const QByteArray& str,char token )
 {
 	QString s = str ;
 	return s.split( token,QString::SkipEmptyParts ) ;

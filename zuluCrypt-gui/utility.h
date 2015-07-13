@@ -146,6 +146,8 @@ namespace utility
 	bool userHasGoodVersionOfWhirlpool( void ) ;
 	void licenseInfo( QWidget * ) ;
 
+	bool ProcessExecute( const QString& m_point,const QString& exe,const QString& env,int uid ) ;
+
 	QVector<int> getWindowDimensions( const QString& application ) ;
 	void setWindowDimensions( const QVector<int>&,const QString& application ) ;
 

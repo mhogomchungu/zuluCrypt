@@ -171,6 +171,7 @@ private:
 	bool m_startHidden ;
 	LxQt::Wallet::Wallet * m_wallet = nullptr ;
 	int m_userID ;
+	QString m_env ;
 };
 
 #endif // ZULUCRYPT_H

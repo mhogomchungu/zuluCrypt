@@ -225,8 +225,11 @@ void zuluCrypt::start()
 	QStringList l = QCoreApplication::arguments() ;
 
 	QString e      = utility::cmdArgumentValue( l,"-d" ) ;
+
 	m_openPath     = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_startHidden  = l.contains( "-e" ) ;
+
+	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
 
 	if( utility::userIsRoot() ){
 
@@ -826,7 +829,7 @@ void zuluCrypt::openFolder()
 
 void zuluCrypt::openFolder( QString path )
 {
-	utility::openMountPoint( path,m_openPath ).then( [ this ]( bool failed ){
+	utility::openMountPoint( path,m_openPath,m_env ).then( [ this ]( bool failed ){
 
 		if( failed ){
 

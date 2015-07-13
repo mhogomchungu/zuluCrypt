@@ -508,6 +508,7 @@ void MainWindow::Show()
 
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
 
 	if( utility::userIsRoot() ){
 
