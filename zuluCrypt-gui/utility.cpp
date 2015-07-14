@@ -368,10 +368,15 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 
 		if( e.failed() ){
 
-			return false ;
+			return true ;
 		}
 
 		exe = e.splitOutput( '\n' ).first().toLatin1() ;
+	}else{
+		if( !utility::pathExists( exe ) ){
+
+			return true ;
+		}
 	}
 
 	process_t p = Process( exe.constData(),m_point.constData(),nullptr ) ;
