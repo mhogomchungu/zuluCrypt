@@ -231,10 +231,7 @@ void zuluCrypt::start()
 
 	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
 
-	if( utility::userIsRoot() ){
-
-		utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
-	}
+	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
 	new oneinstance( this,"zuluCrypt-gui.socket","raiseWindow",e,[ this,e ]( QObject * instance ){
 

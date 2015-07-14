@@ -31,7 +31,7 @@ oneinstance::oneinstance( QObject * parent,const char * socketPath,const char * 
 
 	this->setParent( parent ) ;
 
-	m_serverPath = QDir::homePath() + "/.zuluCrypt-socket/" ;
+	m_serverPath = utility::homePath() + "/.zuluCrypt-socket/" ;
 
 	m_methodName = methodName ;
 

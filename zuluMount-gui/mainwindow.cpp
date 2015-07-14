@@ -510,10 +510,7 @@ void MainWindow::Show()
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
 
-	if( utility::userIsRoot() ){
-
-		utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
-	}
+	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
 	QString volume = utility::cmdArgumentValue( l,"-d" ) ;
 

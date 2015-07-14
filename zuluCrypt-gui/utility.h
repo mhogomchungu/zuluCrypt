@@ -90,6 +90,18 @@ namespace utility
 
 namespace utility
 {
+	class Array
+	{
+	public:
+		explicit Array( const QString&,char splitter = '\n' ) ;
+		explicit Array( const QStringList& ) ;
+		char * const * value() ;
+	private :
+		void setUp() ;
+		QVector< const char * > m_vector ;
+		QList< QByteArray > m_list ;
+	};
+
 	struct wallet
 	{
 		bool opened ;
@@ -97,11 +109,6 @@ namespace utility
 		QString key ;
 		QString password ;
 	};
-
-	template< typename T > void debug( T t )
-	{
-		qDebug() << t ;
-	}
 
 	int startApplication( const char * appName,std::function<int()> ) ;
 

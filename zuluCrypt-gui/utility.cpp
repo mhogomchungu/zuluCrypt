@@ -29,6 +29,8 @@
 #include <QDir>
 #include <pwd.h>
 
+#include <memory>
+
 #include <QDebug>
 #include <QCoreApplication>
 #include <blkid/blkid.h>
@@ -79,7 +81,10 @@ static int staticGlobalUserId = -1 ;
 
 void utility::setUID( int uid )
 {
-	staticGlobalUserId = uid ;
+	if( utility::userIsRoot() ){
+
+		staticGlobalUserId = uid ;
+	}
 }
 
 int utility::getUID()
@@ -313,6 +318,45 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 	} ) ;
 }
 
+utility::Array::Array( const QString& s,char splitter )
+{
+	m_list = s.toLatin1().split( splitter ) ;
+	this->setUp() ;
+}
+
+utility::Array::Array( const QStringList& s )
+{
+	for( const auto& it : s ){
+
+		m_list.append( it.toLatin1() ) ;
+	}
+
+	this->setUp() ;
+}
+
+void utility::Array::setUp()
+{
+	auto p = m_list.size() ;
+
+	decltype( p ) i ;
+
+	m_vector.resize( p + 1 ) ;
+
+	auto q = m_vector.data() ;
+
+	for( i = 0 ; i < p ; i++ ){
+
+		*( q + i ) = m_list.at( i ).constData() ;
+	}
+
+	*( q + p ) = nullptr ;
+}
+
+char * const * utility::Array::value()
+{
+	return ( char * const * ) m_vector.data() ;
+}
+
 bool utility::ProcessExecute( const QString& m,const QString& e,const QString& env,int uid )
 {
 	QByteArray exe     = e.toLatin1() ;
@@ -334,29 +378,11 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 
 	if( uid != -1 && !env.isEmpty() ){
 
-		QStringList l = utility::split( env ) ;
-
-		QList< QByteArray > r ;
-
-		for( const auto& it : l ){
-
-			r.append( it.toLatin1() ) ;
-		}
-
-		QVector< const char * > e( r.size() + 1 ) ;
-
-		const char ** z = e.data() ;
-
-		for( int i = 0 ; i < r.size() ; i++ ){
-
-			*( z + i ) = r.at( i ).constData() ;
-		}
-
-		*( z + r.size() ) = nullptr ;
+		utility::Array array( env ) ;
 
 		ProcessSetOptionUser( p,uid ) ;
 
-		ProcessSetEnvironmentalVariable( p,( char * const * ) z ) ;
+		ProcessSetEnvironmentalVariable( p,array.value() ) ;
 
 		ProcessStart( p ) ;
 	}else{
@@ -378,17 +404,22 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 {
 	utility::wallet w{ false,false,"","" } ;
 
+	auto _getBackEnd = []( LxQt::Wallet::walletBackEnd e ){
+
+		return LxQt::Wallet::getWalletBackend( e ) ;
+	} ;
+
+	typedef std::unique_ptr< LxQt::Wallet::Wallet > storage_t ;
+
 	if( storage == LxQt::Wallet::kwalletBackEnd ){
 
-		auto e = LxQt::Wallet::getWalletBackend( LxQt::Wallet::kwalletBackEnd ) ;
+		storage_t e( _getBackEnd( storage ) ) ;
 
 		w.opened = e->await_open( "default",utility::applicationName() ) ;
 
 		if( w.opened ){
-			w.key = utility::getKeyFromWallet( e,keyID ).await() ;
+			w.key = utility::getKeyFromWallet( e.get(),keyID ).await() ;
 		}
-
-		e->deleteLater() ;
 
 		return w ;
 
@@ -399,19 +430,17 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 
 		if( LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,walletName,appName ) ){
 
-			auto e = LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) ;
+			storage_t e( _getBackEnd( storage ) ) ;
 
 			e->setImage( ":/zuluCrypt.png" ) ;
 
 			w.opened = e->await_open( walletName,appName,pwd ) ;
 
 			if( w.opened ){
-				w.key = utility::getKeyFromWallet( e,keyID ).await() ;
+				w.key = utility::getKeyFromWallet( e.get(),keyID ).await() ;
 				w.password = e->qObject()->objectName() ;
 				w.notConfigured = false ;
 			}
-
-			e->deleteLater() ;
 
 			return w ;
 		}else{
@@ -421,15 +450,13 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 
 	}else if( storage == LxQt::Wallet::secretServiceBackEnd ){
 
-		auto e = LxQt::Wallet::getWalletBackend( LxQt::Wallet::secretServiceBackEnd ) ;
+		storage_t e( _getBackEnd( storage ) ) ;
 
 		w.opened = e->await_open( utility::walletName(),utility::applicationName() ) ;
 
 		if( w.opened ){
-			w.key = utility::getKeyFromWallet( e,keyID ).await() ;
+			w.key = utility::getKeyFromWallet( e.get(),keyID ).await() ;
 		}
-
-		e->deleteLater() ;
 
 		return w ;
 	}else{
