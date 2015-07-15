@@ -73,7 +73,7 @@ void oneinstance::Exit( QObject * e )
 {
 	Q_UNUSED( e ) ;
 	//QCoreApplication::exit( 200 ) ;
-	exit( 200 ) ;
+	exit( 0 ) ;
 }
 
 void oneinstance::setDevice( QString device )
