@@ -24,212 +24,184 @@
 #include <QTableWidgetItem>
 #include <QStringList>
 
-void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous )
+#include <functional>
+
+static void _for_each_column( QTableWidget * table,int row,std::function< void( int,int ) > _function )
 {
-	QTableWidget * table ;
+	if( row >= 0 && row < table->rowCount() ){
 
-	int col = 0 ;
-	int i   = 0 ;
-	int j   = 0 ;
+		auto col = table->columnCount() ;
 
-	if( current && previous ){
+		decltype( col ) i ;
 
-		if( previous->row() == current->row() ){
-			table = current->tableWidget() ;
-			table->setCurrentCell( current->row(),table->columnCount() - 1 ) ;
-			table->setFocus() ;
-			return ;
-		}
-	}
+		for( i = 0 ; i < col ; i++ ){
 
-	if( current ){
-
-		table = current->tableWidget() ;
-
-		if( table->rowCount() > 0 ){
-
-			col = table->columnCount() ;
-			j = current->row() ;
-
-			for( i = 0 ; i < col ; i++ ){
-				table->item( j,i )->setSelected( true ) ;
-			}
+			_function( row,i ) ;
 		}
 
-		table->setCurrentCell( j,table->columnCount() -1 ) ;
-		table->setFocus() ;
+		table->setCurrentCell( row,col - 1 ) ;
 	}
+}
 
-	if( previous ){
+static void _for_each_row( QTableWidget * table,int col,std::function< void( int,int ) > _function )
+{
+	if( col >= 0 && col < table->columnCount() ){
 
-		table = previous->tableWidget() ;
+		auto row = table->rowCount() ;
 
-		if( table->rowCount() > 0 ){
+		decltype( row ) i ;
 
-			col = table->columnCount() ;
-			j = previous->row() ;
+		for( i = 0 ; i < row ; i++ ){
 
-			for( i = 0 ; i < col ; i++ ){
-				table->item( j,i )->setSelected( false ) ;
-			}
+			_function( i,col ) ;
+		}
+	}
+}
+
+static void _update_table_row( QTableWidgetItem * item,bool setSelected )
+{
+	if( item ){
+
+		auto table = item->tableWidget() ;
+		auto row   = item->row() ;
+		auto col   = table->columnCount() ;
+
+		for( int i = 0 ; i < col ; i++ ){
+
+			table->item( row,i )->setSelected( setSelected ) ;
+		}
+
+		if( setSelected ){
+
+			table->setCurrentCell( row,col - 1 ) ;
 		}
 
 		table->setFocus() ;
 	}
 }
 
+static QTableWidgetItem *
+_set_item( QTableWidgetItem * item,const QString& text = QString(),const QFont& font = QFont() )
+{
+	item->setText( text ) ;
+	item->setTextAlignment( Qt::AlignCenter ) ;
+	item->setFont( font ) ;
+	return item ;
+}
+
+void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous )
+{
+	if( current && previous && previous->row() == current->row() ){
+
+		auto table = current->tableWidget() ;
+		table->setCurrentCell( current->row(),table->columnCount() - 1 ) ;
+		table->setFocus() ;
+	}else{
+		_update_table_row( current,true ) ;
+		_update_table_row( previous,false ) ;
+	}
+}
+
 int tablewidget::addEmptyRow( QTableWidget * table )
 {
-	QTableWidgetItem * item ;
 	int row = table->rowCount() ;
-	int col = table->columnCount() ;
+
 	table->insertRow( row ) ;
-	for( int i = 0 ; i < col ; i++ ){
-		item = new QTableWidgetItem() ;
-		item->setTextAlignment( Qt::AlignCenter ) ;
-		table->setItem( row,i,item ) ;
-	}
-	table->setCurrentCell( row,col - 1 ) ;
+
+	_for_each_column( table,row,[ table ]( int row,int col ){
+
+		table->setItem( row,col,_set_item( new QTableWidgetItem ) ) ;
+	} ) ;
+
 	return row ;
 }
 
 int tablewidget::columnHasEntry( QTableWidget * table,const QString& entry,int column )
 {
 	if( column < 0 || column >= table->columnCount() ){
+
+		return -1 ;
+	}else{
+		int rows = table->rowCount() ;
+
+		for( int i = 0 ; i < rows ; i++ ){
+
+			if( table->item( i,column )->text() == entry ){
+
+				return i ;
+			}
+		}
+
 		return -1 ;
 	}
-	int rows = table->rowCount() ;
-	for( int i = 0 ; i < rows ; i++ ){
-		if( table->item( i,column )->text() == entry ){
-			return i ;
-		}
-	}
-	return -1 ;
-}
-
-void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list )
-{
-	QTableWidgetItem * item ;
-
-	int j = list.size() ;
-
-	if( j != table->columnCount() ){
-		qDebug() << "ERROR: Table column count is NOT the same as QStringList size ";
-		return ;
-	}
-
-	int row = table->rowCount() ;
-
-	table->insertRow( row ) ;
-
-	for( int i = 0 ; i < j ; i++ ){
-
-		item = new QTableWidgetItem() ;
-		item->setText( list.at( i ) ) ;
-		item->setTextAlignment( Qt::AlignCenter ) ;
-		table->setItem( row,i,item ) ;
-	}
-
-	table->setCurrentCell( row,j - 1 ) ;
 }
 
 void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list,const QFont& font )
 {
-	QTableWidgetItem * item ;
-
 	int j = list.size() ;
 
 	if( j != table->columnCount() ){
-		qDebug() << "ERROR: table column count is NOT the same as QStringList size ";
-		return ;
+
+		qDebug() << "ERROR: Table column count is NOT the same as QStringList size" ;
+	}else{
+		int row = table->rowCount() ;
+
+		table->insertRow( row ) ;
+
+		_for_each_column( table,row,[ & ]( int row,int col ){
+
+			table->setItem( row,col,_set_item( new QTableWidgetItem,list.at( col ),font ) ) ;
+		} ) ;
 	}
-
-	int row = table->rowCount() ;
-
-	table->insertRow( row ) ;
-
-	for( int i = 0 ; i < j ; i++ ){
-
-		item = new QTableWidgetItem() ;
-		item->setText( list.at( i ) ) ;
-		item->setTextAlignment( Qt::AlignCenter ) ;
-		item->setFont( font ) ;
-		table->setItem( row,i,item ) ;
-	}
-
-	table->setCurrentCell( row,j - 1 ) ;
 }
 
 void tablewidget::updateRowInTable( QTableWidget * table,const QStringList& list,int row,const QFont& font )
 {
-	QTableWidgetItem * item ;
-
 	int j = list.size() ;
 
 	if( j != table->columnCount() ){
-		qDebug() << "ERROR: table column count is NOT the same as QStringList size ";
-		return ;
-	}
 
-	if( row < table->rowCount() ){
-		for( int i = 0 ; i < j ; i++ ){
-			item = table->item( row,i ) ;
-			item->setText( list.at( i ) ) ;
-			item->setTextAlignment( Qt::AlignCenter ) ;
-			item->setFont( font ) ;
-		}
+		qDebug() << "ERROR: table column count is NOT the same as QStringList size" ;
+	}else{
+		_for_each_column( table,row,[ & ]( int row,int col ){
 
-		table->setCurrentCell( row,j - 1 ) ;
+			_set_item( table->item( row,col ),list.at( col ),font ) ;
+		} ) ;
 	}
 }
 
 void tablewidget::setRowFont( QTableWidget * table ,int row,const QFont& font )
 {
-	if( row < table->rowCount() ){
-		int j = table->columnCount() ;
-		for( int i = 0 ; i < j ; i++ ){
-			table->item( row,i )->setFont( font ) ;
-		}
-	}
+	_for_each_column( table,row,[ & ]( int row,int col ){
+
+		table->item( row,col )->setFont( font ) ;
+	} ) ;
 }
 
 void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
 {
-	if( row < table->rowCount() ){
-		table->removeRow( row ) ;
-		if( table->rowCount() > 0 ){
-			table->setCurrentCell( table->rowCount() - 1,table->columnCount() - 1 ) ;
-		}
-	}
-	table->setFocus() ;
-}
+	if( row >= 0 && row < table->rowCount() ){
 
-void tablewidget::deleteRowFromTable( QTableWidget * table,const QString& value,int column )
-{
-	int j = table->rowCount() ;
-	for( int row = 0 ; row < j ; row++ ){
-		if( table->item( row,column )->text() == value ){
-			tablewidget::deleteRowFromTable( table,row ) ;
-		}
+		table->removeRow( row ) ;
+
+		tablewidget::selectLastRow( table ) ;
 	}
 }
 
 void tablewidget::deleteTableRow( QTableWidget * table,const QString& value,int column )
 {
-	int j = table->rowCount() ;
-	for( int row = 0 ; row < j ; row++ ){
-		if( table->item( row,column )->text() == value ){
-			table->removeRow( row ) ;
-			break ;
-		}
-	}
+	int r = tablewidget::columnHasEntry( table,value,column ) ;
+	tablewidget::deleteRowFromTable( table,r ) ;
 }
 
 void tablewidget::selectRow( QTableWidget * table,int row )
 {
 	if( row >= 0 && row < table->rowCount() ){
+
 		table->setCurrentCell( row,table->columnCount() - 1 ) ;
 	}
+
+	table->setFocus() ;
 }
 
 void tablewidget::selectRow( QTableWidget * table,const QString& e )
@@ -239,46 +211,34 @@ void tablewidget::selectRow( QTableWidget * table,const QString& e )
 
 void tablewidget::selectLastRow( QTableWidget * table )
 {
-	int row = table->rowCount() - 1 ;
-	if( row >= 0 ){
-		table->setCurrentCell( row,table->columnCount() - 1 ) ;
-	}
-	table->setFocus() ;
+	tablewidget::selectRow( table,table->rowCount() - 1 ) ;
 }
 
 void tablewidget::setText( QTableWidget * table,int row,int col,const QString& text )
 {
-	QFont f = table->item( row,col )->font() ;
-
-	QTableWidgetItem * item = new QTableWidgetItem() ;
-	item->setText( text ) ;
-	item->setTextAlignment( Qt::AlignCenter ) ;
-	item->setFont( f ) ;
-	table->setItem( row,col,item ) ;
+	table->setItem( row,col,_set_item( new QTableWidgetItem,text,table->item( row,col )->font() ) ) ;
 }
 
-QStringList tablewidget::tableColumnEntries( QTableWidget * table,int column )
+QStringList tablewidget::tableColumnEntries( QTableWidget * table,int col )
 {
 	QStringList l ;
-	int col = table->columnCount() ;
-	if( column < col ){
-		int j = table->rowCount() ;
-		for( int row = 0 ; row < j ; row++ ){
-			l.append( table->item( row,column )->text() ) ;
-		}
-	}
+
+	_for_each_row( table,col,[ & ]( int row,int col ){
+
+		l.append( table->item( row,col )->text() ) ;
+	} ) ;
+
 	return l ;
 }
 
 QStringList tablewidget::tableRowEntries( QTableWidget * table,int row )
 {
 	QStringList l ;
-	int r = table->rowCount() ;
-	if( row < r ){
-		int j = table->columnCount() ;
-		for( int c = 0 ; c < j ; c++ ){
-			l.append( table->item( row,c )->text() ) ;
-		}
-	}
+
+	_for_each_column( table,row,[ & ]( int row,int col ){
+
+		l.append( table->item( row,col )->text() ) ;
+	} ) ;
+
 	return l ;
 }

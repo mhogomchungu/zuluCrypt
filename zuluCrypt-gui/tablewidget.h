@@ -27,25 +27,22 @@
 class QTableWidget ;
 class QTableWidgetItem ;
 
-class tablewidget
+namespace tablewidget
 {
-public:
-	static void selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
-	static void addRowToTable( QTableWidget *,const QStringList& ) ;
-	static void addRowToTable( QTableWidget *,const QStringList&,const QFont& ) ;
-	static void updateRowInTable( QTableWidget *,const QStringList&,int row,const QFont& ) ;
-	static void setRowFont( QTableWidget *,int row,const QFont& ) ;
-	static void deleteRowFromTable( QTableWidget *,int row ) ;
-	static void deleteRowFromTable( QTableWidget *,const QString&,int column = 0 ) ;
-	static void deleteTableRow( QTableWidget *,const QString&,int column = 0 ) ;
-	static void selectRow( QTableWidget *,int row ) ;
-	static void selectRow( QTableWidget *,const QString& ) ;
-	static void selectLastRow( QTableWidget * ) ;
-	static void setText( QTableWidget *,int row,int col,const QString& text ) ;
-	static int addEmptyRow( QTableWidget * ) ;
-	static int columnHasEntry( QTableWidget *,const QString&,int column = 0 ) ;
-	static QStringList tableColumnEntries( QTableWidget * table,int column = 0 ) ;
-	static QStringList tableRowEntries( QTableWidget * table,int row = 0 ) ;
-};
+	void selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
+	void addRowToTable( QTableWidget *,const QStringList&,const QFont& = QFont() ) ;
+	void updateRowInTable( QTableWidget *,const QStringList&,int row,const QFont& ) ;
+	void setRowFont( QTableWidget *,int row,const QFont& ) ;
+	void deleteRowFromTable( QTableWidget *,int row ) ;
+	void deleteTableRow( QTableWidget *,const QString&,int = 0 ) ;
+	void selectRow( QTableWidget *,int row ) ;
+	void selectRow( QTableWidget *,const QString& ) ;
+	void selectLastRow( QTableWidget * ) ;
+	void setText( QTableWidget *,int row,int col,const QString& text ) ;
+	int addEmptyRow( QTableWidget * ) ;
+	int columnHasEntry( QTableWidget *,const QString&,int = 0 ) ;
+	QStringList tableColumnEntries( QTableWidget * table,int = 0 ) ;
+	QStringList tableRowEntries( QTableWidget * table,int = 0 ) ;
+}
 
 #endif // TABLEWIDGET_H
