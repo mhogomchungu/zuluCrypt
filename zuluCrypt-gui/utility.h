@@ -86,6 +86,12 @@ namespace utility
 			if( chown( path,uid,uid ) ){;}
 		}
 	}
+
+	template< typename T >
+	void changeFilePermissions( const T& f,int mode = 0777 )
+	{
+		if( fchmod( f.handle(),mode ) ){;}
+	}
 }
 
 namespace utility

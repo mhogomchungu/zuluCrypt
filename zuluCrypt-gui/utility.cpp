@@ -956,6 +956,7 @@ void utility::addToFavorite( const QString& dev,const QString& m_point )
 	QString fav = QString( "%1\t%2\n" ).arg( dev,m_point ) ;
 	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
+	utility::changeFilePermissions( f ) ;
 	f.write( fav.toLatin1() ) ;
 	f.close() ;
 }
@@ -982,6 +983,7 @@ void utility::removeFavoriteEntry( const QString& entry )
 	f.close() ;
 	QByteArray c = b.remove( b.indexOf( entry ),entry.length() ) ;
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+	utility::changeFilePermissions( f ) ;
 	f.write( c ) ;
 	f.close() ;
 }
@@ -1060,6 +1062,8 @@ static QVector<int> _dimensions( const QString& path,const char * defaults,int s
 
 		if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
+			utility::changeFilePermissions( f ) ;
+
 			f.write( defaults ) ;
 
 			f.close() ;
@@ -1105,7 +1109,7 @@ static QVector<int> _dimensions( const QString& path,const char * defaults,int s
 
 QVector<int> utility::getWindowDimensions( const QString& application )
 {
-	QString path = QDir::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
+	QString path = utility::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
 
 	if( application == "zuluCrypt" ){
 
@@ -1117,11 +1121,13 @@ QVector<int> utility::getWindowDimensions( const QString& application )
 
 void utility::setWindowDimensions( const QVector<int>& e,const QString& application )
 {
-	QString path = QDir::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
+	QString path = utility::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
 
 	QFile f( path ) ;
 
 	if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+
+		utility::changeFilePermissions( f ) ;
 
 		for( const auto& it : e ){
 
