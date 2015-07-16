@@ -22,9 +22,15 @@
 #include <QString>
 #include <QStringList>
 
+#include <initializer_list>
+
 class volumeEntryProperties
 {
 public:
+	volumeEntryProperties( const std::initializer_list< QString>& l,bool isSystem = false )
+	{
+		this->setValues( l,isSystem ) ;
+	}
 	volumeEntryProperties( const QStringList& l = QStringList(),bool isSystem = false )
 	{
 		this->setValues( l,isSystem ) ;
@@ -91,14 +97,7 @@ public:
 	}
 	QStringList entryList() const
 	{
-		QStringList l ;
-		l.append( m_volume ) ;
-		l.append( m_mountPoint ) ;
-		l.append( m_fileSystem ) ;
-		l.append( m_label ) ;
-		l.append( m_volumeSize ) ;
-		l.append( m_usedSpacePercentage ) ;
-		return l ;
+		return QStringList{ m_volume,m_mountPoint,m_fileSystem,m_label,m_volumeSize,m_usedSpacePercentage } ;
 	}
 private:
 	void setValues( const QStringList& l,bool isSystem )

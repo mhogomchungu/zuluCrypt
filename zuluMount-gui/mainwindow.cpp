@@ -41,6 +41,7 @@
 #include <QFile>
 
 #include <utility>
+#include <initializer_list>
 
 #include <unistd.h>
 #include "keydialog.h"
@@ -824,11 +825,7 @@ void MainWindow::showMoungDialog( const QString& volume )
 
 		}else if( utility::pathPointsToAFolder( volume ) ){
 
-			QStringList l ;
-
-			l << volume << "Nil" << "encfs" << "Nil" << "Nil" << "Nil" ;
-
-			this->mount( volumeEntryProperties( l ) ) ;
+			this->mount( volumeEntryProperties( { volume,"Nil","encfs","Nil","Nil","Nil" } ) ) ;
 		}
 	}
 }
@@ -1158,6 +1155,15 @@ void MainWindow::enableAll()
 	m_ui->pbmount->setEnabled( true ) ;
 	m_ui->tableWidget->setFocus() ;
 	m_ui->pbunlockencfs->setEnabled( true ) ;
+
+	if( utility::userIsRoot() && utility::getUID() != -1 ){
+
+		/*
+		 * FUSE related permission issues prevents us from currently supporting
+		 * unlocking encfs volumes when running in mixed mode.
+		 */
+		m_ui->pbunlockencfs->setEnabled( false ) ;
+	}
 }
 
 void MainWindow::enableAll_1()
