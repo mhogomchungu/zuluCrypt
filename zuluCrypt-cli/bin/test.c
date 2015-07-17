@@ -131,7 +131,7 @@ static void createTestImages_0( const char * path )
 
 	f = open( path,opt,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 
-	puts( "creating testing images" ) ;
+	puts( "creating a testing image file" ) ;
 
 	if( f < 0 ){
 		perror( "failed to create testing images: " ) ;
@@ -391,7 +391,7 @@ int zuluCryptRunTest( void )
 	if( r ){;}
 
 	if( _loop_device_module_is_not_present() ){
-		printf( "\nWARNING: \"loop\" kernel module does not appear to be loaded\n" ) ;
+		printf( "\nWARNING: \"loop\" kernel module does not appear to be loaded,\n" ) ;
 		printf( "tests and opening of encrypted containers in files will fail if the module was not built into the kernel\n\n" ) ;
 	}
 
