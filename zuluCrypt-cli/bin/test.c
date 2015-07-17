@@ -44,13 +44,14 @@ static void _close( int x )
 {
 	if( close( x ) ){;}
 }
-static void _chmod( const char * x,mode_t y )
+static void _fchmod( int x,mode_t y )
 {
-	if( chmod( x,y ) ){;}
+	if( fchmod( x,y ) ){;}
 }
 
 const char * luksTestVolume   = "/tmp/zuluCrypt-luksTestVolume" ;
 const char * plainTestVolume  = "/tmp/zuluCrypt-plainTestVolume" ;
+const char * tcryptTestVolume = "/tmp/zuluCrypt-tcryptTestVolume" ;
 const char * headerBackUp     = "/tmp/zuluCrypt-HeaderBackUp" ;
 const char * mount_point      = "zuluCrypt-MountPoint" ;
 const char * key              = "xyz" ;
@@ -60,24 +61,25 @@ const char * pluginPath       = ZULUCRYPTplugInPath;
 const char * keyfile          = "/tmp/zuluCrypt-KeyFile" ;
 const char * keyfile1         = "/tmp/zuluCrypt-KeyFile1" ;
 
-void __print( const char * msg )
+static void _print( const char * msg )
 {
 	printf( "%s",msg ) ;
-	fflush( stdout );
+	fflush( stdout ) ;
 }
 
-void __printLine( void )
+static void _printLine( void )
 {
 	sleep( 1 ) ;
-	__print( "\n" ) ;
+	_print( "\n" ) ;
 }
 
-void EXIT( int st,char * msg )
+static void EXIT( int st,char * msg )
 {
 	unlink( keyfile ) ;
 	unlink( keyfile1 ) ;
 	unlink( luksTestVolume ) ;
 	unlink( plainTestVolume ) ;
+	unlink( tcryptTestVolume ) ;
 	unlink( headerBackUp ) ;
 
 	rmdir( mount_point ) ;
@@ -90,7 +92,7 @@ void EXIT( int st,char * msg )
 	exit( st ) ;
 }
 
-void createKeyFiles( void )
+static void createKeyFiles_0( const char * keyfile )
 {
 	int f = open( keyfile,O_WRONLY|O_TRUNC|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 	int e ;
@@ -101,25 +103,11 @@ void createKeyFiles( void )
 		perror( "failed to create a keyfile: " ) ;
 		EXIT( 1,NULL ) ;
 	}else{
+		_fchmod( f,S_IRWXU ) ;
+
 		e = write( f,key,strlen( key ) ) ;
-		close( f ) ;
-		chmod( keyfile,S_IRWXU ) ;
-		if( e != 3 ){
-			perror( "failed to create a keyfile: " ) ;
-			EXIT( 1,NULL ) ;
-		}
-	}
+		_close( f ) ;
 
-	f = open( keyfile1,O_WRONLY|O_TRUNC|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-	puts( "creating a keyfile" ) ;
-
-	if( f < 0 ){
-		perror( "failed to create a keyfile: " ) ;
-		EXIT( 1,NULL ) ;
-	}else{
-		e = write( f,key1,strlen( key1 ) ) ;
-		close( f ) ;
-		chmod( keyfile1,S_IRWXU ) ;
 		if( e != 3 ){
 			perror( "failed to create a keyfile: " ) ;
 			EXIT( 1,NULL ) ;
@@ -127,16 +115,19 @@ void createKeyFiles( void )
 	}
 }
 
-void createTestImages( void )
+static void createKeyFiles( void )
+{
+	createKeyFiles_0( keyfile ) ;
+	createKeyFiles_0( keyfile1 ) ;
+}
+
+static void createTestImages_0( const char * path )
 {
 	int i ;
 	int f ;
 	int opt = O_WRONLY|O_TRUNC|O_CREAT ;
-	char buffer[ 1024 ] = { '\0' };
+	char buffer[ 1024 ] = { '\0' } ;
 	int size = 10 * 1024 ;
-	char path[ 64 ] = { '\0' } ;
-
-	strncpy( path,luksTestVolume,64 ) ;
 
 	f = open( path,opt,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 
@@ -146,90 +137,75 @@ void createTestImages( void )
 		perror( "failed to create testing images: " ) ;
 		EXIT( 1,NULL ) ;
 	}else{
+		_fchmod( f,S_IRWXU ) ;
+
 		for( i = 0 ; i < size ; i++ ){
 			_write( f,buffer,1024 ) ;
 		}
 		close( f ) ;
-		chmod( luksTestVolume,S_IRWXU ) ;
-	}
-
-	strncpy( path,plainTestVolume,64 ) ;
-
-	f = open( path,opt,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-
-	if( f < 0 ){
-		perror( "failed to create testing images: " ) ;
-		EXIT( 1,NULL ) ;
-	}else{
-		for( i = 0 ; i < size ; i++ ){
-			_write( f,buffer,1024 ) ;
-		}
-		_close( f ) ;
-		_chmod( plainTestVolume,S_IRWXU ) ;
 	}
 }
 
-void __ProcessGetResult( process_t p )
+static void createTestImages( void )
+{
+	createTestImages_0( plainTestVolume ) ;
+	createTestImages_0( luksTestVolume ) ;
+	createTestImages_0( tcryptTestVolume ) ;
+}
+
+static void _ProcessPrint( process_t p,void ( *print )( const char * ) )
 {
 	char * e = NULL ;
-	int st ;
 
 	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
 
-	st = ProcessWaitUntilFinished( &p ) ;
-
-	if( st ){
+	if( ProcessWaitUntilFinished( &p ) != 0 ){
 		puts( "FAILED" ) ;
 		EXIT( 1,e ) ;
 	}else{
-		puts( "PASSED" ) ;
 		if( e ){
+			if( print ){
+				print( e ) ;
+			}else{
+				puts( "PASSED" ) ;
+			}
 			free( e ) ;
 		}
 	}
 }
 
-void __ProcessGetResultANDPrint( process_t p )
+static void _ProcessGetResult( process_t p )
 {
-	char * e = NULL ;
-	int st ;
-
-	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
-	st = ProcessWaitUntilFinished( &p ) ;
-
-	if( st ){
-		puts( "FAILED" ) ;
-		EXIT( 1,e ) ;
-	}else{
-		if( e ){
-			__print( e ) ;
-			free( e ) ;
-		}
-	}
+	_ProcessPrint( p,NULL ) ;
 }
 
-void createHeaderBackup( const char * device,const char * msg )
+static void _ProcessGetResultANDPrint( process_t p )
+{
+	_ProcessPrint( p,_print ) ;
+}
+
+static void createHeaderBackup( const char * device,const char * msg )
 {
 	process_t p ;
-	__print( msg ) ;
+	_print( msg ) ;
 	p = Process( zuluCryptExe,"-B","-d",device,"-z",headerBackUp,NULL ) ;
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 }
 
-void restoreHeaderBackup( const char * device,const char * msg )
+static void restoreHeaderBackup( const char * device,const char * msg )
 {
 	process_t p ;
-	__print( msg ) ;
+	_print( msg ) ;
 	p = Process( zuluCryptExe,"-R","-k","-d",device,"-z",headerBackUp,NULL ) ;
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 }
 
-void createVolume( const char * device,const char * msg,const char * keysource,const char * type )
+static void createVolume( const char * device,const char * msg,const char * keysource,const char * type )
 {
 	process_t p ;
-	__print( msg ) ;
+	_print( msg ) ;
 	p = Process( zuluCryptExe,NULL ) ;
 	if( strcmp( keysource,"-p" ) == 0 ){
 		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,key,NULL ) ;
@@ -237,22 +213,22 @@ void createVolume( const char * device,const char * msg,const char * keysource,c
 		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,keyfile,NULL ) ;
 	}
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 }
 
-void closeVolume( const char * device,const char * msg )
+static void closeVolume( const char * device,const char * msg )
 {
 	process_t p ;
-	__print( msg ) ;
+	_print( msg ) ;
 	p = Process( zuluCryptExe,"-q","-d",device,NULL ) ;
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 }
 
-void openVolume( const char * device,const char * msg,const char * keysource )
+static void openVolume( const char * device,const char * msg,const char * keysource )
 {
 	process_t p ;
-	__print( msg ) ;
+	_print( msg ) ;
 	p = Process( zuluCryptExe,NULL ) ;
 	if( strcmp( keysource,"-p" ) == 0 ){
 		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,key,NULL ) ;
@@ -260,66 +236,66 @@ void openVolume( const char * device,const char * msg,const char * keysource )
 		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,keyfile,NULL ) ;
 	}
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 }
 
-void checkKeySlotsInUse( const char * device )
+static void checkKeySlotsInUse( const char * device )
 {
 	process_t p ;
-	__print( "check key slots in use: " ) ;
+	_print( "check key slots in use: " ) ;
 	p = Process( zuluCryptExe,"-b","-d",device,NULL ) ;
 	ProcessStart( p ) ;
-	__ProcessGetResultANDPrint( p ) ;
+	_ProcessGetResultANDPrint( p ) ;
 }
 
-void addKeysToLuks( const char * device )
+static void addKeysToLuks( const char * device )
 {
 	process_t p ;
 
-	__print( "add a key to a luks volume using a key and a key: " ) ;
+	_print( "add a key to a luks volume using a key and a key: " ) ;
 
 	p = Process( zuluCryptExe,"-a","-d",device,"-y",key,"-l",key1,NULL ) ;
 
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 
-	__print( "add key to luks volume using keyfile and keyfile: " ) ;
+	_print( "add key to luks volume using keyfile and keyfile: " ) ;
 
 	p = Process( zuluCryptExe,"-a","-d",device,"-u",keyfile,"-n",keyfile1,NULL ) ;
 
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 
-	__print( "add key to luks volume using passphrase and keyfile: " ) ;
+	_print( "add key to luks volume using passphrase and keyfile: " ) ;
 
 	p = Process( zuluCryptExe,"-a","-d",device,"-y",key,"-n",keyfile,NULL ) ;
 
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 
-	__print( "add key to luks volume using keyfile and passphrase: " ) ;
+	_print( "add key to luks volume using keyfile and passphrase: " ) ;
 
 	p = Process( zuluCryptExe,"-a","-d",device,"-u",keyfile1,"-l",key1,NULL ) ;
 
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 }
 
-void removeKeysFromLuksVolume( const char * device )
+static void removeKeysFromLuksVolume( const char * device )
 {
 	process_t p ;
-	__print( "remove a key from a luks volume using a key: " ) ;
+	_print( "remove a key from a luks volume using a key: " ) ;
 	p = Process( zuluCryptExe,"-r","-d",device,"-p",key,NULL ) ;
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 
-	__print( "remove a key from a luks volume using a keyfile: " ) ;
+	_print( "remove a key from a luks volume using a keyfile: " ) ;
 	p = Process( zuluCryptExe,"-r","-d",device,"-f",keyfile,NULL ) ;
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 }
 
-void checkForOpenedMappers( void )
+static void checkForOpenedMappers( void )
 {
 	char * d ;
 
@@ -356,16 +332,16 @@ void checkForOpenedMappers( void )
 	}
 }
 
-void openVolumeWithPlugIn( const char * device,const char * msg )
+static void openVolumeWithPlugIn( const char * device,const char * msg )
 {
 	process_t p ;
-	__print( msg ) ;
+	_print( msg ) ;
 	p = Process( zuluCryptExe,"-o","-d",device,"-m",mount_point,"-G",pluginPath,NULL ) ;
 	ProcessStart( p ) ;
-	__ProcessGetResult( p ) ;
+	_ProcessGetResult( p ) ;
 }
 
-void checkIfDeviceIsLuks( const char * device )
+static void checkIfDeviceIsLuks( const char * device )
 {
 	int st ;
 	process_t p = Process( zuluCryptExe,"-i","-d",device,NULL ) ;
@@ -373,11 +349,11 @@ void checkIfDeviceIsLuks( const char * device )
 	st = ProcessWaitUntilFinished( &p ) ;
 
 	if( st ){
-		__print( "check if a luks volume is a luks volume: PASSED\n" ) ;
+		_print( "check if a luks volume is a luks volume: PASSED\n" ) ;
 	}
 }
 
-int _loop_device_module_is_not_present( void )
+static int _loop_device_module_is_not_present( void )
 {
 	struct stat stlsmod ;
 	int st = 0 ;
@@ -422,67 +398,74 @@ int zuluCryptRunTest( void )
 	createTestImages() ;
 	createKeyFiles() ;
 
-	__printLine() ;
+	_printLine() ;
 	createVolume( luksTestVolume,"create a luks type volume using a key: ","-p","luks" ) ;
 
-	__printLine() ;
+	_printLine() ;
 	checkIfDeviceIsLuks( luksTestVolume ) ;
 
-	__printLine() ;
+	_printLine() ;
 	createHeaderBackup( luksTestVolume,"create luks header backup: " ) ;
 
-	__printLine() ;
+	_printLine() ;
 	restoreHeaderBackup( luksTestVolume,"restore luks header from backup: " ) ;
 
-	__printLine() ;
+	_printLine() ;
 	createVolume( plainTestVolume,"create a plain type volume using a key: ","-p","plain" ) ;
 
-	__printLine() ;
-	openVolume( plainTestVolume,"open a plain volume with a key: ","-p" );
+	_printLine() ;
+	createVolume( tcryptTestVolume,"create a tcrypt type volume using a key: ","-p","tcrypt" ) ;
+
+	_printLine() ;
+	openVolume( plainTestVolume,"open a plain volume with a key: ","-p" ) ;
 	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
 
-	__printLine() ;
-	openVolume( plainTestVolume,"open a plain volume with a keyfile: ","-f" );
+	_printLine() ;
+	openVolume( plainTestVolume,"open a plain volume with a keyfile: ","-f" ) ;
 	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
 
-	__printLine() ;
+	_printLine() ;
+	openVolume( tcryptTestVolume,"open a tcrypt volume with a key: ","-p" ) ;
+	closeVolume( tcryptTestVolume,"closing a tcrypt volume: " ) ;
+
+	_printLine() ;
 	if( stat( ZULUCRYPTTestPlugin,&st ) != 0 ){
-		__print( "test plugin not found,skip plain volume opening with a plugin\n" ) ;
+		_print( "test plugin not found,skip plain volume opening with a plugin\n" ) ;
 	}else{
 		openVolumeWithPlugIn( plainTestVolume,"open a plain volume using a plugin: " ) ;
 		closeVolume( plainTestVolume,"closing a plain volume: " ) ;
 	}
 
-	__printLine() ;
-	openVolume( luksTestVolume,"open a luks volume with a key: ","-p" );
+	_printLine() ;
+	openVolume( luksTestVolume,"open a luks volume with a key: ","-p" ) ;
 	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
 
-	__printLine() ;
-	openVolume( luksTestVolume,"open a luks volume with a keyfile: ","-f" );
+	_printLine() ;
+	openVolume( luksTestVolume,"open a luks volume with a keyfile: ","-f" ) ;
 	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
 
-	__printLine() ;
+	_printLine() ;
 	if( stat( ZULUCRYPTTestPlugin,&st ) != 0 ){
-		__print( "test plugin not found,skip luks volume opening with a plugin\n" ) ;
+		_print( "test plugin not found,skip luks volume opening with a plugin\n" ) ;
 	}else{
 		openVolumeWithPlugIn( luksTestVolume,"open a luks volume using a plugin: " ) ;
 		closeVolume( luksTestVolume,"closing a luks volume: " ) ;
 	}
 
-	__printLine() ;
+	_printLine() ;
 	checkKeySlotsInUse( luksTestVolume ) ;
 
-	__printLine() ;
+	_printLine() ;
 	addKeysToLuks( luksTestVolume ) ;
 
-	__printLine() ;
+	_printLine() ;
 	checkKeySlotsInUse( luksTestVolume ) ;
 
-	__printLine() ;
+	_printLine() ;
 	removeKeysFromLuksVolume( luksTestVolume ) ;
 	checkKeySlotsInUse( luksTestVolume ) ;
 
-	__printLine() ;
+	_printLine() ;
 	checkForOpenedMappers() ;
 
 	EXIT( 0,NULL ) ;

@@ -27,7 +27,7 @@
 class volumeEntryProperties
 {
 public:
-	volumeEntryProperties( const std::initializer_list< QString>& l,bool isSystem = false )
+	volumeEntryProperties( const std::initializer_list< QString >& l,bool isSystem = false )
 	{
 		this->setValues( l,isSystem ) ;
 	}
