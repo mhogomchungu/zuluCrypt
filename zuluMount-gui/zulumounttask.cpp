@@ -162,7 +162,7 @@ static QVector< deviceList > _getDevices()
 	QDir d( p ) ;
 	QDir e ;
 
-	QStringList l =  d.entryList() ;
+	QStringList l = d.entryList() ;
 
 	l.removeOne( "." ) ;
 	l.removeOne( ".." ) ;
@@ -255,9 +255,9 @@ void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 
 		f.close() ;
 
-		if( !l.isEmpty() ){
+		if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
-			if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+			if( !l.isEmpty() ){
 
 				for( const auto& it : l ){
 
