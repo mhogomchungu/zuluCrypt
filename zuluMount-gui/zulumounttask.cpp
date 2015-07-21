@@ -140,7 +140,66 @@ Task::future< utility::Task >& zuluMountTask::unmountVolume( const QString& volu
 
 static QString _excludeVolumePath()
 {
-	return QDir::homePath() + "/.zuluCrypt/zuluMount-gui-excludeVolumes" ;
+	return utility::homePath() + "/.zuluCrypt/zuluMount-gui-excludeVolumes" ;
+}
+
+struct deviceList
+{
+	deviceList( const QString& d,const QString& n ) : device( d ),uniqueName( n )
+	{
+	}
+	deviceList()
+	{
+	}
+	QString device ;
+	QString uniqueName ;
+};
+
+static QVector< deviceList > _getDevices()
+{
+	const char * p = "/dev/disk/by-id/" ;
+
+	QDir d( p ) ;
+	QDir e ;
+
+	QStringList l =  d.entryList() ;
+
+	l.removeOne( "." ) ;
+	l.removeOne( ".." ) ;
+
+	QVector< deviceList > devices ;
+
+	if( l.isEmpty() ){
+
+		return devices ;
+	}else{
+		for( const auto& it : l ){
+
+			e.setPath ( p + it ) ;
+
+			devices.append( deviceList( e.canonicalPath(),it ) ) ;
+		}
+	}
+
+	return devices ;
+}
+
+static QString _getUniqueName( const QString& device )
+{
+	for( const auto& it : _getDevices() ){
+
+		if( it.device == device ){
+
+			return it.uniqueName ;
+		}
+	}
+
+	return QString() ;
+}
+
+static QStringList _split( QFile& f )
+{
+	return utility::split( f.readAll() ) ;
 }
 
 void zuluMountTask::addVolumeToHiddenVolumeList( const QString& e )
@@ -149,7 +208,12 @@ void zuluMountTask::addVolumeToHiddenVolumeList( const QString& e )
 
 	if( f.open( QIODevice::WriteOnly | QIODevice::Append ) ){
 
-		f.write( e.toLatin1() + "\n" ) ;
+		QString a = _getUniqueName( e ) ;
+
+		if( !a.isEmpty() ){
+
+			f.write( a.toLatin1() + "\n" ) ;
+		}
 	}
 }
 
@@ -159,7 +223,21 @@ QStringList zuluMountTask::hiddenVolumeList()
 
 	if( f.open( QIODevice::ReadOnly ) ){
 
-		return QString( f.readAll() ).split( '\n',QString::SkipEmptyParts ) ;
+		QVector< deviceList > l = _getDevices() ;
+
+		QStringList e ;
+
+		QStringList g = _split( f ) ;
+
+		for( const auto& it : l ){
+
+			if( g.contains( it.uniqueName ) ){
+
+				e.append( it.device ) ;
+			}
+		}
+
+		return  e ;
 	}else{
 		return QStringList() ;
 	}
@@ -171,15 +249,15 @@ void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 
 	if( f.open( QIODevice::ReadOnly ) ){
 
-		auto l = QString( f.readAll() ).split( '\n',QString::SkipEmptyParts ) ;
+		QStringList l = _split( f ) ;
 
-		l.removeAll( e ) ;
+		l.removeAll( _getUniqueName( e ) ) ;
 
 		f.close() ;
 
-		if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+		if( !l.isEmpty() ){
 
-			if( !l.isEmpty() ){
+			if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
 				for( const auto& it : l ){
 
