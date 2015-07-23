@@ -1762,7 +1762,7 @@ dm_info_map(const char *map_name)
 	info->skip = dm_table[outermost]->skip;
 	info->offset = dm_table[outermost]->offset;
 	info->blk_sz = 512;
-	
+
 	info_dm = &dmi[outermost];
 
 	info->read_only = info_dm->read_only;
@@ -2088,6 +2088,11 @@ dm_teardown(const char *mapname, const char *device __unused)
 	}
 
 	return 0;
+}
+
+int tc_api_close_mapper(const char *mapname)
+{
+	return dm_teardown(mapname, NULL);
 }
 
 struct tc_crypto_algo *

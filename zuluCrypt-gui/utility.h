@@ -216,7 +216,7 @@ namespace utility
 
 			while( true ){
 
-				while( ::read( m_fd,&z,1 ) > 0 ){;}
+				while( ::read( m_fd,&z,1 ) != 1 ){;}
 
 				if( z > ' ' && z < '~' ){
 

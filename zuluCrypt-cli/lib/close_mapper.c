@@ -25,39 +25,25 @@
 
 static int _close_mapper( const char * mapper,int TrueCryptOrVeraCryptVolume )
 {
-	int r = 1 ;
+	int r ;
 
 	struct crypt_device * cd ;
 
-	tc_api_task task ;
-
 	if( TrueCryptOrVeraCryptVolume ){
 
-		if( tc_api_initialize() ){
-
-			if( tc_api_task_initialize( &task,"unmap" ) ){
-
-				mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
-
-				tc_api_task_set( task,"map_name",mapper ) ;
-
-				r = tc_api_task_do( task ) ;
-
-				tc_api_task_uninit( task ) ;
-			}
-
-			tc_api_uninit() ;
-		}
+		return tc_api_close_mapper( mapper ) ;
 	}else{
 		if( crypt_init_by_name( &cd,mapper ) == 0 ){
 
 			r = crypt_deactivate( cd,mapper ) ;
 
 			crypt_free( cd ) ;
+
+			return r ;
+		}else{
+			return 1 ;
 		}
 	}
-
-	return r ;
 }
 
 int zuluCryptCloseMapper( const char * mapper )
@@ -68,6 +54,8 @@ int zuluCryptCloseMapper( const char * mapper )
 	 * zuluCryptTrueCryptOrVeraCryptVolume() is defined in status.c
 	 */
 	int e = zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ;
+
+	mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
 
 	for( i = 0 ; i < 3 ; i++ ){
 
