@@ -58,7 +58,7 @@ typedef struct{
 extern uid_t global_variable_user_uid ;
 
 /*
- * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in create_volume.c
+ * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in open_volume.c
  */
 void zuluCryptTrueCryptVeraCryptVolumeInfo( const char * type,tvcrypt * e ) ;
 

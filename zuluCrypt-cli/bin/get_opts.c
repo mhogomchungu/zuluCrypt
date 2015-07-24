@@ -23,10 +23,14 @@
 
 void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 {
+	static char random[] = "/dev/urandom" ;
+	static char type[]   = "luks" ;
+
 	memset( stopts,'\0',sizeof( struct_opts ) ) ;
 
-	stopts->fs = "ext4" ;
-	stopts->rng = "/dev/urandom" ;
+	stopts->fs   = "ext4" ;
+	stopts->rng  = random ;
+	stopts->type = type ;
 
 	stopts->open_mount = 1 ;
 	stopts->ask_confirmation = 1 ;

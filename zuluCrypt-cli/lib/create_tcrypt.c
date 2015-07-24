@@ -36,7 +36,7 @@
 static const int TRUE  = 1 ;
 static const int FALSE = 0 ;
 
-static int _create_file_system( const create_tcrypt_t * e )
+static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 {
 	string_t m = StringVoid ;
 
@@ -72,7 +72,7 @@ static int _create_file_system( const create_tcrypt_t * e )
 	}
 
 	opts.veraCrypt_volume = e->veraCrypt_volume ;
-	opts.iteration_count  = e->iteration_count ;
+	opts.iteration_count  = iteration_count ;
 
 	/*
 	 * zuluCryptOpenTcrypt_1 is defined in open_tcrypt.c
@@ -370,14 +370,11 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 	char * const * options = NULL ;
 	size_t options_count = 0 ;
 
+	int iteration_count = 0 ;
+
 	stringList_t stl ;
 
 	const create_tcrypt_t * e = opts->args ;
-
-	if( e->veraCrypt_volume && !VERACRYPT_CREATE ){
-
-		return !TC_OK ;
-	}
 
 	if( StringHasNothing( e->encryption_options ) ){
 
@@ -400,14 +397,20 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 			hash = "RIPEMD160" ;
 		}
 
-	}else if( options_count == 5 ){
+	}else if( options_count >= 5 ){
 
 		cipher_chain = _set_cipher_chain( options + 1 ) ;
 		hash         = _set_hash( options + 4 ) ;
 		rng          = *( options + 0 ) ;
 
 		if( cipher_chain == NULL || hash == NULL ){
+			
 			return _zuluExit( !TC_OK,options,stl ) ;
+		}
+
+		if( options_count >= 6 ){
+
+			iteration_count = ( int )StringConvertToInt( *( options + 5 ) ) ;
 		}
 	}else{
 		return _zuluExit( !TC_OK,options,stl ) ;
@@ -418,7 +421,7 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 		if( tc_api_task_initialize( &task,"create" ) ){
 
 			tc_api_task_set( task,"veracrypt_mode",e->veraCrypt_volume ) ;
-			tc_api_task_set( task,"iteration_count",zuluCryptVeraCryptPIM( e->iteration_count ) ) ;
+			tc_api_task_set( task,"iteration_count",zuluCryptVeraCryptPIM( iteration_count ) ) ;
 			tc_api_task_set( task,"dev",device ) ;
 			tc_api_task_set( task,"secure_erase",FALSE ) ;
 			tc_api_task_set( task,"prf_algo",hash ) ;
@@ -453,7 +456,7 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 			tc_api_task_uninit( task ) ;
 
 			if( r == TC_OK ){
-				r = _create_file_system( e ) ;
+				r = _create_file_system( e,iteration_count ) ;
 			}
 		}
 

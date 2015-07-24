@@ -479,10 +479,12 @@ int main( int argc,char * argv[] )
 		q = StringListAssignString( stl,String( clargs.type ) ) ;
 		hide( clargs.type ) ;
 		clargs.type = StringContent( q ) ;
-	}else{
-		clargs.type = "luks" ;
 	}
-
+	if( clargs.rng != NULL ){
+		q = StringListAssignString( stl,String( clargs.rng ) ) ;
+		hide( clargs.rng ) ;
+		clargs.rng = StringContent( q ) ;
+	}
 	for( i = 0 ; clargs.tcrypt_multiple_keyfiles[ i ] != NULL ; i++ ){
 
 		q = StringListAssignString( stl,String( clargs.tcrypt_multiple_keyfiles[ i ] ) ) ;

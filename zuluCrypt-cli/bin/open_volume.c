@@ -205,6 +205,31 @@ static int _open_volume( const open_struct_t * volume )
 	return r ;
 }
 
+void zuluCryptTrueCryptVeraCryptVolumeInfo( const char * type,tvcrypt * e )
+{
+	stringList_t stl = StringListSplit( type,'.' ) ;
+
+	size_t p = StringListSize( stl ) ;
+
+	const char * q ;
+
+	memset( e,'\0',sizeof( tvcrypt ) ) ;
+
+	if( p > 0 ){
+
+		e->type = StringListCopyStringAtFirstPlace( stl ) ;
+
+		if( p > 1 ){
+
+			q = StringListContentAtSecondPlace( stl ) ;
+
+			e->iteration_count = ( int )StringConvertToInt( q ) ;
+		}
+	}
+
+	StringListDelete( &stl ) ;
+}
+
 int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	int share                = opts->share ;
@@ -430,7 +455,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.m_flags     = m_flags ;
 
 	/*
-	 * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in create_volume.c.
+	 * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in this source file.
 	 */
 	zuluCryptTrueCryptVeraCryptVolumeInfo( opts->type,&v_info ) ;
 
