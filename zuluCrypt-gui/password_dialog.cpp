@@ -238,8 +238,6 @@ void passwordDialog::setTitle()
 
 void passwordDialog::ShowUI( QString dev )
 {
-	this->addTcryptVcryptKeyOption() ;
-
 	this->setTitle() ;
 
 	QString m_point = utility::homePath() + "/" + dev.split( "/" ).last() ;
