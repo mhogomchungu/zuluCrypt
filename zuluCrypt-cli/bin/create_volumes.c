@@ -76,6 +76,31 @@ static int zuluExit_1( const char * type,stringList_t stl )
 	return 0 ;
 }
 
+void zuluCryptTrueCryptVeraCryptVolumeInfo( const char * type,tvcrypt * e )
+{
+	stringList_t stl = StringListSplit( type,'.' ) ;
+
+	size_t p = StringListSize( stl ) ;
+
+	const char * q ;
+
+	memset( e,'\0',sizeof( tvcrypt ) ) ;
+
+	if( p > 0 ){
+
+		e->type = StringListCopyStringAtFirstPlace( stl ) ;
+
+		if( p > 1 ){
+
+			q = StringListContentAtSecondPlace( stl ) ;
+
+			e->iteration_count = ( int )StringConvertToInt( q ) ;
+		}
+	}
+
+	StringListDelete( &stl ) ;
+}
+
 int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
 {
 	int ask_confirmation = opts->ask_confirmation ;
@@ -105,7 +130,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 
 	stringList_t stz = StringListVoid ;
 	stringList_t stk = StringListVoid ;
-	stringList_t stn = StringListVoid ;
 
 	string_t p = StringVoid ;
 
@@ -113,8 +137,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	size_t       volkeysize = 0 ;
 	const char * volkey_h = "" ;
 	size_t       volkeysize_h = 0 ;
-
-	const char * e ;
 
 	int tcrypt_source   = TCRYPT_PASSPHRASE ;
 	int tcrypt_source_h = TCRYPT_PASSPHRASE ;
@@ -128,13 +150,13 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int veracrypt_volume = 0 ;
 
 	int iteration_count = 0 ;
-	size_t v ;
 
 	u_int64_t hidden_volume_size = 0 ;
 
 	u_int64_t size ;
 
 	create_tcrypt_t tcrypt ;
+	tvcrypt v_info ;
 
 	const char * tcrypt_hidden_volume_size     = opts->tcrypt_hidden_volume_size ;
 	const char * tcrypt_hidden_volume_key      = opts->tcrypt_hidden_volume_key ;
@@ -229,30 +251,19 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		}
 	}
 
-	stn = StringListSplit( type,'.' ) ;
+	/*
+	 * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in this source file.
+	 */
+	zuluCryptTrueCryptVeraCryptVolumeInfo( type,&v_info ) ;
 
-	v = StringListSize( stn ) ;
+	iteration_count = v_info.iteration_count ;
 
-	if( v > 0 ){
+	truecrypt_volume = StringAtLeastOneMatch( v_info.type,"tcrypt","truecrypt",NULL ) ;
+	veracrypt_volume = StringAtLeastOneMatch( v_info.type,"vcrypt","veracrypt","vera",NULL ) ;
 
-		e = StringListContentAt( stn,0 ) ;
+	*type_1 = v_info.type ;
 
-		truecrypt_volume = StringAtLeastOneMatch_1( e,"tcrypt","truecrypt",NULL ) ;
-		veracrypt_volume = StringAtLeastOneMatch_1( e,"vcrypt","veracrypt","vera",NULL ) ;
-
-		if( veracrypt_volume && v >= 2 ){
-
-			*type_1 = String( e ) ;
-
-			type = StringContent( *type_1 ) ;
-
-			e = StringListContentAt( stn,1 ) ;
-
-			iteration_count = ( int )StringConvertToInt( e ) ;
-		}
-	}
-
-	StringListDelete( &stn ) ;
+	type = StringContent( v_info.type ) ;
 
 	if( key_source == NULL ){
 		printf( gettext( "Enter passphrase: " ) ) ;

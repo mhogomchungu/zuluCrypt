@@ -34,6 +34,13 @@
 #include "locale_path.h"
 #include "../lib/includes.h"
 
+typedef struct{
+
+	int iteration_count ;
+	string_t type ;
+
+}tvcrypt ;
+
 /*
  * these two defines are used in save_and_restore_volume_header.c
  */
@@ -49,6 +56,11 @@
  * global_variable_user_uid global variable is defined in security.c
  */
 extern uid_t global_variable_user_uid ;
+
+/*
+ * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in create_volume.c
+ */
+void zuluCryptTrueCryptVeraCryptVolumeInfo( const char * type,tvcrypt * e ) ;
 
 /*
  * this function is defined in security.c

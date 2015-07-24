@@ -233,8 +233,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	string_t * mapper      =  &stringArray[ 4 ] ;
 	string_t * mapper_path =  &stringArray[ 5 ] ;
 
-	stringList_t stz = StringListVoid ;
-
 	const char * key = NULL ;
 	const char * mapper_name ;
 	const char * e ;
@@ -242,7 +240,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	size_t key_len = 0 ;
 	int st = 0 ;
 
-	size_t v ;
+	stringList_t stz ;
+	tvcrypt v_info ;
 
 	unsigned long m_flags ;
 
@@ -430,25 +429,16 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.m_opts      = m_opts ;
 	volume.m_flags     = m_flags ;
 
-	stz = StringListSplit( opts->type,'.' ) ;
+	/*
+	 * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in create_volume.c.
+	 */
+	zuluCryptTrueCryptVeraCryptVolumeInfo( opts->type,&v_info ) ;
 
-	v = StringListSize( stz ) ;
+	volume.iteration_count = v_info.iteration_count ;
 
-	if( v > 0 ){
+	volume.veraCrypt_volume = StringAtLeastOneMatch( v_info.type,"vcrypt","veracrypt","vera",NULL ) ;
 
-		e = StringListContentAt( stz,0 ) ;
-
-		volume.veraCrypt_volume = StringAtLeastOneMatch_1( e,"vcrypt","veracrypt","vera",NULL ) ;
-
-		if( volume.veraCrypt_volume && v >= 2 ){
-
-			e = StringListContentAt( stz,1 ) ;
-
-			volume.iteration_count = ( int )StringConvertToInt( e ) ;
-		}
-	}
-
-	StringListDelete( &stz ) ;
+	StringDelete( &v_info.type ) ;
 
 	plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
 
