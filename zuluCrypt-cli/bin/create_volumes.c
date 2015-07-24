@@ -123,8 +123,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int truecrypt_volume = 0 ;
 	int veracrypt_volume = 0 ;
 
-	int iteration_count = 0 ;
-
 	u_int64_t hidden_volume_size = 0 ;
 
 	u_int64_t size ;
@@ -345,7 +343,6 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		tcrypt.encryption_options = rng ;
 		tcrypt.hidden_volume_size = hidden_volume_size ;
 		tcrypt.veraCrypt_volume   = veracrypt_volume ;
-		tcrypt.iteration_count    = iteration_count ;
 
 		if( tcrypt_keyfiles[ 0 ] != NULL ){
 			/*

@@ -97,7 +97,6 @@ typedef struct{
 	const char * fs ;
 	const char * fs_h ;
 	int veraCrypt_volume ;
-	int iteration_count ;
 }create_tcrypt_t ;
 
 typedef struct{
