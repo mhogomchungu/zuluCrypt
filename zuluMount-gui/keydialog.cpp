@@ -212,7 +212,7 @@ void keyDialog::doAction( QAction * ac )
 {
 	QString e = ac->text() ;
 
-	if( e == tr( "Set File System 0ptions" ) ){
+	if( e == tr( "Set File System Options" ) ){
 		this->showFileSystemOptionWindow() ;
 	}else if( e == tr( "Set Volume Offset" ) ){
 		this->showOffSetWindowOption() ;
