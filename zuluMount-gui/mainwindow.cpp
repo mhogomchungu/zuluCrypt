@@ -56,22 +56,7 @@
 #include "zulumounttask.h"
 #include "../zuluCrypt-gui/task.h"
 
-template< typename T >
-class Object_raii
-{
-public:
-	explicit Object_raii( T t ) : m_Object( t )
-	{
-	}
-	~Object_raii()
-	{
-		delete m_Object ;
-	}
-private:
-	T m_Object ;
-};
-
-#define Object_raii( x ) Object_raii< decltype( x ) > Object_raii_x( x ) ; Q_UNUSED( Object_raii_x )
+#include <memory>
 
 MainWindow::MainWindow( QWidget * parent ) : QWidget( parent )
 {
@@ -382,9 +367,9 @@ void MainWindow::quitApplication()
 	QCoreApplication::quit() ;
 }
 
-void MainWindow::autoMountVolume( volumeEntryProperties * entry )
+void MainWindow::autoMountVolume( volumeEntryProperties * e )
 {
-	Object_raii( entry ) ;
+	std::unique_ptr< volumeEntryProperties > entry( e ) ;
 
 	if( entry && entry->entryisValid() ){
 
@@ -889,9 +874,9 @@ void MainWindow::removeEntryFromTable( QString volume )
 	}
 }
 
-void MainWindow::volumeMiniProperties( volumeEntryProperties * volumeInfo )
+void MainWindow::volumeMiniProperties( volumeEntryProperties * e )
 {
-	Object_raii( volumeInfo ) ;
+	std::unique_ptr< volumeEntryProperties > volumeInfo( e ) ;
 
 	this->disableAll() ;
 
@@ -904,9 +889,9 @@ void MainWindow::volumeMiniProperties( volumeEntryProperties * volumeInfo )
 	}
 }
 
-void MainWindow::volumeMiniProperties_0( volumeEntryProperties * volumeInfo )
+void MainWindow::volumeMiniProperties_0( volumeEntryProperties * e )
 {
-	Object_raii( volumeInfo ) ;
+	std::unique_ptr< volumeEntryProperties > volumeInfo( e ) ;
 
 	this->disableAll() ;
 
