@@ -101,6 +101,7 @@ namespace utility
 	public:
 		explicit Array( const QString&,char splitter = '\n' ) ;
 		explicit Array( const QStringList& ) ;
+		size_t size() ;
 		char * const * value() ;
 	private :
 		void setUp() ;
@@ -165,6 +166,9 @@ namespace utility
 	void setWindowDimensions( const QVector<int>&,const QString& application ) ;
 
 	void createPlugInMenu( QMenu *,const QString&,const QString&,const QString&,bool ) ;
+
+	QFont getFont( QWidget * ) ;
+	void saveFont( const QFont& ) ;
 
 	::Task::future< int >& clearVolume( const QString& volumePath,bool * exit,std::function< void( int ) > ) ;
 	::Task::future< int >& exec( const QString& ) ;

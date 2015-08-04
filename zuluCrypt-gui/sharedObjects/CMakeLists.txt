@@ -3,7 +3,6 @@ cmake_policy(SET CMP0017 OLD)
 
 set( SRC
 	../dialogmsg.cpp
-	../userfont.cpp
 	../tablewidget.cpp
 	../utility.cpp
 	../readonlywarning.cpp

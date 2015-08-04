@@ -61,7 +61,6 @@
 #include "cryptfiles.h"
 #include "dialogmsg.h"
 #include "managesystemvolumes.h"
-#include "userfont.h"
 #include "walletconfig.h"
 #include "tablewidget.h"
 #include "utility.h"
@@ -186,8 +185,7 @@ void zuluCrypt::initKeyCombo()
 
 void zuluCrypt::initFont()
 {
-	userfont f( this ) ;
-	setUserFont( f.getFont() ) ;
+	this->setUserFont( utility::getFont( this ) ) ;
 }
 
 void zuluCrypt::raiseWindow()
@@ -660,8 +658,8 @@ void zuluCrypt::fonts()
 		}
 
 		this->setUserFont( Font ) ;
-		userfont f( this ) ;
-		f.saveFont( Font ) ;
+		
+		utility::saveFont( Font ) ;
 	}
 }
 

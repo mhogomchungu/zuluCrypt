@@ -40,7 +40,6 @@
 #include "bin_path.h"
 #include "../zuluCrypt-gui/task.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
-#include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "mountoptions.h"
@@ -68,8 +67,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) : QWidge
 
 	m_ui->pbMountFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 
-	userfont F( this ) ;
-	this->setFont( F.getFont() ) ;
+	this->setFont( parent->font() ) ;
 
 	m_ui->pbMountFolder->setVisible( false ) ;
 

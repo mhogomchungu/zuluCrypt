@@ -334,6 +334,11 @@ utility::Array::Array( const QStringList& s )
 	this->setUp() ;
 }
 
+size_t utility::Array::size()
+{
+	return m_list.size() ;
+}
+
 void utility::Array::setUp()
 {
 	auto p = m_list.size() ;
@@ -1133,5 +1138,89 @@ void utility::setWindowDimensions( const QVector<int>& e,const QString& applicat
 
 			f.write( QString( QString::number( it ) + " " ).toLatin1() ) ;
 		}
+	}
+}
+
+
+QFont utility::getFont( QWidget * widget )
+{
+	QString fontPath = utility::homePath() + "/.zuluCrypt/font" ;
+
+	QFile x( fontPath ) ;
+
+	if( x.open( QIODevice::ReadOnly ) ){
+
+		QStringList l = utility::split( x.readAll() ) ;
+
+		if( l.size() >= 4 ){
+
+			QFont F ;
+
+			const QString& fontFamily = l.at( 0 ) ;
+			const QString& fontSize   = l.at( 1 ) ;
+			const QString& fontStyle  = l.at( 2 ) ;
+			const QString& fontWeight = l.at( 3 ) ;
+
+			F.setFamily( fontFamily ) ;
+
+			F.setPointSize( fontSize.toInt() ) ;
+
+			if( fontStyle == "normal" ){
+
+				F.setStyle( QFont::StyleNormal ) ;
+
+			}else if( fontStyle == "italic" ){
+
+				F.setStyle( QFont::StyleItalic ) ;
+			}else{
+				F.setStyle( QFont::StyleOblique ) ;
+			}
+
+			if( fontWeight == "normal" ){
+
+				F.setWeight( QFont::Normal ) ;
+			}else{
+				F.setWeight( QFont::Bold ) ;
+			}
+
+			return F ;
+		}else{
+			return widget->font() ;
+		}
+	}else{
+		return widget->font() ;
+	}
+}
+
+void utility::saveFont( const QFont& Font )
+{
+	QFile f( utility::homePath() + "/.zuluCrypt/font" ) ;
+
+	if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+
+		utility::changeFileOwner( f ) ;
+		utility::changeFilePermissions( f ) ;
+
+		QString s = QString( "%1\n%2\n" ).arg( Font.family() ).arg( QString::number( Font.pointSize() ) ) ;
+
+		if( Font.style() == QFont::StyleNormal ){
+
+			s = s + "normal\n" ;
+
+		}else if( Font.style() == QFont::StyleItalic ){
+
+			s = s + "italic\n" ;
+		}else{
+			s = s + "oblique\n" ;
+		}
+
+		if( Font.weight() == QFont::Normal ){
+
+			s = s + "normal\n" ;
+		}else{
+			s = s + "bold" ;
+		}
+
+		f.write( s.toLatin1() ) ;
 	}
 }

@@ -46,7 +46,6 @@
 #include <unistd.h>
 #include "keydialog.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
-#include "../zuluCrypt-gui/userfont.h"
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "mountpartition.h"
 #include "oneinstance.h"
@@ -712,8 +711,7 @@ void MainWindow::setUpShortCuts()
 
 void MainWindow::setUpFont()
 {
-	userfont F( this ) ;
-	this->setFont( F.getFont() ) ;
+	this->setFont( utility::getFont( this ) ) ;
 }
 
 void MainWindow::closeEvent( QCloseEvent * e )
