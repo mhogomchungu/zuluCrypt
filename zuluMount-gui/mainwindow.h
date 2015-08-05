@@ -52,6 +52,7 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void closeApplication( void ) ;
 	void unlockencfs( void ) ;
 	void showVisibleVolumeList( void ) ;
 	void showHiddenVolumeList( void ) ;
@@ -72,7 +73,7 @@ private slots:
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
 	void pbUmount( void ) ;
-	void pbClose( void ) ;
+	void pbMenu( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;

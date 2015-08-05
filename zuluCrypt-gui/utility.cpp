@@ -1141,7 +1141,6 @@ void utility::setWindowDimensions( const QVector<int>& e,const QString& applicat
 	}
 }
 
-
 QFont utility::getFont( QWidget * widget )
 {
 	QString fontPath = utility::homePath() + "/.zuluCrypt/font" ;

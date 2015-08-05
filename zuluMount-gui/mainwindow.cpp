@@ -68,7 +68,7 @@ void MainWindow::setUpApp( const QString& volume )
 	m_ui->setupUi( this ) ;
 
 	m_ui->pbunlockencfs->setMinimumHeight( 31 ) ;
-	m_ui->pbclose->setMinimumHeight( 31 ) ;
+	m_ui->pbmenu->setMinimumHeight( 31 ) ;
 	m_ui->pbmount->setMinimumHeight( 31 ) ;
 	m_ui->pbupdate->setMinimumHeight( 31 ) ;
 
@@ -105,7 +105,7 @@ void MainWindow::setUpApp( const QString& volume )
 		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->pbmount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
 	connect( m_ui->pbupdate,SIGNAL( clicked()),this,SLOT( pbUpdate() ) ) ;
-	connect( m_ui->pbclose,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
+	connect( m_ui->pbmenu,SIGNAL( clicked() ),this,SLOT( pbMenu() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->pbunlockencfs,SIGNAL( clicked() ),this,SLOT( unlockencfs() ) ) ;
 
@@ -141,12 +141,6 @@ void MainWindow::setUpApp( const QString& volume )
 	trayMenu->addAction( autoOpenFolderOnMount ) ;
 
 	auto ac = new QAction( this ) ;
-	ac->setText( tr( "Show The Interface" ) ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( raiseWindow() ) ) ;
-
-	trayMenu->addAction( ac ) ;
-
-	ac = new QAction( this ) ;
 	ac->setText( tr( "Unmount All" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( unMountAll() ) ) ;
 
@@ -169,11 +163,13 @@ void MainWindow::setUpApp( const QString& volume )
 	connect( ac,SIGNAL( triggered() ),this,SLOT( licenseInfo() ) ) ;
 	trayMenu->addAction( ac ) ;
 
-	trayMenu->addAction( tr( "Quit" ),this,SLOT( pbClose() ) ) ;
+	trayMenu->addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
 	m_trayIcon->setContextMenu( trayMenu ) ;
 
 	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
+
+	m_ui->pbmenu->setMenu( m_trayIcon->contextMenu() ) ;
 
 	m_trayIcon->show() ;
 
@@ -353,10 +349,15 @@ void MainWindow::startAutoMonitor()
 	m_events->start() ;
 }
 
+void MainWindow::closeApplication()
+{
+	m_events->stop() ;
+}
+
 /*
  * This should be the only function that closes the application
  */
-void MainWindow::pbClose()
+void MainWindow::pbMenu()
 {
 	m_events->stop() ;
 }
@@ -705,7 +706,7 @@ void MainWindow::setUpShortCuts()
 	QList<QKeySequence> e ;
 	e.append( Qt::Key_C ) ;
 	qa->setShortcuts( e ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( pbClose() ) ) ;
+	connect( qa,SIGNAL( triggered() ),this,SLOT( closeApplication() ) ) ;
 	this->addAction( qa ) ;
 }
 
@@ -1120,7 +1121,7 @@ void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidget
 
 void MainWindow::disableAll()
 {
-	m_ui->pbclose->setEnabled( false ) ;
+	m_ui->pbmenu->setEnabled( false ) ;
 	m_ui->pbmount->setEnabled( false ) ;
 	m_ui->pbupdate->setEnabled( false ) ;
 	m_ui->tableWidget->setEnabled( false ) ;
@@ -1132,7 +1133,7 @@ void MainWindow::enableAll()
 	if( m_removeAllVolumes ){
 		return ;
 	}
-	m_ui->pbclose->setEnabled( true ) ;
+	m_ui->pbmenu->setEnabled( true ) ;
 	m_ui->pbupdate->setEnabled( true ) ;
 	m_ui->tableWidget->setEnabled( true ) ;
 	m_ui->pbmount->setEnabled( true ) ;

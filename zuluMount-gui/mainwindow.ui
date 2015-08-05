@@ -133,9 +133,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pbclose">
+         <widget class="QPushButton" name="pbmenu">
           <property name="text">
-           <string>&amp;Close</string>
+           <string>&amp;Menu</string>
           </property>
          </widget>
         </item>
@@ -148,7 +148,7 @@
  </widget>
  <layoutdefault spacing="6" margin="5"/>
  <tabstops>
-  <tabstop>pbclose</tabstop>
+  <tabstop>pbmenu</tabstop>
  </tabstops>
  <resources>
   <include location="icon.qrc"/>
