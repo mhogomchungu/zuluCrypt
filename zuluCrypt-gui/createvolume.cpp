@@ -88,14 +88,11 @@ createvolume::createvolume( QWidget * parent ) :
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
-	QStringList l ;
-
 	/*
 	 * for simplicity's sake,lets only show most popular file systems.
 	 */
-	l << "ext4" << "vfat" << "ntfs" << "ext2" << "ext3" ;
 
-	m_ui->comboBoxFS->addItems( l ) ;
+	m_ui->comboBoxFS->addItems( { "ext4","vfat","ntfs","ext2","ext3" } ) ;
 
 #if TRUECRYPT_CREATE
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal TrueCrypt" ) ) ;
@@ -342,15 +339,20 @@ void createvolume::setOptions( int e )
 		 * crypto options for TrueCrypt and VeraCrypt volumes
 		 */
 
-		auto _veraCryptVolume = [ this ](){
+		bool veraCryptVolume ;
 
-			auto type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
-			return type == createvolume::normal_veracrypt || type == createvolume::normal_and_hidden_veracrypt ;
-		} ;
+		switch( createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ){
+
+			case createvolume::normal_veracrypt :
+			case createvolume::normal_and_hidden_veracrypt :
+				veraCryptVolume = true ;
+			default:
+				veraCryptVolume = false ;
+		}
 
 		auto _add_option = [ & ]( const QString& algo ){
 
-			if( _veraCryptVolume() ){
+			if( veraCryptVolume ){
 
 				options->addItem( algo + ".xts-plain64.256.sha512" ) ;
 				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;

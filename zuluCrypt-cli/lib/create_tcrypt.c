@@ -235,10 +235,10 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 	return zuluCryptResolveDevicePath( _modify_tcrypt_header,&opts ) ;
 }
 
-struct{
+static const struct{
 	const char * first ;
 	const char * second;
-} const pair[] = {
+} pair[] = {
 	{ "aes"                ,"AES-256-XTS" },
 	{ "twofish"            ,"TWOFISH-256-XTS" },
 	{ "serpent"            ,"SERPENT-256-XTS" },
@@ -404,7 +404,7 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 		rng          = *( options + 0 ) ;
 
 		if( cipher_chain == NULL || hash == NULL ){
-			
+
 			return _zuluExit( !TC_OK,options,stl ) ;
 		}
 

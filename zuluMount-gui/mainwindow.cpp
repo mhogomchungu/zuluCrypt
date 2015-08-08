@@ -781,9 +781,7 @@ void MainWindow::slotMount()
 	auto table = m_ui->tableWidget ;
 	int row = table->currentRow() ;
 
-	volumeEntryProperties entry( tablewidget::tableRowEntries( table,row ) ) ;
-
-	this->mount( entry ) ;
+	this->mount( volumeEntryProperties( tablewidget::tableRowEntries( table,row ) ) ) ;
 }
 
 void MainWindow::showMoungDialog( const volumeEntryProperties& v )
