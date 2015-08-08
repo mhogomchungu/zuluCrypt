@@ -25,6 +25,78 @@
 #include <QDebug>
 #include <QFile>
 
+static QString _convert_lvm_path( const QString& dev )
+{
+	QString volume = dev ;
+	QByteArray e = dev.toLatin1() ;
+
+	char * begin = e.data() ;
+	char * end = begin + e.size() ;
+
+	char * k ;
+	char * c ;
+	char * d ;
+
+	for( auto it = begin + 3 ; it < end ; it++ ){
+
+		k = it - 2 ;
+		c = it - 1 ;
+		d = it ;
+
+		if( *k != '-' && *c == '-' && *d != '-' ){
+
+			*c = '/' ;
+
+			volume = e ;
+
+			while( volume.contains( "--" ) ){
+
+				volume.replace( "--","-" ) ;
+			}
+
+			break ;
+		}
+	}
+
+	return volume ;
+}
+
+static QString _convert_md_raid_path( const QString& dev,bool wait )
+{
+	QString volume = dev ;
+
+	QString dev_1 ;
+	QDir d( "/dev/md/" ) ;
+	QDir f ;
+
+	if( wait ){
+		/*
+		 * wait for a while because things dont always happen as expected if we check too soon.
+		 */
+		utility::Task::wait( 4 ) ;
+	}
+
+	if( d.exists() ){
+
+		QStringList l = d.entryList() ;
+
+		for( const auto& it : l ){
+
+			dev_1 = "/dev/md/" + it ;
+			f.setPath( dev_1 ) ;
+
+			if( f.canonicalPath() == dev ){
+
+				volume = dev_1 ;
+
+				break ;
+			}
+		}
+	}
+
+	return volume ;
+}
+
 static QString _device( const QString& device )
 {
 	if( device.startsWith( "UUID" ) ){
@@ -145,8 +217,27 @@ static QString _excludeVolumePath()
 
 struct deviceList
 {
-	deviceList( const QString& d,const QString& n ) : device( d ),uniqueName( n )
+	deviceList( const QString& dev,const QString& n ) : uniqueName( n )
 	{
+		if( dev.startsWith( "/dev/dm-" ) ){
+
+			QFile file( "/sys/block/" + dev.split( '/' ).last() + "/dm/name" ) ;
+
+			if( file.open( QIODevice::ReadOnly ) ){
+
+				QString e = file.readAll() ;
+				e.truncate( e.size() - 1 ) ;
+				device = _convert_lvm_path( "/dev/" + e ) ;
+			}else{
+				device = dev ;
+			}
+
+		}else if( dev.startsWith( "/dev/md" ) ){
+
+			device = _convert_md_raid_path( dev,false ) ;
+		}else{
+			device = dev ;
+		}
 	}
 	deviceList()
 	{
@@ -365,7 +456,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 		return true ;
 	} ;
 
-	volumeMiniPropertiesTaskResult s = { volume,false,nullptr } ;
+	volumeMiniPropertiesTaskResult s{ volume,false,nullptr } ;
 
 	if( !volume.startsWith( "UUID" ) && !volume.startsWith( "/dev/" ) ){
 
@@ -402,43 +493,9 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 {
 	auto _mdRaidDevice = [&]( const QString& device ){
 
-		auto _mdRaidPath = []( const QString& dev ){
+		QString d = _convert_md_raid_path( device,true ) ;
 
-			QString volume = dev ;
-
-			QString dev_1 ;
-			QDir d( "/dev/md/" ) ;
-			QDir f ;
-
-			/*
-			* wait for a while because things dont always happen as expected if we check too soon.
-			*/
-			utility::Task::wait( 4 ) ;
-
-			if( d.exists() ){
-
-				QStringList l = d.entryList() ;
-
-				for( const auto& it : l ){
-
-					dev_1 = "/dev/md/" + it ;
-					f.setPath( dev_1 ) ;
-
-					if( f.canonicalPath() == dev ){
-
-						volume = dev_1 ;
-
-						break ;
-					}
-				}
-			}
-
-			return volume ;
-		} ;
-
-		QString d = _mdRaidPath( device ) ;
-
-		volumeMiniPropertiesTaskResult s = { d,false,nullptr } ;
+		volumeMiniPropertiesTaskResult s{ d,false,nullptr } ;
 
 		if( deviceProperty.added ){
 
@@ -452,45 +509,9 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 
 	auto _dmDevice = [&]( const QString& device ){
 
-		auto _convertLVM = []( const QString& dev ){
+		QString d = _convert_lvm_path( device ) ;
 
-			QString volume = dev ;
-			QByteArray e = dev.toLatin1() ;
-
-			char * begin = e.data() ;
-			char * end = begin + e.size() ;
-
-			char * k ;
-			char * c ;
-			char * d ;
-
-			for( auto it = begin + 3 ; it < end ; it++ ){
-
-				k = it - 2 ;
-				c = it - 1 ;
-				d = it ;
-
-				if( *k != '-' && *c == '-' && *d != '-' ){
-
-					*c = '/' ;
-
-					volume = e ;
-
-					while( volume.contains( "--" ) ){
-
-						volume.replace( "--","-" ) ;
-					}
-
-					break ;
-				}
-			}
-
-			return volume ;
-		} ;
-
-		QString d = _convertLVM( device ) ;
-
-		volumeMiniPropertiesTaskResult s = { d,false,nullptr } ;
+		volumeMiniPropertiesTaskResult s{ d,false,nullptr } ;
 
 		if( deviceProperty.added ){
 
@@ -511,7 +532,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 				device.startsWith( "/dev/mmc" ) ;
 		} ;
 
-		volumeMiniPropertiesTaskResult s = { "",false,nullptr } ;
+		volumeMiniPropertiesTaskResult s{ QString(),false,nullptr } ;
 
 		if( _allowed_device( device ) ){
 
@@ -530,8 +551,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 
 	auto _shouldNotGetHere = [](){
 
-		volumeMiniPropertiesTaskResult s = { "",false,nullptr } ;
-		return s ;
+		return volumeMiniPropertiesTaskResult{ QString(),false,nullptr } ;
 	} ;
 
 	QString device = QString( "/dev/%1" ).arg( deviceProperty.volumeName ) ;
