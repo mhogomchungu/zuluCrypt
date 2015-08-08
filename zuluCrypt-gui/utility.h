@@ -265,7 +265,7 @@ namespace utility
 			m_monitor.fd     = m_handle.handle() ;
 			m_monitor.events = POLLPRI ;
 		}
-		bool canMonitor() const
+		operator bool()
 		{
 			return m_handle.opened() ;
 		}

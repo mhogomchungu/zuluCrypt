@@ -77,7 +77,7 @@ void monitor_mountinfo::run()
 
 	utility::monitor_mountinfo monitor ;
 
-	if( monitor.canMonitor() ){
+	if( monitor ){
 
 		m_running = true ;
 	}else{
