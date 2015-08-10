@@ -128,6 +128,11 @@ static inline int zuluCryptWhirlpoolIsSupported()
 int zuluCryptVeraCryptPIM( int e ) ;
 
 /*
+ * zuluCryptSystemVeraCryptPIM() is defined in create_tcrypt.c
+ */
+int zuluCryptSystemVeraCryptPIM( int e ) ;
+
+/*
  * zuluCryptResolveDevicePath() is defined in resolve_path.c
  */
 int zuluCryptResolveDevicePath( int( * )( const char *,const resolve_path_t * ),

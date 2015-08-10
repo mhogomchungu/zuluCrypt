@@ -117,13 +117,15 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 			tc_api_task_set( task,"map_name",opts->mapper_name ) ;
 			tc_api_task_set( task,"read_only",StringHasComponent( opts->m_opts,"ro" ) ) ;
 
-			/*
-			 * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
-			 */
-			tc_api_task_set( task,"iteration_count",zuluCryptVeraCryptPIM( opts->iteration_count ) ) ;
 			tc_api_task_set( task,"dev",device ) ;
 
 			if( opts->tcrypt_system ){
+
+				/*
+				 * zuluCryptSystemVeraCryptPIM() is defined in create_tcrypt.c
+				 */
+				tc_api_task_set( task,"iteration_count",
+						 zuluCryptSystemVeraCryptPIM( opts->iteration_count ) ) ;
 
 				if( StringAtLeastOnePrefixMatch( device,"/dev/sd","/dev/hd",NULL ) ){
 
@@ -133,6 +135,12 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 				}else{
 					tc_api_task_set( task,"sys",device ) ;
 				}
+			}else{
+				/*
+				 * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
+				 */
+				tc_api_task_set( task,"iteration_count",
+						 zuluCryptVeraCryptPIM( opts->iteration_count ) ) ;
 			}
 
 			tc_api_task_set( task,"passphrase",opts->key ) ;

@@ -333,13 +333,18 @@ static int _zuluExit( int r,char * const * options,stringList_t stl )
 	return r ;
 }
 
-int zuluCryptVeraCryptPIM( int e )
+int zuluCryptVeraCryptPIM( int pim )
 {
-	if( e > 0 ){
-		return 15000 + ( e * 1000 ) ;
+	if( pim > 0 ){
+		return 15000 + ( pim * 1000 ) ;
 	}else{
 		return 0 ;
 	}
+}
+
+int zuluCryptSystemVeraCryptPIM( int pim )
+{
+	return pim * 2048 ;
 }
 
 /*
