@@ -116,8 +116,6 @@ void LxQt::Wallet::internalWallet::password( QString password,bool create )
 
 		} ).then( [ this ]( bool created ){
 
-			this->taskResult( created ) ;
-
 			if( created ){
 
 				this->openWallet( m_password ) ;
