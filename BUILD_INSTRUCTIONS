@@ -10,6 +10,9 @@ This tool depends on the following packages installed to build, their precise na
 1. libpwquality-devel( optional dependency used to check the quality of passwords when creating volumes )
 2. libblkid-devel
 3. libqt4-devel( required if building GUI components )
+   libqt4-network
+   libqtcore4
+   libqtgui4
 4. gcc
 5. gcc-c++
 6. cryptsetup-devel
@@ -27,6 +30,9 @@ The precise names of the above packages in debian are:
 1. libpwquality-dev( optional dependency used to check the quality of passwords when creating volumes )
 2. libblkid-dev
 3. libqt4-dev( optional dependency used when building GUI components )
+   libqt4-network
+   libqtcore4
+   libqtgui4
 4. gcc
 5. g++
 6. libcryptsetup-dev

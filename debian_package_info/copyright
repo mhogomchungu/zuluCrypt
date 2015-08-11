@@ -1,9 +1,9 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: zulucrypt
-Source: http://code.google.com/p/zulucrypt/
+Source: http://mhogomchungu.github.io/zuluCrypt/
 
 Files: *
-Copyright: 2011-2013 Mhogo Mchungu <mhogomchungu@gmail.com>
+Copyright: 2011-2015 Mhogo Mchungu <mhogomchungu@gmail.com>
 License: GPL-2+
 
 Files: zuluCrypt-cli/lib/canonicalize/canonicalize.c
