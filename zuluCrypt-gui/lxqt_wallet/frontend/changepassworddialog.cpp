@@ -159,11 +159,6 @@ void LxQt::Wallet::changePassWordDialog::change()
 							    password.size(),walletName.toLatin1().constData(),
 							    applicationName.toLatin1().constData() ) ;
 			}
-			wallet& operator=( lxqt_wallet_error e )
-			{
-				m_error = e ;
-				return *this ;
-			}
 			operator bool()
 			{
 				return m_error == lxqt_wallet_no_error ;
