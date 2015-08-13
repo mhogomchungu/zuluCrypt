@@ -121,8 +121,8 @@
     </property>
     <addaction name="actionLuks_header_backup"/>
     <addaction name="actionOpen_zuluCrypt_pdf"/>
-    <addaction name="actionAbout"/>
     <addaction name="actionCheck_For_Update"/>
+    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">

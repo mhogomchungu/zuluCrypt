@@ -414,12 +414,17 @@ void zuluCrypt::networkReply( QNetworkReply * r )
 
 	QString l = r->readAll() ;
 
+	l.replace( "\n","" ) ;
+
+	DialogMsg msg( this ) ;
+
 	if( l != "Not Found" ){
 
-		DialogMsg msg( this ) ;
-
-		QString e = tr( "Installed Version Is : %1.\nLatest Version Is %2." ).arg( THIS_VERSION,l ) ;
+		QString e = tr( "\nInstalled Version Is : %1.\n\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
 		msg.ShowUIOK( tr( "Version Info" ),e ) ;
+	}else{
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Updates" ) ) ;
 	}
 }
 
