@@ -54,6 +54,7 @@
 #include "../zuluCrypt-gui/utility.h"
 #include "zulumounttask.h"
 #include "../zuluCrypt-gui/task.h"
+#include "../zuluCrypt-gui/checkforupdates.h"
 
 #include <memory>
 
@@ -159,6 +160,11 @@ void MainWindow::setUpApp( const QString& volume )
 	connect( m_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showHiddenVolumeList() ) ) ;
 
 	ac = new QAction( this ) ;
+	ac->setText( tr( "Check For Update" ) ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
+	trayMenu->addAction( ac ) ;
+
+	ac = new QAction( this ) ;
 	ac->setText( tr( "About" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( licenseInfo() ) ) ;
 	trayMenu->addAction( ac ) ;
@@ -191,11 +197,23 @@ void MainWindow::setUpApp( const QString& volume )
 	}else{
 		this->showMoungDialog( volume ) ;
 	}
+
+	this->autoUpdateCheck() ;
 }
 
 void MainWindow::licenseInfo()
 {
 	utility::licenseInfo( this ) ;
+}
+
+void MainWindow::updateCheck()
+{
+	checkForUpdates::checkForUpdate( this ) ;
+}
+
+void MainWindow::autoUpdateCheck()
+{
+	checkForUpdates::autoCheckForUpdate( this,"zuluMount" ) ;
 }
 
 void MainWindow::removeVolumeFromHiddenVolumeList( QAction * ac )

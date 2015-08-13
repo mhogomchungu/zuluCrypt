@@ -55,7 +55,8 @@ SOURCES += main.cpp\
     favorites.cpp \
     managevolumeheader.cpp \
     tcrypt.cpp \
-    readonlywarning.cpp
+    readonlywarning.cpp \
+    checkforupdates.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -99,7 +100,8 @@ HEADERS  += zulucrypt.h \
     favorites.h \
     managevolumeheader.h \
     tcrypt.h \
-    readonlywarning.h
+    readonlywarning.h \
+    checkforupdates.h
 
 
 FORMS    += zulucrypt.ui password.ui \

@@ -6,11 +6,13 @@ set( SRC
 	../tablewidget.cpp
 	../utility.cpp
 	../readonlywarning.cpp
+	../checkforupdates.cpp
 )
 
 set( MOC_FILES
 	../dialogmsg.h
 	../readonlywarning.h
+	../checkforupdates.h
 )
 
 set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui )

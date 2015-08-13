@@ -49,8 +49,7 @@ set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version_1.h "
-#ifndef THIS_VERSION_1
-#define THIS_VERSION_1
+#ifndef THIS_VERSION
 #define THIS_VERSION \"${PGR_VERSION}\"
 #endif
 \n" )

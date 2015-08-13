@@ -92,7 +92,9 @@ private slots:
 	void favoriteClicked( QAction * ) ;
 	void openMountPointPath( QString ) ;
 	void licenseInfo( void ) ;
+	void updateCheck( void ) ;
 private:
+	void autoUpdateCheck( void ) ;
 	void updateVolumeList( const QVector< volumeEntryProperties >& ) ;
 	void openMountPoint( const QString& ) ;
 	QFont getSystemVolumeFont( void ) ;
