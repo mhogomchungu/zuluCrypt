@@ -45,6 +45,10 @@
 #include <QUrl>
 #include <QMimeData>
 
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
+
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluMount-gui/oneinstance.h"
 #include "password_dialog.h"
@@ -66,9 +70,12 @@
 #include "utility.h"
 #include "task.h"
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
+#include "version_1.h"
 
 #include "veracrypt_support.h"
 #include "pdf_path.h"
+
+#include <memory>
 
 zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
 {
@@ -220,7 +227,7 @@ void zuluCrypt::start()
 	 * runs.
 	 */
 
-	QStringList l = QCoreApplication::arguments() ;
+	QStringList l  = QCoreApplication::arguments() ;
 
 	QString e      = utility::cmdArgumentValue( l,"-d" ) ;
 
@@ -349,6 +356,7 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionManage_volumes_in_gnome_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInGNOMEWallet() ) ) ;
 	connect( m_ui->actionManage_volumes_in_internal_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInInternalWallet() ) ) ;
 	connect( m_ui->actionOpen_zuluCrypt_pdf,SIGNAL( triggered() ),this,SLOT( openpdf() ) ) ;
+	connect( m_ui->actionCheck_For_Update,SIGNAL( triggered() ),this,SLOT( checkForUpdate() ) ) ;
 
 	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
 
@@ -394,6 +402,40 @@ void zuluCrypt::openpdf()
 
 		msg.ShowUIOK( tr( "WARNING!" ),tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
 	}
+}
+
+#define QObject_raii( x ) \
+	auto _deleter_x = []( QObject * e ){ e->deleteLater() ; } ; \
+	std::unique_ptr< QObject,decltype( _deleter_x ) > x_x( x->parent(),_deleter_x ) ;
+
+void zuluCrypt::networkReply( QNetworkReply * r )
+{
+	QObject_raii( r ) ;
+
+	QString l = r->readAll() ;
+
+	if( l != "Not Found" ){
+
+		DialogMsg msg( this ) ;
+
+		QString e = tr( "Installed Version Is : %1.\nLatest Version Is %2." ).arg( THIS_VERSION,l ) ;
+		msg.ShowUIOK( tr( "Version Info" ),e ) ;
+	}
+}
+
+void zuluCrypt::checkForUpdate()
+{
+	auto e = new QNetworkAccessManager() ;
+
+	connect( e,SIGNAL( finished( QNetworkReply * ) ),this,SLOT( networkReply( QNetworkReply * ) ) ) ;
+
+	QNetworkRequest rqt( QUrl( "https://raw.githubusercontent.com/mhogomchungu/zuluCrypt/master/version" ) ) ;
+
+	rqt.setRawHeader( "Host","raw.githubusercontent.com" ) ;
+	rqt.setRawHeader( "User-Agent","Mozilla/5.0 (X11; Linux x86_64; rv:39.0) Gecko/20100101 Firefox/39.0" ) ;
+	rqt.setRawHeader( "Accept-Encoding","text/plain" ) ;
+
+	e->get( rqt ) ;
 }
 
 void zuluCrypt::info()

@@ -39,6 +39,7 @@ class luksaddkey ;
 class managevolumeheader ;
 class cryptfiles ;
 class walletconfig ;
+class QNetworkReply ;
 
 namespace LxQt{
 namespace Wallet{
@@ -140,6 +141,8 @@ private slots :
 	void walletIsOpen( bool ) ;
 	void optionMenuAboutToShow( void ) ;
 	void openpdf( void ) ;
+	void networkReply( QNetworkReply * ) ;
+	void checkForUpdate( void ) ;
 private:
 	void updateVolumeList( const QString& volume = QString() ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;

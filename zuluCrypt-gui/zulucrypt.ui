@@ -94,7 +94,7 @@
      <x>0</x>
      <y>0</y>
      <width>782</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">
@@ -122,6 +122,7 @@
     <addaction name="actionLuks_header_backup"/>
     <addaction name="actionOpen_zuluCrypt_pdf"/>
     <addaction name="actionAbout"/>
+    <addaction name="actionCheck_For_Update"/>
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">
@@ -486,6 +487,14 @@
    </property>
    <property name="shortcut">
     <string>Shift+H</string>
+   </property>
+  </action>
+  <action name="actionCheck_For_Update">
+   <property name="text">
+    <string>Check For Update</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+U</string>
    </property>
   </action>
  </widget>
