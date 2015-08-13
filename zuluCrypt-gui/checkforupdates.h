@@ -17,7 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef CHECKFORUPDATES_H
 #define CHECKFORUPDATES_H
 
@@ -28,25 +27,19 @@
 
 class QNetworkReply ;
 class QWidget ;
+
 class checkForUpdates : public QObject
 {
 	Q_OBJECT
 public:
-	explicit checkForUpdates( QWidget * ) ;
-	~checkForUpdates() ;
-	void check() ;
-	void autoCheck() ;
-
+	checkForUpdates( QWidget *,bool ) ;
 	static void autoCheckForUpdate( QWidget *,const QString& ) ;
 	static void checkForUpdate( QWidget * ) ;
-signals:
-
 public slots:
 	void networkReply( QNetworkReply * ) ;
 private:
-	void angalia() ;
-	bool m_autocheck ;
 	QWidget * m_widget ;
+	bool m_autocheck ;
 	QNetworkAccessManager m_manager ;
 };
 

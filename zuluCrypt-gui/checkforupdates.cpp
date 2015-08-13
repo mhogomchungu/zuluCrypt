@@ -17,7 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "checkforupdates.h"
 
 #include <QtNetwork/QNetworkReply>
@@ -51,13 +50,13 @@ void checkForUpdates::networkReply( QNetworkReply * e )
 
 		if( l != "Not Found" && l != THIS_VERSION ){
 
-			l = tr( "\nInstalled Version Is : %1.\n\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
+			l = tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
 			msg.ShowUIOK( tr( "Update Available" ),l ) ;
 		}
 	}else{
 		if( l != "Not Found" ){
 
-			l = tr( "\nInstalled Version Is : %1.\n\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
+			l = tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
 			msg.ShowUIOK( tr( "Version Info" ),l ) ;
 		}else{
 			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update" ) ) ;
@@ -65,15 +64,7 @@ void checkForUpdates::networkReply( QNetworkReply * e )
 	}
 }
 
-checkForUpdates::checkForUpdates( QWidget * widget ) : m_widget( widget )
-{
-}
-
-checkForUpdates::~checkForUpdates()
-{
-}
-
-void checkForUpdates::angalia()
+checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) : m_widget( widget ),m_autocheck( autocheck )
 {
 	connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),this,SLOT( networkReply( QNetworkReply * ) ) ) ;
 
@@ -86,31 +77,15 @@ void checkForUpdates::angalia()
 	m_manager.get( r ) ;
 }
 
-void checkForUpdates::check()
-{
-	m_autocheck = false ;
-	this->angalia() ;
-}
-
-void checkForUpdates::autoCheck()
-{
-	m_autocheck = true ;
-	this->angalia() ;
-}
-
 void checkForUpdates::autoCheckForUpdate( QWidget * widget,const QString& e )
 {
 	if( utility::pathExists( utility::homePath() + "/.zuluCrypt/autoCheckUpdates." + e ) ){
 
-		auto e = new checkForUpdates( widget ) ;
-
-		e->autoCheck() ;
+		new checkForUpdates( widget,true ) ;
 	}
 }
 
 void checkForUpdates::checkForUpdate( QWidget * widget )
 {
-	auto e = new checkForUpdates( widget ) ;
-
-	e->check() ;
+	new checkForUpdates( widget,false ) ;
 }
