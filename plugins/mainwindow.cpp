@@ -24,6 +24,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "../zuluCrypt-gui/utility.h"
+
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 
 #include "../zuluCrypt-gui/lxqt_wallet/frontend/task.h"
@@ -284,7 +286,7 @@ void MainWindow::pbOpen()
 
 void MainWindow::pbKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),QDir::homePath() ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath() ) ;
 
 	if( !Z.isEmpty() ){
 		m_ui->lineEditKeyFile->setText( Z ) ;
