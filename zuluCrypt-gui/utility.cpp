@@ -199,11 +199,14 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 
 	l.append( a ) ;
 
-	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
-		l.append( b ) ;
-	}
-	if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
-		l.append( c ) ;
+	if( utility::NotrunningInMixedMode() ){
+
+		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
+			l.append( b ) ;
+		}
+		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
+			l.append( c ) ;
+		}
 	}
 
 	if( addPlugIns ){
@@ -1222,4 +1225,14 @@ void utility::saveFont( const QFont& Font )
 
 		f.write( s.toLatin1() ) ;
 	}
+}
+
+bool utility::runningInMixedMode()
+{
+	return utility::userIsRoot() && utility::getUID() != -1 ;
+}
+
+bool utility::NotrunningInMixedMode()
+{
+	return !utility::runningInMixedMode() ;
 }

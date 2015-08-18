@@ -123,6 +123,8 @@ namespace utility
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
+	bool runningInMixedMode( void ) ;
+	bool NotrunningInMixedMode( void ) ;
 	void addToFavorite( const QString& dev,const QString& m_point ) ;
 	QStringList readFavorites( void ) ;
 	void removeFavoriteEntry( const QString& ) ;

@@ -1156,7 +1156,7 @@ void MainWindow::enableAll()
 	m_ui->tableWidget->setFocus() ;
 	m_ui->pbunlockencfs->setEnabled( true ) ;
 
-	if( utility::userIsRoot() && utility::getUID() != -1 ){
+	if( utility::runningInMixedMode() ){
 
 		/*
 		 * FUSE related permission issues prevents us from currently supporting
