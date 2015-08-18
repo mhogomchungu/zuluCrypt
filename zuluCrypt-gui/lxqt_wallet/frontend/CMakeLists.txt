@@ -26,6 +26,8 @@ if(QT5)
 	include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
 	add_definitions(${Qt5Widgets_DEFINITIONS})
+
+	set( KF5 "true" )
 else()
 	find_package(Qt4 REQUIRED)
 
