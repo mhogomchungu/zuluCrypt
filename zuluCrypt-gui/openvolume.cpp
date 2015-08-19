@@ -120,8 +120,7 @@ void openvolume::pbHelp()
 		m = tr( "A list of all partitions on this system are displayed here.\nDouble click an entry to use it" ) ;
 	}else{
 		if( getuid() != 0 ) {
-			m = tr( "You are not root user and hence only non system partition are displayed on this list.\
-\nPlease read documentation for more information on system/non system partitions.\nDouble click an entry to use it" ) ;
+			m = tr( "Restart the tool from root's account or after you have created and added yourself to group \"zulucrypt\" if the volume you want to use is not on the list." ) ;
 		}else{
 			m = tr( "You are a root user and all partitions are displayed.\nDouble click an entry to use it" )	;
 		}
@@ -198,8 +197,12 @@ void openvolume::partitionList( QString title,QString volumeType )
 		 * Root user can create encrypted volumes in all partitions including system partitions.
 		 * Show all partitions, not only non system.
 		 */
-		if( volumeType == " -N" && utility::userIsRoot() ){
-			volumeType = " -A" ;
+		if( volumeType == " -N" ) {
+
+			if( utility::userIsRoot() || utility::userBelongsToGroup( "zulucrypt" ) ){
+
+				volumeType = " -A" ;
+			}
 		}
 
 		QString exe = QString( "%1 %2 -Z" ).arg( ZULUCRYPTzuluCrypt,volumeType ) ;

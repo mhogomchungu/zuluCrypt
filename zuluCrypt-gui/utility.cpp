@@ -28,6 +28,7 @@
 #include <QObject>
 #include <QDir>
 #include <pwd.h>
+#include <grp.h>
 
 #include <memory>
 
@@ -1235,4 +1236,29 @@ bool utility::runningInMixedMode()
 bool utility::NotrunningInMixedMode()
 {
 	return !utility::runningInMixedMode() ;
+}
+
+bool utility::userBelongsToGroup( const char * groupname )
+{
+	auto user = getpwuid( utility::getUserID() ) ;
+
+	if( user != nullptr ){
+
+		auto grp = getgrnam( groupname ) ;
+
+		if( grp != nullptr ){
+
+			auto name  = user->pw_name ;
+
+			for( auto e = grp->gr_mem ; *e ; e++ ){
+
+				if( strcmp( *e,name ) == 0 ){
+
+					return true ;
+				}
+			}
+		}
+	}
+
+	return false ;
 }

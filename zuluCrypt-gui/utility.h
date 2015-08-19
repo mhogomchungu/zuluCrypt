@@ -123,6 +123,7 @@ namespace utility
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
+	bool userBelongsToGroup( const char * groupname ) ;
 	bool runningInMixedMode( void ) ;
 	bool NotrunningInMixedMode( void ) ;
 	void addToFavorite( const QString& dev,const QString& m_point ) ;
