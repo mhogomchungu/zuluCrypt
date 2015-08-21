@@ -42,9 +42,16 @@ void checkForUpdates::networkReply( QNetworkReply * e )
 
 	QString l = e->readAll() ;
 
-	l.replace( "\n","" ) ;
-
 	DialogMsg msg( m_widget ) ;
+
+	if( l.isEmpty() ){
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
+
+		return ;
+	}
+
+	l.replace( "\n","" ) ;
 
 	if( m_autocheck ){
 
@@ -59,7 +66,7 @@ void checkForUpdates::networkReply( QNetworkReply * e )
 			l = tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
 			msg.ShowUIOK( tr( "Version Info" ),l ) ;
 		}else{
-			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update" ) ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
 		}
 	}
 }

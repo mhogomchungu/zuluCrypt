@@ -889,13 +889,13 @@ void MainWindow::removeEntryFromTable( QString volume )
 	}
 }
 
-void MainWindow::volumeMiniProperties( volumeEntryProperties * e )
+void MainWindow::volumeMiniProperties( bool valid,volumeEntryProperties * e )
 {
 	std::unique_ptr< volumeEntryProperties > volumeInfo( e ) ;
 
 	this->disableAll() ;
 
-	if( volumeInfo ){
+	if( valid ){
 
 		this->updateList( *volumeInfo ) ;
 		this->enableAll() ;
@@ -904,19 +904,14 @@ void MainWindow::volumeMiniProperties( volumeEntryProperties * e )
 	}
 }
 
-void MainWindow::volumeMiniProperties_0( volumeEntryProperties * e )
+void MainWindow::volumeMiniProperties( volumeEntryProperties * volumeInfo )
 {
-	std::unique_ptr< volumeEntryProperties > volumeInfo( e ) ;
+	this->volumeMiniProperties( volumeInfo,volumeInfo ) ;
+}
 
-	this->disableAll() ;
-
-	if( volumeInfo && volumeInfo->mounted() ){
-
-		this->updateList( *volumeInfo ) ;
-		this->enableAll() ;
-	}else{
-		this->pbUpdate() ;
-	}
+void MainWindow::volumeMiniProperties_0( volumeEntryProperties * volumeInfo )
+{
+	this->volumeMiniProperties( volumeInfo && volumeInfo->mounted(),volumeInfo ) ;
 }
 
 void MainWindow::updateList( const volumeEntryProperties& entry )
