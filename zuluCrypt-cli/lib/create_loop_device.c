@@ -375,7 +375,7 @@ int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,
 	/*
 	 * try to attach a loop device multiple times
 	 */
-	for( j = 0 ; j < 6 ; j++ ){
+	for( j = 0 ; j < 3 ; j++ ){
 		i = _attach_loop_device_to_file( path,mode,loop_fd,loop_device ) ;
 		if( i == 1 ){
 			break ;
@@ -412,7 +412,7 @@ int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,
 	/*
 	 * try to attach a loop device multiple times
 	 */
-	for( j = 0 ; j < 6 ; j++ ){
+	for( j = 0 ; j < 3 ; j++ ){
 
 		i = _attach_loop_device( fd_path,fd_loop,mode,loop_device ) ;
 

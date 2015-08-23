@@ -168,6 +168,8 @@ tc_api_task_init(const char *op)
 		goto out;
 	}
 
+	tc_set_iteration_count(0);
+
 	fail = 0;
 
 out:
@@ -439,11 +441,7 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 			opts->flags &= ~TC_FLAG_READ_ONLY_MODE;
 	} else if (_match(key, "iteration_count")) {
 		if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE)){
-			i = va_arg(ap, int);
-			if (i >0)
-				opts->iteration_count = i;
-			else
-				opts->iteration_count = 0;
+			tc_set_iteration_count(va_arg(ap, int));
 		}
 	} else {
 		r = TC_ERR_UNIMPL;

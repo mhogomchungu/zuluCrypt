@@ -281,6 +281,8 @@ int pbkdf2(struct pbkdf_prf_algo *hash, const char *pass, int passlen,
 int apply_keyfiles(unsigned char *pass, size_t pass_memsz, const char *keyfiles[],
     int nkeyfiles);
 
+void tc_set_iteration_count(int);
+
 struct tchdr_enc *create_hdr(unsigned char *pass, int passlen,
     struct pbkdf_prf_algo *prf_algo, struct tc_cipher_chain *cipher_chain,
     size_t sec_sz, disksz_t total_blocks,

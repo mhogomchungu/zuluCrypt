@@ -59,7 +59,7 @@ private slots:
 private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void addEntries( QString,QString ) ;
+	void addEntries( const QString&,const QString& ) ;
 	Ui::favorites * m_ui ;
 	QAction * m_ac ;
 };

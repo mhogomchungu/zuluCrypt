@@ -242,3 +242,12 @@ QStringList tablewidget::tableRowEntries( QTableWidget * table,int row )
 
 	return l ;
 }
+
+
+void tablewidget::clearTable( QTableWidget * table )
+{
+	while( table->rowCount() > 0 ){
+
+		table->removeRow( 0 ) ;
+	}
+}

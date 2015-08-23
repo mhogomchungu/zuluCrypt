@@ -110,7 +110,21 @@ struct pbkdf_prf_algo pbkdf_prf_algos_boot_vc[] = {
 	{ NULL,		0    }
 };
 
+static const struct pbkdf_prf_algo _original_pbkdf_prf_algos_boot_vc[] = {
+	{ "RIPEMD160",	327661 },
+	{ "SHA256",	200000 },
+	{ NULL,		0    }
+};
+
 struct pbkdf_prf_algo pbkdf_prf_algos_standard_vc[] = {
+	{ "SHA512",	500000 },
+	{ "whirlpool",	500000 },
+	{ "SHA256",	500000 },
+	{ "RIPEMD160",	655331 },
+	{ NULL,		0    }
+};
+
+static const struct pbkdf_prf_algo _original_pbkdf_prf_algos_standard_vc[] = {
 	{ "SHA512",	500000 },
 	{ "whirlpool",	500000 },
 	{ "SHA256",	500000 },
@@ -149,6 +163,33 @@ const char *valid_cipher_chains[][MAX_CIPHER_CHAINS] = {
 	{ "SERPENT-256-XTS", "TWOFISH-256-XTS", NULL },
 	{ NULL }
 };
+
+static void _tc_set_iteration_count(struct pbkdf_prf_algo *s,int iteration_count)
+{
+	int i;
+	for ( i = 0 ; ; i++ ){
+		s += i;
+		if(s->name == NULL){
+			break;
+		}else{
+			s->iteration_count = iteration_count;
+		}
+	}
+}
+
+void tc_set_iteration_count(int iteration_count)
+{
+	if (iteration_count > 0){
+		_tc_set_iteration_count(pbkdf_prf_algos_boot_vc,iteration_count);
+		_tc_set_iteration_count(pbkdf_prf_algos_standard_vc,iteration_count);
+	}else{
+		memcpy(pbkdf_prf_algos_boot_vc ,_original_pbkdf_prf_algos_boot_vc,
+		       sizeof(_original_pbkdf_prf_algos_boot_vc));
+
+		memcpy(pbkdf_prf_algos_standard_vc ,_original_pbkdf_prf_algos_standard_vc,
+		       sizeof(_original_pbkdf_prf_algos_standard_vc));
+	}
+}
 
 struct tc_cipher_chain *tc_cipher_chains[MAX_CIPHER_CHAINS];
 
@@ -506,7 +547,6 @@ process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int 
 	int i, j, found, error, veracrypt_mode;
 
 	int flags = opts->flags ;
-	int iteration_count = opts->iteration_count;
 
 	*pinfo = NULL;
 
@@ -535,9 +575,6 @@ process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int 
 	/* Start search for correct algorithm combination */
 	found = 0;
 	for (i = 0; !found && pbkdf_prf_algos[i].name != NULL; i++) {
-
-		if(iteration_count > 0)
-			pbkdf_prf_algos[i].iteration_count = iteration_count;
 #ifdef DEBUG
 		printf("\nTrying PRF algo %s (%d)\n", pbkdf_prf_algos[i].name,
 		    pbkdf_prf_algos[i].iteration_count);

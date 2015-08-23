@@ -111,21 +111,24 @@ void favorites::ShowUI()
 	m_ui->tableWidget->setColumnWidth( 0,285 ) ;
 	m_ui->tableWidget->setColumnWidth( 1,285 ) ;
 
-	while( m_ui->tableWidget->rowCount() > 0 ){
-		m_ui->tableWidget->removeRow( 0 ) ;
-	}
+	tablewidget::clearTable( m_ui->tableWidget ) ;
+
 	QStringList entries = utility::readFavorites() ;
 	QStringList line ;
+
 	int j = entries.size() - 1 ;
 
 	for( int i = 0 ; i < j ; i++ ){
+
 		line = entries.at( i ).split( "\t" ) ;
-		addEntries( line.at( 0 ),line.at( 1 ) ) ;
+
+		this->addEntries( line.at( 0 ),line.at( 1 ) ) ;
 	}
 
 	m_ui->lineEditDeviceAddress->clear() ;
 	m_ui->lineEditMountPath->clear() ;
 	m_ui->tableWidget->setFocus() ;
+
 	this->show() ;
 }
 
@@ -135,14 +138,9 @@ void favorites::HideUI()
 	emit HideUISignal() ;
 }
 
-void favorites::addEntries( QString dev,QString m_point )
+void favorites::addEntries( const QString& dev,const QString& m_point )
 {
-	QStringList s ;
-
-	s.append( dev ) ;
-	s.append( m_point ) ;
-
-	tablewidget::addRowToTable( m_ui->tableWidget,s ) ;
+	tablewidget::addRowToTable( m_ui->tableWidget,QStringList{ dev,m_point } ) ;
 }
 
 void favorites::itemClicked( QTableWidgetItem * current )
