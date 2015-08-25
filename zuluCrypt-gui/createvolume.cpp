@@ -339,20 +339,18 @@ void createvolume::setOptions( int e )
 		 * crypto options for TrueCrypt and VeraCrypt volumes
 		 */
 
-		bool veraCryptVolume ;
+		auto _veraCryptVolume = [ this ](){
 
-		switch( createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ){
+			using cv = createvolume ;
 
-			case createvolume::normal_veracrypt :
-			case createvolume::normal_and_hidden_veracrypt :
-				veraCryptVolume = true ;
-			default:
-				veraCryptVolume = false ;
-		}
+			auto e = cv::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
+
+			return e == cv::normal_veracrypt || e == cv::normal_and_hidden_veracrypt ;
+		} ;
 
 		auto _add_option = [ & ]( const QString& algo ){
 
-			if( veraCryptVolume ){
+			if( _veraCryptVolume() ){
 
 				options->addItem( algo + ".xts-plain64.256.sha512" ) ;
 				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;

@@ -167,7 +167,7 @@ const char *valid_cipher_chains[][MAX_CIPHER_CHAINS] = {
 static void _tc_set_iteration_count(struct pbkdf_prf_algo *s,int iteration_count)
 {
 	int i;
-	for ( i = 0 ; ; i++ ){
+	for( i = 0 ; ; i++ ){
 		s += i;
 		if(s->name == NULL){
 			break;

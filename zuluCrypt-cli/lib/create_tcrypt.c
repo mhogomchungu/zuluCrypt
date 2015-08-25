@@ -52,7 +52,7 @@ static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 	memset( &opts,'\0',sizeof( open_struct_t ) ) ;
 
 	m = String( crypt_get_dir() ) ;
-	len = StringLength( m )   ;
+	len = StringLength( m ) ;
 
 	StringAppend( m,"/zuluCrypt-" ) ;
 	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
