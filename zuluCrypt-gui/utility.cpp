@@ -200,7 +200,7 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 
 	l.append( a ) ;
 
-	if( utility::NotrunningInMixedMode() ){
+	if( utility::notRunningInMixedMode() ){
 
 		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
 			l.append( b ) ;
@@ -1233,7 +1233,7 @@ bool utility::runningInMixedMode()
 	return utility::userIsRoot() && utility::getUID() != -1 ;
 }
 
-bool utility::NotrunningInMixedMode()
+bool utility::notRunningInMixedMode()
 {
 	return !utility::runningInMixedMode() ;
 }

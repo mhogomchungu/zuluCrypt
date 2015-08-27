@@ -126,11 +126,6 @@ char * zuluCryptDeviceFromLabel( const char * label ) ;
 /*
  * this function is defined in security.c
  */
-int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;
-
-/*
- * this function is defined in security.c
- */
 int zuluCryptSecurityPathIsValid( const char * path,uid_t uid ) ;
 
 /*

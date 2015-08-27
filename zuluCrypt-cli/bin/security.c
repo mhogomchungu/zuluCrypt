@@ -37,6 +37,10 @@
  * This feature allows tradition unix permissions to be set on a paths to control non user access to volumes
  */
 
+/*
+ * zuluCryptUserIsAMemberOfAGroup() was moved to ../lib/mount_fs_options.c
+ */
+
 #define ZULUDEBUG 0
 
 static int create_group( const char * groupname ) __attribute__((unused)) ;
@@ -51,65 +55,6 @@ static int create_group( const char * groupname )
 	r = ProcessWaitUntilFinished( &p ) ;
 	zuluCryptSecurityDropElevatedPrivileges();
 	return r == 0 ;
-}
-
-static int _polkitAuthenticated( void )
-{
-	return 0 ;
-}
-
-int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
-{
-	int st = 0 ;
-	int i = 0 ;
-	struct group * grp ;
-	struct passwd * pass ;
-
-	const char ** entry ;
-	const char * name ;
-
-	if( groupname == NULL ){
-		st = 0 ;
-	}else if( uid == 0 ){
-		st = 1 ;
-	}else{
-		zuluCryptSecurityGainElevatedPrivileges() ;
-
-		pass = getpwuid( uid ) ;
-
-		if( pass == NULL ){
-			st = 0 ;
-		}else{
-			grp = getgrnam( groupname ) ;
-
-			if( grp == NULL ){
-				/*
-				* 	dont autocreate groups
-				*	create_group( groupname )  ;
-				*/
-				st = 0 ;
-			}else{
-				name = ( const char * )pass->pw_name ;
-				entry = ( const char ** )grp->gr_mem ;
-
-				while( entry[ i ] != NULL ){
-					if( StringsAreEqual( entry[ i ],name ) ){
-						st = 1 ;
-						break ;
-					}else{
-						i++ ;
-					}
-				}
-			}
-		}
-		zuluCryptSecurityDropElevatedPrivileges();
-	}
-
-	if( st == 0 ){
-		return _polkitAuthenticated() ;
-	}else{
-		return st ;
-	}
 }
 
 int zuluCryptSecurityGainElevatedPrivileges( void )

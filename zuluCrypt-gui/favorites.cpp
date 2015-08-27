@@ -177,7 +177,7 @@ void favorites::removeEntryFromFavoriteList()
 	QString txt1 = table->item( row,0 )->text() ;
 	QString txt2 = table->item( row,1 )->text() ;
 
-	QString entry = QString( "%1\t%2\n" ).arg( txt1 ).arg( txt2 ) ;
+	QString entry = QString( "%1\t%2\n" ).arg( txt1,txt2 ) ;
 
 	utility::removeFavoriteEntry( entry ) ;
 

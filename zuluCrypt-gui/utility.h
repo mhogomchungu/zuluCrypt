@@ -125,7 +125,7 @@ namespace utility
 
 	bool userBelongsToGroup( const char * groupname ) ;
 	bool runningInMixedMode( void ) ;
-	bool NotrunningInMixedMode( void ) ;
+	bool notRunningInMixedMode( void ) ;
 	void addToFavorite( const QString& dev,const QString& m_point ) ;
 	QStringList readFavorites( void ) ;
 	void removeFavoriteEntry( const QString& ) ;

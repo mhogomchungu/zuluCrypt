@@ -141,51 +141,54 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 	return r ;
 }
 
-static int _userIsAllowed_1( uid_t uid,const char * groupname )
+int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 {
-	int st = 0 ;
-	int i = 0 ;
+	int i ;
+
 	struct group * grp ;
 	struct passwd * pass ;
 
-	const char ** entry ;
-	const char * name ;
 	const char * e ;
 
 	if( groupname == NULL ){
-		st = 0 ;
+
+		return 0 ;
+
 	}else if( uid == 0 ){
-		st = 1 ;
+
+		return 1 ;
 	}else{
 		pass = getpwuid( uid ) ;
 
 		if( pass == NULL ){
-			st = 0 ;
+
+			return 0 ;
 		}else{
 			grp = getgrnam( groupname ) ;
 
-			if( grp != NULL ){
+			if( grp == NULL ){
 
-				name = ( const char * )pass->pw_name ;
-				entry = ( const char ** )grp->gr_mem ;
+				return 0 ;
+			}else{
+				for( i = 0 ; ; i++ ){
 
-				while( 1 ){
-					e = *( entry + i ) ;
-					i++ ;
+					e = *( grp->gr_mem + i ) ;
+
 					if( e == NULL ){
-						break ;
+
+						return 0 ;
 					}else{
-						if( StringsAreEqual( e,name ) ){
-							st = 1 ;
-							break ;
+						if( StringsAreEqual( e,pass->pw_name ) ){
+
+							return 1 ;
 						}
 					}
 				}
+
+				return 0 ;
 			}
 		}
 	}
-
-	return st ;
 }
 
 static inline int _userIsAllowed( uid_t uid,const char * fs )
@@ -202,7 +205,7 @@ static inline int _userIsAllowed( uid_t uid,const char * fs )
 		 * user is attempting to use not supported file system options.Allow them only if
 		 * they are a member of a supported group
 		 */
-		return _userIsAllowed_1( uid,"zulumount" ) ;
+		return zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
 	}
 }
 

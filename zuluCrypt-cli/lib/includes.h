@@ -553,4 +553,9 @@ stringList_t zuluCryptGetAListOfMountedVolumes( void ) ;
  */
 int zuluCryptModifyTcryptHeader( const info_t * info ) ;
 
+/*
+ * this function is defined in mount_fs_options.c
+ */
+int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;
+
 #endif

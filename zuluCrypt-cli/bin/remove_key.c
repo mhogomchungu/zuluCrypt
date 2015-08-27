@@ -44,7 +44,7 @@ static int _zuluCryptExECheckEmptySlots( const char * device )
 		}
 	}
 
-	free( c ) ;
+	StringFree( c ) ;
 
 	return status ;
 }
