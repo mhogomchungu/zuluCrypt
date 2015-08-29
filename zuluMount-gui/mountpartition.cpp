@@ -230,7 +230,11 @@ void mountPartition::showFileSystemOptionWindow()
 
 void mountPartition::doAction( QAction * ac )
 {
-	if( ac->text() == tr( "Set File System Options" ) ){
+	auto e = ac->text() ;
+
+	e.remove( "&" ) ;
+
+	if( e == tr( "Set File System Options" ) ){
 		this->showFileSystemOptionWindow() ;
 	}else{
 		this->showOffSetWindowOption() ;

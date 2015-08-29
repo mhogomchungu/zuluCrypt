@@ -802,7 +802,9 @@ void zuluCrypt::favAboutToHide()
 
 void zuluCrypt::favClicked( QAction * e )
 {
-	QStringList l = e->text().split( "\t" ) ;
+	auto r = e->text() ;
+	r.remove( "&" ) ;
+	auto l = r.split( "\t" ) ;
 	emit favClickedVolume( l.at( 0 ),l.at( 1 ) ) ;
 }
 

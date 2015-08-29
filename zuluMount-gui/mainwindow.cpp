@@ -287,7 +287,9 @@ void MainWindow::removeVolumeFromVisibleVolumeList( QAction * ac )
 
 void MainWindow::favoriteClicked( QAction * ac )
 {
-	this->showMoungDialog( ac->text() ) ;
+	auto e = ac->text() ;
+	e.remove( "&" ) ;
+	this->showMoungDialog( e ) ;
 }
 
 void MainWindow::showFavorites()

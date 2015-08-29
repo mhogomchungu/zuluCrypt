@@ -212,6 +212,8 @@ void keyDialog::doAction( QAction * ac )
 {
 	QString e = ac->text() ;
 
+	e.remove( "&" ) ;
+
 	if( e == tr( "Set File System Options" ) ){
 		this->showFileSystemOptionWindow() ;
 	}else if( e == tr( "Set Volume Offset" ) ){
@@ -338,7 +340,11 @@ void keyDialog::Plugin()
 
 void keyDialog::pbPluginEntryClicked( QAction * e )
 {
-	if( e->text() != tr( "Cancel" ) ){
+	auto r = e->text() ;
+
+	r.remove( "&" ) ;
+
+	if( r != tr( "Cancel" ) ){
 
 		m_ui->lineEditKey->setText( e->text() ) ;
 	}
