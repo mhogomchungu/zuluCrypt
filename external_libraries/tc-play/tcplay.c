@@ -105,9 +105,9 @@ struct pbkdf_prf_algo pbkdf_prf_algos_standard_tc[] = {
 };
 
 struct pbkdf_prf_algo pbkdf_prf_algos_boot_vc[] = {
-	{ "RIPEMD160",	327661 },
-	{ "SHA256",	200000 },
-	{ NULL,		0    }
+	{ "RIPEMD160",	0 },
+	{ "SHA256",	0 },
+	{ NULL,		0 }
 };
 
 static const struct pbkdf_prf_algo _original_pbkdf_prf_algos_boot_vc[] = {
@@ -117,11 +117,11 @@ static const struct pbkdf_prf_algo _original_pbkdf_prf_algos_boot_vc[] = {
 };
 
 struct pbkdf_prf_algo pbkdf_prf_algos_standard_vc[] = {
-	{ "SHA512",	500000 },
-	{ "whirlpool",	500000 },
-	{ "SHA256",	500000 },
-	{ "RIPEMD160",	655331 },
-	{ NULL,		0    }
+	{ "SHA512",	0 },
+	{ "whirlpool",	0 },
+	{ "SHA256",	0 },
+	{ "RIPEMD160",	0 },
+	{ NULL,		0 }
 };
 
 static const struct pbkdf_prf_algo _original_pbkdf_prf_algos_standard_vc[] = {

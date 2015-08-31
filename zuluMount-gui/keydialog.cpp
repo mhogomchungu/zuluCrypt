@@ -414,7 +414,7 @@ void keyDialog::pbOpen()
 
 void keyDialog::encfsMount()
 {
-	QString m = utility::mountPath( m_point ) ;
+	auto m = utility::mountPath( utility::mountPathPostFix( m_ui->lineEditMountPoint->text() ) ) ;
 
 	bool ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
@@ -604,7 +604,7 @@ void keyDialog::openVolume()
 			/*
 			 * The volume is reported as opened and it actually is
 			 */
-			emit openMountPoint( utility::mountPath( m_point ) ) ;
+			emit openMountPoint( utility::mountPath( mountPoint ) ) ;
 		}else{
 			/*
 			 * The volume is reported as opened but it isnt,possible reason is a backe end crash
