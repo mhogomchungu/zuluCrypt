@@ -36,6 +36,7 @@
 #include "createvolumedialog.h"
 #include "dialogmsg.h"
 #include "tcrypt.h"
+#include "initializer_list"
 
 #include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
@@ -309,69 +310,82 @@ void createvolume::setOptions( int e )
 		/*
 		 * cryto options for LUKS volumes.
 		 */
-		auto _add_option = [ & ]( const QString& algo ){
+		auto _add_options = [ & ]( const std::initializer_list<QString>& list ){
 
-			options->addItem( algo + ".xts-plain64.256.sha1" ) ;
-			options->addItem( algo + ".xts-plain64.256.sha256" ) ;
-			options->addItem( algo + ".xts-plain64.256.sha512" ) ;
-			options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
+			auto _add_option = [ & ]( const QString& algo ){
 
-			if( supportWhirlpool ){
-				options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
-			}
+				options->addItem( algo + ".xts-plain64.256.sha1" ) ;
+				options->addItem( algo + ".xts-plain64.256.sha256" ) ;
+				options->addItem( algo + ".xts-plain64.256.sha512" ) ;
+				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
 
-			options->addItem( algo + ".xts-plain64.512.sha1" ) ;
-			options->addItem( algo + ".xts-plain64.512.sha256" ) ;
-			options->addItem( algo + ".xts-plain64.512.sha512" ) ;
-			options->addItem( algo + ".xts-plain64.512.ripemd160" ) ;
+				if( supportWhirlpool ){
+					options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
+				}
 
-			if( supportWhirlpool ){
-				options->addItem( algo + ".xts-plain64.512.whirlpool" ) ;
+				options->addItem( algo + ".xts-plain64.512.sha1" ) ;
+				options->addItem( algo + ".xts-plain64.512.sha256" ) ;
+				options->addItem( algo + ".xts-plain64.512.sha512" ) ;
+				options->addItem( algo + ".xts-plain64.512.ripemd160" ) ;
+
+				if( supportWhirlpool ){
+					options->addItem( algo + ".xts-plain64.512.whirlpool" ) ;
+				}
+			} ;
+
+			for( const auto& it : list ){
+
+				_add_option( it ) ;
 			}
 		} ;
 
-		_add_option( "aes" ) ;
-		_add_option( "serpent" ) ;
-		_add_option( "twofish" ) ;
-
+		_add_options( { "aes","serpent","twofish" } ) ;
 	}else{
 		/*
 		 * crypto options for TrueCrypt and VeraCrypt volumes
 		 */
 
-		auto _veraCryptVolume = [ this ](){
+		auto _add_options = [ & ]( const std::initializer_list<QString>& list ){
 
-			using cv = createvolume ;
+			auto _veraCryptVolume = [ & ](){
 
-			auto e = cv::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
+				using cv = createvolume ;
 
-			return e == cv::normal_veracrypt || e == cv::normal_and_hidden_veracrypt ;
+				auto e = cv::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
+
+				return e == cv::normal_veracrypt || e == cv::normal_and_hidden_veracrypt ;
+			} ;
+
+			auto _add_option = [ & ]( const QString& algo ){
+
+				if( _veraCryptVolume() ){
+
+					options->addItem( algo + ".xts-plain64.256.sha512" ) ;
+					options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
+				}else{
+					options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
+					options->addItem( algo + ".xts-plain64.256.sha512" ) ;
+				}
+
+				if( supportWhirlpool ){
+					options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
+				}
+			} ;
+
+			for( const auto& it : list ){
+
+				_add_option( it ) ;
+			}
 		} ;
 
-		auto _add_option = [ & ]( const QString& algo ){
-
-			if( _veraCryptVolume() ){
-
-				options->addItem( algo + ".xts-plain64.256.sha512" ) ;
-				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
-			}else{
-				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
-				options->addItem( algo + ".xts-plain64.256.sha512" ) ;
-			}
-
-			if( supportWhirlpool ){
-				options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
-			}
-		} ;
-
-		_add_option( "aes" ) ;
-		_add_option( "serpent" ) ;
-		_add_option( "twofish" ) ;
-		_add_option( "aes:serpent" ) ;
-		_add_option( "twofish:aes" ) ;
-		_add_option( "serpent:twofish" ) ;
-		_add_option( "aes:twofish:serpent" ) ;
-		_add_option( "serpent:twofish:aes" ) ;
+		_add_options( { "aes",
+				"serpent",
+				"twofish",
+				"aes:serpent",
+				"twofish:aes",
+				"serpent:twofish",
+				"aes:twofish:serpent",
+				"serpent:twofish:aes" } ) ;
 	}
 }
 
