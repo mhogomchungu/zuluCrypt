@@ -221,6 +221,7 @@ void MainWindow::removeVolumeFromHiddenVolumeList( QAction * ac )
 	this->disableAll() ;
 
 	auto e = ac->text() ;
+	e.remove( "&" ) ;
 
 	zuluMountTask::removeVolumeFromHiddenVolumeList( e ) ;
 
@@ -270,6 +271,8 @@ void MainWindow::showVisibleVolumeList()
 void MainWindow::removeVolumeFromVisibleVolumeList( QAction * ac )
 {
 	auto e = ac->text() ;
+	e.remove( "&" ) ;
+	
 	auto table = m_ui->tableWidget ;
 
 	zuluMountTask::addVolumeToHiddenVolumeList( e ) ;
