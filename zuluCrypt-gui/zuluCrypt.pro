@@ -56,7 +56,8 @@ SOURCES += main.cpp\
     managevolumeheader.cpp \
     tcrypt.cpp \
     readonlywarning.cpp \
-    checkforupdates.cpp
+    checkforupdates.cpp \
+    hmac.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -101,7 +102,8 @@ HEADERS  += zulucrypt.h \
     managevolumeheader.h \
     tcrypt.h \
     readonlywarning.h \
-    checkforupdates.h
+    checkforupdates.h \
+    hmac.h
 
 
 FORMS    += zulucrypt.ui password.ui \
@@ -124,7 +126,8 @@ FORMS    += zulucrypt.ui password.ui \
     favorites.ui \
     managevolumeheader.ui \
     tcrypt.ui \
-    readonlywarning.ui
+    readonlywarning.ui \
+    hmac.ui
 
 TRANSLATIONS = ../translations/zuluCrypt/messages.ts
 

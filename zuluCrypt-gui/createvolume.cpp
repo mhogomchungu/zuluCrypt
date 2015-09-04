@@ -36,7 +36,9 @@
 #include "createvolumedialog.h"
 #include "dialogmsg.h"
 #include "tcrypt.h"
-#include "initializer_list"
+#include <initializer_list>
+
+#include "hmac.h"
 
 #include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
@@ -83,9 +85,11 @@ createvolume::createvolume( QWidget * parent ) :
 
 	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbNormalVolume->addItem( tr( "Keyfile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "Key+keyfile" ) ) ;
 
 	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "Keyfile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "key+Keyfile" ) ) ;
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
@@ -163,8 +167,11 @@ void createvolume::volumeType( int s )
 
 	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbNormalVolume->addItem( tr( "Keyfile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "key+Keyfile" ) ) ;
+
 	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "Keyfile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "key+Keyfile" ) ) ;
 
 	auto _enableHidden = [ this ](){
 
@@ -502,7 +509,7 @@ void createvolume::cbNormalVolume( int r )
 {
 	this->setWindowTitle( tr( "Create A New Volume" ) ) ;
 
-	if( r == 0 ){
+	auto _set_key_ui = [ this ](){
 
 		m_ui->pbOpenKeyFile->setEnabled( false ) ;
 		m_ui->lineEditPassPhrase2->setEnabled( true ) ;
@@ -515,6 +522,11 @@ void createvolume::cbNormalVolume( int r )
 
 		m_ui->labelRepeatPassPhrase->setEnabled( true ) ;
 		m_ui->pbOpenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
+	} ;
+
+	if( r == 0 ){
+
+		_set_key_ui() ;
 
 	}else if( r == 1 ){
 
@@ -523,9 +535,18 @@ void createvolume::cbNormalVolume( int r )
 		m_ui->lineEditPassPhrase2->clear() ;
 		m_ui->lineEditPassphrase1->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->lineEditPassPhrase2->setEnabled( false ) ;
-		m_ui->labelPassPhrase->setText( tr( "Keyfile" ) ) ;
+		m_ui->labelPassPhrase->setText( tr( "hmac" ) ) ;
 		m_ui->labelRepeatPassPhrase->setEnabled( false ) ;
 		m_ui->pbOpenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
+
+	}else if( r == 2 ){
+
+		_set_key_ui() ;
+
+		auto e = new hmac( this ) ;
+		connect( e,SIGNAL( key( QString ) ),this,SLOT( key( QString ) ) ) ;
+
+		e->ShowUI() ;
 	}else{
 		m_ui->pbOpenKeyFile->setEnabled( false ) ;
 		m_ui->lineEditPassphrase1->clear() ;
@@ -547,7 +568,7 @@ void createvolume::cbHiddenVolume( int r )
 {
 	this->setWindowTitle( tr( "Create A New Volume" ) ) ;
 
-	if( r == 0 ){
+	auto _set_key_ui = [ this ](){
 
 		m_ui->pbHiddenKeyFile->setEnabled( false ) ;
 		m_ui->lineEditHiddenKey1->setEnabled( true ) ;
@@ -558,6 +579,11 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey1->setEchoMode( QLineEdit::Password ) ;
 		m_ui->labelHidden->setText( tr( "Key" ) ) ;
 		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
+	} ;
+
+	if( r == 0 ){
+
+		_set_key_ui() ;
 
 	}else if( r == 1 ){
 
@@ -568,6 +594,15 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
 		m_ui->labelHidden->setText( tr( "Keyfile" ) ) ;
 		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
+
+	}else if( r == 2 ){
+
+		_set_key_ui() ;
+
+		auto e = new hmac( this ) ;
+		connect( e,SIGNAL( key( QString ) ),this,SLOT( hiddenKey( QString ) ) ) ;
+
+		e->ShowUI() ;
 	}else{
 		m_ui->pbHiddenKeyFile->setEnabled( false ) ;
 		m_ui->lineEditHiddenKey->clear() ;
@@ -588,6 +623,32 @@ void createvolume::HideUI()
 {
 	this->hide() ;
 	emit HideUISignal() ;
+}
+
+void createvolume::key( QString e )
+{
+	m_key = e ;
+	m_ui->lineEditPassphrase1->setText( m_key ) ;
+	m_ui->lineEditPassPhrase2->setText( m_key ) ;
+
+	if( e.isEmpty() ){
+
+		m_ui->cbNormalVolume->setCurrentIndex( 0 ) ;
+		this->cbNormalVolume( 0 ) ;
+	}
+}
+
+void createvolume::hiddenKey( QString e )
+{
+	m_hiddenKey = e ;
+	m_ui->lineEditHiddenKey->setText( m_hiddenKey ) ;
+	m_ui->lineEditHiddenKey1->setText( m_hiddenKey ) ;
+
+	if( e.isEmpty() ){
+
+		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
+		this->cbHiddenVolume( 0 ) ;
+	}
 }
 
 void createvolume::enableAll()

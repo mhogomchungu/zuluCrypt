@@ -24,8 +24,8 @@
 #include <QObject>
 #include <QFile>
 
-auto gpg = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
-
+QByteArray gpg( const QVector<QString>& exe,const QString& keyFile,const QString& password )
+{
 	QString arg ;
 
 	if( password.isEmpty() ){
@@ -43,5 +43,6 @@ auto gpg = []( const QVector<QString>& exe,const QString& keyFile,const QString&
 	p.write( password.toLatin1() ) ;
 	p.closeWriteChannel() ;
 	p.waitForFinished() ;
+	
 	return p.readAllStandardOutput() ;
-} ;
+}

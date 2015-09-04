@@ -4,5 +4,6 @@
 	 <qresource>
 		 <file>default.png</file>
 		 <file>keyfile.png</file>
+		 <file>file.png</file>
 	 </qresource>
  </RCC>

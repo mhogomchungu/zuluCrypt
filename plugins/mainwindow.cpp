@@ -40,7 +40,7 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::Mai
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
 	this->setWindowIcon( QIcon( ":/default.png" ) ) ;
-	//m_ui->pbKeyFile->setIcon( QIcon( QString( ":/default.png" ) ) );
+	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
