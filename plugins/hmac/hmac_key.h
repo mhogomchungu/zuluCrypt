@@ -25,14 +25,14 @@
 #include <gcrypt.h>
 #pragma GCC diagnostic warning "-Wdeprecated-declarations"
 
-QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QString& password )
+QByteArray hmac_key_0( const QString& keyFile,const QString& password )
 {
 	auto _getKey = []( gcry_md_hd_t handle,const QString& keyFile ){
 
 		QFile f( keyFile ) ;
 
 		if( f.open( QIODevice::ReadOnly ) ){
-			
+
 			const int size = 1024 ;
 			char buffer[ size ] ;
 
@@ -58,17 +58,15 @@ QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QS
 		}
 	} ;
 
-	Q_UNUSED( exe ) ;
-
-	QByteArray key ;
-	gcry_md_hd_t handle ;
-
 	if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
 
 		gcry_check_version( nullptr ) ;
 		gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
 	}
 
+	QByteArray key ;
+	gcry_md_hd_t handle ;
+	
 	auto r = gcry_md_open( &handle,GCRY_MD_SHA256,GCRY_MD_FLAG_HMAC ) ;
 
 	if( r == GPG_ERR_NO_ERROR ){
@@ -88,7 +86,8 @@ QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QS
 	return key ;
 }
 
-QByteArray hmac_key_0( const QString& keyFile,const QString& password )
+QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {
-	return hmac_key( QVector<QString>(),keyFile,password ) ;
+	Q_UNUSED( exe ) ;
+	return hmac_key_0( keyFile,password ) ;
 }
