@@ -218,3 +218,7 @@ version 4.7.6
 version 4.7.7
 -- add support for creating and opening VeraCrypt volumes that use dynamic mode.
 -- make zuluCrypt-gui window and zuluMount-gui window resizable with the new sizes surviving restarts.
+
+version 4.7.8
+-- add support in zuluCrypt-gui for creation of volumes using a combination of a key and a keyfile.
+   A volume created with this feature is to be unlocked with the "hmac" plugin.

@@ -31,18 +31,14 @@ QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QS
 
 		QFile f( keyFile ) ;
 
-		if( !f.open( QIODevice::ReadOnly ) ){
-
-			return QByteArray() ;
-		}else{
+		if( f.open( QIODevice::ReadOnly ) ){
+			
 			const int size = 1024 ;
 			char buffer[ size ] ;
 
-			qint64 e ;
-
 			while( true ){
 
-				e = f.read( buffer,size ) ;
+				auto e = f.read( buffer,size ) ;
 
 				if( e <= 0 ){
 					break ;
@@ -52,11 +48,13 @@ QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QS
 			}
 
 			auto key = reinterpret_cast< const char * >( gcry_md_read( handle,0 ) ) ;
-			auto x   = int( gcry_md_get_algo_dlen( GCRY_MD_SHA256 ) ) ;
+			auto len = int( gcry_md_get_algo_dlen( GCRY_MD_SHA256 ) ) ;
 
-			QByteArray r( key,x ) ;
+			QByteArray r( key,len ) ;
 
 			return r.toHex() ;
+		}else{
+			return QByteArray() ;
 		}
 	} ;
 
@@ -66,6 +64,7 @@ QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QS
 	gcry_md_hd_t handle ;
 
 	if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
+
 		gcry_check_version( nullptr ) ;
 		gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
 	}
@@ -74,7 +73,9 @@ QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QS
 
 	if( r == GPG_ERR_NO_ERROR ){
 
-		r = gcry_md_setkey( handle,password.toLatin1().constData(),password.size() ) ;
+		auto e = password.toLatin1() ;
+
+		r = gcry_md_setkey( handle,e.constData(),e.size() ) ;
 
 		if( r == GPG_ERR_NO_ERROR ){
 
