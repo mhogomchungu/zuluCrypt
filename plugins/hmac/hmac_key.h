@@ -65,6 +65,11 @@ QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QS
 	QByteArray key ;
 	gcry_md_hd_t handle ;
 
+	if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
+		gcry_check_version( nullptr ) ;
+		gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
+	}
+
 	auto r = gcry_md_open( &handle,GCRY_MD_SHA256,GCRY_MD_FLAG_HMAC ) ;
 
 	if( r == GPG_ERR_NO_ERROR ){

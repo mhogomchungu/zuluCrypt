@@ -26,11 +26,6 @@ int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	if( gcry_control( GCRYCTL_INITIALIZATION_FINISHED_P ) == 0 ){
-		gcry_check_version( nullptr ) ;
-		gcry_control( GCRYCTL_INITIALIZATION_FINISHED,0 ) ;
-	}
-
 	MainWindow w ;
 
 	w.setToken( argv[ 3 ] ) ;
