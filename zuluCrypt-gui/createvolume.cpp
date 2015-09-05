@@ -543,10 +543,19 @@ void createvolume::cbNormalVolume( int r )
 
 		_set_key_ui() ;
 
-		auto e = new hmac( this ) ;
-		connect( e,SIGNAL( key( QString ) ),this,SLOT( key( QString ) ) ) ;
+		new hmac( this,[ this ]( const QString& key ){
 
-		e->ShowUI() ;
+			m_key = key ;
+
+			m_ui->lineEditPassphrase1->setText( m_key ) ;
+			m_ui->lineEditPassPhrase2->setText( m_key ) ;
+
+			if( key.isEmpty() ){
+
+				m_ui->cbNormalVolume->setCurrentIndex( 0 ) ;
+				this->cbNormalVolume( 0 ) ;
+			}
+		} ) ;
 	}else{
 		m_ui->pbOpenKeyFile->setEnabled( false ) ;
 		m_ui->lineEditPassphrase1->clear() ;
@@ -599,10 +608,19 @@ void createvolume::cbHiddenVolume( int r )
 
 		_set_key_ui() ;
 
-		auto e = new hmac( this ) ;
-		connect( e,SIGNAL( key( QString ) ),this,SLOT( hiddenKey( QString ) ) ) ;
+		new hmac( this,[ this ]( const QString& key ){
 
-		e->ShowUI() ;
+			m_hiddenKey = key ;
+			
+			m_ui->lineEditHiddenKey->setText( m_hiddenKey ) ;
+			m_ui->lineEditHiddenKey1->setText( m_hiddenKey ) ;
+
+			if( key.isEmpty() ){
+
+				m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
+				this->cbHiddenVolume( 0 ) ;
+			}
+		} ) ;
 	}else{
 		m_ui->pbHiddenKeyFile->setEnabled( false ) ;
 		m_ui->lineEditHiddenKey->clear() ;
@@ -623,32 +641,6 @@ void createvolume::HideUI()
 {
 	this->hide() ;
 	emit HideUISignal() ;
-}
-
-void createvolume::key( QString e )
-{
-	m_key = e ;
-	m_ui->lineEditPassphrase1->setText( m_key ) ;
-	m_ui->lineEditPassPhrase2->setText( m_key ) ;
-
-	if( e.isEmpty() ){
-
-		m_ui->cbNormalVolume->setCurrentIndex( 0 ) ;
-		this->cbNormalVolume( 0 ) ;
-	}
-}
-
-void createvolume::hiddenKey( QString e )
-{
-	m_hiddenKey = e ;
-	m_ui->lineEditHiddenKey->setText( m_hiddenKey ) ;
-	m_ui->lineEditHiddenKey1->setText( m_hiddenKey ) ;
-
-	if( e.isEmpty() ){
-
-		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
-		this->cbHiddenVolume( 0 ) ;
-	}
 }
 
 void createvolume::enableAll()

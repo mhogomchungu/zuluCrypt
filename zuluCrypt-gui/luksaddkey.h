@@ -50,15 +50,13 @@ public slots:
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 private slots:
+	void cbExistingKey( int ) ;
+	void cbNewKey( int ) ;
 	void keyChanged( QString ) ;
 	void pbOpenExisitingKeyFile( void ) ;
 	void pbOpenNewKeyFile( void ) ;
 	void pbOpenFile( void ) ;
 	void pbOpenPartition( void ) ;
-	void rbExistingPassphrase( void ) ;
-	void rbExistingPassphraseFromFile( void ) ;
-	void rbNewPassphrase( void ) ;
-	void rbNewPassphraseFromFile( void ) ;
 	void pbAdd( void ) ;
 	void pbCancel( void ) ;
 	void taskFinished( int ) ;

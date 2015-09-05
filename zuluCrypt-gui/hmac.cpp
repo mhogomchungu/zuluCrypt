@@ -35,7 +35,10 @@
 #include <QDebug>
 #include <QIcon>
 
-hmac::hmac( QDialog * parent ) : QDialog( parent ),m_ui( new Ui::hmac )
+#include <memory>
+
+hmac::hmac( QDialog * parent,std::function< void( const QString& ) > function ) :
+	QDialog( parent ),m_ui( new Ui::hmac ),m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -47,6 +50,8 @@ hmac::hmac( QDialog * parent ) : QDialog( parent ),m_ui( new Ui::hmac )
 	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pbSelectKeyFile() ) ) ;
 
 	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
+
+	this->ShowUI() ;
 }
 
 bool hmac::eventFilter( QObject * watched,QEvent * event )
@@ -78,7 +83,7 @@ void hmac::ShowUI()
 
 void hmac::HideUI()
 {
-	emit key( m_key ) ;
+	m_function( m_key ) ;
 	this->hide() ;
 	this->deleteLater() ;
 }

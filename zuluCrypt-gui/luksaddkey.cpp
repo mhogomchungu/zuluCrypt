@@ -40,6 +40,7 @@
 #include "openvolume.h"
 #include "task.h"
 #include "dialogmsg.h"
+#include "hmac.h"
 
 luksaddkey::luksaddkey( QWidget * parent ) :
 	QDialog( parent )
@@ -63,22 +64,22 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 	connect( m_ui->pushButtonOpenPartition,SIGNAL( clicked() ),this,SLOT( pbOpenPartition( void ) ) ) ;
 	connect( m_ui->pushButtonAdd,SIGNAL( clicked() ),this,SLOT( pbAdd() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->radioButtonNewPassphrase,SIGNAL( toggled( bool ) ),this,SLOT( rbNewPassphrase() ) ) ;
-	connect( m_ui->radioButtonNewPassphraseFromFile,SIGNAL( toggled( bool ) ),this,SLOT( rbNewPassphraseFromFile() ) ) ;
-	connect( m_ui->radioButtonPassphraseinVolume,SIGNAL( toggled( bool ) ),this,SLOT( rbExistingPassphrase() ) ) ;
-	connect( m_ui->radioButtonPassphraseInVolumeFromFile,SIGNAL( toggled( bool ) ),this,SLOT( rbExistingPassphraseFromFile() ) ) ;
+
 	connect( m_ui->textEditPassphraseToAdd,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
 
-	m_ui->lineEditReEnterPassphrase->setEchoMode( QLineEdit::Password ) ;
+	connect( m_ui->cbExistingKey,SIGNAL( activated( int ) ),this,SLOT( cbExistingKey( int ) ) ) ;
+	connect( m_ui->cbNewKey,SIGNAL( activated( int ) ),this,SLOT( cbNewKey( int ) ) ) ;
 
-	m_ui->radioButtonNewPassphrase->setChecked( true ) ;
-	m_ui->radioButtonPassphraseinVolume->setChecked( true ) ;
+	m_ui->lineEditReEnterPassphrase->setEchoMode( QLineEdit::Password ) ;
 
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( false ) ;
 
 	m_ui->pushButtonOpenPartition->setIcon( QIcon( ":/partition.png" ) ) ;
 	m_ui->pushButtonOpenFile->setIcon( QIcon( ":/file.png" ) ) ;
+
+	this->cbExistingKey( 0 ) ;
+	this->cbNewKey( 0 ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -95,10 +96,14 @@ bool luksaddkey::eventFilter( QObject * watched,QEvent * event )
 
 void luksaddkey::keyChanged( QString key )
 {
-	bool checkQuality = m_ui->radioButtonNewPassphrase->isChecked() && m_keystrength.canCheckQuality() ;
+	bool checkQuality = m_ui->cbNewKey->currentIndex() == 0 && m_keystrength.canCheckQuality() ;
+
 	if( checkQuality ){
+
 		int st = m_keystrength.quality( key ) ;
+
 		if( st < 0 ){
+
 			this->setWindowTitle( tr( "Passphrase Quality: 0%" ) ) ;
 		}else{
 			this->setWindowTitle( tr( "Passphrase Quality: %1%" ).arg( QString::number( st ) ) ) ;
@@ -136,7 +141,7 @@ void luksaddkey::setFieldFocus()
 		m_ui->textEditExistingPassphrase->setFocus() ;
 	}else if( m_ui->textEditPassphraseToAdd->text().isEmpty() ){
 		m_ui->textEditPassphraseToAdd->setFocus() ;
-	}else if( m_ui->radioButtonNewPassphrase->isChecked() ){
+	}else if( m_ui->cbNewKey->currentIndex() == 0 ){
 		if( m_ui->lineEditReEnterPassphrase->text().isEmpty() ){
 			m_ui->lineEditReEnterPassphrase->setFocus() ;
 		}else{
@@ -151,6 +156,97 @@ void luksaddkey::HideUI()
 {
 	this->hide() ;
 	emit HideUISignal() ;
+}
+
+void luksaddkey::cbExistingKey( int e )
+{
+	auto _key_ui = [ this ](){
+
+		m_ui->textEditExistingPassphrase->setToolTip( tr( "Enter A Key" ) ) ;
+		m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Password ) ;
+		m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
+		m_ui->labelExistingPassphrase->setText( tr( "Key" ) ) ;
+		m_ui->textEditExistingPassphrase->clear() ;
+		m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
+		m_ui->textEditExistingPassphrase->setFocus() ;
+	} ;
+
+	if( e == 0 ){
+
+		_key_ui() ;
+
+	}else if( e == 1 ){
+
+		m_ui->textEditExistingPassphrase->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
+		m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->pushButtonOpenExistingKeyFile->setEnabled( true ) ;
+		m_ui->labelExistingPassphrase->setText( tr( "Keyfile Path" ) ) ;
+		m_ui->textEditExistingPassphrase->clear() ;
+		m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
+		m_ui->textEditExistingPassphrase->setFocus() ;
+	}else{
+		_key_ui() ;
+
+		new hmac( this,[ this ]( const QString& key ){
+
+			m_ui->textEditExistingPassphrase->setText( key ) ;
+
+			if( key.isEmpty() ){
+
+				m_ui->cbExistingKey->setCurrentIndex( 0 ) ;
+				this->cbExistingKey( 0 ) ;
+			}
+		} ) ;
+	}
+}
+
+void luksaddkey::cbNewKey( int e )
+{
+	auto _key_ui = [ this ](){
+
+		m_ui->textEditPassphraseToAdd->setToolTip( tr( "Enter a key" ) ) ;
+		m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Password ) ;
+		m_ui->pushButtonOpenNewKeyFile->setEnabled( false ) ;
+		m_ui->labelNewPassphrase->setText( tr( "Key" ) ) ;
+		m_ui->textEditPassphraseToAdd->clear() ;
+		m_ui->lineEditReEnterPassphrase->setEnabled( true ) ;
+		m_ui->labelReEnterPassphrase->setEnabled( true ) ;
+		m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
+		m_ui->textEditPassphraseToAdd->setFocus() ;
+	} ;
+
+	if( e == 0 ){
+
+		_key_ui() ;
+
+	}else if( e == 1 ){
+
+		m_ui->textEditPassphraseToAdd->clear() ;
+		m_ui->lineEditReEnterPassphrase->clear() ;
+		m_ui->textEditPassphraseToAdd->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
+		m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->pushButtonOpenNewKeyFile->setEnabled( true ) ;
+		m_ui->labelNewPassphrase->setText( tr( "Keyfile path" ) ) ;
+		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
+		m_ui->lineEditReEnterPassphrase->clear() ;
+		m_ui->labelReEnterPassphrase->setEnabled( false ) ;
+		m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
+		m_ui->textEditPassphraseToAdd->setFocus() ;
+	}else{
+		_key_ui() ;
+
+		new hmac( this,[ this ]( const QString& key ){
+
+			m_ui->textEditPassphraseToAdd->setText( key ) ;
+			m_ui->lineEditReEnterPassphrase->setText( key ) ;
+
+			if( key.isEmpty() ){
+
+				m_ui->cbNewKey->setCurrentIndex( 0 ) ;
+				this->cbNewKey( 0 ) ;
+			}
+		} ) ;
+	}
 }
 
 void luksaddkey::pbOpenExisitingKeyFile( void )
@@ -190,54 +286,6 @@ void luksaddkey::pbOpenPartition( void )
 	op->ShowAllPartitions() ;
 }
 
-void luksaddkey::rbExistingPassphrase( void )
-{
-	m_ui->textEditExistingPassphrase->setToolTip( tr( "Enter A Key" ) ) ;
-	m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Password ) ;
-	m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
-	m_ui->labelExistingPassphrase->setText( tr( "Key" ) ) ;
-	m_ui->textEditExistingPassphrase->clear() ;
-	m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
-	m_ui->textEditExistingPassphrase->setFocus() ;
-}
-
-void luksaddkey::rbExistingPassphraseFromFile( void )
-{
-	m_ui->textEditExistingPassphrase->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
-	m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->pushButtonOpenExistingKeyFile->setEnabled( true ) ;
-	m_ui->labelExistingPassphrase->setText( tr( "Keyfile Path" ) ) ;
-	m_ui->textEditExistingPassphrase->clear() ;
-	m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
-	m_ui->textEditExistingPassphrase->setFocus() ;
-}
-
-void luksaddkey::rbNewPassphrase( void )
-{
-	m_ui->textEditPassphraseToAdd->setToolTip( tr( "Enter a key" ) ) ;
-	m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Password ) ;
-	m_ui->pushButtonOpenNewKeyFile->setEnabled( false ) ;
-	m_ui->labelNewPassphrase->setText( tr( "Key" ) ) ;
-	m_ui->textEditPassphraseToAdd->clear() ;
-	m_ui->lineEditReEnterPassphrase->setEnabled( true ) ;
-	m_ui->labelReEnterPassphrase->setEnabled( true ) ;
-	m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
-	m_ui->textEditPassphraseToAdd->setFocus() ;
-}
-
-void luksaddkey::rbNewPassphraseFromFile()
-{
-	m_ui->textEditPassphraseToAdd->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
-	m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->pushButtonOpenNewKeyFile->setEnabled( true ) ;
-	m_ui->labelNewPassphrase->setText( tr( "Keyfile path" ) ) ;
-	m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
-	m_ui->lineEditReEnterPassphrase->clear() ;
-	m_ui->labelReEnterPassphrase->setEnabled( false ) ;
-	m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
-	m_ui->textEditPassphraseToAdd->setFocus() ;
-}
-
 void luksaddkey::pbAdd( void )
 {
 	DialogMsg msg( this ) ;
@@ -248,24 +296,33 @@ void luksaddkey::pbAdd( void )
 
 	m_volumePath = m_ui->textEditPathToVolume->text() ;
 
+	bool existingKeyIsKeyFile = m_ui->cbExistingKey->currentIndex() == 1 ;
+	bool newKeyIsKeyFile = m_ui->cbNewKey->currentIndex() == 1 ;
+
 	if( m_volumePath.isEmpty() ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 	}
 
 	m_volumePath = utility::resolvePath( m_volumePath ) ;
 
-	if( m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ){
+	if( existingKeyIsKeyFile ){
+
 		if( ExistingKey.isEmpty() ){
+
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 		}
 	}
 
-	if( m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
+	if( newKeyIsKeyFile ){
+
 		if( NewKey.isEmpty() ){
+
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 		}
 	}else{
 		if( NewKey != NewKey_1 ){
+
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "Keys do not match" ) ) ;
 			m_ui->textEditPassphraseToAdd->clear() ;
 			m_ui->lineEditReEnterPassphrase->clear() ;
@@ -276,7 +333,8 @@ void luksaddkey::pbAdd( void )
 
 	QString existingPassType ;
 
-	if( m_ui->radioButtonPassphraseInVolumeFromFile->isChecked() ){
+	if( existingKeyIsKeyFile ){
+
 		ExistingKey = utility::resolvePath( ExistingKey ).replace( "\"","\"\"\"" ) ;
 		existingPassType = "-u" ;
 	}else{
@@ -289,7 +347,9 @@ void luksaddkey::pbAdd( void )
 	}
 
 	QString newPassType ;
-	if( m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
+
+	if( newKeyIsKeyFile ){
+
 		NewKey = utility::resolvePath( NewKey ).replace( "\"","\"\"\"" ) ;
 		newPassType = "-n" ;
 	}else{
@@ -390,11 +450,7 @@ void luksaddkey::disableAll()
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
 	m_ui->pushButtonOpenFile->setEnabled( false ) ;
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( false ) ;
-	m_ui->pushButtonOpenPartition->setEnabled( false ) ;
-	m_ui->radioButtonNewPassphrase->setEnabled( false ) ;
-	m_ui->radioButtonNewPassphraseFromFile->setEnabled( false ) ;
-	m_ui->radioButtonPassphraseinVolume->setEnabled( false ) ;
-	m_ui->radioButtonPassphraseInVolumeFromFile->setEnabled( false ) ;
+	m_ui->pushButtonOpenPartition->setEnabled( false ) ;	
 	m_ui->labelReEnterPassphrase->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
@@ -416,15 +472,11 @@ void luksaddkey::enableAll()
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( true ) ;
 	m_ui->pushButtonOpenFile->setEnabled( true ) ;
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( true ) ;
-	m_ui->pushButtonOpenPartition->setEnabled( true ) ;
-	m_ui->radioButtonNewPassphrase->setEnabled( true ) ;
-	m_ui->radioButtonNewPassphraseFromFile->setEnabled( true ) ;
-	m_ui->radioButtonPassphraseinVolume->setEnabled( true ) ;
-	m_ui->radioButtonPassphraseInVolumeFromFile->setEnabled( true ) ;
-	if( m_ui->radioButtonNewPassphrase->isChecked() ){
-		m_ui->labelReEnterPassphrase->setEnabled( true ) ;
-	}
-	if( !m_ui->radioButtonNewPassphraseFromFile->isChecked() ){
+	m_ui->pushButtonOpenPartition->setEnabled( true ) ;	
+
+	auto index = m_ui->cbNewKey->currentIndex() ;
+
+	if( index != 1 ){
 		m_ui->lineEditReEnterPassphrase->setEnabled( true ) ;
 	}
 	m_ui->label->setEnabled( true ) ;

@@ -24,6 +24,7 @@
 #include <QDialog>
 #include <QObject>
 #include <QString>
+#include <functional>
 
 class QCloseEvent ;
 class QEvent ;
@@ -36,12 +37,10 @@ class hmac : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit hmac( QDialog * parent = nullptr ) ;
+	explicit hmac( QDialog * parent,std::function< void( const QString& ) > ) ;
 	~hmac() ;
 	void ShowUI() ;
 	void HideUI() ;
-signals:
-	void key( QString ) ;
 private slots:
 	void pbSetKey() ;
 	void pbSelectKeyFile() ;
@@ -55,6 +54,7 @@ private:
 	QString m_keyFile ;
 	QString m_passphrase ;
 	QString m_key = QString() ;
+	std::function< void( const QString& ) > m_function ;
 };
 
 #endif // HMAC_H

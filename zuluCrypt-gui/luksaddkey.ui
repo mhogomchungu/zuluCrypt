@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>602</width>
-    <height>302</height>
+    <height>282</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -77,9 +77,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>60</y>
+     <y>70</y>
      <width>581</width>
-     <height>81</height>
+     <height>61</height>
     </rect>
    </property>
    <property name="title">
@@ -88,37 +88,11 @@
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
-   <widget class="QRadioButton" name="radioButtonPassphraseinVolume">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>0</y>
-      <width>271</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Key</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="radioButtonPassphraseInVolumeFromFile">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>20</y>
-      <width>271</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Keyfile</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="labelExistingPassphrase">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>50</y>
+      <y>30</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -137,7 +111,7 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>50</y>
+      <y>30</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -156,18 +130,43 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>50</y>
+      <y>30</y>
       <width>321</width>
       <height>31</height>
      </rect>
     </property>
+   </widget>
+   <widget class="QComboBox" name="cbExistingKey">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>0</y>
+      <width>321</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Key</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>KeyFile</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Key+KeyFile</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QPushButton" name="pushButtonAdd">
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>270</y>
+     <y>250</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -186,7 +185,7 @@
    <property name="geometry">
     <rect>
      <x>300</x>
-     <y>270</y>
+     <y>250</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -217,7 +216,7 @@
      <x>10</x>
      <y>160</y>
      <width>581</width>
-     <height>111</height>
+     <height>101</height>
     </rect>
    </property>
    <property name="title">
@@ -226,37 +225,11 @@
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
-   <widget class="QRadioButton" name="radioButtonNewPassphrase">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>0</y>
-      <width>271</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Key</string>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="radioButtonNewPassphraseFromFile">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>20</y>
-      <width>271</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Keyfile</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButtonOpenNewKeyFile">
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>50</y>
+      <y>30</y>
       <width>31</width>
       <height>31</height>
      </rect>
@@ -275,7 +248,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>50</y>
+      <y>30</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -294,7 +267,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>50</y>
+      <y>30</y>
       <width>321</width>
       <height>31</height>
      </rect>
@@ -304,7 +277,7 @@
     <property name="geometry">
      <rect>
       <x>130</x>
-      <y>80</y>
+      <y>60</y>
       <width>321</width>
       <height>31</height>
      </rect>
@@ -314,7 +287,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>80</y>
+      <y>60</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -329,6 +302,31 @@
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QComboBox" name="cbNewKey">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>0</y>
+      <width>321</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Key</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>KeyFile</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Key+KeyFile</string>
+     </property>
+    </item>
+   </widget>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
@@ -336,7 +334,7 @@
      <x>50</x>
      <y>40</y>
      <width>501</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -350,9 +348,9 @@
    <property name="geometry">
     <rect>
      <x>50</x>
-     <y>140</y>
+     <y>130</y>
      <width>501</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -367,12 +365,10 @@
   <tabstop>textEditPathToVolume</tabstop>
   <tabstop>pushButtonOpenFile</tabstop>
   <tabstop>pushButtonOpenPartition</tabstop>
-  <tabstop>radioButtonPassphraseinVolume</tabstop>
-  <tabstop>radioButtonPassphraseInVolumeFromFile</tabstop>
+  <tabstop>cbExistingKey</tabstop>
   <tabstop>textEditExistingPassphrase</tabstop>
   <tabstop>pushButtonOpenExistingKeyFile</tabstop>
-  <tabstop>radioButtonNewPassphrase</tabstop>
-  <tabstop>radioButtonNewPassphraseFromFile</tabstop>
+  <tabstop>cbNewKey</tabstop>
   <tabstop>textEditPassphraseToAdd</tabstop>
   <tabstop>pushButtonOpenNewKeyFile</tabstop>
   <tabstop>lineEditReEnterPassphrase</tabstop>

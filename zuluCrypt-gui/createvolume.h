@@ -62,8 +62,6 @@ public slots:
 	void ShowFile( QString volume ) ;
 	void HideUI( void ) ;
 private slots:
-	void key( QString ) ;
-	void hiddenKey( QString ) ;
 	void keyChanged_0( QString ) ;
 	void keyChanged_1( QString ) ;
 	void pbCreateClicked( void ) ;

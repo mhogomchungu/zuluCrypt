@@ -38,6 +38,7 @@
 #include "ui_luksdeletekey.h"
 #include "task.h"
 #include "dialogmsg.h"
+#include "hmac.h"
 
 luksdeletekey::luksdeletekey( QWidget * parent ) :
 	QDialog( parent ),
@@ -53,11 +54,13 @@ luksdeletekey::luksdeletekey( QWidget * parent ) :
 
 	connect( m_ui->pushButtonDelete,SIGNAL( clicked() ),this,SLOT( pbDelete() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->rbPassphrase,SIGNAL( toggled( bool ) ),this,SLOT( rbPassphrase() ) ) ;
-	connect( m_ui->rbPassphraseFromFile,SIGNAL( toggled( bool ) ),this,SLOT( rbPassphraseFromFile() ) ) ;
 	connect( m_ui->pushButtonOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) ) ;
 	connect( m_ui->pushButtonOpenVolume,SIGNAL( clicked() ),this,SLOT( pbOpenVolume() ) ) ;
 	connect( m_ui->pushButtonOpenPartition,SIGNAL( clicked() ),this,SLOT( pbOpenPartition() ) ) ;
+
+	connect( m_ui->cbKey,SIGNAL( activated( int ) ),this,SLOT( Key( int ) ) ) ;
+
+	this->Key( 0 ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -65,6 +68,7 @@ luksdeletekey::luksdeletekey( QWidget * parent ) :
 bool luksdeletekey::eventFilter( QObject * watched,QEvent * event )
 {
 	if( utility::eventFilter( this,watched,event ) ){
+
 		this->HideUI() ;
 		return true ;
 	}else{
@@ -80,25 +84,45 @@ void luksdeletekey::closeEvent( QCloseEvent * e )
 	}
 }
 
-void luksdeletekey::rbPassphrase()
+void luksdeletekey::Key( int e )
 {
-	m_ui->lineEditPassphrase->setToolTip( tr( "Enter a key" ) ) ;
-	m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
-	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Password ) ;
-	m_ui->lineEditPassphrase->clear() ;
-	m_ui->pushButtonOpenKeyFile->setEnabled( false ) ;
-	m_ui->pushButtonOpenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
-	m_ui->lineEditPassphrase->setFocus() ;
-}
+	auto _key_ui = [ this ](){
 
-void luksdeletekey::rbPassphraseFromFile()
-{
-	m_ui->lineEditPassphrase->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
-	m_ui->labelPassphrase->setText( tr( "Keyfile path" ) ) ;
-	m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Normal ) ;
-	m_ui->lineEditPassphrase->clear() ;
-	m_ui->pushButtonOpenKeyFile->setEnabled( true ) ;
-	m_ui->pushButtonOpenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
+		m_ui->lineEditPassphrase->setToolTip( tr( "Enter a key" ) ) ;
+		m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
+		m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Password ) ;
+		m_ui->lineEditPassphrase->clear() ;
+		m_ui->pushButtonOpenKeyFile->setEnabled( false ) ;
+		m_ui->pushButtonOpenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
+		m_ui->lineEditPassphrase->setFocus() ;
+	} ;
+
+	if( e == 0 ){
+
+		_key_ui() ;
+
+	}else if( e == 1 ){
+
+		m_ui->lineEditPassphrase->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
+		m_ui->labelPassphrase->setText( tr( "Keyfile path" ) ) ;
+		m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->lineEditPassphrase->clear() ;
+		m_ui->pushButtonOpenKeyFile->setEnabled( true ) ;
+		m_ui->pushButtonOpenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
+	}else{
+		_key_ui() ;
+
+		new hmac( this,[ this ]( const QString& key ){
+
+			m_ui->lineEditPassphrase->setText( key ) ;
+
+			if( key.isEmpty() ){
+
+				m_ui->cbKey->setCurrentIndex( 0 ) ;
+				this->Key( 0 ) ;
+			}
+		} ) ;
+	}
 }
 
 void luksdeletekey::pbOpenKeyFile()
@@ -115,9 +139,7 @@ void luksdeletekey::pbOpenKeyFile()
 void luksdeletekey::ShowUI()
 {
 	this->enableAll() ;
-	m_ui->rbPassphrase->setEnabled( true ) ;
 	m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
-	m_ui->rbPassphrase->setChecked( true ) ;
 
 	if( m_ui->lineEditVolumePath->text().isEmpty() ){
 		m_ui->lineEditVolumePath->setFocus() ;
@@ -137,7 +159,7 @@ void luksdeletekey::ShowUI( const QString& path )
 
 void luksdeletekey::disableAll()
 {
-	m_ui->groupBox->setEnabled( false ) ;
+	m_ui->cbKey->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
 	m_ui->labelPassphrase->setEnabled( false ) ;
 	m_ui->lineEditPassphrase->setEnabled( false ) ;
@@ -147,24 +169,24 @@ void luksdeletekey::disableAll()
 	m_ui->pushButtonOpenKeyFile->setEnabled( false ) ;
 	m_ui->pushButtonOpenPartition->setEnabled( false ) ;
 	m_ui->pushButtonOpenVolume->setEnabled( false ) ;
-	m_ui->rbPassphrase->setEnabled( false ) ;
-	m_ui->rbPassphraseFromFile->setEnabled( false ) ;
 }
 
 void luksdeletekey::enableAll()
 {
-	m_ui->groupBox->setEnabled( true ) ;
+	m_ui->cbKey->setEnabled( true ) ;
 	m_ui->label->setEnabled( true ) ;
 	m_ui->labelPassphrase->setEnabled( true ) ;
 	m_ui->lineEditPassphrase->setEnabled( true ) ;
 	m_ui->lineEditVolumePath->setEnabled( true ) ;
 	m_ui->pushButtonCancel->setEnabled( true ) ;
 	m_ui->pushButtonDelete->setEnabled( true ) ;
-	m_ui->pushButtonOpenKeyFile->setEnabled( true ) ;
 	m_ui->pushButtonOpenPartition->setEnabled( true ) ;
 	m_ui->pushButtonOpenVolume->setEnabled( true ) ;
-	m_ui->rbPassphrase->setEnabled( true ) ;
-	m_ui->rbPassphraseFromFile->setEnabled( true ) ;
+
+	if( m_ui->cbKey->currentIndex() == 1 ){
+
+		m_ui->pushButtonOpenKeyFile->setEnabled( true ) ;
+	}
 }
 
 void luksdeletekey::pbCancel()
@@ -188,6 +210,7 @@ void luksdeletekey::pbDelete()
 	m_volumePath = utility::resolvePath( m_ui->lineEditVolumePath->text() ) ;
 
 	if( m_volumePath.isEmpty() ){
+
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 	}else{
 		this->disableAll() ;
@@ -225,7 +248,7 @@ void luksdeletekey::deleteKey( const QStringList& l )
 
 	QString keypath ;
 
-	if( m_ui->rbPassphraseFromFile->isChecked() ){
+	if( m_ui->cbKey->currentIndex() == 1 ){
 		keypath = utility::resolvePath( m_ui->lineEditPassphrase->text() ).replace( "\"","\"\"\"" ) ;
 	}else{
 		keypath = utility::keyPath() ;

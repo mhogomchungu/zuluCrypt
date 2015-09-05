@@ -47,11 +47,10 @@ public slots:
 	void ShowUI( const QString& ) ;
 	void HideUI( void ) ;
 private slots:
+	void Key( int ) ;
 	void pbOpenPartition( void ) ;
 	void pbDelete( void ) ;
 	void pbCancel( void ) ;
-	void rbPassphrase( void ) ;
-	void rbPassphraseFromFile( void ) ;
 	void pbOpenKeyFile( void ) ;
 	void pbOpenVolume( void ) ;
 	void taskFinished( int ) ;
