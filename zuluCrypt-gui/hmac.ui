@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Key Generator using A Passphrase And A KeyFile</string>
+   <string>Key Generator Using A Passphrase And A KeyFile</string>
   </property>
   <widget class="QPushButton" name="pbSetKey">
    <property name="geometry">
@@ -90,9 +90,9 @@
      </rect>
     </property>
     <property name="text">
-     <string>Create An Encryption Key That Is Made Up of a Passphrase And a KeyFile.
+     <string>Create an encryption key that is made up of a passphrase and a keyfile.
 
-A Volume Created With A Key Generated Here Should Be Opened With &quot;hmac&quot; Plugin.</string>
+A volume created with a key generated here should be opened with &quot;hmac&quot; plugin.</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>

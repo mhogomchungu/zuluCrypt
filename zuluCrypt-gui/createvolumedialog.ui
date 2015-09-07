@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>warning!!</string>
+   <string>Warning!!</string>
   </property>
   <widget class="QPushButton" name="pbYes">
    <property name="geometry">

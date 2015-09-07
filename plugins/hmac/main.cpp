@@ -26,14 +26,12 @@ int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	MainWindow w ;
+	MainWindow w( hmac_key ) ;
 
-	w.setToken( argv[ 3 ] ) ;
+	w.setToken( argv ) ;
 	w.setApplicationName( "hmac" ) ;
 	w.setkeyLabel( QObject::tr( "Enter A Password Below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "Enter A Path To A Keyfile Below" ) ) ;
-
-	w.setKeyFunction( hmac_key ) ;
 
 	w.Show() ;
 

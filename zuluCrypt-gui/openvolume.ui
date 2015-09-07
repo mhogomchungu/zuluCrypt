@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>select a partition to open</string>
+   <string>Select A Partition To Open</string>
   </property>
   <property name="modal">
    <bool>true</bool>

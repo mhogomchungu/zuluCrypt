@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>add an entry to wallet</string>
+   <string>Add An Entry To Wallet</string>
   </property>
   <widget class="QPushButton" name="pushButtonAdd">
    <property name="geometry">

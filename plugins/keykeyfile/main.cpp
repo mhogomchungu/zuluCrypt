@@ -29,21 +29,22 @@ int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	MainWindow w ;
+	MainWindow w( []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 
-	w.setToken( argv[ 3 ] ) ;
+		Q_UNUSED( exe ) ;
+
+		QFile f( keyFile ) ;
+
+		f.open( QIODevice::ReadOnly ) ;
+
+		return password.toLatin1() + f.readAll() ;
+	} ) ;
+
+	w.setToken( argv ) ;
 	w.setkeyLabel( QObject::tr( "Enter Key Below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "Enter A Path To A Keyfile Below" ) ) ;
 	w.setButtonIcon( "Keyfile" ) ;
 
-	auto e = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
-		Q_UNUSED( exe ) ;
-		QFile f( keyFile ) ;
-		f.open( QIODevice::ReadOnly ) ;
-		return password.toLatin1() + f.readAll() ;
-	} ;
-
-	w.setKeyFunction( e ) ;
 	w.Show() ;
 
 	return a.exec() ;

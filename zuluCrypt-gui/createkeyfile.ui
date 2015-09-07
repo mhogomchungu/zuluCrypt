@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>create a key file</string>
+   <string>Create A KeyFile</string>
   </property>
   <widget class="QLineEdit" name="lineEditFileName">
    <property name="geometry">
@@ -122,7 +122,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Keyfile Path</string>
+    <string>KeyFile Path</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

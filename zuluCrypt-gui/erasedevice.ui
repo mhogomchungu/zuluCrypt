@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>erase data on the device by writing random data over them</string>
+   <string>Erase Data On The Device By Writing Random Data Over Them</string>
   </property>
   <widget class="QLabel" name="labelPath">
    <property name="geometry">

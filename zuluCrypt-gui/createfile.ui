@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>create a container file</string>
+   <string>Create A Container File</string>
   </property>
   <widget class="QLineEdit" name="lineEditFileName">
    <property name="geometry">

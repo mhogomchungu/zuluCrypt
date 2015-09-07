@@ -23,6 +23,7 @@
 #include <QString>
 #include <QObject>
 #include <QFile>
+#include <QVector>
 
 QByteArray gpg( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {
@@ -43,6 +44,6 @@ QByteArray gpg( const QVector<QString>& exe,const QString& keyFile,const QString
 	p.write( password.toLatin1() ) ;
 	p.closeWriteChannel() ;
 	p.waitForFinished() ;
-	
+
 	return p.readAllStandardOutput() ;
 }

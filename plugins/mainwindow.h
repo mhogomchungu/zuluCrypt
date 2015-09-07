@@ -34,29 +34,29 @@
 #include <QCloseEvent>
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include <functional>
+#include <memory>
 
 namespace Ui {
 class MainWindow ;
 }
 
-typedef std::function<QByteArray( const QVector<QString>&,const QString& keyFile,const QString& password )> function_t ;
-
 class MainWindow : public QWidget
 {
 	Q_OBJECT
 public:
-	MainWindow( QWidget * parent = 0 ) ;
-	void setToken( const QString& ) ;
+	using function_t = std::function<QByteArray( const QVector<QString>&,const QString& keyFile,const QString& password )> ;
+
+	MainWindow( MainWindow::function_t,QWidget * parent = 0 ) ;
+	void setToken( char * const * ) ;
 	void setApplicationName( const QString& ) ;
 	void setkeyLabel( const QString& ) ;
 	void setkeyFileLabel( const QString& ) ;
 	void setButtonIcon( const QString& ) ;
-	void setRequireKey( bool k = true ) ;
-	void setRequireKeyFile( bool k = true ) ;
+	void setRequireKey( bool = true ) ;
+	void setRequireKeyFile( bool = true ) ;
 	void setKeyFileAsKey( void ) ;
 	void Show( void ) ;
 	void setExe( const QVector<QString>& exe ) ;
-	void setKeyFunction( std::function<QByteArray( const QVector<QString>& exe,const QString& keyFile,const QString& password )> ) ;
 	void setfindExeFunction( std::function<const QString&( QVector<QString>& )> ) ;
 	~MainWindow() ;
 private slots:
@@ -79,9 +79,9 @@ private:
 	bool m_keyfileAsKey = false ;
 	QVector<QString> m_exe ;
 	QVector<QString> m_exe_1 ;
-	function_t m_function ;
-	std::function<const QString&( QVector<QString>& )> m_findExecutable ;
 	void * m_handle ;
+	MainWindow::function_t m_function ;
+	std::function<const QString&( QVector<QString>& )> m_findExecutable ;
 };
 
 #endif // MAINWINDOW_H

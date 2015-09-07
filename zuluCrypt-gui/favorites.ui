@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>manage favorites</string>
+   <string>Manage Favorites</string>
   </property>
   <widget class="QPushButton" name="pbAdd">
    <property name="geometry">

@@ -153,6 +153,11 @@
       <string>Keyfile</string>
      </property>
     </item>
+    <item>
+     <property name="text">
+      <string>Key+KeyFile</string>
+     </property>
+    </item>
    </widget>
   </widget>
   <widget class="QLineEdit" name="lineEditPass_1">

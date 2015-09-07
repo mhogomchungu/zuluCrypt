@@ -37,26 +37,29 @@ int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	MainWindow w ;
+	MainWindow w( []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 
-	w.setToken( argv[ 3 ] ) ;
-	w.setApplicationName( "tomb" ) ;
-	w.setkeyLabel( QObject::tr( "Enter tomb/steghide Key Below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "Enter A Path To A tomb/steghide Keyfile Below" ) ) ;
-
-	auto tomb = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 		/*
 		 * TODO: look into passing the passphrase more securely
 		 */
+
 		QString arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe.first(),keyFile,password ) ;
+
 		QProcess p ;
+
 		p.start( arg ) ;
+
 		p.waitForFinished( -1 ) ;
+
 		QByteArray key = p.readAllStandardOutput() ;
+
 		p.close() ;
+
 		if( key.isEmpty() ){
+
 			return key ;
 		}else{
+
 			key = "\n-----BEGIN PGP MESSAGE-----\n\n" + key + "-----END PGP MESSAGE-----\n" ;
 
 			QString temp_path = QString( "%1/%2/" ).arg( QDir::homePath(),"/.zuluCrypt/" ) ;
@@ -76,12 +79,10 @@ int main( int argc,char * argv[] )
 			temp_file.write( key ) ;
 			temp_file.close() ;
 
-			QVector<QString> e ;
-			e.append( exe.at( 1 ) ) ;
 			/*
 			 * gpg() is defined in ../gpg/gpg.h
 			 */
-			key = gpg( e,temp_path,password ) ;
+			key = gpg( QVector<QString>{ exe.at( 1 ) },temp_path,password ) ;
 
 			temp_file.setFileName( temp_path ) ;
 			temp_file.open( QIODevice::WriteOnly ) ;
@@ -94,15 +95,15 @@ int main( int argc,char * argv[] )
 			temp_file.remove() ;
 			return key ;
 		}
-	} ;
+	} ) ;
 
-	w.setKeyFunction( tomb ) ;
+	w.setToken( argv ) ;
+	w.setApplicationName( "tomb" ) ;
+	w.setkeyLabel( QObject::tr( "Enter tomb/steghide Key Below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "Enter A Path To A tomb/steghide Keyfile Below" ) ) ;
 
-	QVector<QString> exe ;
-	exe.append( "steghide" ) ;
-	exe.append( "gpg" ) ;
+	w.setExe( { "steghide","gpg" } ) ;
 
-	w.setExe( exe ) ;
 	w.Show() ;
 
 	return a.exec() ;

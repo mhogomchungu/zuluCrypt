@@ -37,10 +37,15 @@
 
 #include <memory>
 
-hmac::hmac( QDialog * parent,std::function< void( const QString& ) > function ) :
+hmac::hmac( QDialog * parent,std::function< void( const QString& ) > function,const QString& e ) :
 	QDialog( parent ),m_ui( new Ui::hmac ),m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
+
+	if( !e.isEmpty() ){
+
+		m_ui->label->setText( e ) ;
+	}
 
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
@@ -96,12 +101,12 @@ void hmac::pbSetKey()
 
 	if( m_passphrase.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "Passphrase Not Set." ) ) ;
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "Passphrase Not Set" ) ) ;
 	}
 
 	if( m_keyFile.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set." ) ) ;
+		return msg.ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
 	}
 
 	this->disableAll() ;
@@ -118,7 +123,7 @@ void hmac::pbSetKey()
 
 			DialogMsg msg( this ) ;
 
-			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Generate Key." ) ) ;
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Generate Key" ) ) ;
 
 			this->enableAll() ;
 		}else{

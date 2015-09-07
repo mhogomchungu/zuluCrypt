@@ -41,6 +41,8 @@
 #include "dialogmsg.h"
 #include "lxqt_wallet/backend/lxqtwallet.h"
 
+#include "hmac.h"
+
 cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryptfiles )
 {
 	m_ui->setupUi( this ) ;
@@ -246,23 +248,33 @@ void cryptfiles::pbCreate()
 	QString key_2 = m_ui->lineEditPass_2->text() ;
 
 	QString keySource ;
-	if( m_ui->comboBox->currentIndex() == 0 ){
+
+	if( m_ui->comboBox->currentIndex() == 1 ){
+
+		if( utility::pathExists( key_1 ) ){
+
+			keySource = "-f" ;
+		}else{
+			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to key file" ) ) ;
+		}
+
+	}else{
 		keySource = "-p" ;
+
 		if( key_1.isEmpty() ){
+
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "First key field is empty" ) ) ;
 		}
 		if( m_operation == "-E" ){
+
 			if( key_2.isEmpty() ){
+
 				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Second key field is empty" ) ) ;
 			}
 			if( key_1 != key_2 ){
+
 				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Keys do not match" ) ) ;
 			}
-		}
-	}else{
-		keySource = "-f" ;
-		if( !utility::pathExists( key_1 ) ){
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to key file" ) ) ;
 		}
 	}
 
@@ -412,7 +424,7 @@ void cryptfiles::pbOpenFolder( void )
 
 void cryptfiles::cbChanged( int r )
 {
-	if( r == 0 ){
+	auto _key_ui = [ this ](){
 
 		m_ui->lineEditPass_1->setToolTip( tr( "Enter A Key" ) ) ;
 		m_ui->pushButtonKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
@@ -428,7 +440,13 @@ void cryptfiles::cbChanged( int r )
 			m_ui->labelKey2->setEnabled( true ) ;
 			m_ui->lineEditPass_2->setEnabled( true ) ;
 		}
-	}else{
+	} ;
+
+	if( r == 0 ){
+
+		_key_ui() ;
+
+	}else if( r == 1 ){
 
 		m_ui->lineEditPass_1->setToolTip( tr( "Enter A Path To A Keyfile Location" ) ) ;
 		m_ui->labelKey->setText( tr( "keyfile path" ) ) ;
@@ -440,6 +458,21 @@ void cryptfiles::cbChanged( int r )
 		m_ui->lineEditPass_2->clear() ;
 		m_ui->lineEditPass_1->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->lineEditPass_1->setFocus() ;
+	}else{
+		_key_ui() ;
+
+		new hmac( this,[ this ]( const QString& key ){
+
+			m_ui->lineEditPass_1->setText( key ) ;
+			m_ui->lineEditPass_2->setText( key ) ;
+
+			if( key.isEmpty() ){
+
+				m_ui->comboBox->setCurrentIndex( 0 ) ;
+				this->cbChanged( 0 ) ;
+			}
+
+		},tr( "Generate a key made up of a passphrase and a keyfile" ) ) ;
 	}
 }
 

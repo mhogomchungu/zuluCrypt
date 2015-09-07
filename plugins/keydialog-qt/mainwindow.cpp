@@ -54,9 +54,9 @@ void MainWindow::defaultButton()
 	}
 }
 
-void MainWindow::setToken( const QString& token )
+void MainWindow::setToken( char * const * e )
 {
-	m_token = token ;
+	m_token = *( e + 3 ) ;
 	m_handle = zuluCryptPluginManagerOpenConnection( m_token.toLatin1().constData() ) ;
 }
 

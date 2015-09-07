@@ -14,7 +14,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>TrueCrypt keys</string>
+   <string>TrueCrypt Keys</string>
   </property>
   <widget class="QPushButton" name="pbSend">
    <property name="geometry">

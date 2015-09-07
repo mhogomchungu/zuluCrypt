@@ -37,7 +37,7 @@ class hmac : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit hmac( QDialog * parent,std::function< void( const QString& ) > ) ;
+	explicit hmac( QDialog * parent,std::function< void( const QString& ) >,const QString& = QString() ) ;
 	~hmac() ;
 	void ShowUI() ;
 	void HideUI() ;

@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Setting This Option Will Cause The Volume To Open In Read Only Mode.</string>
+    <string>Setting this option will cause the volume to open in read only mode.</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

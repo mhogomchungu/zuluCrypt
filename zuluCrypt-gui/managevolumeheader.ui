@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>backup volume header</string>
+   <string>Backup Volume Header</string>
   </property>
   <widget class="QLineEdit" name="lineEditBackUpName">
    <property name="geometry">

@@ -17,7 +17,7 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>create a new volume</string>
+   <string>Create A New Volume</string>
   </property>
   <widget class="QLineEdit" name="lineEditVolumePath">
    <property name="geometry">

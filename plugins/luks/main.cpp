@@ -29,14 +29,8 @@ int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	MainWindow w ;
+	MainWindow w( []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 
-	w.setToken( argv[ 3 ] ) ;
-	w.setApplicationName( "luks" ) ;
-	w.setkeyLabel( QObject::tr( " Enter LUKS Key Below" ) ) ;
-	w.setkeyFileLabel( QObject::tr( "Enter A Path To A LUKS Header Below" ) ) ;
-
-	auto e = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
 		Q_UNUSED( exe ) ;
 		/*
 		 * we are sending a 4 component structure.
@@ -60,9 +54,13 @@ int main( int argc,char * argv[] )
 		keyfile.open( QIODevice::ReadOnly ) ;
 
 		return passWordSize + keyFileSize + password.toLatin1() + keyfile.readAll() ;
-	} ;
+	} ) ;
 
-	w.setKeyFunction( e ) ;
+	w.setToken( argv ) ;
+	w.setApplicationName( "luks" ) ;
+	w.setkeyLabel( QObject::tr( " Enter LUKS Key Below" ) ) ;
+	w.setkeyFileLabel( QObject::tr( "Enter A Path To A LUKS Header Below" ) ) ;
+
 	w.Show() ;
 
 	return a.exec() ;

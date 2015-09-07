@@ -41,7 +41,7 @@ class MainWindow : public QWidget
 	Q_OBJECT
 public:
 	MainWindow( QWidget * parent = 0 ) ;
-	void setToken( const QString& ) ;
+	void setToken( char * const * ) ;
 	~MainWindow();
 private slots:
 	void defaultButton( void ) ;

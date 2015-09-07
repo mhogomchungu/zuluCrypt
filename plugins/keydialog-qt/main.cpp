@@ -24,7 +24,7 @@ int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 	MainWindow w ;
-	w.setToken( QString( argv[ 3 ] ) ) ;
+	w.setToken( argv ) ;
 	w.show() ;
 
 	return a.exec() ;

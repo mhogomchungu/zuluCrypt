@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>manage system volumes</string>
+   <string>Manage System Volumes</string>
   </property>
   <property name="modal">
    <bool>true</bool>

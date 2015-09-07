@@ -32,7 +32,8 @@
 
 namespace Task = LxQt::Wallet::Task ;
 
-MainWindow::MainWindow( QWidget * parent ) : QWidget( parent ),m_ui( new Ui::MainWindow ),m_handle( nullptr )
+MainWindow::MainWindow( MainWindow::function_t f,QWidget * parent ) :
+	QWidget( parent ),m_ui( new Ui::MainWindow ),m_handle( nullptr ),m_function( std::move( f ) )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
@@ -128,9 +129,9 @@ void MainWindow::defaultButton()
 	}
 }
 
-void MainWindow::setToken( const QString& token )
+void MainWindow::setToken( char * const * e )
 {
-	m_handle = zuluCryptPluginManagerOpenConnection( token.toLatin1().constData() ) ;
+	m_handle = zuluCryptPluginManagerOpenConnection( *( e + 3 ) ) ;
 }
 
 void MainWindow::setApplicationName( const QString& appName )
@@ -146,11 +147,6 @@ void MainWindow::setkeyLabel( const QString& keyLabel )
 void MainWindow::setkeyFileLabel( const QString& keyFileLabel )
 {
 	m_ui->label->setText( keyFileLabel ) ;
-}
-
-void MainWindow::setKeyFunction( function_t function )
-{
-	m_function = function ;
 }
 
 void MainWindow::SetFocus()
