@@ -24,21 +24,28 @@
 #include <QDialog>
 #include <QObject>
 #include <QString>
+#include <QVector>
+
 #include <functional>
 
 class QCloseEvent ;
 class QEvent ;
 
+#include "../plugins/plugins.h"
+
 namespace Ui {
-class hmac;
+class plugin;
 }
 
-class hmac : public QDialog
+class plugin : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit hmac( QDialog * parent,std::function< void( const QString& ) >,const QString& = QString() ) ;
-	~hmac() ;
+	plugin( QDialog * parent,
+	      plugins::type,
+	      std::function< void( const QString& ) >,
+	      const QString& = QString(),const QVector<QString>& = QVector<QString>() ) ;
+	~plugin() ;
 	void ShowUI() ;
 	void HideUI() ;
 private slots:
@@ -50,11 +57,13 @@ private:
 	void disableAll() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	Ui::hmac * m_ui ;
+	Ui::plugin * m_ui ;
 	QString m_keyFile ;
 	QString m_passphrase ;
 	QString m_key = QString() ;
 	std::function< void( const QString& ) > m_function ;
+	plugins::type m_pluginType ;
+	QVector<QString> m_exe ;
 };
 
 #endif // HMAC_H

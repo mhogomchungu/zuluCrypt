@@ -41,7 +41,7 @@
 #include "dialogmsg.h"
 #include "lxqt_wallet/backend/lxqtwallet.h"
 
-#include "hmac.h"
+#include "plugin.h"
 
 cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryptfiles )
 {
@@ -457,7 +457,7 @@ void cryptfiles::cbChanged( int r )
 	}else{
 		_key_ui() ;
 
-		new hmac( this,[ this ]( const QString& key ){
+		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_ui->lineEditPass_1->setText( key ) ;
 			m_ui->lineEditPass_2->setText( key ) ;

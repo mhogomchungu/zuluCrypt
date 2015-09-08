@@ -55,7 +55,7 @@ public:
 			std::function< void( const QString& ) > ) ;
 	void ShowUI( const volumeEntryProperties& ) ;
 	void HideUI( void ) ;
-	void AutoMount( QStringList entry ) ;
+	void AutoMount( const QStringList& entry ) ;
 	~mountPartition() ;
 signals:
 	void cancel( void ) ;

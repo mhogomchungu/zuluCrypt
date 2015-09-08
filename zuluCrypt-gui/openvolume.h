@@ -69,9 +69,9 @@ private:
 	Ui::openvolume * m_ui ;
 	QAction * m_action ;
 	int m_option ;
-	bool m_diableNonLUKS ;
-	bool m_showEncryptedOnly ;
-	bool m_showLuksOnly ;
+	bool m_diableNonLUKS = false ;
+	bool m_showEncryptedOnly = false ;
+	bool m_showLuksOnly = false ;
 	std::function< void( const QString& ) > m_function ;
 };
 

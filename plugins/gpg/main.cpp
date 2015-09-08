@@ -20,13 +20,13 @@
 #include <QApplication>
 #include "../mainwindow.h"
 
-#include "gpg.h"
+#include "../plugins.h"
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	MainWindow w( gpg ) ;
+	MainWindow w( plugins::gpg ) ;
 
 	w.setToken( argv ) ;
 	w.setApplicationName( "gpg" ) ;

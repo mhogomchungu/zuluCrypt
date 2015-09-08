@@ -18,7 +18,7 @@
  */
 
 #include "../mainwindow.h"
-#include "hmac_key.h"
+#include "../plugins.h"
 
 #include <QApplication>
 
@@ -26,7 +26,7 @@ int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	MainWindow w( hmac_key ) ;
+	MainWindow w( plugins::hmac_key ) ;
 
 	w.setToken( argv ) ;
 	w.setApplicationName( "hmac" ) ;

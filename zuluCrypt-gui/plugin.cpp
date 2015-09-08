@@ -18,12 +18,12 @@
  */
 
 
-#include "hmac.h"
+#include "plugin.h"
 #include "task.h"
 
-#include "../plugins/hmac/hmac_key.h"
+#include "../plugins/plugins.h"
 
-#include "ui_hmac.h"
+#include "ui_plugin.h"
 
 #include "utility.h"
 #include "dialogmsg.h"
@@ -37,8 +37,8 @@
 
 #include <memory>
 
-hmac::hmac( QDialog * parent,std::function< void( const QString& ) > function,const QString& e ) :
-	QDialog( parent ),m_ui( new Ui::hmac ),m_function( std::move( function ) )
+plugin::plugin( QDialog * parent,plugins::type t,std::function< void( const QString& ) > function,const QString& e,const QVector<QString>& exe ) :
+	QDialog( parent ),m_ui( new Ui::plugin ),m_function( std::move( function ) ),m_pluginType( t ),m_exe( exe )
 {
 	m_ui->setupUi( this ) ;
 
@@ -56,31 +56,33 @@ hmac::hmac( QDialog * parent,std::function< void( const QString& ) > function,co
 
 	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
 
+	m_ui->lineEdit_2->setEnabled( false ) ;
+
 	this->ShowUI() ;
 }
 
-bool hmac::eventFilter( QObject * watched,QEvent * event )
+bool plugin::eventFilter( QObject * watched,QEvent * event )
 {
 	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
-void hmac::closeEvent( QCloseEvent * e )
+void plugin::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->HideUI() ;
 }
 
-hmac::~hmac()
+plugin::~plugin()
 {
 	delete m_ui ;
 }
 
-void hmac::ShowUI()
+void plugin::ShowUI()
 {
 	this->show() ;
 }
 
-void hmac::HideUI()
+void plugin::HideUI()
 {
 	m_function( m_key ) ;
 
@@ -88,7 +90,7 @@ void hmac::HideUI()
 	this->deleteLater() ;
 }
 
-void hmac::pbSetKey()
+void plugin::pbSetKey()
 {
 	m_passphrase = m_ui->lineEdit->text() ;
 
@@ -108,7 +110,33 @@ void hmac::pbSetKey()
 
 	Task::run< QByteArray >( [ this ](){
 
-		return hmac_key_0( m_keyFile,m_passphrase ) ;
+		switch( m_pluginType ){
+		case plugins::plugin::gpg:
+
+			return plugins::gpg( m_exe,m_keyFile,m_passphrase ) ;
+
+		case plugins::plugin::hmac_key:
+
+			return plugins::hmac_key( m_exe,m_keyFile,m_passphrase ) ;
+
+		case plugins::plugin::hmac_key_0:
+
+			return plugins::hmac_key_0( m_keyFile,m_passphrase ) ;
+
+		case plugins::plugin::keyKeyFile:
+
+			return plugins::keyKeyFile( m_exe,m_keyFile,m_passphrase ) ;
+
+		case plugins::plugin::luks:
+
+			return plugins::luks( m_exe,m_keyFile,m_passphrase ) ;
+
+		case plugins::plugin::steghide:
+
+			return plugins::steghide( m_exe,m_keyFile,m_passphrase ) ;
+		default:
+			return QByteArray() ;
+		}
 
 	} ).then( [ this ]( const QByteArray& e ){
 
@@ -127,32 +155,39 @@ void hmac::pbSetKey()
 	} ) ;
 }
 
-void hmac::pbSelectKeyFile()
+void plugin::pbSelectKeyFile()
 {
 	m_keyFile = QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),0 ) ;
+	m_ui->lineEdit_2->setText( m_keyFile ) ;
 }
 
-void hmac::pbClose()
+void plugin::pbClose()
 {
 	this->HideUI() ;
 }
 
-void hmac::enableAll()
+void plugin::enableAll()
 {
 	m_ui->pbCancel->setEnabled( true ) ;
 	m_ui->pbKeyFile->setEnabled( true ) ;
 	m_ui->pbSetKey->setEnabled( true ) ;
 	m_ui->groupBox->setEnabled( true ) ;
 	m_ui->label->setEnabled( true ) ;
+	m_ui->label_2->setEnabled( true ) ;
+	m_ui->label_3->setEnabled( true ) ;
 	m_ui->lineEdit->setEnabled( true ) ;
+	//m_ui->lineEdit_2->setEnabled( true ) ;
 }
 
-void hmac::disableAll()
+void plugin::disableAll()
 {
 	m_ui->pbCancel->setEnabled( false ) ;
 	m_ui->pbKeyFile->setEnabled( false ) ;
 	m_ui->pbSetKey->setEnabled( false ) ;
 	m_ui->groupBox->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
+	m_ui->label_2->setEnabled( false ) ;
+	m_ui->label_3->setEnabled( false ) ;
 	m_ui->lineEdit->setEnabled( false ) ;
+	//m_ui->lineEdit_2->setEnabled( false ) ;
 }

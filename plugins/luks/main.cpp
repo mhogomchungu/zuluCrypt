@@ -19,46 +19,17 @@
 
 #include <QApplication>
 #include "../mainwindow.h"
-#include <QDebug>
-#include <QByteArray>
-#include <QString>
-#include <QFile>
-#include <QObject>
+#include "../plugins.h"
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	MainWindow w( []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
-
-		Q_UNUSED( exe ) ;
-		/*
-		 * we are sending a 4 component structure.
-		 * first  component at offset 0 is a u_int32_t structure holding the size of the passphrase
-		 * Second component at offset 4 is a u_int32_t structure holding the size of the contents of luks header
-		 * third  component at offset 8 is the passphrase to unlock the LUKS volume.
-		 * last   component is at offset that marks the end of the third component.Where this offset will be depends on the length of the passphrase
-		 */
-
-		auto intToByteArray = []( quint32 s ){
-
-			const char * e = reinterpret_cast< const char * >( &s ) ;
-			return QByteArray( e,sizeof( quint32 ) ) ;
-		} ;
-
-		QFile keyfile( keyFile ) ;
-
-		QByteArray keyFileSize  = intToByteArray( keyfile.size() ) ;
-		QByteArray passWordSize = intToByteArray( password.size() ) ;
-
-		keyfile.open( QIODevice::ReadOnly ) ;
-
-		return passWordSize + keyFileSize + password.toLatin1() + keyfile.readAll() ;
-	} ) ;
+	MainWindow w( plugins::luks ) ;
 
 	w.setToken( argv ) ;
 	w.setApplicationName( "luks" ) ;
-	w.setkeyLabel( QObject::tr( " Enter LUKS Key Below" ) ) ;
+	w.setkeyLabel( QObject::tr( "Enter LUKS Key Below" ) ) ;
 	w.setkeyFileLabel( QObject::tr( "Enter A Path To A LUKS Header Below" ) ) ;
 
 	w.Show() ;

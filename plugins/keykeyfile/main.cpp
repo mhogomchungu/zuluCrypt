@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 2012
+ *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
  *  email: mhogomchungu@gmail.com
  *  This program is free software: you can redistribute it and/or modify
@@ -19,26 +19,13 @@
 
 #include <QApplication>
 #include "../mainwindow.h"
-#include <QDebug>
-#include <QByteArray>
-#include <QString>
-#include <QFile>
-#include <QObject>
+#include "../plugins.h"
 
 int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	MainWindow w( []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
-
-		Q_UNUSED( exe ) ;
-
-		QFile f( keyFile ) ;
-
-		f.open( QIODevice::ReadOnly ) ;
-
-		return password.toLatin1() + f.readAll() ;
-	} ) ;
+	MainWindow w( plugins::keyKeyFile ) ;
 
 	w.setToken( argv ) ;
 	w.setkeyLabel( QObject::tr( "Enter Key Below" ) ) ;

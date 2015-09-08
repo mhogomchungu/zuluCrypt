@@ -40,7 +40,7 @@
 #include "openvolume.h"
 #include "task.h"
 #include "dialogmsg.h"
-#include "hmac.h"
+#include "plugin.h"
 
 luksaddkey::luksaddkey( QWidget * parent ) :
 	QDialog( parent )
@@ -188,7 +188,7 @@ void luksaddkey::cbExistingKey( int e )
 	}else{
 		_key_ui() ;
 
-		new hmac( this,[ this ]( const QString& key ){
+		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_ui->textEditExistingPassphrase->setText( key ) ;
 
@@ -236,7 +236,7 @@ void luksaddkey::cbNewKey( int e )
 	}else{
 		_key_ui() ;
 
-		new hmac( this,[ this ]( const QString& key ){
+		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_ui->textEditPassphraseToAdd->setText( key ) ;
 			m_ui->lineEditReEnterPassphrase->setText( key ) ;

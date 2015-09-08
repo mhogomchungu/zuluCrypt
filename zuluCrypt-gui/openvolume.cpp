@@ -83,11 +83,6 @@ openvolume::openvolume( QWidget * parent ) :
 
 	m_ui->checkBoxUUID->setVisible( false ) ;
 
-	m_diableNonLUKS = false ;
-	//m_ui->pbUUID->setVisible( false ) ;
-	m_showEncryptedOnly = false ;
-	m_showLuksOnly = false ;
-
 	this->installEventFilter( this ) ;
 }
 
@@ -104,7 +99,7 @@ openvolume& openvolume::showEncryptedOnly()
 
 openvolume& openvolume::showLuksOnly()
 {
-	m_showEncryptedOnly = true ;
+	m_showLuksOnly = true ;
 	return *this ;
 }
 
@@ -244,12 +239,16 @@ void openvolume::partitionProperties( const QStringList& l )
 				if( size == "1.0 KB" || size == "Nil" ){
 					continue ;
 				}
-				if( m_showEncryptedOnly ){
-					if( fs.startsWith( "crypto" ) || fs.contains( "Nil" ) ){
+				if( m_showLuksOnly ){
+
+					if( fs.startsWith( "crypto_LUKS" ) ){
+
 						tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
 					}
-				}else if( m_showLuksOnly ){
-					if( fs.startsWith( "crypto" ) ){
+				}else if( m_showEncryptedOnly ){
+
+					if( fs.startsWith( "crypto" ) || fs.contains( "Nil" ) ){
+
 						tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
 					}
 				}else{

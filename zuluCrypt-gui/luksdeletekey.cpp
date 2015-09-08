@@ -38,7 +38,7 @@
 #include "ui_luksdeletekey.h"
 #include "task.h"
 #include "dialogmsg.h"
-#include "hmac.h"
+#include "plugin.h"
 
 luksdeletekey::luksdeletekey( QWidget * parent ) :
 	QDialog( parent ),
@@ -106,7 +106,7 @@ void luksdeletekey::Key( int e )
 	}else{
 		_key_ui() ;
 
-		new hmac( this,[ this ]( const QString& key ){
+		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_ui->lineEditPassphrase->setText( key ) ;
 

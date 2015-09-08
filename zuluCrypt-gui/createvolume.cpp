@@ -38,7 +38,7 @@
 #include "tcrypt.h"
 #include <initializer_list>
 
-#include "hmac.h"
+#include "plugin.h"
 
 #include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
@@ -530,7 +530,7 @@ void createvolume::cbNormalVolume( int r )
 
 		_set_key_ui() ;
 
-		new hmac( this,[ this ]( const QString& key ){
+		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_key = key ;
 
@@ -595,7 +595,7 @@ void createvolume::cbHiddenVolume( int r )
 
 		_set_key_ui() ;
 
-		new hmac( this,[ this ]( const QString& key ){
+		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_hiddenKey = key ;
 			

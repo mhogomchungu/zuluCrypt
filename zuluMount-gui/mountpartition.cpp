@@ -269,7 +269,7 @@ void mountPartition::ShowUI( const volumeEntryProperties& e )
 	this->show() ;
 }
 
-void mountPartition::AutoMount( QStringList entry )
+void mountPartition::AutoMount( const QStringList& entry )
 {
 	m_path = entry.at( 0 ) ;
 	QString label = entry.at( 3 ) ;
