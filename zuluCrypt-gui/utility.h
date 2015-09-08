@@ -35,6 +35,8 @@
 #include <QVector>
 
 #include <functional>
+#include <memory>
+
 #include <utility>
 
 #include <sys/types.h>
@@ -157,7 +159,7 @@ namespace utility
 	bool getOpenVolumeReadOnlyOption( const QString& app ) ;
 	QString keyPath( void ) ;
 	void keySend( const QString& keyPath,const QString& key ) ;
-	bool eventFilter( QObject * gui,QObject * watched,QEvent * event ) ;
+	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	QStringList split( const QString&,char token = '\n' ) ;
 	QStringList split( const QByteArray&,char token = '\n' ) ;
 	bool userHasGoodVersionOfWhirlpool( void ) ;

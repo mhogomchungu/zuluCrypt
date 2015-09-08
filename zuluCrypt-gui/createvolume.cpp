@@ -84,12 +84,12 @@ createvolume::createvolume( QWidget * parent ) :
 	m_ui->comboBoxOptions->setToolTip( a + b + c + d ) ;
 
 	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
-	m_ui->cbNormalVolume->addItem( tr( "Keyfile" ) ) ;
-	m_ui->cbNormalVolume->addItem( tr( "Key+keyfile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "KeyFile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "Key+keyFile" ) ) ;
 
 	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
-	m_ui->cbHiddenVolume->addItem( tr( "Keyfile" ) ) ;
-	m_ui->cbHiddenVolume->addItem( tr( "key+Keyfile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "KeyFile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "key+KeyFile" ) ) ;
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
@@ -99,14 +99,11 @@ createvolume::createvolume( QWidget * parent ) :
 
 	m_ui->comboBoxFS->addItems( { "ext4","vfat","ntfs","ext2","ext3" } ) ;
 
-#if TRUECRYPT_CREATE
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal TrueCrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden TrueCrypt" ) ) ;
-#if VERACRYPT_CREATE
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal VeraCrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden VeraCrypt" ) ) ;
-#endif
-#endif
+
 	m_ui->comboBoxVolumeType->setCurrentIndex( int( createvolume::luks ) ) ;
 }
 
@@ -152,12 +149,7 @@ void createvolume::keyChanged( bool check,const QString& key )
 
 bool createvolume::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void createvolume::volumeType( int s )
@@ -166,12 +158,12 @@ void createvolume::volumeType( int s )
 	m_ui->cbHiddenVolume->clear() ;
 
 	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
-	m_ui->cbNormalVolume->addItem( tr( "Keyfile" ) ) ;
-	m_ui->cbNormalVolume->addItem( tr( "key+Keyfile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "KeyFile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "key+KeyFile" ) ) ;
 
 	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
-	m_ui->cbHiddenVolume->addItem( tr( "Keyfile" ) ) ;
-	m_ui->cbHiddenVolume->addItem( tr( "key+Keyfile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "KeyFile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "key+KeyFile" ) ) ;
 
 	auto _enableHidden = [ this ](){
 
@@ -211,13 +203,13 @@ void createvolume::volumeType( int s )
 	case createvolume::normal_truecrypt :
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( false ) ;
-		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt keys" ) ) ;
+		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt Keys" ) ) ;
 		_disableHidden() ;
 		break ;
 	case createvolume::normal_veracrypt :
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( false ) ;
-		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt keys" ) ) ;
+		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt Keys" ) ) ;
 		_disableHidden() ;
 		break ;
 	case createvolume::normal_and_hidden_truecrypt :
@@ -441,68 +433,63 @@ void createvolume::pbCancelClicked()
 	this->HideUI() ;
 }
 
-void createvolume::tcryptCancelled()
-{
-	this->enableAll() ;
-
-	bool x = m_ui->cbNormalVolume->currentIndex() == createvolume::normal_truecrypt ;
-	bool y = m_ui->cbNormalVolume->currentIndex() == createvolume::normal_veracrypt ;
-
-	if( x || y ){
-
-		m_ui->pbOpenKeyFile->setEnabled( false ) ;
-		m_ui->lineEditPassphrase1->setEnabled( false ) ;
-	}
-
-	if( m_normalVolume ){
-		m_key.clear() ;
-		m_keyFiles.clear() ;
-	}else{
-		m_hiddenKey.clear() ;
-		m_hiddenKeyFiles.clear() ;
-	}
-}
-
 void createvolume::tcryptGui( bool e )
 {
 	m_normalVolume = e ;
+
 	this->disableAll() ;
 
-	tcrypt * t = new tcrypt( this ) ;
-	connect( t,SIGNAL( Keys( QString,QStringList ) ),this,SLOT( keys( QString,QStringList ) ) ) ;
-	connect( t,SIGNAL( cancelled() ),this,SLOT( tcryptCancelled() ) ) ;
+	new tcrypt( this,true,[ this ]( const QString& key,const QStringList& keyFiles ){
 
-	t->ShowUI_1() ;
-}
+		this->enableAll() ;
 
-void createvolume::keys( QString key,QStringList keyFiles )
-{
-	this->enableAll() ;
+		if( m_normalVolume ){
 
-	if( m_normalVolume ){
-		m_key = key ;
-		m_keyFiles = keyFiles ;
-		m_ui->lineEditPassphrase1->setEnabled( false ) ;
-		m_ui->pbOpenKeyFile->setEnabled( false ) ;
+			m_key = key ;
+			m_keyFiles = keyFiles ;
+			m_ui->lineEditPassphrase1->setEnabled( false ) ;
+			m_ui->pbOpenKeyFile->setEnabled( false ) ;
 
-		auto type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
+			auto type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
 
-		bool e = type == createvolume::normal_and_hidden_truecrypt || type == createvolume::normal_and_hidden_veracrypt ;
+			bool e = type == createvolume::normal_and_hidden_truecrypt || type == createvolume::normal_and_hidden_veracrypt ;
 
-		if( !e ){
+			if( !e ){
 
-			m_ui->lineEditHiddenKey->setEnabled( false ) ;
-			m_ui->lineEditHiddenKey1->setEnabled( false ) ;
-			m_ui->lineEditHiddenSize->setEnabled( false ) ;
-			m_ui->pbHiddenKeyFile->setEnabled( false ) ;
-			m_ui->comboBoxHiddenSize->setEnabled( false ) ;
-			m_ui->cbHiddenVolume->setEnabled( false ) ;
+				m_ui->lineEditHiddenKey->setEnabled( false ) ;
+				m_ui->lineEditHiddenKey1->setEnabled( false ) ;
+				m_ui->lineEditHiddenSize->setEnabled( false ) ;
+				m_ui->pbHiddenKeyFile->setEnabled( false ) ;
+				m_ui->comboBoxHiddenSize->setEnabled( false ) ;
+				m_ui->cbHiddenVolume->setEnabled( false ) ;
+			}
+		}else{
+			m_ui->lineEditPassphrase1->setEnabled( false ) ;
+			m_hiddenKey = key ;
+			m_hiddenKeyFiles = keyFiles ;
 		}
-	}else{
-		m_ui->lineEditPassphrase1->setEnabled( false ) ;
-		m_hiddenKey = key ;
-		m_hiddenKeyFiles = keyFiles ;
-	}
+
+	},[ this ](){
+
+		this->enableAll() ;
+
+		bool x = m_ui->cbNormalVolume->currentIndex() == createvolume::normal_truecrypt ;
+		bool y = m_ui->cbNormalVolume->currentIndex() == createvolume::normal_veracrypt ;
+
+		if( x || y ){
+
+			m_ui->pbOpenKeyFile->setEnabled( false ) ;
+			m_ui->lineEditPassphrase1->setEnabled( false ) ;
+		}
+
+		if( m_normalVolume ){
+			m_key.clear() ;
+			m_keyFiles.clear() ;
+		}else{
+			m_hiddenKey.clear() ;
+			m_hiddenKeyFiles.clear() ;
+		}
+	} ) ;
 }
 
 void createvolume::cbNormalVolume( int r )
@@ -601,7 +588,7 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey1->clear() ;
 		m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
-		m_ui->labelHidden->setText( tr( "Keyfile" ) ) ;
+		m_ui->labelHidden->setText( tr( "KeyFile" ) ) ;
 		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 
 	}else if( r == 2 ){
@@ -640,7 +627,7 @@ void createvolume::cbHiddenVolume( int r )
 void createvolume::HideUI()
 {
 	this->hide() ;
-	emit HideUISignal() ;
+	this->deleteLater() ;
 }
 
 void createvolume::enableAll()
@@ -668,11 +655,9 @@ void createvolume::enableAll()
 	m_ui->labelvolumeOptions->setEnabled( true ) ;
 	m_ui->comboBoxOptions->setEnabled( true ) ;
 
-#if TRUECRYPT_CREATE
 	if( m_ui->comboBoxVolumeType->currentIndex() > createvolume::luks ){
 		m_ui->groupBox->setEnabled( true ) ;
 	}
-#endif
 }
 
 void createvolume::disableAll()
@@ -695,10 +680,7 @@ void createvolume::disableAll()
 	m_ui->cbNormalVolume->setEnabled( false ) ;
 	m_ui->labelvolumeOptions->setEnabled( false ) ;
 	m_ui->comboBoxOptions->setEnabled( false ) ;
-
-#if TRUECRYPT_CREATE
 	m_ui->groupBox->setEnabled( false ) ;
-#endif
 }
 
 void createvolume::pbCreateClicked()

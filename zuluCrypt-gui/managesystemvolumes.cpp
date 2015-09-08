@@ -36,9 +36,9 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-manageSystemVolumes::manageSystemVolumes( QWidget * parent ) : QDialog( parent )
+manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
+	QDialog( parent ),m_ui( new Ui::manageSystemVolumes )
 {
-	m_ui = new Ui::manageSystemVolumes() ;
 	m_ui->setupUi( this ) ;
 
 	this->setFont( parent->font() ) ;
@@ -66,21 +66,21 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) : QDialog( parent )
 
 bool manageSystemVolumes::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void manageSystemVolumes::defaultButton()
 {
 	if( m_ui->pbDone->hasFocus() ){
+
 		this->pbDone() ;
+
 	}else if( m_ui->pbFile->hasFocus() ){
+
 		this->pbFile() ;
+
 	}else if( m_ui->pbPartition->hasFocus() ){
+
 		this->pbPartition() ;
 	}else{
 		this->contextMenu() ;
@@ -95,22 +95,17 @@ void manageSystemVolumes::currentItemChanged( QTableWidgetItem * current,QTableW
 void manageSystemVolumes::readSystemPartitions()
 {
 	QFile file( m_path ) ;
-	if( !file.open( QIODevice::ReadOnly ) ){
-		return ;
-	}
-	QStringList entries = QString( file.readAll() ).split( '\n' ) ;
 
-	file.close() ;
+	if( file.open( QIODevice::ReadOnly ) ){
 
-	if( entries.isEmpty() ){
-		return ;
-	}
-	entries.removeDuplicates() ;
+		QStringList l = utility::split( file.readAll() ) ;
 
-	int j = entries.size() ;
+		l.removeDuplicates() ;
 
-	for( int i = 0 ; i < j ; i++ ){
-		this->addItemsToTable( entries.at( i ) ) ;
+		for( const auto& it : l ){
+
+			this->addItemsToTable( it ) ;
+		}
 	}
 }
 
@@ -124,17 +119,24 @@ void manageSystemVolumes::writeSystemPartitions()
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Could not open \"%1\" for writing" ).arg( m_path ) ) ;
 	}else{
 		QTableWidgetItem * it ;
+
 		QTableWidget * table = m_ui->tableWidget ;
+
 		int j = m_ui->tableWidget->rowCount() ;
+
 		if( j > 0 ){
+
 			for( int i = 0 ; i < j ; i++ ){
+
 				it = table->item( i,0 ) ;
+
 				file.write( it->text().toLatin1() ) ;
+
 				file.putChar( '\n' ) ;
 			}
 		}
-		file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;
-		file.close() ;
+
+		file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;		
 	}
 }
 
@@ -151,6 +153,7 @@ void manageSystemVolumes::contextMenu()
 void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 {
 	if( current ){
+
 		QMenu m ;
 		m.setFont( this->font() ) ;
 		connect( m.addAction( tr( "Remove Selected Entry" ) ),SIGNAL( triggered() ),this,SLOT( removeCurrentRow() ) ) ;
@@ -159,6 +162,7 @@ void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 		m.addAction( tr( "Cancel" ) ) ;
 
 		if( clicked ){
+
 			m.exec( QCursor::pos() ) ;
 		}else{
 			int x = m_ui->tableWidget->columnWidth( 0 ) / 2 ;
@@ -171,11 +175,13 @@ void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 void manageSystemVolumes::removeCurrentRow()
 {
 	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
+
 	QString m = tr( "Are you sure you want to remove \n\"%1\"\n from the list?" ).arg( it->text() ) ;
 
 	DialogMsg msg( this ) ;
 
 	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING"),m ) == QMessageBox::Yes ){
+
 		tablewidget::deleteRowFromTable( m_ui->tableWidget,it->row() ) ;
 	}
 }
@@ -183,6 +189,7 @@ void manageSystemVolumes::removeCurrentRow()
 void manageSystemVolumes::addItemsToTable( QString path )
 {
 	if( path.isEmpty() ){
+
 		m_ui->tableWidget->setFocus() ;
 	}else{
 		QStringList l ;
@@ -211,21 +218,12 @@ void manageSystemVolumes::pbFile()
 
 void manageSystemVolumes::pbPartition()
 {
-	openvolume * op = new openvolume( this ) ;
-	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	connect( op,SIGNAL( HideUISignal() ),this,SLOT( setFocusTableWidget() ) ) ;
-	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( clickedPartition( QString ) ) ) ;
-	op->ShowAllPartitions() ;
-}
+	openvolume::instance( this )->ShowAllPartitions( [ this ]( const QString& e ){
 
-void manageSystemVolumes::setFocusTableWidget()
-{
-	m_ui->tableWidget->setFocus() ;
-}
+		m_ui->tableWidget->setFocus() ;
 
-void manageSystemVolumes::clickedPartition( QString path )
-{
-	this->addItemsToTable( path ) ;
+		this->addItemsToTable( e ) ;
+	} ) ;
 }
 
 void manageSystemVolumes::closeEvent( QCloseEvent * e )
@@ -237,7 +235,7 @@ void manageSystemVolumes::closeEvent( QCloseEvent * e )
 void manageSystemVolumes::HideUI()
 {
 	this->hide() ;
-	emit HideUISignal() ;
+	this->deleteLater() ;
 }
 
 void manageSystemVolumes::ShowUI( const QString& path )

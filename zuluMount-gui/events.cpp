@@ -50,7 +50,7 @@
 #define _contains( x,y ) strstr( x,y ) != 0
 #define _stringsAreEqual( x,y ) strcmp( x,y ) == 0
 
-events::events( QObject * parent )
+events::events( QObject * parent,std::function< void() > f ) : m_function( std::move( f ) )
 {
 	m_baba = this ;
 	m_main = this ;
@@ -64,6 +64,7 @@ events::~events()
 void events::stop()
 {
 	if( m_running ){
+
 		m_mtoto->terminate() ;
 	}else{
 		this->threadStopped() ;
@@ -72,7 +73,7 @@ void events::stop()
 
 void events::threadStopped()
 {
-	emit stopped() ;
+	m_function() ;
 	m_running = false ;
 }
 

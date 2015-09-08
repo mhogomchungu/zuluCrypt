@@ -69,16 +69,9 @@ public slots:
 	void raiseWindow( QString ) ;
 signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
-	void showManageFavorites( void ) ;
-	void favClickedVolume( QString volume_path,QString mount_point_path ) ;
-	void SignalShowNonSystemPartitions( void ) ;
-	void luksAddKey( QString volumePath ) ;
-	void luksDeleteKey( QString passphrase ) ;
-	void redoOpen( bool boolOpenReadOnly,bool boolKeyFromFile,QString volumePath,QString mountPointPath ) ;
 private slots :
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void info( void ) ;
-	void createEncryptedpartitionUI( void ) ;
 	void luksAddKeyContextMenu( void ) ;
 	void luksDeleteKeyContextMenu( void ) ;
 	void aboutMenuOption( void ) ;
@@ -102,7 +95,6 @@ private slots :
 	void closeStatus( int ) ;
 	void menuKeyPressed( void ) ;
 	void ShowCreateFile( void ) ;
-	void FileCreated( QString ) ;
 	void ShowFavoritesEntries( void ) ;
 	void ShowCreateKeyFile( void ) ;
 	void ShowDeleteKeyContextMenu( QString ) ;
@@ -118,9 +110,6 @@ private slots :
 	void ShowManageNonSystemPartitions( void ) ;
 	void ShowPasswordDialog( QString,QString ) ;
 	void ShowEraseDataDialog( void ) ;
-	void partitionClicked( QString ) ;
-	void veraPartitionClicked( QString ) ;
-	void createPartition( QString ) ;
 	void luksHeaderBackUpContextMenu( void ) ;
 	void volumeHeaderBackUp( void ) ;
 	void volumeRestoreHeader( void ) ;
@@ -131,7 +120,6 @@ private slots :
 	void setDefaultWallet( void ) ;
 	void failedToOpenWallet( void ) ;
 	void openFolder( void ) ;
-	void openFolder( QString ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void manageVolumesInInternalWallet( void ) ;
 	void manageVolumesInKDEWallet( void ) ;
@@ -143,19 +131,13 @@ private slots :
 	void openpdf( void ) ;
 	void updateCheck( void ) ;
 private:
+	void openFolder( const QString& ) ;
 	void autoUpdateCheck( void ) ;
 	void updateVolumeList( const QString& volume = QString() ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 
 	passwordDialog * setUpPasswordDialog( void ) ;
-	openvolume * setUpOpenpartition( void ) ;
-	createvolume * setUpCreatepartition( void ) ;
-	luksdeletekey * setUpluksdeletekey( void ) ;
-	luksaddkey * setUpluksaddkey( void ) ;
-	managevolumeheader * setUpManageVolumeHeader( void ) ;
-	cryptfiles * setUpCryptFiles( void ) ;
-	walletconfig * setUpWalletConfig( void ) ;
 
 	void setLocalizationLanguage( void ) ;
 	void setupConnections( void ) ;

@@ -27,7 +27,8 @@
 #include "../zuluCrypt-gui/task.h"
 #include "zulumounttask.h"
 
-monitor_mountinfo::monitor_mountinfo( QObject * parent ) : QThread( parent )
+monitor_mountinfo::monitor_mountinfo( QObject * parent,std::function< void() > f ) :
+	QThread( parent ),m_stop( std::move( f ) )
 {
 	m_babu = parent ;
 	m_baba = this ;
@@ -38,18 +39,22 @@ monitor_mountinfo::~monitor_mountinfo()
 {
 }
 
-void monitor_mountinfo::stop()
+std::function< void() > monitor_mountinfo::stop()
 {
-	if( m_running ){
-		m_mtoto->terminate() ;
-	}else{
-		this->threadStopped() ;
-	}
+	return [ this ](){
+
+		if( m_running ){
+
+			m_mtoto->terminate() ;
+		}else{
+			this->threadStopped() ;
+		}
+	} ;
 }
 
 void monitor_mountinfo::threadStopped()
 {
-	emit stopped() ;
+	m_stop() ;
 	m_running = false ;
 }
 

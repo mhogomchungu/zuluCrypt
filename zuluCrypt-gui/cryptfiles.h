@@ -36,6 +36,10 @@ class cryptfiles : public QDialog
 {
 	Q_OBJECT
 public:
+	static cryptfiles * instance( QWidget * parent = 0 )
+	{
+		return new cryptfiles( parent ) ;
+	}
 	explicit cryptfiles( QWidget * parent = 0 ) ;
 	~cryptfiles() ;
 signals:

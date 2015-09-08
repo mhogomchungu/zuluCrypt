@@ -23,6 +23,9 @@
 #include <QDialog>
 #include <QString>
 
+#include <functional>
+#include <memory>
+
 #include "utility.h"
 
 class QCloseEvent ;
@@ -35,14 +38,10 @@ class walletconfiginput : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit walletconfiginput( QWidget * parent = 0 ) ;
+	walletconfiginput( QWidget * parent,
+			   std::function< void( const QString&,const QString&,const QString& ) >,
+			   std::function< void() > ) ;
 	~walletconfiginput() ;
-	void ShowUI( void ) ;
-signals:
-	void add( QString volumeId,QString comment,QString key ) ;
-	void cancel( void ) ;
-public slots:
-	void HideUI( void ) ;
 private slots:
 	void pbAdd( void ) ;
 	void slotCancel( void ) ;
@@ -50,10 +49,14 @@ private slots:
 	void pbVolumePath( void ) ;
 	void setvolumeID( QString ) ;
 private:
+	void HideUI( void ) ;
+	void ShowUI( void ) ;
 	void focus( void ) ;
 	Ui::walletconfiginput * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
+	std::function< void( const QString&,const QString&,const QString& ) > m_add ;
+	std::function< void() > m_cancel ;
 };
 
 #endif // KWALLETCONFIGINPUT_H

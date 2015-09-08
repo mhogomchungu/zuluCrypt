@@ -768,15 +768,17 @@ QString utility::keyPath()
 	return QString( "%1/.zuluCrypt-socket/%2" ).arg( a,utility::hashPath( data ).mid( 1 ) ) ;
 }
 
-bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event )
+bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > function )
 {
 	if( watched == gui ){
 
 		if( event->type() == QEvent::KeyPress ){
 
-			QKeyEvent * keyEvent = static_cast< QKeyEvent* >( event ) ;
+			auto keyEvent = static_cast< QKeyEvent* >( event ) ;
 
 			if( keyEvent->key() == Qt::Key_Escape ){
+
+				function() ;
 
 				return true ;
 			}

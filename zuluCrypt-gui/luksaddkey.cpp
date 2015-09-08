@@ -65,7 +65,12 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 	connect( m_ui->pushButtonAdd,SIGNAL( clicked() ),this,SLOT( pbAdd() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 
-	connect( m_ui->textEditPassphraseToAdd,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged( QString ) ) ) ;
+	if( m_ui->cbNewKey->currentIndex() == 0 && m_keystrength.canCheckQuality() ){
+
+		connect( m_ui->textEditPassphraseToAdd,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged_0( QString ) ) ) ;
+	}else{
+		connect( m_ui->textEditPassphraseToAdd,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged_1( QString ) ) ) ;
+	}
 
 	connect( m_ui->cbExistingKey,SIGNAL( activated( int ) ),this,SLOT( cbExistingKey( int ) ) ) ;
 	connect( m_ui->cbNewKey,SIGNAL( activated( int ) ),this,SLOT( cbNewKey( int ) ) ) ;
@@ -86,37 +91,33 @@ luksaddkey::luksaddkey( QWidget * parent ) :
 
 bool luksaddkey::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
-void luksaddkey::keyChanged( QString key )
+void luksaddkey::keyChanged_1( QString key )
 {
-	bool checkQuality = m_ui->cbNewKey->currentIndex() == 0 && m_keystrength.canCheckQuality() ;
+	Q_UNUSED( key ) ;
+	this->setWindowTitle( tr( "Add A Key To A Volume" ) ) ;
+}
 
-	if( checkQuality ){
+void luksaddkey::keyChanged_0( QString key )
+{
+	int st = m_keystrength.quality( key ) ;
 
-		int st = m_keystrength.quality( key ) ;
+	if( st < 0 ){
 
-		if( st < 0 ){
-
-			this->setWindowTitle( tr( "Passphrase Quality: 0%" ) ) ;
-		}else{
-			this->setWindowTitle( tr( "Passphrase Quality: %1%" ).arg( QString::number( st ) ) ) ;
-		}
+		this->setWindowTitle( tr( "Passphrase Quality: 0%" ) ) ;
 	}else{
-		this->setWindowTitle( tr( "Add A Key To A Volume" ) ) ;
+		this->setWindowTitle( tr( "Passphrase Quality: %1%" ).arg( QString::number( st ) ) ) ;
 	}
 }
 
 void luksaddkey::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
+
 	if( m_isWindowClosable ){
+
 		this->HideUI() ;
 	}
 }
@@ -155,7 +156,7 @@ void luksaddkey::setFieldFocus()
 void luksaddkey::HideUI()
 {
 	this->hide() ;
-	emit HideUISignal() ;
+	this->deleteLater() ;
 }
 
 void luksaddkey::cbExistingKey( int e )
@@ -180,7 +181,7 @@ void luksaddkey::cbExistingKey( int e )
 		m_ui->textEditExistingPassphrase->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
 		m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->pushButtonOpenExistingKeyFile->setEnabled( true ) ;
-		m_ui->labelExistingPassphrase->setText( tr( "Keyfile Path" ) ) ;
+		m_ui->labelExistingPassphrase->setText( tr( "KeyFile Path" ) ) ;
 		m_ui->textEditExistingPassphrase->clear() ;
 		m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 		m_ui->textEditExistingPassphrase->setFocus() ;
@@ -226,7 +227,7 @@ void luksaddkey::cbNewKey( int e )
 		m_ui->textEditPassphraseToAdd->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
 		m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->pushButtonOpenNewKeyFile->setEnabled( true ) ;
-		m_ui->labelNewPassphrase->setText( tr( "Keyfile path" ) ) ;
+		m_ui->labelNewPassphrase->setText( tr( "KeyFile path" ) ) ;
 		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
 		m_ui->lineEditReEnterPassphrase->clear() ;
 		m_ui->labelReEnterPassphrase->setEnabled( false ) ;
@@ -251,7 +252,7 @@ void luksaddkey::cbNewKey( int e )
 
 void luksaddkey::pbOpenExisitingKeyFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Existing Keyfile" ),utility::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Existing KeyFile" ),utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->textEditExistingPassphrase->setText( Z ) ;
 	}
@@ -260,7 +261,7 @@ void luksaddkey::pbOpenExisitingKeyFile( void )
 
 void luksaddkey::pbOpenNewKeyFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "New Keyfile" ),utility::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "New KeyFile" ),utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		m_ui->textEditPassphraseToAdd->setText( Z ) ;
 	}
@@ -278,12 +279,11 @@ void luksaddkey::pbOpenFile( void )
 
 void luksaddkey::pbOpenPartition( void )
 {
-	openvolume * op = new openvolume( this ) ;
-	op->showLuksOnly() ;
-	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( ShowUI( QString ) ) ) ;
-	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	connect( op,SIGNAL( HideUISignal() ),this,SLOT( setFieldFocus() ) ) ;
-	op->ShowAllPartitions() ;
+	openvolume::instance( this )->showLuksOnly().ShowAllPartitions( [ this ]( const QString& e ){
+
+		this->setFieldFocus() ;
+		this->ShowUI( e ) ;
+	} ) ;
 }
 
 void luksaddkey::pbAdd( void )

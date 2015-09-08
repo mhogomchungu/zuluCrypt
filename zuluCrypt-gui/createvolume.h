@@ -52,6 +52,10 @@ public:
 		normal_and_hidden_veracrypt = 5
 	}createVolumeType ;
 
+	static createvolume * instance( QWidget * parent )
+	{
+		return new createvolume( parent ) ;
+	}
 	explicit createvolume( QWidget * parent = 0 ) ;
 	~createvolume() ;
 signals:
@@ -75,8 +79,6 @@ private slots:
 	void dialogResult( int ) ;
 	void setOptions( int ) ;
 	void tcryptGui( bool ) ;
-	void tcryptCancelled( void ) ;
-	void keys( QString,QStringList ) ;
 private:
 	void keyChanged( bool,const QString& ) ;
 	void eraseDataPartition( void ) ;

@@ -35,6 +35,9 @@ class QTableWidget ;
 #include "volumeentryproperties.h"
 #include "../zuluCrypt-gui/utility.h"
 
+#include <functional>
+#include <memory>
+
 namespace Ui {
 class keyDialog;
 }
@@ -43,17 +46,26 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	keyDialog( QWidget * parent,QTableWidget *,const volumeEntryProperties& ) ;
+	static keyDialog * instance( QWidget * parent,
+				     QTableWidget * table,
+				     const volumeEntryProperties& v,
+				     std::function< void() > cancel,
+				     std::function< void( const QString& ) > success )
+	{
+		return new keyDialog( parent,table,v,std::move( cancel ),std::move( success ) ) ;
+	}
+	keyDialog( QWidget * parent,
+		   QTableWidget *,
+		   const volumeEntryProperties&,
+		   std::function< void() >,
+		   std::function< void( const QString& ) > ) ;
 	~keyDialog() ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 signals:
 	void mounted( QString ) ;
 	void cryptoOpen( QString ) ;
-	void cancel( void ) ;
-	void openMountPoint( QString ) ;
 private slots:
-	void setVeraCryptPIMValue( int ) ;
 	void cbActicated( int ) ;
 	void pbkeyOption( void ) ;
 	void pbMountPointPath( void ) ;
@@ -71,8 +83,6 @@ private slots:
 	void doAction( QAction * ) ;
 	void showOffSetWindowOption( void ) ;
 	void showFileSystemOptionWindow( void ) ;
-	void keys( QString key,QStringList keyFiles ) ;
-	void tcryptCancelled( void ) ;
 	void encfsMount( void ) ;
 private :
 	void tcryptGui( void ) ;
@@ -97,6 +107,8 @@ private :
 	bool m_volumeIsEncFs = false ;
 	enum{ Key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
 	int m_veraCryptPIMValue = 0 ;
+	std::function< void() > m_cancel ;
+	std::function< void( const QString& ) > m_success ;
 };
 
 #endif // KEYDIALOG_H

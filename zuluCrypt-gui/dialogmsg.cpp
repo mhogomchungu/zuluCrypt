@@ -42,12 +42,7 @@ DialogMsg::DialogMsg( QWidget * parent ) :
 
 bool DialogMsg::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void DialogMsg::pbNo()

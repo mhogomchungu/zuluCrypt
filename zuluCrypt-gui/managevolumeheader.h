@@ -36,6 +36,10 @@ class managevolumeheader : public QDialog
 {
 	Q_OBJECT
 public:
+	static managevolumeheader * instance ( QWidget * parent )
+	{
+		return new managevolumeheader( parent ) ;
+	}
 	explicit managevolumeheader( QWidget * parent = 0 ) ;
 	~managevolumeheader() ;
 signals:
@@ -54,7 +58,6 @@ private slots:
 	void pbOpenPartition( void ) ;
 	void pbOpenFile( void ) ;
 	void pbKeyFile( void ) ;
-	void selectedPartition( QString ) ;
 	void backUpHeaderNameChange( QString ) ;
 	void rbKeyToggled( bool ) ;
 	void rbTrueCryptVolume( bool ) ;

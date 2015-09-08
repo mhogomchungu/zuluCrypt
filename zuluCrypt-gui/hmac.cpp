@@ -61,13 +61,7 @@ hmac::hmac( QDialog * parent,std::function< void( const QString& ) > function,co
 
 bool hmac::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void hmac::closeEvent( QCloseEvent * e )
@@ -89,6 +83,7 @@ void hmac::ShowUI()
 void hmac::HideUI()
 {
 	m_function( m_key ) ;
+
 	this->hide() ;
 	this->deleteLater() ;
 }
@@ -134,7 +129,7 @@ void hmac::pbSetKey()
 
 void hmac::pbSelectKeyFile()
 {
-	m_keyFile = QFileDialog::getOpenFileName( this,tr( "Key File" ),utility::homePath(),0 ) ;
+	m_keyFile = QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),0 ) ;
 }
 
 void hmac::pbClose()

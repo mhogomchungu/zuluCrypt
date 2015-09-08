@@ -21,7 +21,14 @@
 #ifndef VERACRYPTPIMDIALOG_H
 #define VERACRYPTPIMDIALOG_H
 
+#include <functional>
+#include <memory>
+
+#include <QCloseEvent>
+#include <QObject>
+
 #include <QDialog>
+
 class QCloseEvent ;
 
 namespace Ui {
@@ -32,19 +39,18 @@ class VeraCryptPIMDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit VeraCryptPIMDialog( QWidget * parent = 0 ) ;
-	void Show() ;
-	void Hide() ;
+	explicit VeraCryptPIMDialog( QWidget * parent,std::function< void( int ) > ) ;
 	~VeraCryptPIMDialog() ;
-signals:
-	void setValue( int ) ;
 private slots:
 	void pbSet() ;
 	void pbCancel() ;
 private:
+	void Show() ;
+	void Hide() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::VeraCryptPIMDialog * m_ui ;
+	std::function< void( int ) > m_function ;
 };
 
 #endif // VERACRYPTPIMDIALOG_H

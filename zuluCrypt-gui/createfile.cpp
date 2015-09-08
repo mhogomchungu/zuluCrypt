@@ -32,7 +32,8 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 
-createfile::createfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::createfile )
+createfile::createfile( QWidget * parent,std::function< void( const QString& ) > f ) :
+	QDialog( parent ),m_ui( new Ui::createfile ),m_function( std::move( f ) )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
@@ -56,16 +57,13 @@ createfile::createfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::cre
 	this->setWindowTitle( tr( "Create A Container File" ) ) ;
 
 	m_running = false ;
+
+	this->showUI() ;
 }
 
 bool createfile::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->pbCancel() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->pbCancel() ; } ) ;
 }
 
 void createfile::fileTextChange( QString txt )
@@ -210,7 +208,7 @@ void createfile::pbCreate()
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
 		QFile::remove( filePath ) ;
 	}else if( r == 0 ){
-		emit fileCreated( filePath ) ;
+		m_function( filePath ) ;
 	}else{
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
 		QFile::remove( filePath ) ;
@@ -240,8 +238,8 @@ void createfile::pbCancel()
 
 void createfile::HideUI()
 {
-	emit HideUISignal() ;
 	this->hide() ;
+	this->deleteLater() ;
 }
 
 void createfile::setProgress( int p )

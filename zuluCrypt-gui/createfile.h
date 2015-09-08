@@ -38,12 +38,10 @@ class createfile : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit createfile( QWidget * parent = 0 ) ;
+	explicit createfile( QWidget * parent,std::function< void( const QString& ) > ) ;
 	~createfile();
 signals :
-	void HideUISignal( void ) ;
 	void sendProgress( int ) ;
-	void fileCreated( QString ) ;
 public slots:
 	void HideUI( void ) ;
 	void showUI( void ) ;
@@ -61,6 +59,7 @@ private:
 	Ui::createfile * m_ui ;
 	bool m_exit ;
 	bool m_running ;
+	std::function< void( const QString& ) > m_function ;
 };
 
 #endif // CREATEFILE_H

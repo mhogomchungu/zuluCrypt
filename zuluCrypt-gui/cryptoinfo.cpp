@@ -46,13 +46,7 @@ cryptoinfo::cryptoinfo( QWidget * parent,QString path,QString msg ) :
 
 bool cryptoinfo::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void cryptoinfo::closeEvent( QCloseEvent * e )

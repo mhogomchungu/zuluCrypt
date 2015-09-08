@@ -355,18 +355,9 @@ bool MainWindow::autoOpenFolderOnMount( void )
 
 void MainWindow::startAutoMonitor()
 {
-	m_mountInfo = new monitor_mountinfo( this ) ;
-	m_events = new events( this ) ;
+	m_mountInfo = new monitor_mountinfo( this,[ this ](){ this->quitApplication() ; } ) ;
 
-	/*
-	 * perform an ordely shut down when the application terminates to prevent an occassional crash with
-	 * a warning that says something like "an object was destroyed while a thread is still running"
-	 *
-	 * On quiting,we first shut down auto_mount object and then monitor_mountinfo object and then we
-	 * close the application
-	 */
-	connect( m_mountInfo,SIGNAL( stopped() ),this,SLOT( quitApplication() ) ) ;
-	connect( m_events,SIGNAL( stopped() ),m_mountInfo,SLOT( stop() ) ) ;
+	m_events = new events( this,m_mountInfo->stop() ) ;
 
 	m_mountInfo->start() ;
 	m_events->start() ;
@@ -403,10 +394,13 @@ void MainWindow::autoMountVolume( volumeEntryProperties * e )
 			this->addEntryToTable( true,l ) ;
 		}else{
 			if( m_autoMount ){
-				auto mp = new mountPartition( this,m_ui->tableWidget ) ;
-				connect( mp,SIGNAL( openMountPoint( QString ) ),
-					 this,SLOT( openMountPointPath( QString ) ) ) ;
-				mp->AutoMount( l ) ;
+
+				mountPartition::instance( this,m_ui->tableWidget,[](){},[ this ]( const QString& e ){
+
+					this->openMountPointPath( e ) ;
+
+				} )->AutoMount( l ) ;
+
 			}else{
 				this->addEntryToTable( false,l ) ;
 			}
@@ -769,9 +763,7 @@ void MainWindow::dragEnterEvent( QDragEnterEvent * e )
 
 void MainWindow::dropEvent( QDropEvent * e )
 {
-	auto l = e->mimeData()->urls() ;
-
-	for( const auto& it : l ){
+	for( const auto& it : e->mimeData()->urls() ){
 
 		this->showMoungDialog( it.path() ) ;
 	}
@@ -783,19 +775,25 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 
 	if( entry.encryptedVolume() ){
 
-		auto kd = new keyDialog( this,m_ui->tableWidget,entry ) ;
+		keyDialog::instance( this,m_ui->tableWidget,entry,[ this ](){
 
-		connect( kd,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
-		connect( kd,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
+			this->enableAll() ;
 
-		kd->ShowUI() ;
+		},[ this ]( const QString& e ){
+
+			this->openMountPointPath( e ) ;
+
+		} )->ShowUI() ;
 	}else{
-		auto mp = new mountPartition( this,m_ui->tableWidget ) ;
+		mountPartition::instance( this,m_ui->tableWidget,[ this ](){
 
-		connect( mp,SIGNAL( cancel() ),this,SLOT( enableAll() ) ) ;
-		connect( mp,SIGNAL( openMountPoint( QString ) ),this,SLOT( openMountPointPath( QString ) ) ) ;
+			this->enableAll() ;
 
-		mp->ShowUI( entry ) ;
+		},[ this ]( const QString& e ){
+
+			this->openMountPointPath( e ) ;
+
+		} )->ShowUI( entry ) ;
 	}
 }
 
@@ -874,6 +872,7 @@ QFont MainWindow::getSystemVolumeFont()
 void MainWindow::addEntryToTable( bool systemVolume,const QStringList& l )
 {
 	if( systemVolume ){
+
 		tablewidget::addRowToTable( m_ui->tableWidget,l,this->getSystemVolumeFont() ) ;
 	}else{
 		tablewidget::addRowToTable( m_ui->tableWidget,l ) ;
@@ -887,6 +886,7 @@ void MainWindow::removeEntryFromTable( QString volume )
 	int r = tablewidget::columnHasEntry( table,volume ) ;
 
 	if( r != -1 ){
+
 		tablewidget::deleteRowFromTable( table,r ) ;
 		this->enableAll() ;
 	}else{
@@ -926,14 +926,18 @@ void MainWindow::updateList( const volumeEntryProperties& entry )
 		auto table = m_ui->tableWidget ;
 
 		int row = tablewidget::columnHasEntry( table,entry.volumeName() ) ;
+
 		if( row == -1 ){
+
 			row = tablewidget::addEmptyRow( table ) ;
 		}
 		if( entry.isSystem() ){
+
 			tablewidget::updateRowInTable( table,entry.entryList(),row,this->getSystemVolumeFont() ) ;
 		}else{
 			tablewidget::updateRowInTable( table,entry.entryList(),row,this->font() ) ;
 		}
+
 		tablewidget::selectRow( table,row ) ;
 	}
 }

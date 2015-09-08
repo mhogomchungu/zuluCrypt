@@ -23,10 +23,8 @@
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
 
-#include <QCloseEvent>
-
-VeraCryptPIMDialog::VeraCryptPIMDialog( QWidget * parent ) :
-	QDialog( parent ),m_ui(new Ui::VeraCryptPIMDialog)
+VeraCryptPIMDialog::VeraCryptPIMDialog( QWidget * parent,std::function< void( int ) > function ) :
+	QDialog( parent ),m_ui( new Ui::VeraCryptPIMDialog ),m_function( std::move( function ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -40,16 +38,13 @@ VeraCryptPIMDialog::VeraCryptPIMDialog( QWidget * parent ) :
 	m_ui->label->setText( tr( "Set VeraCrypt dynamic mode magic number below." ) ) ;
 
 	m_ui->lineEditPIM->setFocus() ;
+
+	this->Show() ;
 }
 
 bool VeraCryptPIMDialog::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->pbCancel() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->pbCancel() ; } ) ;
 }
 
 void VeraCryptPIMDialog::closeEvent( QCloseEvent * e )
@@ -81,7 +76,8 @@ void VeraCryptPIMDialog::pbSet()
 	int e = m_ui->lineEditPIM->text().toInt( &ok ) ;
 
 	if( ok ){
-		emit setValue( e ) ;
+
+		m_function( e ) ;
 		this->Hide() ;
 	}else{
 		DialogMsg msg( this ) ;
@@ -92,6 +88,6 @@ void VeraCryptPIMDialog::pbSet()
 
 void VeraCryptPIMDialog::pbCancel()
 {
-	emit setValue( 0 ) ;
+	m_function( 0 ) ;
 	this->Hide() ;
 }

@@ -61,12 +61,7 @@ walletconfig::walletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 
 bool walletconfig::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void walletconfig::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
@@ -115,73 +110,69 @@ void walletconfig::pbClose()
 	this->HideUI() ;
 }
 
-void walletconfig::add( QString volumeID,QString comment,QString key )
-{
-	m_comment  = comment ;
-	m_volumeID = volumeID ;
-	m_key      = key ;
-
-	Task::run< bool >( [ this ](){
-
-		auto _add = [ this ](){
-
-			if( m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ){
-
-				if( m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ){
-
-					return true ;
-				}else{
-					m_wallet->deleteKey( m_volumeID ) ;
-					return false ;
-				}
-			}else{
-				return false ;
-			}
-		} ;
-
-		for( int i = 0 ; i < 3 ; i++ ){
-
-			if( _add() ){
-
-				return true ;
-			}else{
-				utility::Task::waitForTwoSeconds() ;
-			}
-		}
-
-		return false ;
-
-	} ).then( [ this ]( bool success ){
-
-		if( success ){
-
-			QStringList entry ;
-			entry.append( m_volumeID ) ;
-			entry.append( m_comment ) ;
-
-			tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
-		}else{
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed To Add the Key In The Wallet." ) ) ;
-		}
-
-		this->enableAll() ;
-		m_ui->tableWidget->setFocus() ;
-	} ) ;
-}
-
-void walletconfig::cancel()
-{
-	this->enableAll() ;
-}
-
 void walletconfig::pbAdd()
 {
 	this->disableAll() ;
-	walletconfiginput * w = new walletconfiginput( this ) ;
-	connect( w,SIGNAL( add( QString,QString,QString ) ),this,SLOT( add( QString,QString,QString ) ) ) ;
-	connect( w,SIGNAL( cancel() ),this,SLOT( cancel() ) ) ;
-	w->ShowUI() ;
+
+	new walletconfiginput( this,[ this ]( const QString& volumeID,const QString& comment,const QString& key ){
+
+		m_comment  = comment ;
+		m_volumeID = volumeID ;
+		m_key      = key ;
+
+		Task::run< bool >( [ this ](){
+
+			auto _add = [ this ](){
+
+				if( m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ){
+
+					if( m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ){
+
+						return true ;
+					}else{
+						m_wallet->deleteKey( m_volumeID ) ;
+
+						return false ;
+					}
+				}else{
+					return false ;
+				}
+			} ;
+
+			for( int i = 0 ; i < 2 ; i++ ){
+
+				if( _add() ){
+
+					return true ;
+				}else{
+					utility::Task::waitForTwoSeconds() ;
+				}
+			}
+
+			return false ;
+
+		} ).then( [ this ]( bool success ){
+
+			if( success ){
+
+				QStringList entry ;
+				entry.append( m_volumeID ) ;
+				entry.append( m_comment ) ;
+
+				tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+			}else{
+				DialogMsg msg( this ) ;
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed To Add the Key In The Wallet." ) ) ;
+			}
+
+			this->enableAll() ;
+			m_ui->tableWidget->setFocus() ;
+		} ) ;
+
+	},[ this ](){
+
+		this->enableAll() ;
+	} ) ;
 }
 
 void walletconfig::ShowUI( LxQt::Wallet::walletBackEnd backEnd )

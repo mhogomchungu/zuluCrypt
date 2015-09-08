@@ -84,12 +84,7 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 
 bool cryptfiles::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void cryptfiles::sourceTextChanged( QString source )
@@ -180,10 +175,11 @@ void cryptfiles::pbCancel()
 void cryptfiles::HideUI()
 {
 	if( m_OperationInProgress ){
+
 		m_task->terminate() ;
-	}else{
-		emit HideUISignal() ;
+	}else{		
 		this->hide() ;
+		this->deleteLater() ;
 	}
 }
 

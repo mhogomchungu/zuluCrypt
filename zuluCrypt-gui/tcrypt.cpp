@@ -31,7 +31,10 @@
 #include <QFileDialog>
 #include <QMimeData>
 
-tcrypt::tcrypt( QWidget * parent) : QDialog( parent ),m_ui( new Ui::tcrypt )
+tcrypt::tcrypt( QWidget * parent,bool e,
+		std::function< void( const QString&,const QStringList& ) > p,
+		std::function< void() > q ) :
+	QDialog( parent ),m_ui( new Ui::tcrypt ),m_success( std::move( p ) ),m_cancelled( std::move( q ) )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
@@ -47,6 +50,13 @@ tcrypt::tcrypt( QWidget * parent) : QDialog( parent ),m_ui( new Ui::tcrypt )
 
 	this->installEventFilter( this ) ;
 	m_ui->tableWidget->setColumnWidth( 0,426 ) ;
+
+	if( e ){
+
+		m_ui->pbSend->setText( tr( "&Set" ) ) ;
+	}
+
+	this->show() ;
 }
 
 void tcrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
@@ -61,23 +71,7 @@ void tcrypt::itemClicked( QTableWidgetItem * item )
 
 bool tcrypt::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
-}
-
-void tcrypt::ShowUI()
-{
-	this->show() ;
-}
-
-void tcrypt::ShowUI_1()
-{
-	m_ui->pbSend->setText( tr( "set" ) ) ;
-	this->show() ;
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void tcrypt::HideUI()
@@ -99,16 +93,9 @@ void tcrypt::dragEnterEvent( QDragEnterEvent * e )
 
 void tcrypt::dropEvent( QDropEvent * e )
 {
-	const QMimeData * m = e->mimeData() ;
-	QList<QUrl> l = m->urls() ;
+	for( const auto& it : e->mimeData()->urls() ){
 
-	QTableWidget * table = m_ui->tableWidget ;
-
-	QStringList k ;
-	for( const auto& it : l ){
-		k.clear() ;
-		k.append( it.path() ) ;
-		tablewidget::addRowToTable( table,k ) ;
+		tablewidget::addRowToTable( m_ui->tableWidget,QStringList{ it.path() } ) ;
 	}
 }
 
@@ -125,20 +112,22 @@ void tcrypt::pbSend()
 		 */
 		this->hide() ;
 
-		emit Keys( m_ui->lineEdit->text(),l ) ;
+		m_success( m_ui->lineEdit->text(),l ) ;
+
 		this->HideUI() ;
 	}
 }
 
 void tcrypt::pbCancel()
 {
-	emit cancelled() ;
+	m_cancelled() ;
+
 	this->HideUI() ;
 }
 
 void tcrypt::pbAddKeyFIle()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath(),0 ) ;
+	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),utility::homePath(),0 ) ;
 	if( !Z.isEmpty() ){
 		QTableWidget * table = m_ui->tableWidget ;
 		QStringList l ;

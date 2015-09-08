@@ -58,16 +58,13 @@ createkeyfile::createkeyfile( QWidget * parent ) :
 	this->installEventFilter( this ) ;
 
 	m_running = false ;
+
+	this->ShowUI() ;
 }
 
 bool createkeyfile::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void createkeyfile::keyTextChange( QString txt )
@@ -89,7 +86,7 @@ void createkeyfile::keyTextChange( QString txt )
 void createkeyfile::HideUI()
 {
 	this->hide() ;
-	emit HideUISignal() ;
+	this->deleteLater() ;
 }
 
 void createkeyfile::closeEvent( QCloseEvent * e )
@@ -211,7 +208,7 @@ void createkeyfile::pbCreate()
 		msg.ShowUIOK( tr( "WARNING!" ),tr( "Process interrupted,key not fully generated" ) ) ;
 		this->enableAll() ;
 	}else{
-		msg.ShowUIOK( tr( "SUCCESS!" ),tr( "Key file successfully created" ) ) ;
+		msg.ShowUIOK( tr( "SUCCESS!" ),tr( "KeyFile successfully created" ) ) ;
 		this->HideUI() ;
 	}
 }

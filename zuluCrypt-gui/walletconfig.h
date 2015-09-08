@@ -40,6 +40,10 @@ class walletconfig : public QDialog
 {
 	Q_OBJECT
 public:
+	static walletconfig * instance( QWidget * parent )
+	{
+		return new walletconfig( parent ) ;
+	}
 	explicit walletconfig( QWidget * parent = 0 ) ;
 	~walletconfig() ;
 	void ShowUI( LxQt::Wallet::walletBackEnd ) ;
@@ -52,8 +56,6 @@ private slots:
 	void itemClicked ( QTableWidgetItem * item ) ;
 	void pbDelete( void ) ;
 	void pbClose( void ) ;
-	void add( QString volumeID,QString comment,QString key ) ;
-	void cancel( void ) ;
 	void pbAdd( void ) ;
 	void walletIsOpen( bool ) ;
 private:

@@ -25,6 +25,9 @@
 #include <QString>
 #include <QStringList>
 
+#include <functional>
+#include <memory>
+
 class QObject ;
 class volumeEntryProperties ;
 
@@ -32,7 +35,8 @@ class monitor_mountinfo : public QThread
 {
 	Q_OBJECT
 public:
-	explicit monitor_mountinfo( QObject * parent = 0 ) ;
+	monitor_mountinfo( QObject * parent,std::function< void() > ) ;
+	std::function< void() > stop() ;
 	~monitor_mountinfo() ;
 signals:
 	void stopped( void ) ;
@@ -41,7 +45,6 @@ signals:
 	void volumeMiniProperties_0( volumeEntryProperties * ) ;
 private slots:
 	void threadStopped( void ) ;
-	void stop( void ) ;
 private:
 	void run( void ) ;
 	void failedToStart( void ) ;
@@ -50,6 +53,7 @@ private:
 	QObject * m_babu ;
 	monitor_mountinfo * m_main ;
 	bool m_running ;
+	std::function< void() > m_stop ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

@@ -66,9 +66,9 @@
  */
 static QString _internalPassWord ;
 
-passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialog( parent )
+passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent,std::function< void( const QString& ) > f ) :
+	QDialog( parent ),m_ui( new Ui::PasswordDialog() ),m_openFolder( std::move( f ) )
 {
-	m_ui = new Ui::PasswordDialog() ;
 	m_ui->setupUi( this ) ;
 
 	m_parent = parent ;
@@ -111,12 +111,7 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent ) : QDialo
 
 bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void passwordDialog::pbPlugin()
@@ -136,39 +131,40 @@ void passwordDialog::pbPlugin()
 void passwordDialog::pbPluginEntryClicked( QAction * e )
 {
 	QString text = e->text() ;
+
+	text.remove( "&" ) ;
+
 	if( text != tr( "Cancel" ) ){
+
 		m_ui->PassPhraseField->setText( text ) ;
 	}
-}
-
-void passwordDialog::tcryptCancelled( void )
-{
-	m_key.clear() ;
-	m_keyFiles.clear() ;
-	m_ui->cbKeyType->setCurrentIndex( passwordDialog::key ) ;
-	m_ui->PassPhraseField->setText( "" ) ;
-	this->enableAll() ;
 }
 
 void passwordDialog::tcryptGui()
 {
 	this->disableAll() ;
+
 	m_ui->PassPhraseField->setText( QString() ) ;
 
-	tcrypt * t = new tcrypt( this ) ;
-	connect( t,SIGNAL( Keys( QString,QStringList ) ),this,SLOT( keys( QString,QStringList ) ) ) ;
-	connect( t,SIGNAL( cancelled() ),this,SLOT( tcryptCancelled() ) ) ;
+	new tcrypt( this,false,[ this ]( const QString& key,const QStringList& keyFiles ) {
 
-	t->ShowUI() ;
-}
+		m_key = key ;
+		m_keyFiles = keyFiles ;
 
-void passwordDialog::keys( QString key,QStringList keyFiles )
-{
-	m_key = key ;
-	m_keyFiles = keyFiles ;
-	this->openVolume() ;
-	m_ui->cbKeyType->setCurrentIndex( passwordDialog::key ) ;
-	m_ui->PassPhraseField->setText( "" ) ;
+		this->openVolume() ;
+
+		m_ui->cbKeyType->setCurrentIndex( passwordDialog::key ) ;
+		m_ui->PassPhraseField->setText( QString() ) ;
+
+	},[ this ](){
+
+		m_key.clear() ;
+		m_keyFiles.clear() ;
+		m_ui->cbKeyType->setCurrentIndex( passwordDialog::key ) ;
+		m_ui->PassPhraseField->setText( QString() ) ;
+
+		this->enableAll() ;
+	} ) ;
 }
 
 void passwordDialog::cbStateChanged( int state )
@@ -192,11 +188,10 @@ void passwordDialog::closeEvent( QCloseEvent * e )
 void passwordDialog::addTcryptVcryptKeyOption()
 {
 	if( m_veraCryptVolume ){
+
 		m_ui->cbKeyType->addItem( tr( "VeraCrypt Keys" ) ) ;
 	}else{
-		#if TRUECRYPT_CRYPTSETUP
-			m_ui->cbKeyType->addItem( tr( "TrueCrypt Keys" ) ) ;
-		#endif
+		m_ui->cbKeyType->addItem( tr( "TrueCrypt Keys" ) ) ;
 	}
 }
 
@@ -329,7 +324,7 @@ void passwordDialog::passphraseFromFileOption()
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
-	m_ui->labelPassphrase->setText( tr( "Keyfile Path" ) ) ;
+	m_ui->labelPassphrase->setText( tr( "KeyFile Path" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->pbKeyOption->setIcon( QIcon( ":/keyfile.png" ) ) ;
@@ -342,7 +337,7 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 {
 	QString msg ;
 	if( m_ui->cbKeyType->currentIndex() == passwordDialog::keyfile ){
-		msg = tr( "Select A Keyfile" ) ;
+		msg = tr( "Select A KeyFile" ) ;
 	}else{
 		msg = tr( "Select A Key Module" ) ;
 	}
@@ -384,7 +379,7 @@ void passwordDialog::HideUI()
 {
 	if( !m_working ){
 		this->hide() ;
-		emit HideUISignal() ;
+		this->deleteLater() ;
 	}
 }
 
@@ -649,7 +644,7 @@ void passwordDialog::success( const QByteArray& r )
 
 		tablewidget::addRowToTable( m_table,list ) ;
 
-		emit openFolder( m_p ) ;
+		m_openFolder( m_p ) ;
 
 		this->HideUI() ;
 	}else{
@@ -705,7 +700,9 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 	this->enableAll() ;
 
 	if( r == 4 ){
+
 		if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
+
 			m_ui->PassPhraseField->clear() ;
 			m_ui->PassPhraseField->setFocus() ;
 		}

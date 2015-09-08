@@ -39,18 +39,20 @@ class openvolume :  public QDialog
 {
 	Q_OBJECT
 public:
-	openvolume( QWidget * parent = 0 ) ;
+	static openvolume * instance( QWidget * parent )
+	{
+		return new openvolume( parent ) ;
+	}
+	openvolume( QWidget * parent ) ;
 	virtual ~openvolume() ;
-	void showEncryptedOnly( void ) ;
-	void showLuksOnly( void ) ;
-signals :
-	void HideUISignal( void ) ;
-	void clickedPartition( QString ) ;
+	openvolume& showEncryptedOnly( void ) ;
+	openvolume& showLuksOnly( void ) ;
+	void ShowAllPartitions( std::function< void( const QString& ) > ) ;
+	void ShowNonSystemPartitions( std::function< void( const QString& ) > ) ;
+	void partitionList( const QString&,const QString&,std::function< void( const QString& ) > ) ;
 public slots:
 	void tableEntryDoubleClicked( QTableWidgetItem * ) ;
-	void ShowAllPartitions( void ) ;
 	void HideUI( void ) ;
-	void ShowNonSystemPartitions( void ) ;
 	void ShowPartitionList( QString,QString ) ;
 	void partitionList( QString,QString ) ;
 	void allowLUKSOnly( void ) ;
@@ -70,6 +72,7 @@ private:
 	bool m_diableNonLUKS ;
 	bool m_showEncryptedOnly ;
 	bool m_showLuksOnly ;
+	std::function< void( const QString& ) > m_function ;
 };
 
 #endif

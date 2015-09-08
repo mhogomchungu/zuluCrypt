@@ -44,7 +44,8 @@
 #include "../zuluCrypt-gui/utility.h"
 #include "mountoptions.h"
 
-mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) : QWidget( parent ),m_ui( new Ui::mountPartition )
+mountPartition::mountPartition( QWidget * parent,QTableWidget * table,std::function< void() > p,std::function< void( const QString& ) > q ) :
+	QWidget( parent ),m_ui( new Ui::mountPartition ),m_cancel( std::move( p ) ),m_success( std::move( q ) )
 {
 	m_ui->setupUi( this ) ;
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
@@ -89,12 +90,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table ) : QWidge
 
 bool mountPartition::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void mountPartition::checkBoxReadOnlyStateChanged( int state )
@@ -140,7 +136,7 @@ void mountPartition::disableAll()
 
 void mountPartition::pbCancel()
 {
-	emit cancel() ;
+	m_cancel() ;
 	this->HideUI() ;
 }
 
@@ -198,7 +194,8 @@ void mountPartition::pbMount()
 
 	if( s.success() ){
 
-		emit openMountPoint( utility::mountPath( m_ui->lineEdit->text() ) ) ;
+		m_success( utility::mountPath( m_ui->lineEdit->text() ) ) ;
+
 		this->HideUI() ;
 	}else{
 		if( this->isVisible() ){

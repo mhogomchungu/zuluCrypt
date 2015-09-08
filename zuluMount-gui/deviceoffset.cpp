@@ -36,12 +36,7 @@ deviceOffset::deviceOffset( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::
 
 bool deviceOffset::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->closeUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->closeUI() ; } ) ;
 }
 
 void deviceOffset::ShowUI()

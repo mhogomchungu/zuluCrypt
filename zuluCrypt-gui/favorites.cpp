@@ -66,16 +66,13 @@ favorites::favorites( QWidget * parent ) :
 	this->addAction( m_ac ) ;
 
 	this->installEventFilter( this ) ;
+
+	this->ShowUI() ;
 }
 
 bool favorites::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void favorites::devicePathTextChange( QString txt )
@@ -94,16 +91,16 @@ void favorites::devicePathTextChange( QString txt )
 
 void favorites::shortcutPressed()
 {
-	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
+	auto it = m_ui->tableWidget->currentItem() ;
 	itemClicked( it,false ) ;
 }
 
 void favorites::deviceAddress()
 {
-	openvolume * op = new openvolume( this ) ;
-	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( PartitionEntry( QString ) ) ) ;
-	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	op->ShowAllPartitions() ;
+	openvolume::instance( this )->ShowAllPartitions( [ this ]( const QString& e ){
+
+		m_ui->lineEditDeviceAddress->setText( e ) ;
+	} ) ;
 }
 
 void favorites::ShowUI()
@@ -135,7 +132,7 @@ void favorites::ShowUI()
 void favorites::HideUI()
 {
 	this->hide() ;
-	emit HideUISignal() ;
+	this->deleteLater() ;
 }
 
 void favorites::addEntries( const QString& dev,const QString& m_point )
@@ -158,6 +155,7 @@ void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 	m.addAction( tr( "Cancel" ) ) ;
 
 	if( clicked ){
+
 		m.exec( QCursor::pos() ) ;
 	}else{
 		int x = m_ui->tableWidget->columnWidth( 0 ) ;
@@ -223,11 +221,6 @@ void favorites::fileAddress()
 	if( !Z.isEmpty() ){
 		m_ui->lineEditDeviceAddress->setText( Z ) ;
 	}
-}
-
-void favorites::PartitionEntry( QString device )
-{
-	m_ui->lineEditDeviceAddress->setText( device ) ;
 }
 
 favorites::~favorites()

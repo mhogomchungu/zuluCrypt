@@ -54,8 +54,8 @@
  */
 static QString _internalPassWord ;
 
-keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryProperties& e ) :
-	QDialog( parent ),m_ui( new Ui::keyDialog )
+keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryProperties& e,std::function< void() > p,std::function< void( const QString& ) > q ) :
+	QDialog( parent ),m_ui( new Ui::keyDialog ),m_cancel( std::move( p ) ),m_success( std::move( q ) )
 {
 	m_ui->setupUi( this ) ;
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
@@ -128,7 +128,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	_add_action( tr( "Set VeraCrypt PIM value" ) ) ;
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
-	m_ui->cbKeyType->addItem( tr( "Keyfile" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Plugin" ) ) ;
 
 	if( m_volumeIsEncFs ){
@@ -151,21 +151,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 bool keyDialog::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->pbCancel() ;
-		return true ;
-	}else{
-		return false ;
-	}
-}
-
-void keyDialog::tcryptCancelled( void )
-{
-	m_key.clear() ;
-	m_keyFiles.clear() ;
-	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
-	m_ui->lineEditKey->setText( QString() ) ;
-	this->enableAll() ;
+	return utility::eventFilter( this,watched,event,[ this ](){ this->pbCancel() ; } ) ;
 }
 
 void keyDialog::tcryptGui()
@@ -173,21 +159,25 @@ void keyDialog::tcryptGui()
 	this->disableAll() ;
 	m_ui->lineEditKey->setText( QString() ) ;
 
-	tcrypt * t = new tcrypt( this ) ;
-	connect( t,SIGNAL( Keys( QString,QStringList ) ),this,SLOT( keys( QString,QStringList ) ) ) ;
-	connect( t,SIGNAL( cancelled() ),this,SLOT( tcryptCancelled() ) ) ;
+	new tcrypt( this,false,[ this ]( const QString& key,const QStringList& keyFiles ){
 
-	t->ShowUI() ;
-}
+		m_key = key ;
+		m_keyFiles = keyFiles ;
 
-void keyDialog::keys( QString key,QStringList keyFiles )
-{
-	m_key = key ;
-	m_keyFiles = keyFiles ;
-	this->openVolume() ;
-	m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
-	m_ui->lineEditKey->setText( QString() ) ;
-	m_ui->lineEditKey->setEnabled( false ) ;
+		this->openVolume() ;
+
+		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+		m_ui->lineEditKey->setText( QString() ) ;
+		m_ui->lineEditKey->setEnabled( false ) ;
+
+	},[ this ](){
+
+		m_key.clear() ;
+		m_keyFiles.clear() ;
+		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
+		m_ui->lineEditKey->setText( QString() ) ;
+		this->enableAll() ;
+	} ) ;
 }
 
 void keyDialog::pbOptions()
@@ -215,25 +205,26 @@ void keyDialog::doAction( QAction * ac )
 	e.remove( "&" ) ;
 
 	if( e == tr( "Set File System Options" ) ){
+
 		this->showFileSystemOptionWindow() ;
+
 	}else if( e == tr( "Set Volume Offset" ) ){
+
 		this->showOffSetWindowOption() ;
+
 	}else if( e == tr( "Set Volume As VeraCrypt Volume" ) ){
+
 		m_veraCryptVolume = true ;
+
 	}else if( e == tr( "Set VeraCrypt PIM value" ) ){
 
-		auto v = new VeraCryptPIMDialog( this ) ;
+		new VeraCryptPIMDialog( this,[ this ]( int e ){
 
-		connect( v,SIGNAL( setValue( int ) ),this,SLOT( setVeraCryptPIMValue( int ) ) ) ;
+			m_veraCryptPIMValue = e ;
+			m_veraCryptVolume = e > 0 ;
 
-		v->Show() ;
+		} ) ;
 	}
-}
-
-void keyDialog::setVeraCryptPIMValue( int e )
-{
-	m_veraCryptPIMValue = e ;
-	m_veraCryptVolume = e > 0 ;
 }
 
 void keyDialog::deviceOffSet( QString deviceOffSet,QString key )
@@ -430,7 +421,7 @@ void keyDialog::encfsMount()
 
 		utility::Task::suspend( 2 ) ;
 
-		emit openMountPoint( m ) ;
+		m_success( m ) ;
 
 		this->HideUI() ;
 	}else{
@@ -604,7 +595,7 @@ void keyDialog::openVolume()
 			/*
 			 * The volume is reported as opened and it actually is
 			 */
-			emit openMountPoint( utility::mountPath( mountPoint ) ) ;
+			m_success( utility::mountPath( mountPoint ) ) ;
 		}else{
 			/*
 			 * The volume is reported as opened but it isnt,possible reason is a backe end crash
@@ -613,7 +604,7 @@ void keyDialog::openVolume()
 			DialogMsg msg( this ) ;
 
 			msg.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
-			emit cancel() ;
+			m_cancel() ;
 		}
 		this->HideUI() ;
 	}else{
@@ -685,7 +676,7 @@ void keyDialog::keyFile()
 void keyDialog::pbCancel()
 {
 	this->HideUI() ;
-	emit cancel() ;
+	m_cancel() ;
 }
 
 void keyDialog::ShowUI()
@@ -696,6 +687,7 @@ void keyDialog::ShowUI()
 void keyDialog::HideUI()
 {
 	if( !m_working ){
+
 		this->hide() ;
 		this->deleteLater() ;
 	}

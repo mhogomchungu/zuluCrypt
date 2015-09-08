@@ -29,6 +29,8 @@ class QTableWidgetItem ;
 #include <QDragEnterEvent>
 #include <QString>
 #include <QStringList>
+#include <functional>
+#include <memory>
 
 namespace Ui {
 class tcrypt;
@@ -38,14 +40,11 @@ class tcrypt : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit tcrypt( QWidget * parent = 0 ) ;
-	void ShowUI( void ) ;
-	void ShowUI_1( void ) ;
-	void HideUI( void ) ;
-	~tcrypt();
-signals:
-	void Keys( QString passphrase,QStringList keyfiles ) ;
-	void cancelled( void ) ;
+	tcrypt( QWidget * parent,
+		bool,
+		std::function< void( const QString&,const QStringList& ) >,
+		std::function< void() > ) ;
+	~tcrypt() ;
 private slots:
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked ( QTableWidgetItem * item ) ;
@@ -55,9 +54,12 @@ private slots:
 	void pbCancel( void ) ;
 	void pbAddKeyFIle( void ) ;
 private:
+	void HideUI( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::tcrypt * m_ui ;
+	std::function< void( const QString&,const QStringList& ) > m_success ;
+	std::function< void() > m_cancelled ;
 };
 
 #endif // TCRYPT_H

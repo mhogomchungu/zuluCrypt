@@ -25,6 +25,9 @@
 #include <QByteArray>
 #include <QTimer>
 
+#include <functional>
+#include <memory>
+
 #include "utility.h"
 
 namespace Ui {
@@ -41,12 +44,10 @@ class passwordDialog :  public QDialog
 {
 	Q_OBJECT
 public:
-	passwordDialog( QTableWidget * table,QWidget * parent = 0 ) ;
+	passwordDialog( QTableWidget * table,QWidget * parent,std::function< void( const QString& ) > ) ;
 	virtual ~passwordDialog() ;
 signals :
 	void addItemToTable( QString,QString,QString ) ;
-	void HideUISignal( void ) ;
-	void openFolder( QString ) ;
 public slots:
 	void HideUI( void ) ;
 	void ShowUI( void ) ;
@@ -68,8 +69,6 @@ private slots :
 	void file_path( void  ) ;
 	void mountPointPath( QString ) ;
 	void cbStateChanged( int ) ;
-	void keys( QString key,QStringList keyFiles ) ;
-	void tcryptCancelled( void ) ;
 private :
 	void setTitle( void ) ;
 	void addTcryptVcryptKeyOption( void ) ;
@@ -98,6 +97,7 @@ private :
 	utility::veraCryptWarning m_veraCryptWarning ;
 	bool m_working = false ;
 	enum{ key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
+	std::function< void( const QString& ) > m_openFolder ;
 };
 
 #endif // PASSWORD_DIALOG_H

@@ -28,12 +28,20 @@
 #include "openvolume.h"
 #include <QDebug>
 
-walletconfiginput::walletconfiginput( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::walletconfiginput )
+walletconfiginput::walletconfiginput( QWidget * parent,
+				      std::function< void( const QString&,const QString&,const QString& ) > p,
+				      std::function< void() > q ) :
+	QDialog( parent ),
+	m_ui( new Ui::walletconfiginput ),
+	m_add( std::move( p ) ),
+	m_cancel( std::move( q ) )
 {
 	m_ui->setupUi( this ) ;
 
 	this->setFixedSize( this->size() ) ;
+
 	if( parent ){
+
 		this->setFont( parent->font() ) ;
 	}
 
@@ -50,16 +58,13 @@ walletconfiginput::walletconfiginput( QWidget * parent ) : QDialog( parent ),m_u
 	m_ui->pushButtonVolume->setIcon( QIcon( ":/partition.png" ) ) ;
 
 	this->installEventFilter( this ) ;
+
+	this->show() ;
 }
 
 bool walletconfiginput::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 walletconfiginput::~walletconfiginput()
@@ -101,13 +106,13 @@ void walletconfiginput::pbAdd()
 		comment = "Nil" ;
 	}
 
-	emit add( volumeID,comment,key ) ;
+	m_add( volumeID,comment,key ) ;
 	this->HideUI() ;
 }
 
 void walletconfiginput::slotCancel()
 {
-	emit cancel() ;
+	m_cancel() ;
 	this->HideUI() ;
 }
 
@@ -116,27 +121,29 @@ void walletconfiginput::pbImageFilePath()
 	QString x = QFileDialog::getOpenFileName( this,tr( "Select A Volume" ),utility::homePath(),0 ) ;
 
 	if( !x.isEmpty() ){
+
 		this->setvolumeID( x ) ;
 	}
 }
 
 void walletconfiginput::pbVolumePath()
 {
-	openvolume * op = new openvolume( this ) ;
-	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( setvolumeID( QString ) ) ) ;
-	op->showEncryptedOnly() ;
-	op->ShowAllPartitions() ;
+	openvolume::instance( this )->showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
+
+		this->setvolumeID( e ) ;
+	} ) ;
 }
 
 void walletconfiginput::setvolumeID( QString id )
 {
 	if( id.startsWith( "UUID=" ) ){
+
 		m_ui->lineEditVolumeID->setText( id ) ;
 	}else{
 		QString z = Task::await<QString>( utility::getUUIDFromPath( id ) ) ;
 
 		if( z.isEmpty() ){
+
 			m_ui->lineEditVolumeID->setText( utility::getVolumeID( id ) ) ;
 		}else{
 			m_ui->lineEditVolumeID->setText( z ) ;
@@ -162,6 +169,6 @@ void walletconfiginput::focus()
 void walletconfiginput::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	emit cancel() ;
+	m_cancel() ;
 	this->HideUI() ;
 }

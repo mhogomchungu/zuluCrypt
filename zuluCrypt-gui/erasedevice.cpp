@@ -57,16 +57,13 @@ erasedevice::erasedevice( QWidget * parent ) :
 	m_ui->lineEdit->setFocus() ;
 
 	this->installEventFilter( this ) ;
+
+	this->ShowUI() ;
 }
 
 bool erasedevice::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void erasedevice::ShowUI()
@@ -123,9 +120,9 @@ void erasedevice::taskResult( int st )
 }
 
 void erasedevice::HideUI()
-{
-	emit HideUISignal() ;
+{	
 	this->hide() ;
+	this->deleteLater() ;
 }
 
 void erasedevice::pbStart()
@@ -245,10 +242,12 @@ void erasedevice::pbFile()
 
 void erasedevice::pbPartition()
 {
-	openvolume * op = new openvolume( this ) ;
-	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( setPath( QString ) ) ) ;
-	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	op->partitionList( tr( "Select A Non System Partition To Erase Its Contents" )," -N" ) ;
+	auto e = tr( "Select A Non System Partition To Erase Its Contents" ) ;
+
+	openvolume::instance( this )->partitionList( e," -N",[ this ]( const QString& e ){
+
+		this->setPath( e ) ;
+	} ) ;
 }
 
 void erasedevice::setPath( QString p )

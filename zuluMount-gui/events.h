@@ -20,6 +20,8 @@
 #define AUTO_MOUNT_H
 
 #include <QThread>
+#include <functional>
+#include <memory>
 
 class QObject ;
 class events ;
@@ -29,11 +31,10 @@ class events : public QThread
 {
 	Q_OBJECT
 public:
-	explicit events( QObject * parent = 0 ) ;
+	explicit events( QObject * parent,std::function< void() > ) ;
 	~events() ;
 	void stop( void ) ;
 signals:
-	void stopped( void ) ;
 	void volumeRemoved( QString ) ;
 	void volumeMiniProperties( volumeEntryProperties * ) ;
 private slots:
@@ -46,6 +47,7 @@ private:
 	QObject * m_babu ;
 	events  * m_main ;
 	bool m_running ;
+	std::function< void() > m_function ;
 };
 
 #endif // AUTO_MOUNT_H

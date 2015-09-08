@@ -38,7 +38,12 @@ class manageSystemVolumes : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit manageSystemVolumes( QWidget * parent = 0 ) ;
+	static manageSystemVolumes * instance( QWidget * parent )
+	{
+		return new manageSystemVolumes( parent ) ;
+	}
+
+	explicit manageSystemVolumes( QWidget * parent ) ;
 	~manageSystemVolumes() ;
 	void ShowUI( const QString& ) ;
 	void HideUI( void ) ;
@@ -49,13 +54,11 @@ private slots:
 	void pbDone( void ) ;
 	void pbFile( void ) ;
 	void pbPartition( void ) ;
-	void clickedPartition( QString ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked( QTableWidgetItem * current,bool ) ;
 	void itemClicked( QTableWidgetItem * current ) ;
 	void removeCurrentRow( void ) ;
 	void contextMenu( void ) ;
-	void setFocusTableWidget( void ) ;
 private:
 	void readSystemPartitions( void ) ;
 	void writeSystemPartitions( void ) ;

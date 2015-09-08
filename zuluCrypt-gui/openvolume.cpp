@@ -76,6 +76,7 @@ openvolume::openvolume( QWidget * parent ) :
 	tw->setColumnWidth( 4,309 ) ;
 
 	for( int i = 0 ; i < 5 ; i++ ){
+
 		tw->horizontalHeaderItem( i )->setFont( this->font() ) ;
 	}
 	tw->horizontalHeader()->setVisible( true ) ;
@@ -92,22 +93,19 @@ openvolume::openvolume( QWidget * parent ) :
 
 bool openvolume::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
-void openvolume::showEncryptedOnly()
+openvolume& openvolume::showEncryptedOnly()
 {
 	m_showEncryptedOnly = true ;
+	return *this ;
 }
 
-void openvolume::showLuksOnly()
+openvolume& openvolume::showLuksOnly()
 {
 	m_showEncryptedOnly = true ;
+	return *this ;
 }
 
 void openvolume::pbHelp()
@@ -147,7 +145,8 @@ void openvolume::EnterKeyPressed()
 	auto tw = m_ui->tableWidget ;
 	auto it = tw->currentItem() ;
 
-	if( it != nullptr ){
+	if( it ){
+
 		tableEntryDoubleClicked( tw->item( it->row(),0 ) ) ;
 	}
 }
@@ -157,15 +156,27 @@ void openvolume::currentItemChanged( QTableWidgetItem * current, QTableWidgetIte
 	tablewidget::selectTableRow( current,previous ) ;
 }
 
-void openvolume::ShowNonSystemPartitions()
+void openvolume::ShowNonSystemPartitions( std::function< void( const QString& ) > f )
 {
+	m_function = std::move( f ) ;
+
 	m_option = 1 ;
+
 	this->partitionList( tr( "Select A Partition To Create An Encrypted Volume In" )," -N" ) ;
 }
 
-void openvolume::ShowAllPartitions()
+void openvolume::partitionList( const QString& p, const QString& q,std::function< void( const QString& )> f )
 {
+	m_function = std::move( f ) ;
+	this->partitionList( p,q ) ;
+}
+
+void openvolume::ShowAllPartitions( std::function< void( const QString& ) > f )
+{
+	m_function = std::move( f ) ;
+
 	m_option = 2 ;
+
 	this->partitionList( tr( "Select An Encrypted Partition To Open" )," -A" ) ;
 }
 
@@ -177,18 +188,16 @@ void openvolume::ShowPartitionList( QString x,QString y )
 void openvolume::allowLUKSOnly()
 {
 	m_diableNonLUKS = true ;
-	this->ShowAllPartitions() ;
 }
 
 void openvolume::partitionList( QString title,QString volumeType )
 {
 	this->setWindowTitle( title ) ;
 
-	while( m_ui->tableWidget->rowCount() > 0 ){
-		m_ui->tableWidget->removeRow( 0 ) ;
-	}
+	tablewidget::clearTable( m_ui->tableWidget ) ;
 
 	m_ui->tableWidget->setEnabled( false ) ;
+
 	this->show() ;
 
 	QStringList l = Task::await<QStringList>( [ & ](){
@@ -254,7 +263,7 @@ void openvolume::partitionProperties( const QStringList& l )
 void openvolume::HideUI()
 {
 	this->hide() ;
-	emit HideUISignal() ;
+	this->deleteLater() ;
 }
 
 void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
@@ -263,7 +272,9 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 	QTableWidget * tw = m_ui->tableWidget ;
 
 	if( m_diableNonLUKS ){
+
 		if( tw->item( item->row(),3 )->text() != "crypto_LUKS" ){
+
 			DialogMsg m( this ) ;
 
 			return m.ShowUIOK( tr( "ERROR" ),tr( "Only crypto_LUKS volumes can be selected" ) ) ;
@@ -273,11 +284,13 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 
 	}
 	if( m_ui->pbUUID->isFlat() ){
+
 		dev = "UUID=\"" + tw->item( item->row(),4 )->text() + "\"" ;
 	}else{
 		dev = tw->item( item->row(),0 )->text() ;
 	}
-	emit clickedPartition( dev ) ;
+
+	m_function( dev ) ;
 	this->HideUI() ;
 }
 

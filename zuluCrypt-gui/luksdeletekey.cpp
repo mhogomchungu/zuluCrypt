@@ -67,13 +67,7 @@ luksdeletekey::luksdeletekey( QWidget * parent ) :
 
 bool luksdeletekey::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void luksdeletekey::closeEvent( QCloseEvent * e )
@@ -104,7 +98,7 @@ void luksdeletekey::Key( int e )
 	}else if( e == 1 ){
 
 		m_ui->lineEditPassphrase->setToolTip( tr( "Enter a path to a keyfile location" ) ) ;
-		m_ui->labelPassphrase->setText( tr( "Keyfile path" ) ) ;
+		m_ui->labelPassphrase->setText( tr( "KeyFile path" ) ) ;
 		m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->lineEditPassphrase->clear() ;
 		m_ui->pushButtonOpenKeyFile->setEnabled( true ) ;
@@ -196,11 +190,10 @@ void luksdeletekey::pbCancel()
 
 void luksdeletekey::pbOpenPartition()
 {
-	auto op = new openvolume( this ) ;
-	op->showLuksOnly() ;
-	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( ShowUI( QString ) ) ) ;
-	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	op->ShowAllPartitions() ;
+	openvolume::instance( this )->showLuksOnly().ShowAllPartitions( [ this ]( const QString& e ){
+
+		this->ShowUI( e ) ;
+	} ) ;
 }
 
 void luksdeletekey::pbDelete()
@@ -316,7 +309,7 @@ void luksdeletekey::pbOpenVolume()
 void luksdeletekey::HideUI()
 {
 	this->hide() ;
-	emit HideUISignal() ;
+	this->deleteLater() ;
 }
 
 luksdeletekey::~luksdeletekey()

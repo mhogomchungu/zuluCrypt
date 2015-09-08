@@ -111,13 +111,7 @@ bool readOnlyWarning::showUIwarning()
 
 bool readOnlyWarning::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void readOnlyWarning::closeEvent( QCloseEvent * e )

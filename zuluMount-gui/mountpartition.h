@@ -26,6 +26,9 @@
 
 #include "volumeentryproperties.h"
 
+#include <functional>
+#include <memory>
+
 class QTableWidget ;
 class QCloseEvent ;
 class QMenu ;
@@ -39,7 +42,17 @@ class mountPartition : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit mountPartition( QWidget * parent = 0,QTableWidget * table = 0 ) ;
+	static mountPartition * instance( QWidget * parent,
+					  QTableWidget * table,
+					  std::function< void() > cancel,
+					  std::function< void( const QString& ) > success )
+	{
+		return new mountPartition( parent,table,std::move( cancel ),std::move( success ) ) ;
+	}
+	mountPartition( QWidget * parent,
+			QTableWidget * table,
+			std::function< void() >,
+			std::function< void( const QString& ) > ) ;
 	void ShowUI( const volumeEntryProperties& ) ;
 	void HideUI( void ) ;
 	void AutoMount( QStringList entry ) ;
@@ -63,7 +76,7 @@ private:
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	Ui::mountPartition * m_ui;
+	Ui::mountPartition * m_ui ;
 	QString m_path ;
 	QString m_label ;
 	QString m_point ;
@@ -72,6 +85,8 @@ private:
 	QString m_options ;
 	QTableWidget * m_table ;
 	QMenu * m_menu ;
+	std::function< void() > m_cancel ;
+	std::function< void( const QString& ) > m_success ;
 };
 
 #endif // MOUNTPARTITION_H

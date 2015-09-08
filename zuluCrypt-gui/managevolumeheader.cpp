@@ -82,12 +82,7 @@ managevolumeheader::managevolumeheader( QWidget * parent ) :
 
 bool managevolumeheader::eventFilter( QObject * watched,QEvent * event )
 {
-	if( utility::eventFilter( this,watched,event ) ){
-		this->HideUI() ;
-		return true ;
-	}else{
-		return false ;
-	}
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 void managevolumeheader::rbKeyToggled( bool toggled )
@@ -133,7 +128,7 @@ void managevolumeheader::enableTrueCrypt( bool enable )
 void managevolumeheader::HideUI()
 {
 	this->hide() ;
-	emit HideUISignal() ;
+	this->deleteLater() ;
 }
 
 void managevolumeheader::closeEvent( QCloseEvent * e )
@@ -411,20 +406,18 @@ void managevolumeheader::pbCreate()
 
 void managevolumeheader::pbOpenPartition()
 {
-	auto op = new openvolume( this ) ;
-	connect( op,SIGNAL( clickedPartition( QString ) ),this,SLOT( selectedPartition( QString ) ) ) ;
-	connect( op,SIGNAL( HideUISignal() ),op,SLOT( deleteLater() ) ) ;
-	op->ShowNonSystemPartitions() ;
-}
 
-void managevolumeheader::selectedPartition( QString p )
-{
-	m_ui->lineEditDevicePath->setText( p ) ;
-	if( m_ui->lineEditBackUpName->text().isEmpty() ){
-		m_ui->lineEditBackUpName->setFocus() ;
-	}else{
-		m_ui->pbCreate->setFocus() ;
-	}
+	openvolume::instance( this )->ShowNonSystemPartitions( [ this ]( const QString& e ){
+
+		m_ui->lineEditDevicePath->setText( e ) ;
+
+		if( m_ui->lineEditBackUpName->text().isEmpty() ){
+
+			m_ui->lineEditBackUpName->setFocus() ;
+		}else{
+			m_ui->pbCreate->setFocus() ;
+		}
+	} ) ;
 }
 
 void managevolumeheader::pbOpenFile()
