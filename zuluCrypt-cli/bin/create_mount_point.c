@@ -214,9 +214,11 @@ static int mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_
 void zuluCryptCreateMountPath( const char * path )
 {
 	struct stat st ;
-	stat( path,&st ) ;
 
 	_mkdir( path,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+
+	stat( path,&st ) ;
+
 	_chown( path,0,0 ) ;
 	_chmod( path,st.st_mode | S_IXOTH | S_IROTH ) ;
 }
