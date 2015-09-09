@@ -211,7 +211,7 @@ static int mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_
 	return mount_point_prefix_match_0( m_path,uid,m_point,0 ) ;
 }
 
-static void _path_create( const char * path )
+void zuluCryptCreateMountPath( const char * path )
 {
 	struct stat st ;
 	stat( path,&st ) ;
@@ -229,10 +229,10 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 
 	path = zuluCryptGetUserName( uid ) ;
 
-	_path_create( "/run" ) ;
-	_path_create( "/run/media" ) ;
-	_path_create( "/run/media/private" ) ;
-	_path_create( StringPrepend( path,"/run/media/private/" ) ) ;
+	zuluCryptCreateMountPath( "/run" ) ;
+	zuluCryptCreateMountPath( "/run/media" ) ;
+	zuluCryptCreateMountPath( "/run/media/private" ) ;
+	zuluCryptCreateMountPath( StringPrepend( path,"/run/media/private/" ) ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 

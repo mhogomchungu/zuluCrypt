@@ -24,9 +24,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-static void _chown( const char * x,uid_t y,gid_t z )
+static void _chmod( const char * x,mode_t y )
 {
-	if( chown( x,y,z ) ){;}
+	if( chmod( x,y ) ){;}
 }
 
 int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
@@ -216,8 +216,6 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 
 	stringList_t stl ;
 
-	mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ;
-
 	if( index == -1 ){
 		return 1 ;
 	}
@@ -232,22 +230,15 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	path = String( "/run/media/public/" ) ;
 	m_path = StringAppend( path,o_path + index + 1 ) ;
 
-	#define path_does_not_exist( x ) stat( x,&st ) != 0
-	#define path_does_exist( x ) stat( x,&st ) == 0
+	/*
+	 * zuluCryptCreateMountPath() is defined in create_mount_point.c
+	 */
+	zuluCryptCreateMountPath( "/run" ) ;
+	zuluCryptCreateMountPath( "/run/media" ) ;
+	zuluCryptCreateMountPath( "/run/media/public" ) ;
 
-	if( path_does_not_exist( "/run" ) ){
-		mkdir( "/run",mode ) ;
-		_chown( "/run",0,0 ) ;
-	}
-	if( path_does_not_exist( "/run/media" ) ){
-		mkdir( "/run/media",mode ) ;
-		_chown( "/run/media",0,0 ) ;
-	}
-	if( path_does_not_exist( "/run/media/public" ) ){
-		mkdir( "/run/media/public",mode ) ;
-		_chown( "/run/media/public",0,0 ) ;
-	}
-	if( path_does_exist( m_path ) ){
+	if( stat( m_path,&st ) == 0 ){
+		_chmod( m_path,st.st_mode | S_IXOTH | S_IROTH ) ;
 		/*
 		 * bind mount point exists,this will happen if the mount point is already taken or a mount point folder
 		 * was not autodeleted for some reason
@@ -268,8 +259,7 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		}
 		StringDelete( &tmp ) ;
 	}else{
-		mkdir( m_path,S_IRWXU | S_IRWXG | S_IRWXG ) ;
-		_chown( m_path,0,0 ) ;
+		zuluCryptCreateMountPath( m_path ) ;
 		xt = mount( o_path,m_path,"",flags|MS_BIND,"" ) ;
 		if( xt != 0 ){
 			rmdir( m_path ) ;
