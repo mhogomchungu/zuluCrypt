@@ -136,7 +136,6 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 		m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
 	}else{		
 		m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
-		m_ui->cbKeyType->addItem( tr( "TrueCrypt keys" ) ) ;
 	}
 
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
