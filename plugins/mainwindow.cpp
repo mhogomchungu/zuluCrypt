@@ -236,7 +236,7 @@ void MainWindow::pbOpen()
 	QString e = m_findExecutable( m_exe_1 ) ;
 	if( !e.isEmpty() ){
 		return msg.ShowUIOK( tr( "ERROR" ),
-				     tr( "Could not find \"%1\" executable in \"/usr/local\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( e ) ) ;
+				     tr( "Could not find \"%1\" executable in \"/usr/local/bin\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( e ) ) ;
 	}
 
 	this->disableAll() ;

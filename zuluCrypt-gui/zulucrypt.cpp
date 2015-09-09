@@ -819,8 +819,7 @@ void zuluCrypt::addToFavorite()
 
 void zuluCrypt::menuKeyPressed()
 {
-	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
-	itemClicked( it,false ) ;
+	itemClicked( m_ui->tableWidget->currentItem(),false ) ;
 }
 
 void zuluCrypt::openFolder()
@@ -962,20 +961,20 @@ void zuluCrypt::close()
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	int r = Task::await<int>( [ this ](){
+	this->closeStatus( Task::await<int>( [ this ](){
 
-		QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
+		auto item = m_ui->tableWidget->currentItem() ;
 
-		QString path = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
+		auto path = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
 
-		QString exe = utility::appendUserUID( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ;
+		auto exe = utility::appendUserUID( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ;
 
 		utility::Task::waitForOneSecond() ; //for UI effect
+
 		return utility::Task( exe ).exitCode() ;
 
-	} ) ;
+	} ) ) ;
 
-	this->closeStatus( r ) ;
 	m_ui->tableWidget->setEnabled( true ) ;
 }
 

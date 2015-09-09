@@ -29,6 +29,7 @@
 #include <QMetaObject>
 #include <QDebug>
 #include <QWidget>
+#include <QDialog>
 #include <QEventLoop>
 #include <QTimer>
 #include <QMenu>
@@ -171,6 +172,8 @@ namespace utility
 	void setWindowDimensions( const QVector<int>&,const QString& application ) ;
 
 	void createPlugInMenu( QMenu *,const QString&,const QString&,const QString&,bool ) ;
+
+	int pluginKey( QDialog *,QString *,const QString& ) ;
 
 	QFont getFont( QWidget * ) ;
 	void saveFont( const QFont& ) ;

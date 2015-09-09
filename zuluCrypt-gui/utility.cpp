@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include <QEventLoop>
 #include <QDebug>
 #include <QCoreApplication>
 #include <blkid/blkid.h>
@@ -59,6 +60,8 @@
 #include "dialogmsg.h"
 #include "support_whirlpool.h"
 #include "readonlywarning.h"
+#include "../plugins/plugins.h"
+#include "plugin.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1263,4 +1266,68 @@ bool utility::userBelongsToGroup( const char * groupname )
 	}
 
 	return false ;
+}
+
+int utility::pluginKey( QDialog * w,QString * key,const QString& p )
+{
+	plugins::type pluginType ;
+	QString pluginString ;
+	QVector<QString> exe ;
+
+	if( p == "hmac" ){
+
+		pluginType   = plugins::plugin::hmac_key_0 ;
+		pluginString = w->tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
+
+	}else if( p == "keykeyfile" ){
+
+		pluginType   = plugins::plugin::keyKeyFile ;
+		pluginString = w->tr( "keykeyfile plugin.\n\nThis plugin generates a key using below formular:\n\nkey = passphrase + keyfile contents" ) ;
+
+	}else if( p == "gpg" ){
+
+		pluginType   = plugins::plugin::gpg ;
+		pluginString = w->tr( "gpg plugin.\n\nThis plugin retrives a key locked in a gpg file with a symmetric key" ) ;
+
+		if( utility::pathExists( "/usr/bin/gpg" ) ){
+
+			exe.append( "/usr/bin/gpg" ) ;
+
+		}else if( utility::pathExists( "/usr/local/bin/gpg" ) ){
+
+			exe.append( "/usr/local/bin/gpg" ) ;
+
+		}else if( utility::pathExists( "/usr/sbin/gpg" ) ){
+
+			exe.append( "/usr/sbin/gpg" ) ;
+
+		}else{
+
+			DialogMsg msg( w ) ;
+
+			msg.ShowUIOK( w->tr( "ERROR" ),w->tr( "Could not find \"gpg\" executable in \"/usr/local/bin\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
+
+			return 1 ;
+		}
+
+	}else{
+		return 1 ;
+	}
+
+	QEventLoop l ;
+
+	new plugin( w,pluginType,[ & ]( const QString& e ){
+
+		*key = e ;
+
+		if( e.isEmpty() ){
+
+			l.exit( 1 ) ;
+		}else{
+			l.exit( 0 ) ;
+		}
+
+	},pluginString,exe ) ;
+
+	return l.exec() ;
 }

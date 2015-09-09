@@ -493,9 +493,7 @@ void keyDialog::openVolume()
 		QString addr = utility::keyPath() ;
 		m = QString( "-f %1" ).arg( addr ) ;
 
-		QString key = m_ui->lineEditKey->text() ;
-
-		utility::keySend( addr,key ) ;
+		utility::keySend( addr,m_ui->lineEditKey->text() ) ;
 
 	}else if( keyType == keyDialog::keyfile ){
 
@@ -504,6 +502,15 @@ void keyDialog::openVolume()
 
 	}else if( keyType == keyDialog::plugin ){
 
+		QString r = m_ui->lineEditKey->text() ;
+
+		if( r == "hmac" || r == "gpg" || r == "keykeyfile" ){
+
+			if( utility::pluginKey( this,&m_key,r ) ){
+
+				return this->enableAll() ;
+			}
+		}
 		if( m_key.isEmpty() ){
 
 			m = "-G " + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;

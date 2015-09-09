@@ -552,10 +552,24 @@ void passwordDialog::openVolume()
 			return this->enableAll() ;
 		}else{
 			QString r = m_ui->PassPhraseField->text() ;
+
 			if( r == tr( KWALLET ) || r == tr( INTERNAL_WALLET ) || r == tr( GNOME_WALLET ) ){
+
 				passtype = "-f" ;
 				keyPath = utility::keyPath() ;
 				this->sendKey( keyPath ) ;
+
+			}else if( r == "hmac" || r == "gpg" || r == "keykeyfile" ){
+
+				if( utility::pluginKey( this,&m_key,r ) ){
+
+					return this->enableAll() ;
+				}else{
+					passtype = "-f" ;
+					keyPath = utility::keyPath() ;
+					this->sendKey( keyPath ) ;
+				}
+
 			}else{
 				passtype = "-G" ;
 				keyPath  = r ;

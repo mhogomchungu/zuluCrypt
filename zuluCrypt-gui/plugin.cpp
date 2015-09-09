@@ -54,7 +54,7 @@ plugin::plugin( QDialog * parent,plugins::type t,std::function< void( const QStr
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbClose() ) ) ;
 	connect( m_ui->pbKeyFile,SIGNAL( clicked() ),this,SLOT( pbSelectKeyFile() ) ) ;
 
-	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
+	m_ui->pbKeyFile->setIcon( QIcon( ":../file.png" ) ) ;
 
 	m_ui->lineEdit_2->setEnabled( false ) ;
 
