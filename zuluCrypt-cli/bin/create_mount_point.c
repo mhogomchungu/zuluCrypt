@@ -31,6 +31,10 @@ static void _chmod( const char * x,mode_t y )
 {
 	if( chmod( x,y ) ){;}
 }
+static void _mkdir( const char * x,mode_t y )
+{
+	if( mkdir( x,y ) ){;}
+}
 
 static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 {
@@ -207,53 +211,28 @@ static int mount_point_prefix_match( const char * m_path,uid_t uid,string_t * m_
 	return mount_point_prefix_match_0( m_path,uid,m_point,0 ) ;
 }
 
+static void _path_create( const char * path )
+{
+	struct stat st ;
+	stat( path,&st ) ;
+
+	_mkdir( path,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
+	_chown( path,0,0 ) ;
+	_chmod( path,st.st_mode | S_IXOTH | S_IROTH ) ;
+}
+
 static string_t create_mount_point( const char * device,const char * label,uid_t uid )
 {
-	const char * m_point ;
 	string_t path ;
-	struct stat st ;
-	mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	path = zuluCryptGetUserName( uid ) ;
 
-	#define path_does_not_exist( x ) stat( x,&st ) != 0
-	#define path_does_exist( x ) stat( x,&st ) == 0
-
-	if( path_does_not_exist( "/run" ) ){
-		mkdir( "/run/",mode ) ;
-	}else{
-		_chmod( "/run",st.st_mode | S_IXOTH | S_IROTH ) ;
-	}
-
-	_chown( "/run",0,0 ) ;
-
-	if( path_does_not_exist( "/run/media" ) ){
-		mkdir( "/run/media",mode ) ;
-	}else{
-		_chmod( "/run/media",st.st_mode | S_IXOTH | S_IROTH ) ;
-	}
-
-	_chown( "/run/media",0,0 ) ;
-
-	if( path_does_not_exist( "/run/media/private" ) ){
-		mkdir( "/run/media/private",mode ) ;
-	}else{
-		_chmod( "/run/media/private",st.st_mode | S_IXOTH | S_IROTH ) ;
-	}
-
-	_chown( "/run/media/private",0,0 ) ;
-
-	m_point = StringPrepend( path,"/run/media/private/" ) ;
-
-	if( path_does_not_exist( m_point ) ){
-		mkdir( m_point,S_IRUSR | S_IXUSR ) ;
-		_chown( m_point,uid,uid ) ;
-	}else{
-		_chown( m_point,uid,uid ) ;
-		_chmod( m_point,S_IRUSR | S_IXUSR ) ;
-	}
+	_path_create( "/run" ) ;
+	_path_create( "/run/media" ) ;
+	_path_create( "/run/media/private" ) ;
+	_path_create( StringPrepend( path,"/run/media/private/" ) ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
