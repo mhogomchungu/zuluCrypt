@@ -69,7 +69,6 @@ private slots:
 	void showOffSetWindowOption( void ) ;
 	void showFileSystemOptionWindow( void ) ;
 	void checkBoxReadOnlyStateChanged( int ) ;
-	void deviceOffSet( QString,QString ) ;
 	void doAction( QAction * ) ;
 private:
 	void enableAll( void ) ;

@@ -22,7 +22,8 @@
 #include "ui_deviceoffset.h"
 #include "../zuluCrypt-gui/utility.h"
 
-deviceOffset::deviceOffset( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::deviceOffset )
+deviceOffset::deviceOffset( QWidget * parent,bool e,std::function< void( const QString&,const QString& ) > f ) :
+	QDialog( parent ),m_ui( new Ui::deviceOffset ),m_function( std::move( f ) )
 {
 	m_ui->setupUi( this ) ;
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
@@ -32,23 +33,16 @@ deviceOffset::deviceOffset( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::
 	this->setFont( parent->font() ) ;
 
 	this->installEventFilter( this ) ;
+
+	m_ui->label_2->setEnabled( e ) ;
+	m_ui->lineEditKey->setEnabled( e ) ;
+
+	this->show() ;
 }
 
 bool deviceOffset::eventFilter( QObject * watched,QEvent * event )
 {
-	return utility::eventFilter( this,watched,event,[ this ](){ this->closeUI() ; } ) ;
-}
-
-void deviceOffset::ShowUI()
-{
-	this->show() ;
-}
-
-void deviceOffset::ShowUI_1()
-{
-	m_ui->label_2->setEnabled( false ) ;
-	m_ui->lineEditKey->setEnabled( false ) ;
-	this->show() ;
+	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
 deviceOffset::~deviceOffset()
@@ -56,7 +50,7 @@ deviceOffset::~deviceOffset()
 	delete m_ui ;
 }
 
-void deviceOffset::closeUI()
+void deviceOffset::HideUI()
 {
 	this->hide() ;
 	this->deleteLater() ;
@@ -64,17 +58,17 @@ void deviceOffset::closeUI()
 
 void deviceOffset::pbOK()
 {
-	emit offSetValue( m_ui->lineEdit->text(),m_ui->lineEditKey->text() ) ;
-	this->closeUI() ;
+	m_function( m_ui->lineEdit->text(),m_ui->lineEditKey->text() ) ;
+	this->HideUI() ;
 }
 
 void deviceOffset::pbCancel()
 {
-	this->closeUI() ;
+	this->HideUI() ;
 }
 
 void deviceOffset::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
-	this->closeUI() ;
+	this->HideUI() ;
 }

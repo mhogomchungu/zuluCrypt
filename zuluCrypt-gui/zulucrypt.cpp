@@ -664,7 +664,7 @@ void zuluCrypt::fonts()
 		}
 
 		this->setUserFont( Font ) ;
-		
+
 		utility::saveFont( Font ) ;
 	}
 }
@@ -933,10 +933,12 @@ void zuluCrypt::UIMessage( QString title,QString message )
 void zuluCrypt::closeStatus( int st )
 {
 	m_ui->tableWidget->setEnabled( true ) ;
+
 	if( st == 0 ){
-		removeRowFromTable( m_ui->tableWidget->currentItem()->row() ) ;
+
+		this->removeRowFromTable( m_ui->tableWidget->currentItem()->row() ) ;
 	}else{
-		closeStatusErrorMessage( st ) ;
+		this->closeStatusErrorMessage( st ) ;
 	}
 }
 

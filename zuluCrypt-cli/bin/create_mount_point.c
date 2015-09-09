@@ -35,6 +35,10 @@ static void _mkdir( const char * x,mode_t y )
 {
 	if( mkdir( x,y ) ){;}
 }
+static void _stat( const char * x,struct stat * y )
+{
+	if( stat( x,y ) ){;}
+}
 
 static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 {
@@ -217,19 +221,18 @@ void zuluCryptCreateMountPath( const char * path )
 
 	_mkdir( path,S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
 
-	stat( path,&st ) ;
+	_stat( path,&st ) ;
 
 	_chown( path,0,0 ) ;
+
 	_chmod( path,st.st_mode | S_IXOTH | S_IROTH ) ;
 }
 
 static string_t create_mount_point( const char * device,const char * label,uid_t uid )
 {
-	string_t path ;
+	string_t path = zuluCryptGetUserName( uid ) ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
-
-	path = zuluCryptGetUserName( uid ) ;
 
 	zuluCryptCreateMountPath( "/run" ) ;
 	zuluCryptCreateMountPath( "/run/media" ) ;

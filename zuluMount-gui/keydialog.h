@@ -79,7 +79,6 @@ private slots:
 	void Plugin( void ) ;
 	void KeyFile( void ) ;
 	void cbMountReadOnlyStateChanged( int ) ;
-	void deviceOffSet( QString,QString ) ;
 	void doAction( QAction * ) ;
 	void showOffSetWindowOption( void ) ;
 	void showFileSystemOptionWindow( void ) ;

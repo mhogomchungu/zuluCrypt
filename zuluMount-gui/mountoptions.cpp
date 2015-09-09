@@ -27,11 +27,15 @@ mountOptions::mountOptions( QString * options,QWidget * parent ) :
 	QDialog( parent ),m_ui( new Ui::mountOptions ),m_options( options )
 {
 	m_ui->setupUi( this ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
+
 	connect( m_ui->pbOk,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
+
+	this->ShowUI() ;
 }
 
 void mountOptions::ShowUI()

@@ -214,15 +214,16 @@ void mountPartition::pbMount()
 
 void mountPartition::showOffSetWindowOption()
 {
-	deviceOffset * d = new deviceOffset( this ) ;
-	connect( d,SIGNAL( offSetValue( QString,QString ) ),this,SLOT( deviceOffSet( QString,QString ) ) ) ;
-	d->ShowUI() ;
+	new deviceOffset( this,true,[ this ]( const QString& e,const QString& f ){
+
+		m_deviceOffSet = e ;
+		m_key = f ;
+	} ) ;
 }
 
 void mountPartition::showFileSystemOptionWindow()
 {
-	mountOptions * m = new mountOptions( &m_options,this ) ;
-	m->ShowUI() ;
+	new mountOptions( &m_options,this ) ;
 }
 
 void mountPartition::doAction( QAction * ac )
@@ -297,12 +298,6 @@ void mountPartition::stateChanged( int i )
 
 	m_ui->lineEdit->setText( e ) ;
 	m_ui->checkBox->setEnabled( true ) ;
-}
-
-void mountPartition::deviceOffSet( QString deviceOffSet,QString key )
-{
-	m_deviceOffSet = deviceOffSet ;
-	m_key = key ;
 }
 
 void mountPartition::HideUI()

@@ -33,14 +33,14 @@ class mountOptions : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit mountOptions( QString * options = 0,QWidget * parent = 0 ) ;
-	void ShowUI( void ) ;
+	mountOptions( QString * options,QWidget * parent ) ;
 	~mountOptions() ;
 private slots:
 	void pbOK( void ) ;
 	void pbCancel( void ) ;
 	void HideUI( void ) ;
 private:
+	void ShowUI( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	Ui::mountOptions * m_ui ;
 	QString * m_options ;

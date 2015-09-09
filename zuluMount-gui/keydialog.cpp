@@ -134,12 +134,9 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	if( m_volumeIsEncFs ){
 
 		m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
-	}else{
-		#if VERACRYPT_SUPPORT
-			m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
-		#else
-			m_ui->cbKeyType->addItem( tr( "TrueCrypt keys" ) ) ;
-		#endif
+	}else{		
+		m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
+		m_ui->cbKeyType->addItem( tr( "TrueCrypt keys" ) ) ;
 	}
 
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
@@ -187,15 +184,16 @@ void keyDialog::pbOptions()
 
 void keyDialog::showOffSetWindowOption()
 {
-	deviceOffset * d = new deviceOffset( this ) ;
-	connect( d,SIGNAL( offSetValue( QString,QString ) ),this,SLOT( deviceOffSet( QString,QString ) ) ) ;
-	d->ShowUI_1() ;
+	new deviceOffset( this,false,[ this ]( const QString& e,const QString& f ){
+
+		Q_UNUSED( f ) ;
+		m_deviceOffSet = QString( " -o %1" ).arg( e ) ;
+	} ) ;
 }
 
 void keyDialog::showFileSystemOptionWindow()
 {
-	mountOptions * m = new mountOptions( &m_options,this ) ;
-	m->ShowUI() ;
+	new mountOptions( &m_options,this ) ;
 }
 
 void keyDialog::doAction( QAction * ac )
@@ -225,12 +223,6 @@ void keyDialog::doAction( QAction * ac )
 
 		} ) ;
 	}
-}
-
-void keyDialog::deviceOffSet( QString deviceOffSet,QString key )
-{
-	m_deviceOffSet = QString( " -o %1" ).arg( deviceOffSet ) ;
-	Q_UNUSED( key ) ;
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )

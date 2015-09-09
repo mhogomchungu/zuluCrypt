@@ -23,6 +23,8 @@
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <functional>
+#include <memory>
 
 namespace Ui {
 class deviceOffset;
@@ -32,20 +34,18 @@ class deviceOffset : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit deviceOffset( QWidget * parent = 0 ) ;
-	void ShowUI( void ) ;
-	void ShowUI_1( void ) ;
+	deviceOffset( QWidget *,bool,std::function< void( const QString&,const QString& ) > ) ;
 	~deviceOffset();
-signals:
-	void offSetValue( QString,QString ) ;
 private slots:
-	void closeUI( void ) ;
+	void HideUI( void ) ;
 	void pbOK( void ) ;
 	void pbCancel( void ) ;
 private:
 	Ui::deviceOffset * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
+	bool m_bool ;
+	std::function< void( const QString&,const QString& ) > m_function ;
 };
 
 #endif // DEVICEOFFSET_H
