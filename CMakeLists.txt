@@ -1,6 +1,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 cmake_policy(SET CMP0017 OLD)
+set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON)
 
 add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all -D_FORTIFY_SOURCE=2 --param ssp-buffer-size=4 )
 include_directories( ${PROJECT_BINARY_DIR} )
