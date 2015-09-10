@@ -29,18 +29,11 @@
 
 #include <QWidget>
 
-#include <memory>
-
-void checkForUpdates::networkReply( QNetworkReply * e )
+void checkForUpdates::networkReply( QNetworkReply * q )
 {
-	using function_t = std::function< void( checkForUpdates * ) > ;
-	using raii_t     = std::unique_ptr< checkForUpdates,function_t > ;
+	utility::qObject_unique_ptr< QNetworkReply > p( q ) ;
 
-	raii_t _delete_this( this,[]( checkForUpdates * e ){ e->deleteLater() ; } ) ;
-
-	Q_UNUSED( _delete_this ) ;
-
-	QString l = e->readAll() ;
+	QString l = p->readAll() ;
 
 	DialogMsg msg( m_widget ) ;
 
