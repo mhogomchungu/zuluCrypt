@@ -178,9 +178,10 @@ void LxQt::Wallet::changePassWordDialog::change()
 			lxqt_wallet_error m_error ;
 		};
 
-		Task::run< wallet >( [ this ](){
+		QString password = m_ui->lineEditCurrentPassWord->text() ;
 
-			QString password = m_ui->lineEditCurrentPassWord->text() ;
+		Task::run< wallet >( [ this,password ](){
+
 			return wallet( password,m_walletName,m_applicationName ) ;
 
 		} ).then( [ this ]( wallet w ){

@@ -58,8 +58,6 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::plugin * m_ui ;
-	QString m_keyFile ;
-	QString m_passphrase ;
 	QString m_key = QString() ;
 	std::function< void( const QString& ) > m_function ;
 	plugins::type m_pluginType ;

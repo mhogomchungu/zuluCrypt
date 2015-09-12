@@ -56,8 +56,6 @@ plugin::plugin( QDialog * parent,plugins::type t,std::function< void( const QStr
 
 	m_ui->pbKeyFile->setIcon( QIcon( ":../file.png" ) ) ;
 
-	m_ui->lineEdit_2->setEnabled( false ) ;
-
 	this->ShowUI() ;
 }
 
@@ -92,48 +90,49 @@ void plugin::HideUI()
 
 void plugin::pbSetKey()
 {
-	m_passphrase = m_ui->lineEdit->text() ;
+	auto passphrase = m_ui->lineEdit->text() ;
+	auto keyFile    = m_ui->lineEdit_2->text() ;
 
 	DialogMsg msg( this ) ;
 
-	if( m_passphrase.isEmpty() ){
+	if( passphrase.isEmpty() ){
 
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "Passphrase Not Set" ) ) ;
 	}
 
-	if( m_keyFile.isEmpty() ){
+	if( keyFile.isEmpty() ){
 
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
 	}
 
 	this->disableAll() ;
 
-	Task::run< QByteArray >( [ this ](){
+	Task::run< QByteArray >( [ this,passphrase,keyFile ](){
 
 		switch( m_pluginType ){
 		case plugins::plugin::gpg:
 
-			return plugins::gpg( m_exe,m_keyFile,m_passphrase ) ;
+			return plugins::gpg( m_exe,keyFile,passphrase ) ;
 
 		case plugins::plugin::hmac_key:
 
-			return plugins::hmac_key( m_exe,m_keyFile,m_passphrase ) ;
+			return plugins::hmac_key( m_exe,keyFile,passphrase ) ;
 
 		case plugins::plugin::hmac_key_0:
 
-			return plugins::hmac_key_0( m_keyFile,m_passphrase ) ;
+			return plugins::hmac_key_0( keyFile,passphrase ) ;
 
 		case plugins::plugin::keyKeyFile:
 
-			return plugins::keyKeyFile( m_exe,m_keyFile,m_passphrase ) ;
+			return plugins::keyKeyFile( m_exe,keyFile,passphrase ) ;
 
 		case plugins::plugin::luks:
 
-			return plugins::luks( m_exe,m_keyFile,m_passphrase ) ;
+			return plugins::luks( m_exe,keyFile,passphrase ) ;
 
 		case plugins::plugin::steghide:
 
-			return plugins::steghide( m_exe,m_keyFile,m_passphrase ) ;
+			return plugins::steghide( m_exe,keyFile,passphrase ) ;
 		default:
 			return QByteArray() ;
 		}
@@ -157,8 +156,7 @@ void plugin::pbSetKey()
 
 void plugin::pbSelectKeyFile()
 {
-	m_keyFile = QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),0 ) ;
-	m_ui->lineEdit_2->setText( m_keyFile ) ;
+	m_ui->lineEdit_2->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),0 ) ) ;
 }
 
 void plugin::pbClose()
@@ -176,7 +174,7 @@ void plugin::enableAll()
 	m_ui->label_2->setEnabled( true ) ;
 	m_ui->label_3->setEnabled( true ) ;
 	m_ui->lineEdit->setEnabled( true ) ;
-	//m_ui->lineEdit_2->setEnabled( true ) ;
+	m_ui->lineEdit_2->setEnabled( true ) ;
 }
 
 void plugin::disableAll()
@@ -189,5 +187,5 @@ void plugin::disableAll()
 	m_ui->label_2->setEnabled( false ) ;
 	m_ui->label_3->setEnabled( false ) ;
 	m_ui->lineEdit->setEnabled( false ) ;
-	//m_ui->lineEdit_2->setEnabled( false ) ;
+	m_ui->lineEdit_2->setEnabled( false ) ;
 }
