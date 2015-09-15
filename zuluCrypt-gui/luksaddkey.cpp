@@ -450,7 +450,7 @@ void luksaddkey::disableAll()
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
 	m_ui->pushButtonOpenFile->setEnabled( false ) ;
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( false ) ;
-	m_ui->pushButtonOpenPartition->setEnabled( false ) ;	
+	m_ui->pushButtonOpenPartition->setEnabled( false ) ;
 	m_ui->labelReEnterPassphrase->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
@@ -472,7 +472,7 @@ void luksaddkey::enableAll()
 	m_ui->pushButtonOpenExistingKeyFile->setEnabled( true ) ;
 	m_ui->pushButtonOpenFile->setEnabled( true ) ;
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( true ) ;
-	m_ui->pushButtonOpenPartition->setEnabled( true ) ;	
+	m_ui->pushButtonOpenPartition->setEnabled( true ) ;
 
 	auto index = m_ui->cbNewKey->currentIndex() ;
 
