@@ -66,6 +66,7 @@
 #include "utility.h"
 #include "task.h"
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
+#include "contactinfo.h"
 
 #include "veracrypt_support.h"
 #include "pdf_path.h"
@@ -352,6 +353,7 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionManage_volumes_in_internal_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInInternalWallet() ) ) ;
 	connect( m_ui->actionOpen_zuluCrypt_pdf,SIGNAL( triggered() ),this,SLOT( openpdf() ) ) ;
 	connect( m_ui->actionCheck_For_Update,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
+	connect( m_ui->actionContact_Info,SIGNAL( triggered() ),this,SLOT( cinfo() ) ) ;
 
 	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
 
@@ -408,6 +410,11 @@ void zuluCrypt::openpdf()
 void zuluCrypt::updateCheck()
 {
 	checkForUpdates::checkForUpdate( this ) ;
+}
+
+void zuluCrypt::cinfo()
+{
+	new contactInfo( this ) ;
 }
 
 void zuluCrypt::autoUpdateCheck()

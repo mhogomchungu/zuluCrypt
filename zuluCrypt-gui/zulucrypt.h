@@ -130,6 +130,7 @@ private slots :
 	void optionMenuAboutToShow( void ) ;
 	void openpdf( void ) ;
 	void updateCheck( void ) ;
+	void cinfo( void ) ;
 private:
 	void openFolder( const QString& ) ;
 	void autoUpdateCheck( void ) ;

@@ -123,6 +123,7 @@
     <addaction name="actionOpen_zuluCrypt_pdf"/>
     <addaction name="actionCheck_For_Update"/>
     <addaction name="actionAbout"/>
+    <addaction name="actionContact_Info"/>
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">
@@ -495,6 +496,14 @@
    </property>
    <property name="shortcut">
     <string>Shift+U</string>
+   </property>
+  </action>
+  <action name="actionContact_Info">
+   <property name="text">
+    <string>Contact Info</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+I</string>
    </property>
   </action>
  </widget>

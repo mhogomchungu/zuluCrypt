@@ -21,6 +21,7 @@ set( UI_FILES createfile.ui
 		walletconfiginput.ui
 		openvolume.ui
 		tcrypt.ui
+		contactinfo.ui
 )
 
 set( MOC_FILES
@@ -45,6 +46,7 @@ set( MOC_FILES
 		walletconfig.h
 		walletconfiginput.h
 		../zuluMount-gui/oneinstance.h
+		contactinfo.h
  )
 
 set( SRC
@@ -70,6 +72,7 @@ set( SRC
 	walletconfig.cpp
 	walletconfiginput.cpp
 	../zuluMount-gui/oneinstance.cpp
+	contactinfo.cpp
 )
 
 if( QT5 )
