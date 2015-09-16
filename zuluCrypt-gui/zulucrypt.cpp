@@ -718,6 +718,7 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionVeracrypt_container_in_a_partition->setFont( Font ) ;
 	m_ui->actionOpen_zuluCrypt_pdf->setFont( Font ) ;
 	m_ui->actionCheck_For_Update->setFont( Font ) ;
+	m_ui->actionContact_Info->setFont( Font ) ;
 }
 
 void zuluCrypt::aboutMenuOption( void )
