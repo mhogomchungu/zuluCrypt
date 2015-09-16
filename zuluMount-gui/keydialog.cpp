@@ -134,7 +134,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	if( m_volumeIsEncFs ){
 
 		m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
-	}else{		
+	}else{
 		m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 	}
 
@@ -328,7 +328,7 @@ void keyDialog::pbPluginEntryClicked( QAction * e )
 
 	if( r != tr( "Cancel" ) ){
 
-		m_ui->lineEditKey->setText( r->text() ) ;
+		m_ui->lineEditKey->setText( r.text() ) ;
 	}
 }
 
