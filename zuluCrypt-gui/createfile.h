@@ -38,8 +38,12 @@ class createfile : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit createfile( QWidget * parent,std::function< void( const QString& ) > ) ;
-	~createfile();
+	static createfile * instance( QWidget * parent,std::function< void( const QString& ) > f )
+	{
+		return new createfile( parent,std::move( f ) ) ;
+	}
+	explicit createfile( QWidget *,std::function< void( const QString& ) > ) ;
+	~createfile() ;
 signals :
 	void sendProgress( int ) ;
 public slots:

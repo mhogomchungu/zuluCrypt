@@ -44,6 +44,10 @@ class passwordDialog :  public QDialog
 {
 	Q_OBJECT
 public:
+	static passwordDialog * instance( QTableWidget * table,QWidget * parent,std::function< void( const QString& ) > f )
+	{
+		return new passwordDialog( table,parent,std::move( f ) ) ;
+	}
 	passwordDialog( QTableWidget * table,QWidget * parent,std::function< void( const QString& ) > ) ;
 	virtual ~passwordDialog() ;
 signals :

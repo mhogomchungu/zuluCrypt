@@ -61,7 +61,6 @@ class zuluCrypt : public QMainWindow
 	Q_OBJECT
 public:
 	zuluCrypt( QWidget * parent = 0 ) ;
-	void removeRowFromTable( int row ) ;
 	void start( void ) ;
 	~zuluCrypt() ;
 public slots:
@@ -132,6 +131,7 @@ private slots :
 	void updateCheck( void ) ;
 	void cinfo( void ) ;
 private:
+	void removeRowFromTable( int ) ;
 	void openFolder( const QString& ) ;
 	void autoUpdateCheck( void ) ;
 	void updateVolumeList( const QString& volume = QString() ) ;

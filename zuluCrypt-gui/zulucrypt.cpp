@@ -971,11 +971,11 @@ void zuluCrypt::close()
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	this->closeStatus( Task::await<int>( [ this ](){
+	auto item = m_ui->tableWidget->currentItem() ;
 
-		auto item = m_ui->tableWidget->currentItem() ;
+	auto path = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
 
-		auto path = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
+	this->closeStatus( Task::await<int>( [ this,item,path ](){
 
 		auto exe = utility::appendUserUID( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ;
 
@@ -1029,17 +1029,17 @@ void zuluCrypt::ShowDeleteKey()
 
 void zuluCrypt::ShowCreateKeyFile()
 {
-	new createkeyfile( this ) ;
+	createkeyfile::instance( this ) ;
 }
 
 void zuluCrypt::ShowFavoritesEntries()
 {
-	new favorites( this ) ;
+	favorites::instance( this ) ;
 }
 
 void zuluCrypt::ShowCreateFile()
 {
-	new createfile( this,[ this ]( const QString& file ){
+	createfile::instance( this,[ this ]( const QString& file ){
 
 		if( utility::pathExists( file ) ){
 
@@ -1064,6 +1064,14 @@ void zuluCrypt::ShowOpenPartition()
 	} ) ;
 }
 
+passwordDialog * zuluCrypt::setUpPasswordDialog()
+{
+	return passwordDialog::instance( m_ui->tableWidget,this,[ this ]( const QString& path ){
+
+		this->openFolder( path ) ;
+	} ) ;
+}
+
 void zuluCrypt::ShowVeraPasswordDialog()
 {
 	this->setUpPasswordDialog()->ShowVeraUI() ;
@@ -1074,14 +1082,6 @@ void zuluCrypt::ShowVeraOpenPartition()
 	openvolume::instance( this )->showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
 
 		this->setUpPasswordDialog()->ShowVeraUI( e ) ;
-	} ) ;
-}
-
-passwordDialog * zuluCrypt::setUpPasswordDialog()
-{
-	return new passwordDialog( m_ui->tableWidget,this,[ this ]( const QString& path ){
-
-		this->openFolder( path ) ;
 	} ) ;
 }
 
@@ -1102,7 +1102,7 @@ void zuluCrypt::ShowPasswordDialog( QString x,QString y )
 
 void zuluCrypt::ShowEraseDataDialog()
 {
-	new erasedevice( this ) ;
+	erasedevice::instance( this ) ;
 }
 
 void zuluCrypt::encryptFile()
