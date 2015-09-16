@@ -328,7 +328,7 @@ void keyDialog::pbPluginEntryClicked( QAction * e )
 
 	if( r != tr( "Cancel" ) ){
 
-		m_ui->lineEditKey->setText( e->text() ) ;
+		m_ui->lineEditKey->setText( r->text() ) ;
 	}
 }
 
