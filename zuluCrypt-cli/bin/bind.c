@@ -233,8 +233,6 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	/*
 	 * zuluCryptCreateMountPath() is defined in create_mount_point.c
 	 */
-	zuluCryptCreateMountPath( "/run" ) ;
-	zuluCryptCreateMountPath( "/run/media" ) ;
 	zuluCryptCreateMountPath( "/run/media/public" ) ;
 
 	if( stat( m_path,&st ) == 0 ){

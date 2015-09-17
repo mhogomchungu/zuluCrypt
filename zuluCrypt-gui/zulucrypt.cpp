@@ -1060,7 +1060,7 @@ void zuluCrypt::ShowOpenPartition()
 {
 	openvolume::instance( this )->showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
 
-		this->setUpPasswordDialog()->ShowUI( e ) ; ;
+		this->setUpPasswordDialog()->ShowUI( e ) ;
 	} ) ;
 }
 
