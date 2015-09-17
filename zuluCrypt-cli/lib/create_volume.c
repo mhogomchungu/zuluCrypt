@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <stdio.h>
+#include <limits.h>
 
 static int zuluExit( int st,string_t m )
 {
@@ -38,12 +39,18 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 	char * e = NULL ;
 	process_t p ;
 
+	char buffer[ PATH_MAX ] ;
+
 	/*
 	 * zulucryptFileSystemIsSupported() is defined in mount_fs_options.c
 	 */
 	if( zulucryptFileSystemIsSupported( fs ) == 0 ){
 		return 1 ;
 	}
+
+	if( getcwd( buffer,sizeof( buffer ) ) ){;}
+
+	if( chdir( "/sbin" ) ){;}
 
 	p = Process( ZULUCRYPTmkfs,NULL ) ;
 
@@ -90,6 +97,8 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 			StringFree( e ) ;
 		}
 	}
+
+	if( chdir( buffer ) ){;}
 
 	ProcessCleanUp( &p ) ;
 	return r ;
