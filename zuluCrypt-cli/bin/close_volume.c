@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <libintl.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 static int zuluExit( int st,string_t p )
 {
@@ -89,6 +90,8 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 			if( rmdir( m_point ) == 0 ){
 
 				break ;
+			}else{
+				sleep( 1 ) ;
 			}
 		}
 
