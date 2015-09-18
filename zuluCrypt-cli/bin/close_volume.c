@@ -46,12 +46,12 @@ static int zuluExit( int st,string_t p )
 int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t uid )
 {
 	 int st ;
+	 int i ;
 	 string_t p = StringVoid ;
 	 char * m_point = NULL ;
 	 struct stat xt ;
 	 const char * mapper ;
 
-	 if( uid ){;}
 	 /*
 	  * ZULUCRYPTlongMapperPath is set in ../constants.h
 	  * zuluCryptCreateMapperName() defined in ../lib/create_mapper_name.c
@@ -84,7 +84,14 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 
 	 if( st == 0 && m_point != NULL ){
 
-		remove( m_point ) ;
+		for( i = 0 ; i < 2 ; i++ ){
+
+			if( rmdir( m_point ) == 0 ){
+
+				break ;
+			}
+		}
+
 		StringFree( m_point ) ;
 	 }
 

@@ -142,7 +142,7 @@ void openvolume::EnterKeyPressed()
 
 	if( it ){
 
-		tableEntryDoubleClicked( tw->item( it->row(),0 ) ) ;
+		this->tableEntryDoubleClicked( tw->item( it->row(),0 ) ) ;
 	}
 }
 
