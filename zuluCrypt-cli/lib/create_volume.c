@@ -39,8 +39,7 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 	char * e = NULL ;
 	process_t p ;
 
-	char buffer[ PATH_MAX ] ;
-
+	char * const env[ 2 ] = { "PATH=/bin:/usr/bin:/sbin:/usr/sbin",NULL } ;
 	/*
 	 * zulucryptFileSystemIsSupported() is defined in mount_fs_options.c
 	 */
@@ -48,11 +47,9 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 		return 1 ;
 	}
 
-	if( getcwd( buffer,sizeof( buffer ) ) ){;}
-
-	if( chdir( "/sbin" ) ){;}
-
 	p = Process( ZULUCRYPTmkfs,NULL ) ;
+
+	ProcessSetEnvironmentalVariable( p,env ) ;
 
 	if( StringAtLeastOneMatch_1( fs,"ext2","ext3","ext4",NULL ) ){
 
@@ -90,17 +87,20 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 
 	r = ProcessExitStatus( p ) ;
 
-	if( r ){
+	if( r != 0 ){
+
 		ProcessGetOutPut( p,&e,ProcessStdError ) ;
+
 		if( e ){
+
 			puts( e ) ;
+
 			StringFree( e ) ;
 		}
 	}
 
-	if( chdir( buffer ) ){;}
-
 	ProcessCleanUp( &p ) ;
+
 	return r ;
 }
 
