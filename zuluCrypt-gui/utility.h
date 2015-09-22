@@ -34,6 +34,8 @@
 #include <QTimer>
 #include <QMenu>
 #include <QVector>
+#include <QSystemTrayIcon>
+#include <QAction>
 
 #include <functional>
 #include <memory>
@@ -207,6 +209,8 @@ namespace utility
 	QStringList split( const QByteArray&,char token = '\n' ) ;
 	bool userHasGoodVersionOfWhirlpool( void ) ;
 	void licenseInfo( QWidget * ) ;
+	void showTrayIcon( QAction *,QSystemTrayIcon *,bool = true ) ;
+	void trayProperty( QSystemTrayIcon *,bool = true ) ;
 
 	bool ProcessExecute( const QString& m_point,const QString& exe,const QString& env,int uid ) ;
 

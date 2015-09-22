@@ -37,8 +37,11 @@ class cryptoinfo : public QWidget
 {
 	Q_OBJECT
 public:
+	static cryptoinfo * instance( QWidget * parent,QString path,QString msg )
+	{
+		return new cryptoinfo( parent,path,msg ) ;
+	}
 	cryptoinfo( QWidget * parent,QString path,QString msg ) ;
-	void Show( void ) ;
 	~cryptoinfo() ;
 signals:
 	void closeUISignal( void ) ;
@@ -46,6 +49,7 @@ private slots:
 	void pbOK( void ) ;
 	void checkBoxChecked( bool ) ;
 private:
+	void Show( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void HideUI( void ) ;

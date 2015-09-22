@@ -42,6 +42,8 @@ cryptoinfo::cryptoinfo( QWidget * parent,QString path,QString msg ) :
 	connect( m_ui->checkBox,SIGNAL( clicked( bool ) ),this,SLOT( checkBoxChecked( bool ) ) ) ;
 
 	this->installEventFilter( this ) ;
+
+	this->Show() ;
 }
 
 bool cryptoinfo::eventFilter( QObject * watched,QEvent * event )

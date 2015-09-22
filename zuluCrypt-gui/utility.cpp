@@ -1331,3 +1331,68 @@ int utility::pluginKey( QDialog * w,QString * key,const QString& p )
 
 	return l.exec() ;
 }
+
+void utility::showTrayIcon( QAction * ac,QSystemTrayIcon * trayIcon,bool zuluCrypt )
+{
+	Q_UNUSED( zuluCrypt ) ;
+
+	QString home = utility::homePath() + "/.zuluCrypt/" ;
+	QDir d( home ) ;
+
+	if( !d.exists() ){
+
+		d.mkdir( home ) ;
+	}
+
+	QFile f( utility::homePath() + "/.zuluCrypt/tray" ) ;
+
+	if( !f.exists() ){
+
+		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+		f.write( "1" ) ;
+		f.close() ;
+	}
+
+	f.open( QIODevice::ReadOnly ) ;
+
+	char c ;
+
+	f.read( &c,1 ) ;
+
+	ac->setCheckable( true ) ;
+
+	if( c == '1' ){
+
+		ac->setChecked( true ) ;
+		trayIcon->show() ;
+	}else{
+		ac->setChecked( false ) ;
+		trayIcon->hide() ;
+	}
+}
+
+void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )
+{
+	Q_UNUSED( zuluCrypt ) ;
+
+	QFile f( utility::homePath() + "/.zuluCrypt/tray" ) ;
+
+	f.open( QIODevice::ReadOnly ) ;
+
+	char c ;
+
+	f.read( &c,1 ) ;
+
+	f.close() ;
+
+	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+
+	if( c == '1' ){
+
+		f.write( "0" ) ;
+		trayIcon->hide() ;
+	}else{
+		f.write( "1" ) ;
+		trayIcon->show() ;
+	}
+}

@@ -23,6 +23,9 @@
 #include <QObject>
 #include <QtNetwork/QNetworkAccessManager>
 
+class QWidget ;
+class QNetworkReply ;
+
 #include <memory>
 
 class QNetworkReply ;
@@ -33,8 +36,8 @@ class checkForUpdates : public QObject
 	Q_OBJECT
 public:
 	checkForUpdates( QWidget *,bool ) ;
-	static void autoCheckForUpdate( QWidget *,const QString& ) ;
-	static void checkForUpdate( QWidget * ) ;
+	static void instance( QWidget *,const QString& ) ;
+	static void instance( QWidget * ) ;
 public slots:
 	void networkReply( QNetworkReply * ) ;
 private:

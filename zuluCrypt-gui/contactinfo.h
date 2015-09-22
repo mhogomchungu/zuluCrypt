@@ -35,6 +35,10 @@ class contactInfo : public QDialog
 {
 	Q_OBJECT
 public:
+	static contactInfo * instance( QWidget * parent )
+	{
+		return new contactInfo( parent ) ;
+	}
 	explicit contactInfo( QWidget * parent = 0 ) ;
 	~contactInfo() ;
 private slots:

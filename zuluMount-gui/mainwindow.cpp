@@ -208,12 +208,12 @@ void MainWindow::licenseInfo()
 
 void MainWindow::updateCheck()
 {
-	checkForUpdates::checkForUpdate( this ) ;
+	checkForUpdates::instance( this ) ;
 }
 
 void MainWindow::autoUpdateCheck()
 {
-	checkForUpdates::autoCheckForUpdate( this,"zuluMount" ) ;
+	checkForUpdates::instance( this,"zuluMount" ) ;
 }
 
 void MainWindow::removeVolumeFromHiddenVolumeList( QAction * ac )

@@ -107,75 +107,67 @@ void zuluCrypt::setUpApp( const QString& volume )
 	this->initFont() ;
 	this->initKeyCombo() ;
 	this->initTray() ;
-	this->updateVolumeList( volume ) ;
 	this->info() ;
 	this->autoUpdateCheck() ;
+	this->updateVolumeList( volume ) ;
 }
 
 void zuluCrypt::updateVolumeList( const QString& volume )
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	Task::run<QString>( [](){
+	tablewidget::clearTable( m_ui->tableWidget ) ;
+
+	auto r = Task::await< QString >( [](){
 
 		auto r = utility::Task( QString( "%1 -L" ).arg( ZULUCRYPTzuluCrypt ) ) ;
 
 		if( r.success() ){
+
 			return QString( r.output() ) ;
 		}else{
 			return QString() ;
 		}
+	} ) ;
 
-	} ).then( [ &,volume ]( const QString& r ){
+	if( !r.isEmpty() ){
 
-		if( !r.isEmpty() ){
+		for( const auto& it : utility::split( r,'\n' ) ){
 
-			QStringList l = utility::split( r,'\n' ) ;
-			QStringList z ;
+			auto z = utility::split( it,'\t' ) ;
 
-			for( const auto& it : l ){
+			if( z.size() >= 3 ){
 
-				z = utility::split( it,'\t' ) ;
+				const QString& q = z.at( 2 ) ;
 
-				if( z.size() >= 3 ){
+				if( q.startsWith( "crypto_LUKS" ) ){
 
-					const QString& q = z.at( 2 ) ;
+					z.replace( 2,"luks" ) ;
+				}else{
+					QString e( q ) ;
 
-					if( q.startsWith( "crypto_LUKS" ) ){
+					e.remove( "crypto_" ) ;
 
-						z.replace( 2,"luks" ) ;
-					}else{
-						QString e( q ) ;
-
-						e.remove( "crypto_" ) ;
-
-						z.replace( 2,e.toLower() ) ;
-					}
-
-					tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
+					z.replace( 2,e.toLower() ) ;
 				}
+
+				tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
 			}
 		}
+	}
 
-		m_ui->tableWidget->setEnabled( true ) ;
-		m_ui->tableWidget->setFocus() ;
+	m_ui->tableWidget->setEnabled( true ) ;
+	m_ui->tableWidget->setFocus() ;
 
-		if( !volume.isEmpty() ){
-			QString y = volume.split( "/" ).last() ;
-			this->ShowPasswordDialog( volume,y ) ;
-		}
-	} ) ;
+	if( !volume.isEmpty() ){
+
+		this->ShowPasswordDialog( volume,volume.split( "/" ).last() ) ;
+	}
 }
 
 void zuluCrypt::updateVolumeListAction()
 {
-	QTableWidget * table = m_ui->tableWidget ;
-	if( table->isEnabled() ){
-		while( table->rowCount() > 0 ){
-			table->removeRow( 0 ) ;
-		}
-		this->updateVolumeList() ;
-	}
+	this->updateVolumeList() ;
 }
 
 void zuluCrypt::initKeyCombo()
@@ -197,6 +189,7 @@ void zuluCrypt::initFont()
 void zuluCrypt::raiseWindow()
 {
 	if( m_startHidden ){
+
 		m_trayIcon->setVisible( true ) ;
 	}else{
 		this->setVisible( true ) ;
@@ -212,8 +205,7 @@ void zuluCrypt::raiseWindow( QString device )
 	this->show() ;
 	this->raise() ;
 	this->setWindowState( Qt::WindowActive ) ;
-	QString y = device.split( "/" ).last() ;
-	this->ShowPasswordDialog( device,y ) ;
+	this->ShowPasswordDialog( device,device.split( "/" ).last() ) ;
 }
 
 void zuluCrypt::start()
@@ -248,31 +240,16 @@ void zuluCrypt::start()
 
 void zuluCrypt::initTray()
 {
-	QString home = QDir::homePath() + "/.zuluCrypt/" ;
-	QDir d( home ) ;
-	if( !d.exists() ){
-		d.mkdir( home ) ;
-	}
-	QFile f( QDir::homePath() + "/.zuluCrypt/tray" ) ;
-	if( !f.exists() ){
-		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-		f.write( "1" ) ;
-		f.close() ;
-	}
+	utility::showTrayIcon( m_ui->actionTray_icon,m_trayIcon ) ;
+}
 
-	f.open( QIODevice::ReadOnly ) ;
-	QByteArray c = f.readAll() ;
-	f.close() ;
+void zuluCrypt::trayProperty()
+{
+	m_ui->actionTray_icon->setEnabled( false ) ;
 
-	m_ui->actionTray_icon->setCheckable( true ) ;
+	utility::trayProperty( m_trayIcon ) ;
 
-	if( c.at( 0 ) == '1' ){
-		m_ui->actionTray_icon->setChecked( true ) ;
-		m_trayIcon->show() ;
-	}else{
-		m_ui->actionTray_icon->setChecked( false ) ;
-		m_trayIcon->hide() ;
-	}
+	m_ui->actionTray_icon->setEnabled( true ) ;
 }
 
 void zuluCrypt::setupUIElements()
@@ -305,10 +282,10 @@ void zuluCrypt::setupUIElements()
 
 void zuluCrypt::itemEntered( QTableWidgetItem * item )
 {
-	int row = item->row() ;
-	QTableWidget * table = item->tableWidget() ;
-	QString m_point = table->item( row,1 )->text() ;
+	QString m_point = item->tableWidget()->item( item->row(),1 )->text() ;
+
 	if( !m_point.isEmpty() ){
+
 		item->setToolTip( utility::shareMountPointToolTip( m_point ) ) ;
 	}
 }
@@ -377,14 +354,8 @@ void zuluCrypt::setupConnections()
 	m_ui->actionManage_system_partitions->setEnabled( utility::userIsRoot() ) ;
 	m_ui->actionManage_non_system_partitions->setEnabled( utility::userIsRoot() ) ;
 
-#if VERACRYPT_SUPPORT
-
 	m_ui->actionVeracrypt_container_in_a_file->setEnabled( true ) ;
 	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( true ) ;
-#else
-	m_ui->actionVeracrypt_container_in_a_file->setEnabled( false ) ;
-	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( false ) ;
-#endif
 
 	this->setAcceptDrops( true ) ;
 }
@@ -397,9 +368,7 @@ void zuluCrypt::optionMenuAboutToShow()
 
 void zuluCrypt::openpdf()
 {
-	bool failed = Task::await< bool >( [ this ](){ return utility::Task( m_openPath + PDF_PATH ).failed() ; } ) ;
-
-	if( failed ){
+	if( Task::await< bool >( [ this ](){ return utility::Task( m_openPath + PDF_PATH ).failed() ; } ) ){
 
 		DialogMsg msg( this ) ;
 
@@ -409,26 +378,22 @@ void zuluCrypt::openpdf()
 
 void zuluCrypt::updateCheck()
 {
-	checkForUpdates::checkForUpdate( this ) ;
+	checkForUpdates::instance( this ) ;
 }
 
 void zuluCrypt::cinfo()
 {
-	new contactInfo( this ) ;
+	contactInfo::instance( this ) ;
 }
 
 void zuluCrypt::autoUpdateCheck()
 {
-	checkForUpdates::autoCheckForUpdate( this,"zuluCrypt" ) ;
+	checkForUpdates::instance( this,"zuluCrypt" ) ;
 }
 
 void zuluCrypt::info()
 {
-	QString e = QDir::homePath() + "/.zuluCrypt/doNotshowWarning.option" ;
-
-	auto info = new cryptoinfo( this,e,QString() ) ;
-
-	info->Show() ;
+	cryptoinfo::instance( this,utility::homePath() + "/.zuluCrypt/doNotshowWarning.option",QString() ) ;
 }
 
 void zuluCrypt::manageVolumesInGNOMEWallet()
@@ -514,9 +479,7 @@ void zuluCrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem 
 {
 	tablewidget::selectTableRow( current,previous ) ;
 
-	int rowCount = m_ui->tableWidget->rowCount() ;
-
-	if( rowCount > 12 ){
+	if( m_ui->tableWidget->rowCount() > 12 ){
 
 		m_ui->tableWidget->setColumnWidth( 2,70 ) ;
 	}else{
@@ -581,7 +544,7 @@ void zuluCrypt::minimizeToTray()
 		this->hide() ;
 	}else{
 		m_ui->actionTray_icon->setChecked( true ) ;
-		trayProperty() ;
+		this->trayProperty() ;
 		this->hide() ;
 	}
 }
@@ -604,12 +567,10 @@ void zuluCrypt::dragEnterEvent( QDragEnterEvent * e )
 
 void zuluCrypt::dropEvent( QDropEvent * e )
 {
-	const QMimeData * m = e->mimeData() ;
-	QList<QUrl> l = m->urls() ;
-
-	for( const auto& it : l ){
+	for( const auto& it : e->mimeData()->urls() ){
 
 		const QString& e = it.path() ;
+
 		if( utility::pathPointsToAFile( e ) ){
 
 			this->ShowPasswordDialog( e,e.split( "/" ).last() ) ;
@@ -627,7 +588,9 @@ void zuluCrypt::closeApplication()
 void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )
 {
 	if( e == QSystemTrayIcon::Trigger ){
+
 		if( this->isVisible() ){
+
 			this->hide() ;
 		}else{
 			this->show() ;
@@ -635,36 +598,18 @@ void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )
 	}
 }
 
-void zuluCrypt::trayProperty()
-{
-	m_ui->actionTray_icon->setEnabled( false ) ;
-	QFile f( QDir::homePath() + "/.zuluCrypt/tray" ) ;
-	f.open( QIODevice::ReadOnly ) ;
-	QByteArray c = f.readAll() ;
-	f.close() ;
-	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-	QByteArray data ;
-	if( c.at( 0 ) == '1' ){
-		data.append( '0' ) ;
-		f.write( data ) ;
-		m_trayIcon->hide() ;
-	}else{
-		data.append( '1' ) ;
-		f.write( data ) ;
-		m_trayIcon->show() ;
-	}
-	f.close() ;
-	m_ui->actionTray_icon->setEnabled( true ) ;
-}
-
 void zuluCrypt::fonts()
 {
 	int size = 11 ;
 	bool ok ;
 	QFont Font = QFontDialog::getFont( &ok,this->font(),this ) ;
+
 	if( ok ){
+
 		int k = Font.pointSize() ;
+
 		if( k > size ){
+
 			k = size ;
 			Font.setPointSize( k ) ;
 			UIMessage( tr( "INFO" ),tr( "Resetting font size to %1 because larger font sizes do not fit" ).arg( QString::number( size ) ) ) ;
@@ -804,9 +749,13 @@ void zuluCrypt::readFavorites()
 	QAction * ac ;
 	m_ui->menuFavorites->clear() ;
 	QStringList l = utility::readFavorites() ;
+
 	if( !l.isEmpty() ){
+
 		l.removeLast() ;
+
 		for( const auto& it : l ){
+
 			ac = new QAction( it,m_ui->menuFavorites ) ;
 			m_ui->menuFavorites->addAction( ac ) ;
 		}
@@ -850,7 +799,7 @@ void zuluCrypt::openFolder( const QString& path )
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )
 {
-	itemClicked( it,true ) ;
+	this->itemClicked( it,true ) ;
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
@@ -881,7 +830,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	QString volume_id = m_ui->tableWidget->item( item->row(),0 )->text() + "\t" ;
 
-	QFile f( QDir::homePath() + "/.zuluCrypt/favorites" ) ;
+	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
 
 	QByteArray data ;
 
@@ -1000,7 +949,7 @@ void zuluCrypt::volumeHeaderBackUp()
 
 void zuluCrypt::luksHeaderBackUpContextMenu()
 {
-	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
+	auto item = m_ui->tableWidget->currentItem() ;
 
 	QString device = m_ui->tableWidget->item( item->row(),0 )->text() ;
 

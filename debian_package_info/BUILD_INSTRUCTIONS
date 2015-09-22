@@ -113,7 +113,7 @@ HOW TO BUILD A ZULUCRYPT PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTIO
 
    ******************************************************************************************************
 
-   su -c "dpkg --install ../*.deb"
+   su -c "dpkg --install ../*.deb && apt-get install -f"
 
    ******************************************************************************************************
 

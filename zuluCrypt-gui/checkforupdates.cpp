@@ -19,15 +19,15 @@
 
 #include "checkforupdates.h"
 
-#include <QtNetwork/QNetworkReply>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
+#include <QNetworkReply>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+
+#include <QWidget>
 
 #include "utility.h"
 #include "dialogmsg.h"
 #include "version_1.h"
-
-#include <QWidget>
 
 void checkForUpdates::networkReply( QNetworkReply * q )
 {
@@ -77,7 +77,7 @@ checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) : m_widget( 
 	m_manager.get( r ) ;
 }
 
-void checkForUpdates::autoCheckForUpdate( QWidget * widget,const QString& e )
+void checkForUpdates::instance( QWidget * widget,const QString& e )
 {
 	if( utility::pathExists( utility::homePath() + "/.zuluCrypt/autoCheckUpdates." + e ) ){
 
@@ -85,7 +85,7 @@ void checkForUpdates::autoCheckForUpdate( QWidget * widget,const QString& e )
 	}
 }
 
-void checkForUpdates::checkForUpdate( QWidget * widget )
+void checkForUpdates::instance( QWidget * widget )
 {
 	new checkForUpdates( widget,false ) ;
 }
