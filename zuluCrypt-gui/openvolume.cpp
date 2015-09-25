@@ -42,11 +42,10 @@
 #define ALL_PARTITIONS 1
 #define NON_SYSTEM_PARTITIONS 3
 
-openvolume::openvolume( QWidget * parent ) :
-	QDialog( parent )
+openvolume::openvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::openvolume() )
 {
-	m_ui = new Ui::openvolume() ;
 	m_ui->setupUi( this ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
@@ -79,9 +78,12 @@ openvolume::openvolume( QWidget * parent ) :
 
 		tw->horizontalHeaderItem( i )->setFont( this->font() ) ;
 	}
+
 	tw->horizontalHeader()->setVisible( true ) ;
 
 	m_ui->checkBoxUUID->setVisible( false ) ;
+
+	m_ui->pbHelp->setVisible( false ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -109,15 +111,18 @@ void openvolume::pbHelp()
 
 	QString m ;
 
-	if( m_option == 2 ){
+	if( m_option == openvolume::allVolumes ){
+
 		m = tr( "A list of all partitions on this system are displayed here.\nDouble click an entry to use it" ) ;
 	}else{
-		if( getuid() != 0 ) {
+		if( !utility::userIsRoot() ){
+
 			m = tr( "Restart the tool from root's account or after you have created and added yourself to group \"zulucrypt\" if the volume you want to use is not on the list." ) ;
 		}else{
 			m = tr( "You are a root user and all partitions are displayed.\nDouble click an entry to use it" )	;
 		}
 	}
+
 	msg.ShowUIOK( tr( "INFO" ),m ) ;
 }
 
@@ -155,14 +160,13 @@ void openvolume::ShowNonSystemPartitions( std::function< void( const QString& ) 
 {
 	m_function = std::move( f ) ;
 
-	m_option = 1 ;
-
 	this->partitionList( tr( "Select A Partition To Create An Encrypted Volume In" )," -N" ) ;
 }
 
 void openvolume::partitionList( const QString& p, const QString& q,std::function< void( const QString& )> f )
 {
 	m_function = std::move( f ) ;
+
 	this->partitionList( p,q ) ;
 }
 
@@ -170,14 +174,7 @@ void openvolume::ShowAllPartitions( std::function< void( const QString& ) > f )
 {
 	m_function = std::move( f ) ;
 
-	m_option = 2 ;
-
 	this->partitionList( tr( "Select An Encrypted Partition To Open" )," -A" ) ;
-}
-
-void openvolume::ShowPartitionList( QString x,QString y )
-{
-	this->partitionList( x,y ) ;
 }
 
 void openvolume::allowLUKSOnly()
@@ -185,7 +182,7 @@ void openvolume::allowLUKSOnly()
 	m_diableNonLUKS = true ;
 }
 
-void openvolume::partitionList( QString title,QString volumeType )
+void openvolume::partitionList( const QString& title,const QString& volumeType )
 {
 	this->setWindowTitle( title ) ;
 
@@ -195,44 +192,53 @@ void openvolume::partitionList( QString title,QString volumeType )
 
 	this->show() ;
 
-	QStringList l = Task::await<QStringList>( [ & ](){
+	if( volumeType == " -N" ){
 
-		/*
-		 * Root user can create encrypted volumes in all partitions including system partitions.
-		 * Show all partitions, not only non system.
-		 */
-		if( volumeType == " -N" ) {
+		m_option = openvolume::nonSystemVolumes ;
 
-			if( utility::userIsRoot() || utility::userBelongsToGroup( "zulucrypt" ) ){
+	}else if( volumeType == " -A" ){
 
-				volumeType = " -A" ;
-			}
-		}
+		m_option = openvolume::allVolumes ;
 
-		QString exe = QString( "%1 %2 -Z" ).arg( ZULUCRYPTzuluCrypt,volumeType ) ;
+	}else if( volumeType == " -S" ){
 
-		return utility::Task( exe ).splitOutput( '\n' ) ;
+		m_option = openvolume::systemVolumes ;
+	}
+
+	QStringList r ;
+	QStringList l ;
+
+	Task::await<void>( [ & ](){
+
+		l = utility::Task( QString( "%1 -AZ" ).arg( ZULUCRYPTzuluCrypt ) ).splitOutput( '\n' ) ;
+
+		r = utility::Task( QString( "%1 -S" ).arg( ZULUCRYPTzuluCrypt ) ).splitOutput( '\n' ) ;
 	} ) ;
-
-	m_ui->tableWidget->setEnabled( true ) ;
-	m_ui->tableWidget->setFocus() ;
-
-	this->partitionProperties( l ) ;
-}
-
-void openvolume::partitionProperties( const QStringList& l )
-{
-	QStringList z ;
 
 	for( const auto& it : l ){
 
-		z = utility::split( it,'\t' ) ;
+		const QFont& nonSystem = this->font() ;
+
+		QFont system = this->font() ;
+		system.setItalic( !system.italic() ) ;
+		system.setBold( !system.bold() ) ;
+
+		const QFont * font ;
+
+		auto z = utility::split( it,'\t' ) ;
 
 		if( z.size() >= 4 ){
 
 			const QString& fs = z.at( 3 ) ;
 
 			if( !fs.contains( "member" ) ){
+
+				if( r.contains( z.first() ) ){
+
+					font = &system ;
+				}else{
+					font = &nonSystem ;
+				}
 
 				const QString& size = z.at( 1 ) ;
 
@@ -243,20 +249,23 @@ void openvolume::partitionProperties( const QStringList& l )
 
 					if( fs.startsWith( "crypto_LUKS" ) ){
 
-						tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
+						tablewidget::addRowToTable( m_ui->tableWidget,z,*font ) ;
 					}
 				}else if( m_showEncryptedOnly ){
 
 					if( fs.startsWith( "crypto" ) || fs.contains( "Nil" ) ){
 
-						tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
+						tablewidget::addRowToTable( m_ui->tableWidget,z,*font ) ;
 					}
 				}else{
-					tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
+					tablewidget::addRowToTable( m_ui->tableWidget,z,*font ) ;
 				}
 			}
 		}
 	}
+
+	m_ui->tableWidget->setEnabled( true ) ;
+	m_ui->tableWidget->setFocus() ;
 }
 
 void openvolume::HideUI()
@@ -267,12 +276,11 @@ void openvolume::HideUI()
 
 void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 {
-	QString dev ;
-	QTableWidget * tw = m_ui->tableWidget ;
+	auto tw = m_ui->tableWidget ;
 
 	if( m_diableNonLUKS ){
 
-		if( tw->item( item->row(),3 )->text() != "crypto_LUKS" ){
+		if( !tw->item( item->row(),3 )->text().startsWith( "crypto_LUKS" ) ){
 
 			DialogMsg m( this ) ;
 
@@ -282,14 +290,29 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 		}
 
 	}
-	if( m_ui->pbUUID->isFlat() ){
 
-		dev = "UUID=\"" + tw->item( item->row(),4 )->text() + "\"" ;
-	}else{
-		dev = tw->item( item->row(),0 )->text() ;
+	if( m_option == openvolume::nonSystemVolumes ) {
+
+		if( !( utility::userIsRoot() || utility::userBelongsToGroup( "zulucrypt" ) ) ){
+
+			if( item->font().italic() != this->font().italic() ){
+
+				DialogMsg m( this ) ;
+
+				QString e = tr( "Insufficient privileges to operate on a system volume.\nRestart zuluCrypt from root's account to proceed" ) ;
+
+				return m.ShowUIOK( tr( "ERROR" ),e ) ;
+			}
+		}
 	}
 
-	m_function( dev ) ;
+	if( m_ui->pbUUID->isFlat() ){
+
+		m_function( "UUID=\"" + tw->item( item->row(),4 )->text() + "\"" ) ;
+	}else{
+		m_function( tw->item( item->row(),0 )->text() ) ;
+	}
+
 	this->HideUI() ;
 }
 

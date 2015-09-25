@@ -53,8 +53,6 @@ public:
 public slots:
 	void tableEntryDoubleClicked( QTableWidgetItem * ) ;
 	void HideUI( void ) ;
-	void ShowPartitionList( QString,QString ) ;
-	void partitionList( QString,QString ) ;
 	void allowLUKSOnly( void ) ;
 private slots:
 	void pbHelp( void ) ;
@@ -62,13 +60,13 @@ private slots:
 	void pbCancel( void ) ;
 	void EnterKeyPressed( void ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
-	void partitionProperties( const QStringList& ) ;
 private:
+	void partitionList( const QString&,const QString& ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::openvolume * m_ui ;
 	QAction * m_action ;
-	int m_option ;
+	enum { nonSystemVolumes,systemVolumes,allVolumes } m_option ;
 	bool m_diableNonLUKS = false ;
 	bool m_showEncryptedOnly = false ;
 	bool m_showLuksOnly = false ;
