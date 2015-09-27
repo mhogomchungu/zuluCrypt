@@ -739,30 +739,32 @@ void zuluCrypt::favClicked( QAction * e )
 
 	r.remove( "&" ) ;
 
-	auto l = r.split( "\t" ) ;
+	if( r == tr( "Manage Favorites" ) ){
 
-	this->ShowPasswordDialog( l.at( 0 ),l.at( 1 ) ) ;
+		favorites::instance( this ) ;
+	}else{
+		auto l = utility::split( r,'\t' ) ;
+
+		this->ShowPasswordDialog( l.at( 0 ),l.at( 1 ) ) ;
+	}
 }
 
 void zuluCrypt::readFavorites()
 {
-	QAction * ac ;
 	m_ui->menuFavorites->clear() ;
-	QStringList l = utility::readFavorites() ;
 
-	if( !l.isEmpty() ){
+	auto _add_action = [ this ]( const QString& e ){
 
-		l.removeLast() ;
+		return new QAction( e,m_ui->menuFavorites ) ;
+	} ;
 
-		for( const auto& it : l ){
+	m_ui->menuFavorites->addAction( _add_action( tr( "Manage Favorites" ) ) ) ;
 
-			ac = new QAction( it,m_ui->menuFavorites ) ;
-			m_ui->menuFavorites->addAction( ac ) ;
-		}
-	}else{
-		ac = new QAction( tr( "List Is Empty" ),m_ui->menuFavorites ) ;
-		ac->setEnabled( false ) ;
-		m_ui->menuFavorites->addAction( ac ) ;
+	m_ui->menuFavorites->addSeparator() ;
+
+	for( const auto& it : utility::readFavorites() ){
+
+		m_ui->menuFavorites->addAction( _add_action( it ) ) ;
 	}
 }
 
@@ -776,7 +778,7 @@ void zuluCrypt::addToFavorite()
 
 void zuluCrypt::menuKeyPressed()
 {
-	itemClicked( m_ui->tableWidget->currentItem(),false ) ;
+	this->itemClicked( m_ui->tableWidget->currentItem(),false ) ;
 }
 
 void zuluCrypt::openFolder()

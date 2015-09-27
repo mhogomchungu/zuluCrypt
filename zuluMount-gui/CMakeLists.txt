@@ -9,6 +9,8 @@ set (UI_FILES 	mainwindow.ui
 		mountoptions.ui
 		veracryptpimdialog.ui
 		../zuluCrypt-gui/tcrypt.ui
+		../zuluCrypt-gui/favorites.ui
+		../zuluCrypt-gui/openvolume.ui
 )
 
 set(MOC_FILES 	mainwindow.h
@@ -22,6 +24,8 @@ set(MOC_FILES 	mainwindow.h
 		veracryptpimdialog.h
 		../zuluCrypt-gui/tcrypt.h
 		../zuluCrypt-gui/utility.h
+		../zuluCrypt-gui/favorites.h
+		../zuluCrypt-gui/openvolume.h
  )
 
 set(SRC 	main.cpp
@@ -37,6 +41,8 @@ set(SRC 	main.cpp
 		volumeentryproperties.cpp
 		../zuluCrypt-gui/tcrypt.cpp
 		veracryptpimdialog.cpp
+		../zuluCrypt-gui/favorites.cpp
+		../zuluCrypt-gui/openvolume.cpp
 )
 
 if( QT5 )

@@ -33,11 +33,10 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-favorites::favorites( QWidget * parent ) :
-	QDialog( parent ),
-	m_ui( new Ui::favorites )
+favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favorites )
 {
 	m_ui->setupUi( this ) ;
+
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 
@@ -110,16 +109,14 @@ void favorites::ShowUI()
 
 	tablewidget::clearTable( m_ui->tableWidget ) ;
 
-	QStringList entries = utility::readFavorites() ;
-	QStringList line ;
+	auto _add_entry = [ this ]( const QStringList& l ){
 
-	int j = entries.size() - 1 ;
+		this->addEntries( l.at( 0 ),l.at( 1 ) ) ;
+	} ;
 
-	for( int i = 0 ; i < j ; i++ ){
+	for( const auto& it : utility::readFavorites() ){
 
-		line = entries.at( i ).split( "\t" ) ;
-
-		this->addEntries( line.at( 0 ),line.at( 1 ) ) ;
+		_add_entry( utility::split( it,'\t' ) ) ;
 	}
 
 	m_ui->lineEditDeviceAddress->clear() ;

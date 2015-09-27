@@ -55,6 +55,7 @@
 #include "zulumounttask.h"
 #include "../zuluCrypt-gui/task.h"
 #include "../zuluCrypt-gui/checkforupdates.h"
+#include "../zuluCrypt-gui/favorites.h"
 
 #include <memory>
 
@@ -230,42 +231,34 @@ void MainWindow::removeVolumeFromHiddenVolumeList( QAction * ac )
 	this->enableAll() ;
 }
 
-void MainWindow::showHiddenVolumeList()
+static void _manage_volume_list( QMenu * menu,const QStringList& l )
 {
-	m_hidden_volume_menu->clear() ;
-
-	QStringList l = zuluMountTask::hiddenVolumeList() ;
+	menu->clear() ;
 
 	if( l.isEmpty() ){
 
-		auto ac = new QAction( tr( "List Is Empty" ),m_hidden_volume_menu ) ;
+		auto ac = new QAction( menu->tr( "List Is Empty" ),menu ) ;
+
 		ac->setEnabled( false ) ;
-		m_hidden_volume_menu->addAction( ac ) ;
+
+		menu->addAction( ac ) ;
 	}else{
 		for( const auto& it : l ){
-			auto ac = new QAction( it,m_hidden_volume_menu ) ;
-			m_hidden_volume_menu->addAction( ac ) ;
+
+			menu->addAction( new QAction( it,menu ) ) ;
 		}
 	}
 }
 
+void MainWindow::showHiddenVolumeList()
+{
+	_manage_volume_list( m_hidden_volume_menu,zuluMountTask::hiddenVolumeList() ) ;
+}
+
 void MainWindow::showVisibleVolumeList()
 {
-	m_not_hidden_volume_menu->clear() ;
-
-	QStringList l = tablewidget::tableColumnEntries( m_ui->tableWidget ) ;
-
-	if( l.isEmpty() ){
-
-		auto ac = new QAction( tr( "List Is Empty" ),m_not_hidden_volume_menu ) ;
-		ac->setEnabled( false ) ;
-		m_not_hidden_volume_menu->addAction( ac ) ;
-	}else{
-		for( const auto& it : l ){
-			auto ac = new QAction( it,m_not_hidden_volume_menu ) ;
-			m_not_hidden_volume_menu->addAction( ac ) ;
-		}
-	}
+	_manage_volume_list( m_not_hidden_volume_menu,
+			     tablewidget::tableColumnEntries( m_ui->tableWidget ) ) ;
 }
 
 void MainWindow::removeVolumeFromVisibleVolumeList( QAction * ac )
@@ -292,24 +285,31 @@ void MainWindow::favoriteClicked( QAction * ac )
 {
 	auto e = ac->text() ;
 	e.remove( "&" ) ;
-	this->showMoungDialog( e ) ;
+
+	if( e == tr( "Manage Favorites" ) ){
+
+		favorites::instance( this ) ;
+	}else{
+		this->showMoungDialog( e ) ;
+	}
 }
 
 void MainWindow::showFavorites()
 {
 	m_favorite_menu->clear() ;
-	QStringList l = utility::readFavorites() ;
 
-	if( l.isEmpty() ){
-		auto ac = new QAction( tr( "List Is Empty" ),m_favorite_menu ) ;
-		ac->setEnabled( false ) ;
-		m_favorite_menu->addAction( ac ) ;
-	}else{
-		l.removeLast() ;
-		for( const auto& it : l ){
-			auto ac = new QAction( it.split( "\t" ).first(),m_favorite_menu ) ;
-			m_favorite_menu->addAction( ac ) ;
-		}
+	auto _add_action = [ this ]( const QString& e ){
+
+		return new QAction( e,m_favorite_menu ) ;
+	} ;
+
+	m_favorite_menu->addAction( _add_action( tr( "Manage Favorites" ) ) ) ;
+
+	m_favorite_menu->addSeparator() ;
+
+	for( const auto& it : utility::readFavorites() ){
+
+		m_favorite_menu->addAction( _add_action( utility::split( it,'\t' ).first() ) ) ;
 	}
 }
 
@@ -317,7 +317,7 @@ void MainWindow::setLocalizationLanguage()
 {
 	auto translator  = new QTranslator( this ) ;
 
-	const char * app = "zuluMount-gui" ;
+	auto app = "zuluMount-gui" ;
 
 	QByteArray r = utility::localizationLanguage( app ).toLatin1() ;
 
@@ -824,7 +824,12 @@ void MainWindow::showMoungDialog( const QString& volume )
 
 		if( utility::pathPointsToAFile( volume ) ){
 
-			this->showMoungDialog( zuluMountTask::getVolumeProperties( volume ).await() ) ;
+			this->disableAll() ;
+
+			zuluMountTask::getVolumeProperties( volume ).then( [ this ]( const volumeEntryProperties& e ){
+
+				this->showMoungDialog( e ) ;
+			} ) ;
 
 		}else if( utility::pathPointsToAFolder( volume ) ){
 

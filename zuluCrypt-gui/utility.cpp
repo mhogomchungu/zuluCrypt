@@ -972,21 +972,18 @@ void utility::addToFavorite( const QString& dev,const QString& m_point )
 	f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
 	utility::changeFilePermissions( f ) ;
 	f.write( fav.toLatin1() ) ;
-	f.close() ;
 }
 
 QStringList utility::readFavorites()
 {
 	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
-	QStringList list ;
+
 	if( f.open( QIODevice::ReadOnly ) ){
-		QString data( f.readAll() ) ;
-		f.close() ;
-		if( !data.isEmpty() ){
-			list = data.split( "\n" ) ;
-		}
+
+		return utility::split( f.readAll() ) ;
+	}else{
+		return QStringList() ;
 	}
-	return list ;
 }
 
 void utility::removeFavoriteEntry( const QString& entry )
