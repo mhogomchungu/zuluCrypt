@@ -25,12 +25,12 @@
 
 #include "../zuluCrypt-gui/utility.h"
 
-DialogMsg::DialogMsg( QWidget * parent ) :
-	QDialog( parent ),
-	m_ui( new Ui::DialogMsg )
+DialogMsg::DialogMsg( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::DialogMsg )
 {
 	m_ui->setupUi( this ) ;
+
 	if( parent  ){
+
 		this->setFont( parent->font() ) ;
 	}
 	connect( m_ui->pbNo,SIGNAL( clicked() ),this,SLOT( pbNo() ) ) ;

@@ -40,9 +40,7 @@
 #include "dialogmsg.h"
 #include "plugin.h"
 
-luksdeletekey::luksdeletekey( QWidget * parent ) :
-	QDialog( parent ),
-	m_ui( new Ui::luksdeletekey )
+luksdeletekey::luksdeletekey( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::luksdeletekey )
 {
 	m_isWindowClosable = true ;
 	m_ui->setupUi( this ) ;

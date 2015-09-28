@@ -41,9 +41,7 @@
 
 #include <array>
 
-createkeyfile::createkeyfile( QWidget * parent ) :
-    QDialog( parent ),
-    m_ui( new Ui::createkeyfile )
+createkeyfile::createkeyfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::createkeyfile )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;

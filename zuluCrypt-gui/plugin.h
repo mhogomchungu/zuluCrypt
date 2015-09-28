@@ -41,6 +41,14 @@ class plugin : public QDialog
 {
 	Q_OBJECT
 public:
+	static plugin * instance( QDialog * parent,
+				  plugins::type t,
+				  std::function< void( const QString& ) > e,
+				  const QString& f = QString(),
+				  const QVector<QString>& g = QVector<QString>() )
+	{
+		return new plugin( parent,t,e,f,g ) ;
+	}
 	plugin( QDialog * parent,
 	      plugins::type,
 	      std::function< void( const QString& ) >,

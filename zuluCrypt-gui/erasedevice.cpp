@@ -29,9 +29,7 @@
 #include "dialogmsg.h"
 #include "../zuluCrypt-cli/constants.h"
 
-erasedevice::erasedevice( QWidget * parent ) :
-	QDialog( parent ),
-	m_ui( new Ui::erasedevice )
+erasedevice::erasedevice( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::erasedevice )
 {
 	m_ui->setupUi( this ) ;
 
@@ -57,8 +55,6 @@ erasedevice::erasedevice( QWidget * parent ) :
 	m_ui->lineEdit->setFocus() ;
 
 	this->installEventFilter( this ) ;
-
-	this->ShowUI() ;
 }
 
 bool erasedevice::eventFilter( QObject * watched,QEvent * event )
@@ -132,19 +128,24 @@ void erasedevice::pbStart()
 	DialogMsg msg( this ) ;
 
 	if( path.isEmpty() ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Device path field is empty" ) ) ;
 	}
 
 	path = utility::resolvePath( path ) ;
 
 	if( !utility::pathExists( path ) ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to device" ) ) ;
 	}
+
 	if( m_option == 0 ){
+
 		QString x = tr( "\
 Are you really sure you want to write random data to \"%1\" effectively destroying all contents in it?" ).arg( path ) ;
 
 		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING!" ),x ) == QMessageBox::No ){
+
 			return ;
 		}
 	}

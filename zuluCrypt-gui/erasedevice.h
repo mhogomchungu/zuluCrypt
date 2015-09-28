@@ -44,10 +44,8 @@ public:
 	void ShowUI( const QString& ) ;
 	void HideUI( void ) ;
 signals:
-	void HideUISignal( void ) ;
 	void complete( QString ) ;
 	void sendProgress( int ) ;
-
 private slots:
 	void enableAll( void ) ;
 	void disableAll( void ) ;

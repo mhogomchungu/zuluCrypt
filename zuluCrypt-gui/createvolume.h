@@ -76,7 +76,6 @@ private slots:
 	void pbOpenHiddenKeyFile( void ) ;
 	void taskFinished( int ) ;
 	void volumeType( int ) ;
-	void dialogResult( int ) ;
 	void setOptions( int ) ;
 	void tcryptGui( bool ) ;
 private:

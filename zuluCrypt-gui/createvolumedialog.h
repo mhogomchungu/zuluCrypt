@@ -16,33 +16,38 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef CREATEVOLUMEDIALOG_H
-#define CREATEVOLUMEDIALOG_H
+#ifndef createVolumeDialog_H
+#define createVolumeDialog_H
 
 #include <QDialog>
 #include <QString>
+#include <functional>
+#include <memory>
 
 namespace Ui {
-class CreateVolumeDialog ;
+class createVolumeDialog ;
 }
 
-class CreateVolumeDialog : public QDialog
+class createVolumeDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit CreateVolumeDialog( const QString& path,QWidget * parent = 0 ) ;
-	void ShowUI( void ) ;
-	~CreateVolumeDialog() ;
-signals:
-	void dialogResult( int ) ;
+	static createVolumeDialog * instance( const QString& path,QWidget * parent,std::function< void( int ) > f )
+	{
+		return new createVolumeDialog( path,parent,std::move( f ) ) ;
+	}
+	explicit createVolumeDialog( const QString& path,QWidget * parent,std::function< void( int ) > ) ;
+	~createVolumeDialog() ;
 private slots:
 	void pbYes( void ) ;
 	void pbNo( void ) ;
 private:
-	Ui::CreateVolumeDialog * m_ui ;
+	void ShowUI( void ) ;
+	Ui::createVolumeDialog * m_ui ;
 	int m_opt ;
 	int m_opt_count ;
 	QString m_path ;
+	std::function< void( int ) > m_function ;
 };
 
-#endif // CREATEVOLUMEDIALOG_H
+#endif // createVolumeDialog_H

@@ -36,8 +36,7 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-manageSystemVolumes::manageSystemVolumes( QWidget * parent ) :
-	QDialog( parent ),m_ui( new Ui::manageSystemVolumes )
+manageSystemVolumes::manageSystemVolumes( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::manageSystemVolumes )
 {
 	m_ui->setupUi( this ) ;
 

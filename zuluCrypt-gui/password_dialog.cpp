@@ -146,7 +146,7 @@ void passwordDialog::tcryptGui()
 
 	m_ui->PassPhraseField->setText( QString() ) ;
 
-	new tcrypt( this,false,[ this ]( const QString& key,const QStringList& keyFiles ) {
+	tcrypt::instance( this,false,[ this ]( const QString& key,const QStringList& keyFiles ) {
 
 		m_key = key ;
 		m_keyFiles = keyFiles ;
@@ -200,6 +200,7 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 	this->addTcryptVcryptKeyOption() ;
 
 	if( mount_point.isEmpty() ){
+
 		m_point = utility::mountPathPostFix( volumePath.split( "/" ).last() ) ;
 	}else{
 		m_point = utility::mountPathPostFix( mount_point.split( "/" ).last() ) ;
@@ -213,7 +214,9 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 	m_ui->MountPointPath->setText( m_point ) ;
 	m_ui->PassPhraseField->setFocus() ;
 	QString vp = volumePath.mid( 0,5 ) ;
+
 	if( vp == "/dev/" || vp == "UUID=" ){
+
 		m_ui->PushButtonVolumePath->setIcon( QIcon( ":/partition.png" ) ) ;
 	}else{
 		m_ui->PushButtonVolumePath->setIcon( QIcon( ":/file.png" ) ) ;

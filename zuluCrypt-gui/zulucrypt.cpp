@@ -75,21 +75,21 @@
 
 #include <memory>
 
-zuluCrypt::zuluCrypt( QWidget * parent ) :QMainWindow( parent ),m_trayIcon( 0 )
+zuluCrypt::zuluCrypt( QWidget * parent ) : QMainWindow( parent ),m_trayIcon( 0 )
 {
 }
 
 void zuluCrypt::setLocalizationLanguage()
 {
-	QTranslator * translator = new QTranslator( this ) ;
+	auto translator = new QTranslator( this ) ;
 
-	const char * app = "zuluCrypt-gui" ;
+	auto app = "zuluCrypt-gui" ;
 
-	QByteArray r = utility::localizationLanguage( app ).toLatin1() ;
+	auto r = utility::localizationLanguage( app ).toLatin1() ;
 
 	if( r == "en_US" ){
 		/*
-		 *english_US language,its the default and hence dont load anything
+		 * english_US language,its the default and hence dont load anything
 		 */
 	}else{
 		translator->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
@@ -1053,7 +1053,7 @@ void zuluCrypt::ShowPasswordDialog( QString x,QString y )
 
 void zuluCrypt::ShowEraseDataDialog()
 {
-	erasedevice::instance( this ) ;
+	erasedevice::instance( this )->ShowUI() ;
 }
 
 void zuluCrypt::encryptFile()

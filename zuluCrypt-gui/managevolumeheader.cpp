@@ -37,9 +37,7 @@
 #include "openvolume.h"
 #include "dialogmsg.h"
 
-managevolumeheader::managevolumeheader( QWidget * parent ) :
-    QDialog( parent ),
-    m_ui( new Ui::managevolumeheader )
+managevolumeheader::managevolumeheader( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::managevolumeheader )
 {
 	m_ui->setupUi( this ) ;
 	this->setFont( parent->font() ) ;

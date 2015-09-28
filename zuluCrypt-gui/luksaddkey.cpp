@@ -42,8 +42,7 @@
 #include "dialogmsg.h"
 #include "plugin.h"
 
-luksaddkey::luksaddkey( QWidget * parent ) :
-	QDialog( parent )
+luksaddkey::luksaddkey( QWidget * parent ) : QDialog( parent )
 {
 	m_ui = new Ui::luksaddkey() ;
 	m_ui->setupUi( this ) ;

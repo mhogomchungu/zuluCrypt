@@ -43,9 +43,7 @@
 #include <QDebug>
 #include "../zuluCrypt-cli/constants.h"
 
-createvolume::createvolume( QWidget * parent ) :
-    QDialog( parent ),
-    m_ui( new Ui::createvolume )
+createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::createvolume )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
@@ -136,8 +134,11 @@ void createvolume::keyChanged_1( QString key )
 void createvolume::keyChanged( bool check,const QString& key )
 {
 	if( check ){
+
 		int st = m_keyStrength.quality( key ) ;
+
 		if( st < 0 ){
+
 			this->setWindowTitle( tr( "Passphrase Quality: 0%" ) ) ;
 		}else{
 			this->setWindowTitle( tr( "Passphrase Quality: %1%" ).arg( QString::number( st ) ) ) ;
@@ -236,7 +237,9 @@ void createvolume::volumeType( int s )
 void createvolume::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
+
 	if( m_isWindowClosable ){
+
 		this->pbCancelClicked() ;
 	}
 }
@@ -256,22 +259,22 @@ void createvolume::eraseDataPartition()
 	QString path = m_ui->lineEditVolumePath->text() ;
 
 	if( path.startsWith( "/dev/" ) ){
-		CreateVolumeDialog * cpd = new CreateVolumeDialog( path,this ) ;
-		connect( cpd,SIGNAL( dialogResult( int ) ),this,SLOT( dialogResult( int ) ) ) ;
-		cpd->ShowUI() ;
-	}
-}
 
-void createvolume::dialogResult( int result )
-{
-	if( result == 0 ){
-		this->HideUI() ;
-	}else if( result == 1 ){
-		;
-	}else if( result == 2 ){
-		erasedevice * ed = new erasedevice( this ) ;
-		connect( ed,SIGNAL( HideUISignal() ),ed,SLOT( deleteLater() ) ) ;
-		ed->ShowUI( m_ui->lineEditVolumePath->text() ) ;
+		createVolumeDialog::instance( path,this,[ this ]( int r ){
+
+			if( r == 0 ){
+
+				this->HideUI() ;
+
+			}else if( r == 1 ){
+
+				;
+
+			}else if( r == 2 ){
+
+				erasedevice::instance( this )->ShowUI( m_ui->lineEditVolumePath->text() ) ;
+			}
+		} ) ;
 	}
 }
 
@@ -426,6 +429,7 @@ void createvolume::pbCancelClicked()
 	if( m_created == false ){
 
 		QString s = m_ui->lineEditVolumePath->text() ;
+
 		if( !s.startsWith( "/dev/" ) ){
 			QFile::remove( s ) ;
 		}
@@ -439,7 +443,7 @@ void createvolume::tcryptGui( bool e )
 
 	this->disableAll() ;
 
-	new tcrypt( this,true,[ this ]( const QString& key,const QStringList& keyFiles ){
+	tcrypt::instance( this,true,[ this ]( const QString& key,const QStringList& keyFiles ){
 
 		this->enableAll() ;
 
@@ -530,7 +534,7 @@ void createvolume::cbNormalVolume( int r )
 
 		_set_key_ui() ;
 
-		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_key = key ;
 
@@ -595,7 +599,7 @@ void createvolume::cbHiddenVolume( int r )
 
 		_set_key_ui() ;
 
-		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_hiddenKey = key ;
 			

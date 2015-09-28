@@ -1313,7 +1313,7 @@ int utility::pluginKey( QDialog * w,QString * key,const QString& p )
 
 	QEventLoop l ;
 
-	new plugin( w,pluginType,[ & ]( const QString& e ){
+	plugin::instance( w,pluginType,[ & ]( const QString& e ){
 
 		*key = e ;
 

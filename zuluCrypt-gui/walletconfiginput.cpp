@@ -31,10 +31,7 @@
 walletconfiginput::walletconfiginput( QWidget * parent,
 				      std::function< void( const QString&,const QString&,const QString& ) > p,
 				      std::function< void() > q ) :
-	QDialog( parent ),
-	m_ui( new Ui::walletconfiginput ),
-	m_add( std::move( p ) ),
-	m_cancel( std::move( q ) )
+	QDialog( parent ),m_ui( new Ui::walletconfiginput ),m_add( std::move( p ) ),m_cancel( std::move( q ) )
 {
 	m_ui->setupUi( this ) ;
 
