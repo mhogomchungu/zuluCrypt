@@ -214,7 +214,7 @@ void mountPartition::pbMount()
 
 void mountPartition::showOffSetWindowOption()
 {
-	new deviceOffset( this,true,[ this ]( const QString& e,const QString& f ){
+	deviceOffset::instance( this,true,[ this ]( const QString& e,const QString& f ){
 
 		m_deviceOffSet = e ;
 		m_key = f ;
@@ -223,7 +223,7 @@ void mountPartition::showOffSetWindowOption()
 
 void mountPartition::showFileSystemOptionWindow()
 {
-	new mountOptions( &m_options,this ) ;
+	mountOptions::instance( &m_options,this ) ;
 }
 
 void mountPartition::doAction( QAction * ac )

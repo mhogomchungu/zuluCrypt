@@ -155,7 +155,7 @@ void keyDialog::tcryptGui()
 	this->disableAll() ;
 	m_ui->lineEditKey->setText( QString() ) ;
 
-	new tcrypt( this,false,[ this ]( const QString& key,const QStringList& keyFiles ){
+	tcrypt::instance( this,false,[ this ]( const QString& key,const QStringList& keyFiles ){
 
 		m_key = key ;
 		m_keyFiles = keyFiles ;
@@ -183,7 +183,7 @@ void keyDialog::pbOptions()
 
 void keyDialog::showOffSetWindowOption()
 {
-	new deviceOffset( this,false,[ this ]( const QString& e,const QString& f ){
+	deviceOffset::instance( this,false,[ this ]( const QString& e,const QString& f ){
 
 		Q_UNUSED( f ) ;
 		m_deviceOffSet = QString( " -o %1" ).arg( e ) ;
@@ -192,7 +192,7 @@ void keyDialog::showOffSetWindowOption()
 
 void keyDialog::showFileSystemOptionWindow()
 {
-	new mountOptions( &m_options,this ) ;
+	mountOptions::instance( &m_options,this ) ;
 }
 
 void keyDialog::doAction( QAction * ac )
@@ -215,7 +215,7 @@ void keyDialog::doAction( QAction * ac )
 
 	}else if( e == tr( "Set VeraCrypt PIM value" ) ){
 
-		new VeraCryptPIMDialog( this,[ this ]( int e ){
+		VeraCryptPIMDialog::instance( this,[ this ]( int e ){
 
 			m_veraCryptPIMValue = e ;
 			m_veraCryptVolume = e > 0 ;

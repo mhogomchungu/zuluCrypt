@@ -34,6 +34,12 @@ class deviceOffset : public QDialog
 {
 	Q_OBJECT
 public:
+	static deviceOffset * instance( QWidget * widget,
+					bool b,
+					std::function< void( const QString&,const QString& ) > function )
+	{
+		return new deviceOffset( widget,b,std::move( function ) ) ;
+	}
 	deviceOffset( QWidget *,bool,std::function< void( const QString&,const QString& ) > ) ;
 	~deviceOffset();
 private slots:

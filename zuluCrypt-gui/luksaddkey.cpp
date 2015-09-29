@@ -187,7 +187,7 @@ void luksaddkey::cbExistingKey( int e )
 	}else{
 		_key_ui() ;
 
-		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_ui->textEditExistingPassphrase->setText( key ) ;
 
@@ -235,7 +235,7 @@ void luksaddkey::cbNewKey( int e )
 	}else{
 		_key_ui() ;
 
-		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_ui->textEditPassphraseToAdd->setText( key ) ;
 			m_ui->lineEditReEnterPassphrase->setText( key ) ;

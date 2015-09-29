@@ -315,7 +315,7 @@ void MainWindow::showFavorites()
 
 void MainWindow::setLocalizationLanguage()
 {
-	auto translator  = new QTranslator( this ) ;
+	auto translator = new QTranslator( this ) ;
 
 	auto app = "zuluMount-gui" ;
 
@@ -338,6 +338,7 @@ void MainWindow::autoOpenFolderOnMount( bool b )
 	QString x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
 
 	m_autoOpenFolderOnMount = b ;
+
 	if( b ){
 		QFile::remove( x ) ;
 	}else{
@@ -826,10 +827,7 @@ void MainWindow::showMoungDialog( const QString& volume )
 
 			this->disableAll() ;
 
-			zuluMountTask::getVolumeProperties( volume ).then( [ this ]( const volumeEntryProperties& e ){
-
-				this->showMoungDialog( e ) ;
-			} ) ;
+			this->showMoungDialog( zuluMountTask::getVolumeProperties( volume ).await() ) ;
 
 		}else if( utility::pathPointsToAFolder( volume ) ){
 
