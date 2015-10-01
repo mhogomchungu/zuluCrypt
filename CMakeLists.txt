@@ -3,6 +3,12 @@ cmake_minimum_required(VERSION 2.6)
 cmake_policy(SET CMP0017 OLD)
 set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON)
 
+project(zuluCrypt)
+
+set( PGR_VERSION "4.7.7" )
+set( LIB_VERSION "1.2.0" )
+set( LIB_PLUGIN_VERSION "1.0.0" )
+
 add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all -D_FORTIFY_SOURCE=2 --param ssp-buffer-size=4 )
 include_directories( ${PROJECT_BINARY_DIR} )
 
@@ -44,10 +50,6 @@ pkg_check_modules( BLKID blkid )
 if ( WITH_PWQUALITY )
 	pkg_check_modules( PWQUALITY pwquality )
 endif ( WITH_PWQUALITY )
-
-set( PGR_VERSION "4.7.7" )
-set( LIB_VERSION "1.2.0" )
-set( LIB_PLUGIN_VERSION "1.0.0" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/version_1.h "
 #ifndef THIS_VERSION
@@ -176,7 +178,7 @@ if( NOT NOGUI )
 		find_package( Qt5Network REQUIRED )
 
 		set( CMAKE_INCLUDE_CURRENT_DIR ON )
-		include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
+		include_directories( ${Qt5Widgets_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5Core_INCLUDE_DIRS} )
 
 		add_definitions( ${Qt5Widgets_DEFINITIONS} )
 	else()
@@ -185,7 +187,6 @@ if( NOT NOGUI )
 		add_definitions( -I${Qt4_INCLUDE_DIR} )
 		add_definitions( -I${QT_HEADERS_DIR} )
 
-		INCLUDE( ${QT_USE_FILE} )
 		INCLUDE( ${QT_USE_FILE} )
 	endif()
 

@@ -72,7 +72,7 @@ void luksdeletekey::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	if(  m_isWindowClosable ){
-		pbCancel() ;
+		this->pbCancel() ;
 	}
 }
 

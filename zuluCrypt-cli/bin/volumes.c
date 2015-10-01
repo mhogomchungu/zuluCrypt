@@ -38,46 +38,6 @@
  * NOTE: This source file was previously named "partition.c"
  */
 
-/*
- * This source file deals with parsing partition list from "/proc/partitions,"/etc/fstab" and "/etc/mtab".
- *
- * For security reasons,a normal user it is not allowed to create volumes in system partitions.
- *
- * A System partition is defined as a partition with an active entries in /etc/fstab and/or /etc/crypttab.
- *
- * This policy is in place to prevent a normal user from attempting to create volumes in internal partitions
- * intentially to destroy other people's data.
- *
- * External,pluggable usb based partitions are not considered to be system partitions and the tool can be used to create volumes in those.
- *
- * Internal partitions are considered part of the system and the policy is in place to make sure a normal user does not
- * perform actions reserved for root user.
- *
- */
-
-/*
- * this function reads a line from a fine, it does what gets() does,it just handles the memory dynamically *
- */
-
-/*
- * major minor  #blocks  name
- *
- 8        0   78150744 sda *
- 8        1   11566768 sda1
- 8        2          1 sda2
- 8        5   66581361 sda5
- 8       16  312571224 sdb
- 8       17    1044193 sdb1
- 8       18          1 sdb2
- 8       21  311524416 sdb5
- 8       32     250879 sdc
- 8       33     250608 sdc1
- *
- * above output is the output of "cat /proc/partitions" and below function was build again it.
- * The list of partitions is taken from the 4th field and only sdX and hdY entries are taken
- *
- */
-
 static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 {
 	struct dirent * entry ;
