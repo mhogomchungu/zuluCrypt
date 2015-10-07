@@ -103,6 +103,8 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden VeraCrypt" ) ) ;
 
 	m_ui->comboBoxVolumeType->setCurrentIndex( int( createvolume::luks ) ) ;
+
+	m_ui->comboBoxHiddenSize->setCurrentIndex( 2 ) ;
 }
 
 void createvolume::keyChanged_0( QString key )
@@ -822,13 +824,14 @@ void createvolume::pbCreateClicked()
 			utility::keySend( y,m_hiddenKey ) ;
 		}
 
-		quint64 r = m_ui->lineEditHiddenSize->text().toULongLong() ;
+		auto r = m_ui->lineEditHiddenSize->text().toULongLong() ;
 
 		switch( m_ui->comboBoxHiddenSize->currentIndex() ){
-			case 0 : r *= 1024 * 1024         ; break ;
+
+			case 0 :			  ; break ;
 			case 1 : r *= 1024                ; break ;
-			case 2 : r *= 1024 * 1024 * 1024  ; break ;
-			default: r *= 1024 * 1024         ; break ;
+			case 2 : r *= 1024 * 1024         ; break ;
+			case 3 : r *= 1024 * 1024 * 1024  ; break ;
 		}
 
 		QString z = QString::number( r ) ;

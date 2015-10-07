@@ -238,9 +238,9 @@ static int _checkUnmount( const char * device,uid_t uid )
 		return 0 ;
 	}
 	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
+	 * zuluCryptGetMoutedList() is defined in ../lib/process_mountinfo.c
 	 */
-	stx = zuluCryptGetMoutedListFromMountInfo() ;
+	stx = zuluCryptGetMoutedList() ;
 
 	st = String( device ) ;
 	index = StringListHasStartSequence( stx,StringAppend( st," " ) ) ;

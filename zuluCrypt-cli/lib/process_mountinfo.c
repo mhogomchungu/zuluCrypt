@@ -118,7 +118,7 @@ static string_t _resolve_path_1( const vInfo * e )
 	return st ;
 }
 
-stringList_t zuluCryptGetMoutedListFromMountInfo( void )
+stringList_t zuluCryptGetMoutedList( void )
 {
 	return _volumeList( _resolve_path_1 ) ;
 }
@@ -133,7 +133,7 @@ static string_t _resolve_path_2( const vInfo * e )
 	return st ;
 }
 
-stringList_t zuluCryptGetMoutedListFromMountInfo_1( void )
+stringList_t zuluCryptGetMoutedList_1( void )
 {
 	return _volumeList( _resolve_path_2 ) ;
 }
@@ -170,7 +170,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 	stringList_t stx ;
 	stringList_t list = StringListVoid ;
-	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
+	stringList_t stl = zuluCryptGetMoutedList() ;
 
 	if( uid ){;}
 
@@ -256,7 +256,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 string_t zuluCryptGetMountEntry( const char * path )
 {
-	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
+	stringList_t stl = zuluCryptGetMoutedList() ;
 	string_t st = zuluCryptGetMountEntry_1( stl,path ) ;
 	StringListDelete( &stl ) ;
 	return st ;
@@ -306,7 +306,7 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 
 int zuluCryptPartitionIsMounted( const char * path )
 {
-	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
+	stringList_t stl = zuluCryptGetMoutedList() ;
 
 	string_t st = String( path ) ;
 

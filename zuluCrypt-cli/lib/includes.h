@@ -331,7 +331,7 @@ char * zuluCryptGetLoopDeviceAddress( const char * device ) ;
 /*
  * this function is defined in ./process_mountinfo.c
  */
-stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
+stringList_t zuluCryptGetMoutedList( void ) ;
 
 /*
  * this function is defined in ./process_mountinfo.c
@@ -529,14 +529,14 @@ char * zuluCryptResolvePath_4( const char * path ) ;
 char * zuluCryptResolvePath( const char * path ) ;
 
 /*
- * zuluCryptGetMoutedListFromMountInfo_1() is defined in process_mountinfo.c
+ * zuluCryptGetMoutedList_1() is defined in process_mountinfo.c
  */
-stringList_t zuluCryptGetMoutedListFromMountInfo_1( void ) ;
+stringList_t zuluCryptGetMoutedList_1( void ) ;
 
 /*
- * zuluCryptGetMoutedListFromMountInfo() is defined in process_mountinfo.c
+ * zuluCryptGetMoutedList() is defined in process_mountinfo.c
  */
-stringList_t zuluCryptGetMoutedListFromMountInfo( void ) ;
+stringList_t zuluCryptGetMoutedList( void ) ;
 
 /*
  * zuluCryptGetALoopDeviceAssociatedWithAnImageFile() is defined in create_loop_device.c

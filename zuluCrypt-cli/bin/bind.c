@@ -29,7 +29,7 @@ static void _chmod( const char * x,mode_t y )
 	if( chmod( x,y ) ){;}
 }
 
-int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
+static int _zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 {
 	stringList_t stl ;
 	string_t xt ;
@@ -41,7 +41,6 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	char * h = NULL ;
 	int r = 1 ;
 	int k ;
-	int delete_stx = 0 ;
 
 	/*
 	 * zuluCryptUserIsAMemberOfAGroup() is defined in security.c
@@ -52,14 +51,6 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	int allowedUser = zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
-
-	if( stx == StringListVoid ){
-		/*
-		 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
-		 */
-		stx = zuluCryptGetMoutedListFromMountInfo() ;
-		delete_stx = 1 ;
-	}
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
@@ -182,14 +173,32 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 		StringDelete( &xt ) ;
 	}
 
-	if( delete_stx ){
-		StringListDelete( &stx ) ;
-	}
-
 	StringFree( h ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
+
 	return r ;
+}
+
+int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
+{
+	stringList_t stl ;
+	int r ;
+
+	if( stx == StringListVoid ){
+		/*
+		 * zuluCryptGetMoutedList() is defined in ../lib/process_mountinfo.c
+		 */
+		stl = zuluCryptGetMoutedList() ;
+
+		r = _zuluCryptBindUnmountVolume( stl,device,uid ) ;
+
+		StringListDelete( &stl ) ;
+
+		return r ;
+	}else{
+		return _zuluCryptBindUnmountVolume( stx,device,uid ) ;
+	}
 }
 
 int zuluCryptBindSharedMountPointPathTaken( string_t path )
@@ -223,9 +232,9 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
+	 * zuluCryptGetMoutedList() is defined in ../lib/process_mountinfo.c
 	 */
-	stl = zuluCryptGetMoutedListFromMountInfo() ;
+	stl = zuluCryptGetMoutedList() ;
 
 	path = String( "/run/media/public/" ) ;
 	m_path = StringAppend( path,o_path + index + 1 ) ;

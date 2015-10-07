@@ -734,9 +734,9 @@ void zuluCryptPrintPartitionProperties( const char * device )
 static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
 {
 	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../lib/process_mountinfo.c
+	 * zuluCryptGetMoutedList() is defined in ../lib/process_mountinfo.c
 	 */
-	stringList_t stx = zuluCryptGetMoutedListFromMountInfo() ;
+	stringList_t stx = zuluCryptGetMoutedList() ;
 
 	StringListIterator it  ;
 	StringListIterator end ;

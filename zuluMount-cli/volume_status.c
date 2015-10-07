@@ -342,10 +342,10 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 	size_t l ;
 
 	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is  defined in ../zuluCrypt-cli/lib/process_mountinfo.c
+	 * zuluCryptGetMoutedList() is  defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 * run StringListPrintList( stl ) to get a list of entries being worked on
 	 */
-	stl = zuluCryptGetMoutedListFromMountInfo() ;
+	stl = zuluCryptGetMoutedList() ;
 
 	/*
 	 * zuluCryptGetAListOfAllPartitions() is defined in ../zuluCrypt-cli/bin/volumes.c
@@ -539,9 +539,9 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 	StringListIterator end ;
 
 	/*
-	 * zuluCryptGetMoutedListFromMountInfo() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
+	 * zuluCryptGetMoutedList() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 	 */
-	stringList_t stl = zuluCryptGetMoutedListFromMountInfo() ;
+	stringList_t stl = zuluCryptGetMoutedList() ;
 
 	device_1 = device ;
 

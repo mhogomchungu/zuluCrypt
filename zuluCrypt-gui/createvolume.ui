@@ -369,23 +369,28 @@
      <rect>
       <x>220</x>
       <y>90</y>
-      <width>51</width>
+      <width>121</width>
       <height>31</height>
      </rect>
     </property>
     <item>
      <property name="text">
-      <string>MB</string>
+      <string>Bytes</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>KB</string>
+      <string>KiloBytes</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>GB</string>
+      <string>MegaBytes</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>GigaBytes</string>
      </property>
     </item>
    </widget>

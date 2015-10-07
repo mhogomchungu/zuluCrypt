@@ -219,7 +219,6 @@ void keyDialog::doAction( QAction * ac )
 
 			m_veraCryptPIMValue = e ;
 			m_veraCryptVolume = e > 0 ;
-
 		} ) ;
 	}
 }
