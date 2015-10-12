@@ -79,27 +79,89 @@ zuluCrypt::zuluCrypt( QWidget * parent ) : QMainWindow( parent ),m_trayIcon( 0 )
 {
 }
 
-void zuluCrypt::setLocalizationLanguage()
+static void _set_checked( QMenu * m,const QString& e )
 {
-	auto translator = new QTranslator( this ) ;
+	if( m ){
 
+		for( auto& it : m->actions() ){
+
+			QString p = it->text() ;
+
+			p.remove( "&" ) ;
+
+			it->setChecked( e == p ) ;
+		}
+	}
+}
+
+void zuluCrypt::setLocalizationLanguage( bool translate )
+{
 	auto app = "zuluCrypt-gui" ;
 
 	auto r = utility::localizationLanguage( app ).toLatin1() ;
 
-	if( r == "en_US" ){
-		/*
-		 * english_US language,its the default and hence dont load anything
-		 */
+	auto e = utility::localizationLanguagePath( app ) ;
+
+	if( translate ){
+
+		auto translator = new QTranslator( this ) ;
+
+		if( r == "en_US" ){
+			/*
+			 * english_US language,its the default and hence dont load anything
+			 */
+		}else{
+			translator->load( r.constData(),e ) ;
+			QCoreApplication::installTranslator( translator ) ;
+		}
+
 	}else{
-		translator->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
-		QCoreApplication::installTranslator( translator ) ;
+		auto m = new QMenu( this ) ;
+
+		connect( m,SIGNAL( triggered( QAction * ) ),this,SLOT( languageMenu( QAction * ) ) ) ;
+
+		QDir d( e ) ;
+
+		m->addAction( "en_US" )->setCheckable( true ) ;
+
+		auto t = d.entryList() ;
+
+		if( !t.isEmpty() ){
+
+			t.removeOne( "." ) ;
+			t.removeOne( ".." ) ;
+
+			for( auto& it : t ){
+
+				m->addAction( it.remove( ".qm" ) )->setCheckable( true ) ;
+			}
+		}
+
+		m_ui->actionSelect_Language->setMenu( m ) ;
+
+		_set_checked( m,r ) ;
 	}
+}
+
+void zuluCrypt::languageMenu( QAction * ac )
+{
+	auto e = ac->text() ;
+
+	e.remove( "&" ) ;
+
+	utility::setLocalizationLanguage( "zuluCrypt-gui",e ) ;
+
+	_set_checked( m_ui->actionSelect_Language->menu(),e ) ;
+
+	DialogMsg msg( this ) ;
+
+	msg.ShowUIOK( tr( "INFO" ),tr( "Translation will be done the next time you restart." ) ) ;
 }
 
 void zuluCrypt::setUpApp( const QString& volume )
 {
-	this->setLocalizationLanguage() ;
+	this->setLocalizationLanguage( true ) ;
+
 	m_ui = new Ui::zuluCrypt ;
 
 	this->setupUIElements() ;
@@ -109,6 +171,7 @@ void zuluCrypt::setUpApp( const QString& volume )
 	this->initTray() ;
 	this->info() ;
 	this->autoUpdateCheck() ;
+	this->setLocalizationLanguage( false ) ;
 	this->updateVolumeList( volume ) ;
 }
 

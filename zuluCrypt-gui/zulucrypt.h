@@ -69,6 +69,7 @@ public slots:
 signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
 private slots :
+	void languageMenu( QAction * ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void info( void ) ;
 	void luksAddKeyContextMenu( void ) ;
@@ -140,7 +141,7 @@ private:
 
 	passwordDialog * setUpPasswordDialog( void ) ;
 
-	void setLocalizationLanguage( void ) ;
+	void setLocalizationLanguage( bool ) ;
 	void setupConnections( void ) ;
 	void setupUIElements( void ) ;
 	void closeEvent( QCloseEvent * ) ;

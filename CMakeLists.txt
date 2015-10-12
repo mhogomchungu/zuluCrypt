@@ -288,5 +288,5 @@ install ( FILES docs/zuluCrypt.pdf  DESTINATION share/zuluCrypt )
 file( WRITE ${PROJECT_BINARY_DIR}/pdf_path.h "\n#define PDF_PATH \" ${CMAKE_INSTALL_PREFIX}/share/zuluCrypt/zuluCrypt.pdf\"\n" )
 
 #install ( FILES translations/zuluMount/de_DE.qm DESTINATION share/zuluCrypt/translations/zuluMount-gui )
-#install ( FILES translations/zuluCrypt/de_DE.qm DESTINATION share/zuluCrypt/translations/zuluCrypt-gui )
+install ( FILES translations/zuluCrypt/de_DE.qm DESTINATION share/zuluCrypt/translations/zuluCrypt-gui )
 

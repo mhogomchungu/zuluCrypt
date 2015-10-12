@@ -659,61 +659,35 @@ bool utility::pathPointsToAFolder( const QString& path )
 	}
 }
 
+static QString _language_path( const QString& program )
+{
+	return utility::homePath() + "/.zuluCrypt/" + program + ".lang" ;
+}
+
 QString utility::localizationLanguage( const QString& program )
 {
-	QString langPath = utility::localizationLanguagePath( program ) ;
-	QProcessEnvironment env = QProcessEnvironment::systemEnvironment() ;
-	QString value = env.value( "LANG" ) ;
+	QFile f( _language_path( program ) ) ;
 
-	QString ext( ".qm" ) ;
-	QString s ;
-	int index ;
-	if( !value.isEmpty() ){
-		QStringList values = value.split( ":" ) ;
+	if( f.open( QIODevice::ReadOnly ) ){
 
-		QDir dir( langPath ) ;
+		QString e = f.readAll() ;
 
-		QStringList dirList = dir.entryList() ;
-		dirList.removeOne( "." ) ;
-		dirList.removeOne( ".." ) ;
+		e.remove( "\n" ) ;
 
-		for( const auto& it : values ){
-			s = it ;
-			index = s.indexOf( "." ) ;
-			if( index != -1 ){
-				s.truncate( index ) ;
-			}
-
-			if( dirList.contains( s + ext ) ){
-				return s ;
-			}
-		}
+		return e ;
+	}else{
+		return "en_US" ;
 	}
+}
 
-	value = env.value( "LANGUAGE" ) ;
+void utility::setLocalizationLanguage( const QString& program,const QString& language )
+{
+	QFile f( _language_path( program ) ) ;
 
-	if( !value.isEmpty() ){
-		QStringList values = value.split( ":" ) ;
+	if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
-		QDir dir( langPath ) ;
-
-		QStringList dirList = dir.entryList() ;
-		dirList.removeOne( "." ) ;
-		dirList.removeOne( ".." ) ;
-
-		for( const auto& it : values){
-			s = it ;
-			index = s.indexOf( "." ) ;
-			if( index != -1 ){
-				s.truncate( index ) ;
-			}
-			if( dirList.contains( s + ext ) ){
-				return s ;
-			}
-		}
+		f.write( language.toLatin1() ) ;
 	}
-
-	return QString( "en_US" ) ;
 }
 
 QString utility::localizationLanguagePath( const QString& program )
@@ -721,11 +695,6 @@ QString utility::localizationLanguagePath( const QString& program )
 	return QString( TRANSLATION_PATH ) + program ;
 }
 
-void utility::setLocalizationLanguage( const QString& program,const QString& language )
-{
-	Q_UNUSED( program ) ;
-	Q_UNUSED( language ) ;
-}
 
 QString utility::walletName()
 {
@@ -1274,17 +1243,17 @@ int utility::pluginKey( QDialog * w,QString * key,const QString& p )
 	if( p == "hmac" ){
 
 		pluginType   = plugins::plugin::hmac_key_0 ;
-		pluginString = w->tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
+		pluginString = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
 
 	}else if( p == "keykeyfile" ){
 
 		pluginType   = plugins::plugin::keyKeyFile ;
-		pluginString = w->tr( "keykeyfile plugin.\n\nThis plugin generates a key using below formular:\n\nkey = passphrase + keyfile contents" ) ;
+		pluginString = QObject::tr( "keykeyfile plugin.\n\nThis plugin generates a key using below formular:\n\nkey = passphrase + keyfile contents" ) ;
 
 	}else if( p == "gpg" ){
 
 		pluginType   = plugins::plugin::gpg ;
-		pluginString = w->tr( "gpg plugin.\n\nThis plugin retrives a key locked in a gpg file with a symmetric key" ) ;
+		pluginString = QObject::tr( "gpg plugin.\n\nThis plugin retrives a key locked in a gpg file with a symmetric key" ) ;
 
 		if( utility::pathExists( "/usr/bin/gpg" ) ){
 
@@ -1302,7 +1271,7 @@ int utility::pluginKey( QDialog * w,QString * key,const QString& p )
 
 			DialogMsg msg( w ) ;
 
-			msg.ShowUIOK( w->tr( "ERROR" ),w->tr( "Could not find \"gpg\" executable in \"/usr/local/bin\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
+			msg.ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Could not find \"gpg\" executable in \"/usr/local/bin\",\"/usr/bin\" and \"/usr/sbin\"" ) ) ;
 
 			return 1 ;
 		}

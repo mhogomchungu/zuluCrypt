@@ -322,8 +322,8 @@ void passwordDialog::passphraseOption()
 
 void passwordDialog::passphraseFromFileOption()
 {
-	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "Choose A Key File From The File System" ) ) ;
-	m_ui->PassPhraseField->setToolTip( tr( "Enter A path To A Keyfile Location" ) ) ;
+	m_ui->pushButtonPassPhraseFromFile->setToolTip( tr( "Choose A KeyFile From The File System" ) ) ;
+	m_ui->PassPhraseField->setToolTip( tr( "Enter A Path To A Keyfile Location" ) ) ;
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;

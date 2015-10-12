@@ -140,6 +140,7 @@
      <string>O&amp;ptions</string>
     </property>
     <addaction name="actionTray_icon"/>
+    <addaction name="actionSelect_Language"/>
     <addaction name="actionFonts"/>
     <addaction name="actionManage_names"/>
     <addaction name="actionManage_volumes_in_internal_wallet"/>
@@ -504,6 +505,11 @@
    </property>
    <property name="shortcut">
     <string>Shift+I</string>
+   </property>
+  </action>
+  <action name="actionSelect_Language">
+   <property name="text">
+    <string>Select Language</string>
    </property>
   </action>
  </widget>

@@ -133,6 +133,8 @@ FORMS    += zulucrypt.ui password.ui \
     contactinfo.ui
 
 TRANSLATIONS = ../translations/zuluCrypt/messages.ts
+TRANSLATIONS = ../translations/zuluCrypt/de_DE.ts
+TRANSLATIONS = ../translations/zuluCrypt/fr_FR.ts
 
 RESOURCES = icon.qrc
 
