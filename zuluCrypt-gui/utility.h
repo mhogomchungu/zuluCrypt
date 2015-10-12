@@ -212,6 +212,9 @@ namespace utility
 	void showTrayIcon( QAction *,QSystemTrayIcon *,bool = true ) ;
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
 
+	void setLocalizationLanguage( bool translate,QWidget * obj,QAction * ac,const char * ) ;
+	void languageMenu( QWidget *,QMenu *,QAction *,const char * ) ;
+
 	bool ProcessExecute( const QString& m_point,const QString& exe,const QString& env,int uid ) ;
 
 	QVector<int> getWindowDimensions( const QString& application ) ;

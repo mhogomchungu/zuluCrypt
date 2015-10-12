@@ -94,12 +94,13 @@ private slots:
 	void openMountPointPath( QString ) ;
 	void licenseInfo( void ) ;
 	void updateCheck( void ) ;
+	void languageMenu( QAction * ac ) ;
 private:
 	void autoUpdateCheck( void ) ;
 	void updateVolumeList( const QVector< volumeEntryProperties >& ) ;
 	void openMountPoint( const QString& ) ;
 	QFont getSystemVolumeFont( void ) ;
-	void setLocalizationLanguage( void ) ;
+	void setLocalizationLanguage( bool ) ;
 	bool autoOpenFolderOnMount( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void removeDisappearedEntries( const QVector< volumeEntryProperties >& ) ;
@@ -123,6 +124,8 @@ private:
 	QMenu * m_favorite_menu = nullptr ;
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
+
+	QAction * m_languageAction ;
 
 	bool m_startHidden ;
 	bool m_autoMount ;

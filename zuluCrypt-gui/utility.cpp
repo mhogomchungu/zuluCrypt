@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include <QTranslator>
 #include <QEventLoop>
 #include <QDebug>
 #include <QCoreApplication>
@@ -1361,4 +1362,81 @@ void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )
 		f.write( "1" ) ;
 		trayIcon->show() ;
 	}
+}
+
+static void _set_checked( QMenu * m,const QString& e )
+{
+	for( auto& it : m->actions() ){
+
+		QString p = it->text() ;
+
+		p.remove( "&" ) ;
+
+		it->setChecked( e == p ) ;
+	}
+}
+
+void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,const char * app )
+{
+	auto r = utility::localizationLanguage( app ).toLatin1() ;
+
+	auto e = utility::localizationLanguagePath( app ) ;
+
+	if( translate ){
+
+		auto translator = new QTranslator( w ) ;
+
+		if( r == "en_US" ){
+			/*
+			 * english_US language,its the default and hence dont load anything
+			 */
+		}else{
+			translator->load( r.constData(),e ) ;
+			QCoreApplication::installTranslator( translator ) ;
+		}
+
+	}else{
+		auto m = new QMenu( w ) ;
+
+		w->connect( m,SIGNAL( triggered( QAction * ) ),w,SLOT( languageMenu( QAction * ) ) ) ;
+
+		QDir d( e ) ;
+
+		m->addAction( "en_US" )->setCheckable( true ) ;
+
+		auto t = d.entryList() ;
+
+		if( !t.isEmpty() ){
+
+			t.removeOne( "." ) ;
+			t.removeOne( ".." ) ;
+
+			for( auto& it : t ){
+
+				m->addAction( it.remove( ".qm" ) )->setCheckable( true ) ;
+			}
+		}
+
+		if( ac ){
+
+			ac->setMenu( m ) ;
+		}
+
+		_set_checked( m,r ) ;
+	}
+}
+
+void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac,const char * app )
+{
+	Q_UNUSED( m ) ;
+
+	auto e = ac->text() ;
+
+	e.remove( "&" ) ;
+
+	utility::setLocalizationLanguage( app,e ) ;
+
+	DialogMsg msg( w ) ;
+
+	msg.ShowUIOK( QObject::tr( "INFO" ),QObject::tr( "Translation will be done the next time you restart." ) ) ;
 }

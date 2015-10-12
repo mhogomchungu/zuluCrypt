@@ -65,7 +65,8 @@ MainWindow::MainWindow( QWidget * parent ) : QWidget( parent )
 
 void MainWindow::setUpApp( const QString& volume )
 {
-	this->setLocalizationLanguage() ;
+	this->setLocalizationLanguage( true ) ;
+
 	m_ui = new Ui::MainWindow ;
 	m_ui->setupUi( this ) ;
 
@@ -160,6 +161,10 @@ void MainWindow::setUpApp( const QString& volume )
 	connect( m_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( removeVolumeFromHiddenVolumeList( QAction * ) ) ) ;
 	connect( m_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showHiddenVolumeList() ) ) ;
 
+	m_languageAction = new QAction( this ) ;
+	m_languageAction->setText( tr( "Select Language" ) ) ;
+
+	trayMenu->addAction( m_languageAction ) ;
 	ac = new QAction( this ) ;
 	ac->setText( tr( "Check For Update" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
@@ -177,6 +182,8 @@ void MainWindow::setUpApp( const QString& volume )
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
 
 	m_ui->pbmenu->setMenu( m_trayIcon->contextMenu() ) ;
+
+	this->setLocalizationLanguage( false ) ;
 
 	m_trayIcon->show() ;
 
@@ -237,7 +244,7 @@ static void _manage_volume_list( QMenu * menu,const QStringList& l )
 
 	if( l.isEmpty() ){
 
-		auto ac = new QAction( menu->tr( "List Is Empty" ),menu ) ;
+		auto ac = new QAction( QObject::tr( "List Is Empty" ),menu ) ;
 
 		ac->setEnabled( false ) ;
 
@@ -313,22 +320,14 @@ void MainWindow::showFavorites()
 	}
 }
 
-void MainWindow::setLocalizationLanguage()
+void MainWindow::setLocalizationLanguage( bool translate )
 {
-	auto translator = new QTranslator( this ) ;
+	utility::setLocalizationLanguage( translate,this,m_languageAction,"zuluMount-gui" ) ;
+}
 
-	auto app = "zuluMount-gui" ;
-
-	QByteArray r = utility::localizationLanguage( app ).toLatin1() ;
-
-	if( r == "en_US" ){
-		/*
-		 * english_US language,its the default and hence dont load anything
-		 */
-	}else{
-		translator->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
-		QCoreApplication::installTranslator( translator ) ;
-	}
+void MainWindow::languageMenu( QAction * ac )
+{
+	utility::languageMenu( this,m_languageAction->menu(),ac,"zuluMount-gui" ) ;
 }
 
 #define zuluMOUNT_AUTO_OPEN_FOLDER "/.zuluCrypt/zuluMount-gui.NoAutoOpenFolder"
