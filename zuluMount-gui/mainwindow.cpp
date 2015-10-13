@@ -123,6 +123,8 @@ void MainWindow::setUpApp( const QString& volume )
 
 	auto trayMenu = new QMenu( this ) ;
 
+	trayMenu->setFont( this->font() ) ;
+
 	m_autoMountAction = new QAction( this ) ;
 	m_autoMount = this->autoMount() ;
 	m_autoMountAction->setCheckable( true ) ;
@@ -150,14 +152,23 @@ void MainWindow::setUpApp( const QString& volume )
 	trayMenu->addAction( ac ) ;
 
 	m_favorite_menu = trayMenu->addMenu( tr( "Favorites" ) ) ;
+
+	m_favorite_menu->setFont( this->font() ) ;
+
 	connect( m_favorite_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( favoriteClicked( QAction * ) ) ) ;
 	connect( m_favorite_menu,SIGNAL( aboutToShow() ),this,SLOT( showFavorites() ) ) ;
 
 	m_not_hidden_volume_menu = trayMenu->addMenu( tr( "Hide Volume From View" ) ) ;
+
+	m_not_hidden_volume_menu->setFont( this->font() ) ;
+
 	connect( m_not_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( removeVolumeFromVisibleVolumeList( QAction * ) ) ) ;
 	connect( m_not_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showVisibleVolumeList() ) ) ;
 
 	m_hidden_volume_menu = trayMenu->addMenu( tr( "Unhide Volume From View" ) ) ;
+
+	m_hidden_volume_menu->setFont( this->font() ) ;
+
 	connect( m_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( removeVolumeFromHiddenVolumeList( QAction * ) ) ) ;
 	connect( m_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showHiddenVolumeList() ) ) ;
 
@@ -272,7 +283,7 @@ void MainWindow::removeVolumeFromVisibleVolumeList( QAction * ac )
 {
 	auto e = ac->text() ;
 	e.remove( "&" ) ;
-	
+
 	auto table = m_ui->tableWidget ;
 
 	zuluMountTask::addVolumeToHiddenVolumeList( e ) ;

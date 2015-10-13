@@ -1398,6 +1398,8 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 	}else{
 		auto m = new QMenu( w ) ;
 
+		m->setFont( w->font() ) ;
+
 		w->connect( m,SIGNAL( triggered( QAction * ) ),w,SLOT( languageMenu( QAction * ) ) ) ;
 
 		QDir d( e ) ;
