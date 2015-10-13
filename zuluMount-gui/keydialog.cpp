@@ -116,6 +116,8 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_menu_1 = new QMenu( this ) ;
 
+	m_menu_1->setFont( this->font() ) ;
+
 	auto _add_action = [ & ]( const QString& e ){
 
 		ac = m_menu_1->addAction( e ) ;
@@ -311,6 +313,8 @@ void keyDialog::Plugin()
 {
 	utility::createPlugInMenu( m_menu,tr( INTERNAL_WALLET ),
 				   tr( GNOME_WALLET ),tr( KWALLET ),!m_volumeIsEncFs ) ;
+
+	m_menu->setFont( this->font() ) ;
 
 	m_menu->addSeparator() ;
 

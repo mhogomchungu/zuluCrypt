@@ -83,6 +83,8 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,std::funct
 	m_menu->addAction( tr( "Set File System Options" ) ) ;
 	m_menu->addAction( tr( "Set Volume Offset" ) ) ;
 
+	m_menu->setFont( this->font() ) ;
+
 	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
 
 	this->installEventFilter( this ) ;
