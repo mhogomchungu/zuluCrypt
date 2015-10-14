@@ -262,6 +262,8 @@ void zuluCrypt::setupUIElements()
 
 	QMenu * trayMenu = new QMenu( this ) ;
 
+	trayMenu->setFont( this->font() ) ;
+
 	trayMenu->addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
 
 	m_trayIcon->setContextMenu( trayMenu ) ;

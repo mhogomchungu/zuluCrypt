@@ -3,7 +3,7 @@ Section: admin
 Priority: extra
 Maintainer: Mhogo Mchungu <mhogomchungu@gmail.com>
 Uploaders:
-Build-Depends: debhelper (>= 9), cmake, pkg-config, libsecret-1-dev, libcryptsetup-dev, libblkid-dev, libpwquality-dev, libtcplay-dev, libdevmapper-dev, uuid-dev, libgcrypt11-dev, libqt4-dev, libudev-dev, chrpath, bzip2
+Build-Depends: debhelper (>= 9), cmake, pkg-config, libsecret-1-dev, libcryptsetup-dev, libblkid-dev, libpwquality-dev, libdevmapper-dev, uuid-dev, libgcrypt11-dev, libqt4-dev, libudev-dev, chrpath, bzip2
 Standards-Version: 3.9.5
 Homepage: http://mhogomchungu.github.io/zuluCrypt/
 Vcs-Git: git://git@github.com:mhogomchungu/zuluCrypt.git

@@ -394,16 +394,16 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 
 	process_t p = Process( exe.constData(),m_point.constData(),nullptr ) ;
 
-	if( uid != -1 && !env.isEmpty() ){
+	ProcessSetOptionUser( p,uid ) ;
 
-		utility::Array array( env ) ;
-
-		ProcessSetOptionUser( p,uid ) ;
-
-		ProcessSetEnvironmentalVariable( p,array.value() ) ;
+	if( env.isEmpty() ){
 
 		ProcessStart( p ) ;
 	}else{
+		utility::Array array( env ) ;
+
+		ProcessSetEnvironmentalVariable( p,array.value() ) ;
+
 		ProcessStart( p ) ;
 	}
 
