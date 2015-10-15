@@ -410,7 +410,7 @@ void MainWindow::autoMountVolume( volumeEntryProperties * e )
 
 					this->openMountPointPath( e ) ;
 
-				} )->AutoMount( l ) ;
+				} ).AutoMount( l ) ;
 
 			}else{
 				this->addEntryToTable( false,l ) ;
@@ -528,7 +528,7 @@ void MainWindow::Show()
 
 	QString volume = utility::cmdArgumentValue( l,"-d" ) ;
 
-	new oneinstance( this,"zuluMount-gui.socket","startGUI",volume,[ this,volume ]( QObject * instance ){
+	oneinstance::instance( this,"zuluMount-gui.socket","startGUI",volume,[ this,volume ]( QObject * instance ){
 
 		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
 		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
@@ -794,7 +794,7 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 
 			this->openMountPointPath( e ) ;
 
-		} )->ShowUI() ;
+		} ).ShowUI() ;
 	}else{
 		mountPartition::instance( this,m_ui->tableWidget,[ this ](){
 
@@ -804,7 +804,7 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 
 			this->openMountPointPath( e ) ;
 
-		} )->ShowUI( entry ) ;
+		} ).ShowUI( entry ) ;
 	}
 }
 

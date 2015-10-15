@@ -37,9 +37,9 @@ class createkeyfile : public QDialog
 {
 	Q_OBJECT
 public:
-	static createkeyfile * instance( QWidget * parent )
+	static createkeyfile& instance( QWidget * parent )
 	{
-		return new createkeyfile( parent ) ;
+		return *( new createkeyfile( parent ) ) ;
 	}
 	explicit createkeyfile( QWidget * parent = 0 ) ;
 	~createkeyfile() ;

@@ -42,12 +42,12 @@ class mountPartition : public QWidget
 {
 	Q_OBJECT
 public:
-	static mountPartition * instance( QWidget * parent,
+	static mountPartition& instance( QWidget * parent,
 					  QTableWidget * table,
 					  std::function< void() > cancel,
 					  std::function< void( const QString& ) > success )
 	{
-		return new mountPartition( parent,table,std::move( cancel ),std::move( success ) ) ;
+		return *( new mountPartition( parent,table,std::move( cancel ),std::move( success ) ) ) ;
 	}
 	mountPartition( QWidget * parent,
 			QTableWidget * table,

@@ -274,7 +274,7 @@ void createvolume::eraseDataPartition()
 
 			}else if( r == 2 ){
 
-				erasedevice::instance( this )->ShowUI( m_ui->lineEditVolumePath->text() ) ;
+				erasedevice::instance( this ).ShowUI( m_ui->lineEditVolumePath->text() ) ;
 			}
 		} ) ;
 	}

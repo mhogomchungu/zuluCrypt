@@ -33,9 +33,9 @@ class mountOptions : public QDialog
 {
 	Q_OBJECT
 public:
-	static mountOptions * instance( QString * options,QWidget * parent )
+	static mountOptions& instance( QString * options,QWidget * parent )
 	{
-		return new mountOptions( options,parent ) ;
+		return *( new mountOptions( options,parent ) ) ;
 	}
 	mountOptions( QString * options,QWidget * parent ) ;
 	~mountOptions() ;

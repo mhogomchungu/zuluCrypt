@@ -37,9 +37,9 @@ class cryptoinfo : public QWidget
 {
 	Q_OBJECT
 public:
-	static cryptoinfo * instance( QWidget * parent,QString path,QString msg )
+	static cryptoinfo& instance( QWidget * parent,QString path,QString msg )
 	{
-		return new cryptoinfo( parent,path,msg ) ;
+		return *( new cryptoinfo( parent,path,msg ) ) ;
 	}
 	cryptoinfo( QWidget * parent,QString path,QString msg ) ;
 	~cryptoinfo() ;

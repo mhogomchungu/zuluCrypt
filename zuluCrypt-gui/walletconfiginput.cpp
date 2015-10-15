@@ -125,7 +125,7 @@ void walletconfiginput::pbImageFilePath()
 
 void walletconfiginput::pbVolumePath()
 {
-	openvolume::instance( this )->showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this ).showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
 
 		this->setvolumeID( e ) ;
 	} ) ;

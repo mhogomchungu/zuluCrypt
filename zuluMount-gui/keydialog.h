@@ -46,13 +46,13 @@ class keyDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	static keyDialog * instance( QWidget * parent,
+	static keyDialog& instance( QWidget * parent,
 				     QTableWidget * table,
 				     const volumeEntryProperties& v,
 				     std::function< void() > cancel,
 				     std::function< void( const QString& ) > success )
 	{
-		return new keyDialog( parent,table,v,std::move( cancel ),std::move( success ) ) ;
+		return *( new keyDialog( parent,table,v,std::move( cancel ),std::move( success ) ) ) ;
 	}
 	keyDialog( QWidget * parent,
 		   QTableWidget *,

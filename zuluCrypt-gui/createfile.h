@@ -38,9 +38,9 @@ class createfile : public QDialog
 {
 	Q_OBJECT
 public:
-	static createfile * instance( QWidget * parent,std::function< void( const QString& ) > f )
+	static createfile& instance( QWidget * parent,std::function< void( const QString& ) > f )
 	{
-		return new createfile( parent,std::move( f ) ) ;
+		return *( new createfile( parent,std::move( f ) ) ) ;
 	}
 	explicit createfile( QWidget *,std::function< void( const QString& ) > ) ;
 	~createfile() ;

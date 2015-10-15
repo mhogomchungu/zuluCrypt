@@ -404,7 +404,7 @@ void managevolumeheader::pbCreate()
 
 void managevolumeheader::pbOpenPartition()
 {
-	openvolume::instance( this )->ShowNonSystemPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this ).ShowNonSystemPartitions( [ this ]( const QString& e ){
 
 		m_ui->lineEditDevicePath->setText( e ) ;
 

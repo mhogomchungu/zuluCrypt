@@ -36,9 +36,9 @@ class favorites : public QDialog
 {
 	Q_OBJECT
 public:
-	static favorites * instance( QWidget * parent = 0 )
+	static favorites& instance( QWidget * parent = 0 )
 	{
-		return new favorites( parent ) ;
+		return *( new favorites( parent ) ) ;
 	}
 	explicit favorites( QWidget * parent = 0 ) ;
 	~favorites() ;

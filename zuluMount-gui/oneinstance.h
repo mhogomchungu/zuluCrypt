@@ -38,6 +38,10 @@ class oneinstance : public QObject
 {
 	Q_OBJECT
 public:
+	static void instance( QObject * a,const char * b,const char * c,const QString& d,std::function<void( QObject * )> e )
+	{
+		new oneinstance( a,b,c,d,std::move( e ) ) ;
+	}
 	explicit oneinstance( QObject *,const char *,const char *,const QString&,std::function<void( QObject * )> ) ;
 	~oneinstance() ;
 	void setDevice( QString ) ;

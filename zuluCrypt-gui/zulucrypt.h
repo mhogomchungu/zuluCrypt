@@ -139,7 +139,7 @@ private:
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 
-	passwordDialog * setUpPasswordDialog( void ) ;
+	passwordDialog& setUpPasswordDialog( void ) ;
 
 	void setLocalizationLanguage( bool ) ;
 	void setupConnections( void ) ;

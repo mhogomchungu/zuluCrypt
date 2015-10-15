@@ -38,9 +38,9 @@ class manageSystemVolumes : public QDialog
 {
 	Q_OBJECT
 public:
-	static manageSystemVolumes * instance( QWidget * parent )
+	static manageSystemVolumes& instance( QWidget * parent )
 	{
-		return new manageSystemVolumes( parent ) ;
+		return *( new manageSystemVolumes( parent ) ) ;
 	}
 
 	explicit manageSystemVolumes( QWidget * parent ) ;

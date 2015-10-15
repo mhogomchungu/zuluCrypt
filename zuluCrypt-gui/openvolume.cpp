@@ -217,13 +217,13 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 
 	for( const auto& it : l ){
 
-		const QFont& nonSystem = this->font() ;
+		QFont nonSystem = this->font() ;
 
 		QFont system = this->font() ;
 		system.setItalic( !system.italic() ) ;
 		system.setBold( !system.bold() ) ;
 
-		const QFont * font ;
+		std::reference_wrapper<QFont> font = system ;
 
 		auto z = utility::split( it,'\t' ) ;
 
@@ -235,9 +235,9 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 
 				if( r.contains( z.first() ) ){
 
-					font = &system ;
+					font = system ;
 				}else{
-					font = &nonSystem ;
+					font = nonSystem ;
 				}
 
 				const QString& size = z.at( 1 ) ;
@@ -249,16 +249,16 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 
 					if( fs.startsWith( "crypto_LUKS" ) ){
 
-						tablewidget::addRowToTable( m_ui->tableWidget,z,*font ) ;
+						tablewidget::addRowToTable( m_ui->tableWidget,z,font ) ;
 					}
 				}else if( m_showEncryptedOnly ){
 
 					if( fs.startsWith( "crypto" ) || fs.contains( "Nil" ) ){
 
-						tablewidget::addRowToTable( m_ui->tableWidget,z,*font ) ;
+						tablewidget::addRowToTable( m_ui->tableWidget,z,font ) ;
 					}
 				}else{
-					tablewidget::addRowToTable( m_ui->tableWidget,z,*font ) ;
+					tablewidget::addRowToTable( m_ui->tableWidget,z,font ) ;
 				}
 			}
 		}

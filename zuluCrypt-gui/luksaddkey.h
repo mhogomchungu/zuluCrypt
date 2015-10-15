@@ -39,9 +39,9 @@ class luksaddkey : public QDialog
 {
 	Q_OBJECT
 public:
-	static luksaddkey * instance( QWidget * parent )
+	static luksaddkey& instance( QWidget * parent )
 	{
-		return new luksaddkey( parent ) ;
+		return *( new luksaddkey( parent ) ) ;
 	}
 	explicit luksaddkey( QWidget * parent = 0 ) ;
 	~luksaddkey() ;

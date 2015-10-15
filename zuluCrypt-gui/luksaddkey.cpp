@@ -278,7 +278,7 @@ void luksaddkey::pbOpenFile( void )
 
 void luksaddkey::pbOpenPartition( void )
 {
-	openvolume::instance( this )->showLuksOnly().ShowAllPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this ).showLuksOnly().ShowAllPartitions( [ this ]( const QString& e ){
 
 		this->setFieldFocus() ;
 		this->ShowUI( e ) ;

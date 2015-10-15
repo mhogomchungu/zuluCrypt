@@ -39,9 +39,9 @@ class VeraCryptPIMDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	static VeraCryptPIMDialog * instance( QWidget * parent,std::function< void( int ) > function )
+	static VeraCryptPIMDialog& instance( QWidget * parent,std::function< void( int ) > function )
 	{
-		return new VeraCryptPIMDialog( parent,std::move( function ) ) ;
+		return *( new VeraCryptPIMDialog( parent,std::move( function ) ) ) ;
 	}
 	explicit VeraCryptPIMDialog( QWidget * parent,std::function< void( int ) > ) ;
 	~VeraCryptPIMDialog() ;

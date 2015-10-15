@@ -39,9 +39,9 @@ class openvolume :  public QDialog
 {
 	Q_OBJECT
 public:
-	static openvolume * instance( QWidget * parent )
+	static openvolume& instance( QWidget * parent )
 	{
-		return new openvolume( parent ) ;
+		return *( new openvolume( parent ) ) ;
 	}
 	openvolume( QWidget * parent ) ;
 	virtual ~openvolume() ;

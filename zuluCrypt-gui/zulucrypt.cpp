@@ -228,7 +228,7 @@ void zuluCrypt::start()
 
 	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
-	new oneinstance( this,"zuluCrypt-gui.socket","raiseWindow",e,[ this,e ]( QObject * instance ){
+	oneinstance::instance( this,"zuluCrypt-gui.socket","raiseWindow",e,[ this,e ]( QObject * instance ){
 
 		this->setUpApp( e ) ;
 
@@ -456,7 +456,7 @@ void zuluCrypt::ShowManageSystemPartitions()
 
 	f.rename( "/etc/zuluCrypt-nonsystem","/etc/zuluCrypt/nonsystem_volumes.list" ) ;
 
-	manageSystemVolumes::instance( this )->ShowUI( "/etc/zuluCrypt/system_volumes.list" ) ;
+	manageSystemVolumes::instance( this ).ShowUI( "/etc/zuluCrypt/system_volumes.list" ) ;
 }
 
 void zuluCrypt::ShowManageNonSystemPartitions()
@@ -473,7 +473,7 @@ void zuluCrypt::ShowManageNonSystemPartitions()
 
 	f.rename( "/etc/zuluCrypt-nonsystem","/etc/zuluCrypt/nonsystem_volumes.list" ) ;
 
-	manageSystemVolumes::instance( this )->ShowUI( "/etc/zuluCrypt/nonsystem_volumes.list" ) ;
+	manageSystemVolumes::instance( this ).ShowUI( "/etc/zuluCrypt/nonsystem_volumes.list" ) ;
 }
 
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
@@ -943,12 +943,12 @@ void zuluCrypt::close()
 
 void zuluCrypt::volumeRestoreHeader()
 {
-	managevolumeheader::instance( this )->restoreHeader() ;
+	managevolumeheader::instance( this ).restoreHeader() ;
 }
 
 void zuluCrypt::volumeHeaderBackUp()
 {
-	managevolumeheader::instance( this )->backUpHeader() ;
+	managevolumeheader::instance( this ).backUpHeader() ;
 }
 
 void zuluCrypt::luksHeaderBackUpContextMenu()
@@ -957,27 +957,27 @@ void zuluCrypt::luksHeaderBackUpContextMenu()
 
 	QString device = m_ui->tableWidget->item( item->row(),0 )->text() ;
 
-	managevolumeheader::instance( this )->backUpHeader( device ) ;
+	managevolumeheader::instance( this ).backUpHeader( device ) ;
 }
 
 void zuluCrypt::ShowAddKeyContextMenu( QString key )
 {
-	luksaddkey::instance( this )->ShowUI( key ) ;
+	luksaddkey::instance( this ).ShowUI( key ) ;
 }
 
 void zuluCrypt::ShowAddKey()
 {
-	luksaddkey::instance( this )->ShowUI() ;
+	luksaddkey::instance( this ).ShowUI() ;
 }
 
 void zuluCrypt::ShowDeleteKeyContextMenu( QString key )
 {
-	luksdeletekey::instance( this )->ShowUI( key ) ;
+	luksdeletekey::instance( this ).ShowUI( key ) ;
 }
 
 void zuluCrypt::ShowDeleteKey()
 {
-	luksdeletekey::instance( this )->ShowUI() ;
+	luksdeletekey::instance( this ).ShowUI() ;
 }
 
 void zuluCrypt::ShowCreateKeyFile()
@@ -996,28 +996,28 @@ void zuluCrypt::ShowCreateFile()
 
 		if( utility::pathExists( file ) ){
 
-			createvolume::instance( this )->ShowFile( file ) ;
+			createvolume::instance( this ).ShowFile( file ) ;
 		}
 	} ) ;
 }
 
 void zuluCrypt::ShowNonSystemPartitions()
 {
-	openvolume::instance( this )->ShowNonSystemPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this ).ShowNonSystemPartitions( [ this ]( const QString& e ){
 
-		createvolume::instance( this )->ShowPartition( e ) ;
+		createvolume::instance( this ).ShowPartition( e ) ;
 	} ) ;
 }
 
 void zuluCrypt::ShowOpenPartition()
 {
-	openvolume::instance( this )->showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this ).showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
 
-		this->setUpPasswordDialog()->ShowUI( e ) ;
+		this->setUpPasswordDialog().ShowUI( e ) ;
 	} ) ;
 }
 
-passwordDialog * zuluCrypt::setUpPasswordDialog()
+passwordDialog& zuluCrypt::setUpPasswordDialog()
 {
 	return passwordDialog::instance( m_ui->tableWidget,this,[ this ]( const QString& path ){
 
@@ -1027,20 +1027,20 @@ passwordDialog * zuluCrypt::setUpPasswordDialog()
 
 void zuluCrypt::ShowVeraPasswordDialog()
 {
-	this->setUpPasswordDialog()->ShowVeraUI() ;
+	this->setUpPasswordDialog().ShowVeraUI() ;
 }
 
 void zuluCrypt::ShowVeraOpenPartition()
 {
-	openvolume::instance( this )->showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this ).showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
 
-		this->setUpPasswordDialog()->ShowVeraUI( e ) ;
+		this->setUpPasswordDialog().ShowVeraUI( e ) ;
 	} ) ;
 }
 
 void zuluCrypt::ShowPasswordDialog()
 {
-	this->setUpPasswordDialog()->ShowUI() ;
+	this->setUpPasswordDialog().ShowUI() ;
 }
 
 void zuluCrypt::ShowPasswordDialog( QString x,QString y )
@@ -1049,28 +1049,28 @@ void zuluCrypt::ShowPasswordDialog( QString x,QString y )
 
 		this->decryptFile( x ) ;
 	}else{
-		this->setUpPasswordDialog()->ShowUI( x,y ) ;
+		this->setUpPasswordDialog().ShowUI( x,y ) ;
 	}
 }
 
 void zuluCrypt::ShowEraseDataDialog()
 {
-	erasedevice::instance( this )->ShowUI() ;
+	erasedevice::instance( this ).ShowUI() ;
 }
 
 void zuluCrypt::encryptFile()
 {
-	cryptfiles::instance( this )->encrypt() ;
+	cryptfiles::instance( this ).encrypt() ;
 }
 
 void zuluCrypt::decryptFile( void )
 {
-	cryptfiles::instance( this )->decrypt() ;
+	cryptfiles::instance( this ).decrypt() ;
 }
 
 void zuluCrypt::decryptFile( const QString& e )
 {
-	cryptfiles::instance( this )->decrypt( e ) ;
+	cryptfiles::instance( this ).decrypt( e ) ;
 }
 
 zuluCrypt::~zuluCrypt()

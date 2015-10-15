@@ -34,9 +34,9 @@ class erasedevice : public QDialog
 {
 	Q_OBJECT
 public:
-	static erasedevice * instance( QWidget * parent )
+	static erasedevice& instance( QWidget * parent )
 	{
-		return new erasedevice( parent ) ;
+		return *( new erasedevice( parent ) ) ;
 	}
 	explicit erasedevice( QWidget * parent = 0 ) ;
 	~erasedevice() ;

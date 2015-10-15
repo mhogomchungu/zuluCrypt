@@ -32,9 +32,9 @@ class createVolumeDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	static createVolumeDialog * instance( const QString& path,QWidget * parent,std::function< void( int ) > f )
+	static createVolumeDialog& instance( const QString& path,QWidget * parent,std::function< void( int ) > f )
 	{
-		return new createVolumeDialog( path,parent,std::move( f ) ) ;
+		return *( new createVolumeDialog( path,parent,std::move( f ) ) ) ;
 	}
 	explicit createVolumeDialog( const QString& path,QWidget * parent,std::function< void( int ) > ) ;
 	~createVolumeDialog() ;

@@ -36,9 +36,9 @@ class managevolumeheader : public QDialog
 {
 	Q_OBJECT
 public:
-	static managevolumeheader * instance ( QWidget * parent )
+	static managevolumeheader& instance ( QWidget * parent )
 	{
-		return new managevolumeheader( parent ) ;
+		return *( new managevolumeheader( parent ) ) ;
 	}
 	explicit managevolumeheader( QWidget * parent = 0 ) ;
 	~managevolumeheader() ;

@@ -36,9 +36,9 @@ class luksdeletekey : public QDialog
 {
 	Q_OBJECT
 public:
-	static luksdeletekey * instance( QWidget * parent )
+	static luksdeletekey& instance( QWidget * parent )
 	{
-		return new luksdeletekey( parent ) ;
+		return *( new luksdeletekey( parent ) ) ;
 	}
 	explicit luksdeletekey( QWidget *parent = 0 ) ;
 	~luksdeletekey() ;

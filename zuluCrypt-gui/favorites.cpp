@@ -96,7 +96,7 @@ void favorites::shortcutPressed()
 
 void favorites::deviceAddress()
 {
-	openvolume::instance( this )->ShowAllPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this ).ShowAllPartitions( [ this ]( const QString& e ){
 
 		m_ui->lineEditDeviceAddress->setText( e ) ;
 	} ) ;
