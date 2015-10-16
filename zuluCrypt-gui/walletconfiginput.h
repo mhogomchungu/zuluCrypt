@@ -38,6 +38,13 @@ class walletconfiginput : public QDialog
 {
 	Q_OBJECT
 public:
+	static walletconfiginput& instance( QWidget * parent,
+					    std::function< void( const QString&,const QString&,const QString& ) > p,
+					    std::function< void() > q )
+	{
+		return *( new walletconfiginput( parent,std::move( p ),std::move( q ) ) ) ;
+	}
+
 	walletconfiginput( QWidget * parent,
 			   std::function< void( const QString&,const QString&,const QString& ) >,
 			   std::function< void() > ) ;

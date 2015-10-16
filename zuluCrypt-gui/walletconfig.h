@@ -40,9 +40,9 @@ class walletconfig : public QDialog
 {
 	Q_OBJECT
 public:
-	static walletconfig * instance( QWidget * parent )
+	static walletconfig& instance( QWidget * parent )
 	{
-		return new walletconfig( parent ) ;
+		return *( new walletconfig( parent ) ) ;
 	}
 	explicit walletconfig( QWidget * parent = 0 ) ;
 	~walletconfig() ;

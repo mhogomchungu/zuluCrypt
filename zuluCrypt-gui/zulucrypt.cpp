@@ -399,17 +399,17 @@ void zuluCrypt::info()
 
 void zuluCrypt::manageVolumesInGNOMEWallet()
 {
-	walletconfig::instance( this )->ShowUI( LxQt::Wallet::secretServiceBackEnd ) ;
+	walletconfig::instance( this ).ShowUI( LxQt::Wallet::secretServiceBackEnd ) ;
 }
 
 void zuluCrypt::manageVolumesInInternalWallet()
 {
-	walletconfig::instance( this )->ShowUI( LxQt::Wallet::internalBackEnd ) ;
+	walletconfig::instance( this ).ShowUI( LxQt::Wallet::internalBackEnd ) ;
 }
 
 void zuluCrypt::manageVolumesInKDEWallet()
 {
-	walletconfig::instance( this )->ShowUI( LxQt::Wallet::kwalletBackEnd ) ;
+	walletconfig::instance( this ).ShowUI( LxQt::Wallet::kwalletBackEnd ) ;
 }
 
 void zuluCrypt::failedToOpenWallet()
