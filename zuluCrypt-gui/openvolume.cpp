@@ -208,7 +208,7 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 	QStringList r ;
 	QStringList l ;
 
-	Task::await<void>( [ & ](){
+	Task::await( [ & ](){
 
 		l = utility::Task( QString( "%1 -AZ" ).arg( ZULUCRYPTzuluCrypt ) ).splitOutput( '\n' ) ;
 
