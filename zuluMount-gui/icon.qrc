@@ -8,5 +8,6 @@
 		 <file>keyfile.png</file>
 		 <file>module.png</file>
 		 <file>folder.png</file>
+		 <file>file.png</file>
 	 </qresource>
  </RCC>
