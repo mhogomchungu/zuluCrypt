@@ -274,10 +274,23 @@ void passwordDialog::mountPointPath( QString path )
 void passwordDialog::cbActicated( int e )
 {
 	switch( e ){
-		case passwordDialog::key     : return this->passphraseOption() ;
-		case passwordDialog::keyfile : return this->passphraseFromFileOption() ;
-		case passwordDialog::plugin  : return this->pluginOption() ;
-		case passwordDialog::tcryptKeys : return this->tcryptGui() ;
+		case passwordDialog::key         : return this->passphraseOption() ;
+		case passwordDialog::keyfile     : return this->passphraseFromFileOption() ;
+		case passwordDialog::keyKeyFile  : return this->keyAndKeyFile() ;
+		case passwordDialog::plugin      : return this->pluginOption() ;
+		case passwordDialog::tcryptKeys  : return this->tcryptGui() ;
+	}
+}
+
+void passwordDialog::keyAndKeyFile()
+{
+	QString key ;
+
+	if( utility::pluginKey( this,&key,"hmac" ) ){
+
+		m_ui->cbKeyType->setCurrentIndex( 0 ) ;
+	}else{
+		m_ui->PassPhraseField->setText( key ) ;
 	}
 }
 
@@ -544,7 +557,7 @@ void passwordDialog::openVolume()
 			passtype = "-f" ;
 			keyPath = utility::resolvePath( m_key ).replace( "\"","\"\"\"" ) ;
 		}
-	}else if( keySource == passwordDialog::key ){
+	}else if( keySource == passwordDialog::key || passwordDialog::keyKeyFile ){
 		passtype = "-f" ;
 		keyPath = utility::keyPath() ;
 		this->sendKey( keyPath ) ;

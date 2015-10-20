@@ -74,6 +74,7 @@ private slots :
 	void mountPointPath( QString ) ;
 	void cbStateChanged( int ) ;
 private :
+	void keyAndKeyFile( void ) ;
 	void setTitle( void ) ;
 	void addTcryptVcryptKeyOption( void ) ;
 	void tcryptGui( void ) ;
@@ -100,7 +101,7 @@ private :
 	bool m_veraCryptVolume = false ;
 	utility::veraCryptWarning m_veraCryptWarning ;
 	bool m_working = false ;
-	enum{ key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
+	enum{ key = 0,keyfile = 1,keyKeyFile = 2,plugin = 3,tcryptKeys = 4 } ;
 	std::function< void( const QString& ) > m_openFolder ;
 };
 

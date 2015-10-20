@@ -131,6 +131,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Plugin" ) ) ;
 
 	if( m_volumeIsEncFs ){
@@ -291,6 +292,7 @@ void keyDialog::disableAll()
 void keyDialog::KeyFile()
 {
 	if( m_ui->cbKeyType->currentIndex() == keyDialog::keyfile ){
+
 		QString msg = tr( "Select A File To Be Used As A Keyfile" ) ;
 		QString Z = QFileDialog::getOpenFileName( this,msg,utility::homePath() ) ;
 
@@ -435,7 +437,7 @@ void keyDialog::openVolume()
 
 	if( m_volumeIsEncFs ){
 
-		if( keyType == keyDialog::Key ){
+		if( keyType == keyDialog::Key || keyType == keyDialog::keyKeyFile ){
 
 			m_key = m_ui->lineEditKey->text() ;
 
@@ -458,14 +460,20 @@ void keyDialog::openVolume()
 	}
 
 	if( m_ui->lineEditKey->text().isEmpty() ){
-		if( keyType == keyDialog::Key ){
+
+		if( keyType == keyDialog::Key || keyDialog::keyKeyFile ){
+
 			;
+
 		}else if( keyType == keyDialog::plugin ){
+
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "Plug in name field is empty" ) ) ;
 			m_ui->lineEditKey->setFocus() ;
 			return this->enableAll() ;
+
 		}else if( keyType == keyDialog::keyfile ){
+
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "Keyfile field is empty" ) ) ;
 			m_ui->lineEditKey->setFocus() ;
@@ -474,7 +482,9 @@ void keyDialog::openVolume()
 	}
 
 	QString test_name = m_ui->lineEditMountPoint->text() ;
+
 	if( test_name.contains( "/" ) ){
+
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
 		m_ui->lineEditKey->setFocus() ;
@@ -482,7 +492,7 @@ void keyDialog::openVolume()
 	}
 
 	QString m ;
-	if( keyType == keyDialog::Key ){
+	if( keyType == keyDialog::Key || keyType == keyDialog::keyKeyFile ){
 
 		QString addr = utility::keyPath() ;
 		m = QString( "-f %1" ).arg( addr ) ;
@@ -637,10 +647,23 @@ void keyDialog::openVolume()
 void keyDialog::cbActicated( int e )
 {
 	switch( e ){
-		case keyDialog::Key     : return this->key() ;
-		case keyDialog::keyfile : return this->keyFile() ;
-		case keyDialog::plugin  : return this->plugIn() ;
+		case keyDialog::Key        : return this->key() ;
+		case keyDialog::keyfile    : return this->keyFile() ;
+		case keyDialog::keyKeyFile : return this->keyAndKeyFile() ;
+		case keyDialog::plugin     : return this->plugIn() ;
 		case keyDialog::tcryptKeys : return this->tcryptGui() ;
+	}
+}
+
+void keyDialog::keyAndKeyFile()
+{
+	QString key ;
+
+	if( utility::pluginKey( this,&key,"hmac" ) ){
+
+		m_ui->cbKeyType->setCurrentIndex( 0 ) ;
+	}else{
+		m_ui->lineEditKey->setText( key ) ;
 	}
 }
 

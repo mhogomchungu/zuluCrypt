@@ -84,6 +84,7 @@ private slots:
 	void showFileSystemOptionWindow( void ) ;
 	void encfsMount( void ) ;
 private :
+	void keyAndKeyFile( void ) ;
 	void tcryptGui( void ) ;
 	void openVolume( void ) ;
 	void enableAll( void ) ;
@@ -104,7 +105,7 @@ private :
 	bool m_veraCryptVolume = false ;
 	bool m_working ;
 	bool m_volumeIsEncFs = false ;
-	enum{ Key = 0,keyfile = 1,plugin = 2,tcryptKeys = 3 } ;
+	enum{ Key = 0,keyfile = 1,keyKeyFile = 2,plugin = 3,tcryptKeys = 4 } ;
 	int m_veraCryptPIMValue = 0 ;
 	std::function< void() > m_cancel ;
 	std::function< void( const QString& ) > m_success ;
