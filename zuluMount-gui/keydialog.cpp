@@ -663,6 +663,8 @@ void keyDialog::keyAndKeyFile()
 
 		m_ui->cbKeyType->setCurrentIndex( 0 ) ;
 	}else{
+		this->key() ;
+
 		m_ui->lineEditKey->setText( key ) ;
 	}
 }

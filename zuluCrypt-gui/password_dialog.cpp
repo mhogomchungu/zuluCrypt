@@ -290,6 +290,8 @@ void passwordDialog::keyAndKeyFile()
 
 		m_ui->cbKeyType->setCurrentIndex( 0 ) ;
 	}else{
+		this->passphraseOption() ;
+
 		m_ui->PassPhraseField->setText( key ) ;
 	}
 }
@@ -328,7 +330,7 @@ void passwordDialog::passphraseOption()
 	m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
-	m_ui->pbKeyOption->setIcon( QIcon( QString() ) ) ;
+	m_ui->pbKeyOption->setIcon( QIcon() ) ;
 	m_ui->pbKeyOption->setEnabled( false ) ;
 	m_ui->PassPhraseField->setEnabled( true ) ;
 }
