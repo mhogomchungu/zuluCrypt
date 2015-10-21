@@ -83,11 +83,11 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 
 	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbNormalVolume->addItem( tr( "KeyFile" ) ) ;
-	m_ui->cbNormalVolume->addItem( tr( "Key+keyFile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "Key+KeyFile" ) ) ;
 
 	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "KeyFile" ) ) ;
-	m_ui->cbHiddenVolume->addItem( tr( "key+KeyFile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "Key+KeyFile" ) ) ;
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
@@ -162,11 +162,11 @@ void createvolume::volumeType( int s )
 
 	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbNormalVolume->addItem( tr( "KeyFile" ) ) ;
-	m_ui->cbNormalVolume->addItem( tr( "key+KeyFile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "Key+KeyFile" ) ) ;
 
 	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "KeyFile" ) ) ;
-	m_ui->cbHiddenVolume->addItem( tr( "key+KeyFile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "Key+KeyFile" ) ) ;
 
 	auto _enableHidden = [ this ](){
 
@@ -536,6 +536,9 @@ void createvolume::cbNormalVolume( int r )
 
 		_set_key_ui() ;
 
+		m_ui->lineEditPassphrase1->setEnabled( false ) ;
+		m_ui->lineEditPassPhrase2->setEnabled( false ) ;
+
 		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_key = key ;
@@ -547,6 +550,11 @@ void createvolume::cbNormalVolume( int r )
 
 				m_ui->cbNormalVolume->setCurrentIndex( 0 ) ;
 				this->cbNormalVolume( 0 ) ;
+			}else{
+				if( m_keyStrength.canCheckQuality() ){
+
+					this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
+				}
 			}
 		} ) ;
 	}else{
@@ -593,6 +601,7 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey->clear() ;
 		m_ui->lineEditHiddenKey1->clear() ;
 		m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Normal ) ;
+		m_ui->lineEditHiddenKey->setEnabled( true ) ;
 		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
 		m_ui->labelHidden->setText( tr( "KeyFile" ) ) ;
 		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
@@ -600,6 +609,9 @@ void createvolume::cbHiddenVolume( int r )
 	}else if( r == 2 ){
 
 		_set_key_ui() ;
+
+		m_ui->lineEditHiddenKey->setEnabled( false ) ;
+		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
 
 		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
@@ -612,6 +624,11 @@ void createvolume::cbHiddenVolume( int r )
 
 				m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
 				this->cbHiddenVolume( 0 ) ;
+			}else{
+				if( m_keyStrength.canCheckQuality() ){
+
+					this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
+				}
 			}
 		} ) ;
 	}else{

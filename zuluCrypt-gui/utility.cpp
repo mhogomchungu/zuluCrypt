@@ -367,7 +367,7 @@ void utility::Array::setUp()
 
 char * const * utility::Array::value()
 {
-	return ( char * const * ) m_vector.data() ;
+	return const_cast< char * const * >( m_vector.data() ) ;
 }
 
 bool utility::ProcessExecute( const QString& m,const QString& e,const QString& env,int uid )
@@ -392,7 +392,7 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 		}
 	}
 
-	process_t p = Process( exe.constData(),m_point.constData(),nullptr ) ;
+	auto p = Process( exe.constData(),m_point.constData(),nullptr ) ;
 
 	ProcessSetOptionUser( p,uid ) ;
 
@@ -1021,21 +1021,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>." ).arg( VE
 	m.ShowUIInfo( QObject::tr( "about zuluCrypt" ),license ) ;
 }
 
-static QVector<int> _default_dimensions( const char * defaults )
+static utility::array_t _default_dimensions( const char * defaults )
 {
-	QStringList l = QString( defaults ).split( ' ' ) ;
+	auto l = QString( defaults ).split( ' ' ) ;
 
-	QVector<int> e ;
+	utility::array_t e ;
 
-	for( const auto& it : l ){
+	auto f = e.data() ;
 
-		e.append( it.toInt() ) ;
+	auto j = l.size() ;
+
+	for( int i = 0 ; i < j ; i++ ){
+
+		*( f + i ) = l.at( i ).toInt() ;
 	}
 
 	return e ;
 }
 
-static QVector<int> _dimensions( const QString& path,const char * defaults,int size )
+static utility::array_t _dimensions( const QString& path,const char * defaults,int size )
 {
 	QFile f( path ) ;
 
@@ -1056,39 +1060,43 @@ static QVector<int> _dimensions( const QString& path,const char * defaults,int s
 
 	if( f.open( QIODevice::ReadOnly ) ){
 
-		QStringList l = QString( f.readAll() ).split( ' ',QString::SkipEmptyParts ) ;
+		auto l = QString( f.readAll() ).split( ' ',QString::SkipEmptyParts ) ;
 
-		if( l.size() != size ){
+		utility::array_t p ;
+
+		if( l.size() != size || size > int( p.size() ) ){
 
 			qDebug() << "failed to parse config file" ;
 			return _default_dimensions( defaults ) ;
 		}
 
-		QVector<int> customDimensions ;
+		auto f = p.data() ;
 
-		for( const auto& it : l ){
+		auto j = l.size() ;
+
+		for( int i = 0 ; i < j ; i++ ){
 
 			bool ok ;
 
-			int e = it.toInt( &ok ) ;
+			int e = l.at( i ).toInt( &ok ) ;
 
 			if( ok ){
 
-				customDimensions.append( e ) ;
+				*( f + i ) = e ;
 			}else{
 				qDebug() << "failed to parse config file option" ;
 				return _default_dimensions( defaults ) ;
 			}
 		}
 
-		return customDimensions ;
+		return p ;
 	}else{
 		qDebug() << "failed to open config file" ;
 		return _default_dimensions( defaults ) ;
 	}
 }
 
-QVector<int> utility::getWindowDimensions( const QString& application )
+utility::array_t utility::getWindowDimensions( const QString& application )
 {
 	QString path = utility::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
 
@@ -1100,7 +1108,7 @@ QVector<int> utility::getWindowDimensions( const QString& application )
 	}
 }
 
-void utility::setWindowDimensions( const QVector<int>& e,const QString& application )
+void utility::setWindowDimensions( const QString& application,const std::initializer_list<int>& e )
 {
 	QString path = utility::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
 

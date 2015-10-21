@@ -75,13 +75,13 @@ void MainWindow::setUpApp( const QString& volume )
 	m_ui->pbmount->setMinimumHeight( 31 ) ;
 	m_ui->pbupdate->setMinimumHeight( 31 ) ;
 
-	QVector<int> f = utility::getWindowDimensions( "zuluMount" ) ;
+	auto f = utility::getWindowDimensions( "zuluMount" ) ;
 
-	int * e = f.data() ;
+	auto e = f.data() ;
 
 	this->window()->setGeometry( *( e + 0 ),*( e + 1 ),*( e + 2 ),*( e + 3 ) ) ;
 
-	QTableWidget * table = m_ui->tableWidget ;
+	auto table = m_ui->tableWidget ;
 
 	table->setColumnWidth( 0,*( e + 4 ) ) ;
 	table->setColumnWidth( 1,*( e + 5 ) ) ;
@@ -1202,31 +1202,32 @@ MainWindow::~MainWindow()
 	QFile f( utility::homePath() + zuluMOUNT_AUTOPATH ) ;
 
 	if( m_autoMountAction ){
+
 		if( m_autoMountAction->isChecked() ){
+
 			if( !f.exists() ){
+
 				f.open( QIODevice::WriteOnly ) ;
-				f.close() ;
 			}
 		}else{
 			f.remove() ;
 		}
 	}
 
-	QVector<int> e ;
-
 	auto q = m_ui->tableWidget ;
 
-	const QRect& r = this->window()->geometry() ;
+	const auto& r = this->window()->geometry() ;
 
-	e << r.x()
-	  << r.y()
-	  << r.width()
-	  << r.height()
-	  << q->columnWidth( 0 )
-	  << q->columnWidth( 1 )
-	  << q->columnWidth( 2 )
-	  << q->columnWidth( 4 )
-	  << q->columnWidth( 5 ) ;
+	using list = std::initializer_list<int> ;
 
-	utility::setWindowDimensions( e,"zuluMount" ) ;
+	utility::setWindowDimensions( "zuluMount",list{ r.x(),
+							r.y(),
+							r.width(),
+							r.height(),
+							q->columnWidth( 0 ),
+							q->columnWidth( 1 ),
+							q->columnWidth( 2 ),
+							q->columnWidth( 4 ),
+							q->columnWidth( 5 ) } ) ;
+
 }

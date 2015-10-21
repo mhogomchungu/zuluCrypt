@@ -351,9 +351,13 @@ static const char * _mount_options( unsigned long flags,string_t st )
 
 static int _mount_FUSEfs( const m_struct * mst,string_t st )
 {
+	const char * opts = _mount_options( mst->m_flags,st ) ;
+
+	char * const env[ 2 ] = { "PATH=/bin:/usr/bin:/sbin:/usr/sbin",NULL } ;
+
 	process_t p = Process( ZULUCRYPTmount,NULL ) ;
 
-	const char * opts = _mount_options( mst->m_flags,st ) ;
+	ProcessSetEnvironmentalVariable( p,env ) ;
 
 	if( StringsAreEqual( mst->fs,"ntfs" ) ){
 

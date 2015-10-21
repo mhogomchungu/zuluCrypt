@@ -56,6 +56,8 @@ plugin::plugin( QDialog * parent,plugins::type t,std::function< void( const QStr
 
 	m_ui->pbKeyFile->setIcon( QIcon( ":/file.png" ) ) ;
 
+	m_ui->lineEdit->setFocus() ;
+
 	this->ShowUI() ;
 }
 
@@ -95,10 +97,10 @@ void plugin::pbSetKey()
 
 	DialogMsg msg( this ) ;
 
-	if( passphrase.isEmpty() ){
+	//if( passphrase.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR" ),tr( "Passphrase Not Set" ) ) ;
-	}
+	//	return msg.ShowUIOK( tr( "ERROR" ),tr( "Passphrase Not Set" ) ) ;
+	//}
 
 	if( keyFile.isEmpty() ){
 

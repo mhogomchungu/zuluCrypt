@@ -169,6 +169,7 @@ void luksaddkey::cbExistingKey( int e )
 		m_ui->textEditExistingPassphrase->clear() ;
 		m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 		m_ui->textEditExistingPassphrase->setFocus() ;
+		m_ui->textEditExistingPassphrase->setEnabled( true ) ;
 	} ;
 
 	if( e == 0 ){
@@ -184,8 +185,10 @@ void luksaddkey::cbExistingKey( int e )
 		m_ui->textEditExistingPassphrase->clear() ;
 		m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 		m_ui->textEditExistingPassphrase->setFocus() ;
+		m_ui->textEditExistingPassphrase->setEnabled( true ) ;
 	}else{
 		_key_ui() ;
+		m_ui->textEditExistingPassphrase->setEnabled( false ) ;
 
 		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
@@ -209,10 +212,12 @@ void luksaddkey::cbNewKey( int e )
 		m_ui->pushButtonOpenNewKeyFile->setEnabled( false ) ;
 		m_ui->labelNewPassphrase->setText( tr( "Key" ) ) ;
 		m_ui->textEditPassphraseToAdd->clear() ;
+		m_ui->lineEditReEnterPassphrase->clear() ;
 		m_ui->lineEditReEnterPassphrase->setEnabled( true ) ;
 		m_ui->labelReEnterPassphrase->setEnabled( true ) ;
 		m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 		m_ui->textEditPassphraseToAdd->setFocus() ;
+		m_ui->textEditPassphraseToAdd->setEnabled( true ) ;
 	} ;
 
 	if( e == 0 ){
@@ -228,12 +233,14 @@ void luksaddkey::cbNewKey( int e )
 		m_ui->pushButtonOpenNewKeyFile->setEnabled( true ) ;
 		m_ui->labelNewPassphrase->setText( tr( "KeyFile path" ) ) ;
 		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
-		m_ui->lineEditReEnterPassphrase->clear() ;
 		m_ui->labelReEnterPassphrase->setEnabled( false ) ;
 		m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 		m_ui->textEditPassphraseToAdd->setFocus() ;
+		m_ui->textEditPassphraseToAdd->setEnabled( true ) ;
 	}else{
 		_key_ui() ;
+		m_ui->textEditPassphraseToAdd->setEnabled( false ) ;
+		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
 
 		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
@@ -244,6 +251,11 @@ void luksaddkey::cbNewKey( int e )
 
 				m_ui->cbNewKey->setCurrentIndex( 0 ) ;
 				this->cbNewKey( 0 ) ;
+			}else{
+				if( m_keystrength.canCheckQuality() ){
+
+					this->setWindowTitle( tr( "Passphrase Quality: 100%" ) ) ;
+				}
 			}
 		} ) ;
 	}
@@ -457,6 +469,7 @@ void luksaddkey::disableAll()
 
 void luksaddkey::enableAll()
 {
+	m_ui->labelReEnterPassphrase->setEnabled( true ) ;
 	m_ui->labelExistingPassphrase->setEnabled( true ) ;
 	m_ui->labelLuksVolume->setEnabled( true ) ;
 	m_ui->labelNewPassphrase->setEnabled( true ) ;
@@ -475,8 +488,12 @@ void luksaddkey::enableAll()
 
 	auto index = m_ui->cbNewKey->currentIndex() ;
 
-	if( index != 1 ){
-		m_ui->lineEditReEnterPassphrase->setEnabled( true ) ;
+	if( index == 1 ){
+		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
+	}
+	if( index == 2 ){
+		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
+		m_ui->textEditPassphraseToAdd->setEnabled( false ) ;
 	}
 	m_ui->label->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;

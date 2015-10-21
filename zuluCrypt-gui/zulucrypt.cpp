@@ -171,13 +171,13 @@ void zuluCrypt::updateVolumeListAction()
 
 void zuluCrypt::initKeyCombo()
 {
-	QAction * rca = new QAction( this ) ;
+	auto ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
 	keys.append( Qt::Key_Menu ) ;
 	keys.append( Qt::CTRL + Qt::Key_M ) ;
-	rca->setShortcuts( keys ) ;
-	connect( rca,SIGNAL( triggered() ),this,SLOT( menuKeyPressed() ) ) ;
-	this->addAction( rca ) ;
+	ac->setShortcuts( keys ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( menuKeyPressed() ) ) ;
+	this->addAction( ac ) ;
 }
 
 void zuluCrypt::initFont()
@@ -260,7 +260,7 @@ void zuluCrypt::setupUIElements()
 	m_trayIcon = new QSystemTrayIcon( this ) ;
 	m_trayIcon->setIcon( QIcon( ":/zuluCrypt.png" ) ) ;
 
-	QMenu * trayMenu = new QMenu( this ) ;
+	auto trayMenu = new QMenu( this ) ;
 
 	trayMenu->setFont( this->font() ) ;
 
@@ -268,13 +268,13 @@ void zuluCrypt::setupUIElements()
 
 	m_trayIcon->setContextMenu( trayMenu ) ;
 
-	QVector<int> f = utility::getWindowDimensions( "zuluCrypt" ) ;
+	auto f = utility::getWindowDimensions( "zuluCrypt" ) ;
 
-	int * e = f.data() ;
+	auto e = f.data() ;
 
 	this->window()->setGeometry( *( e + 0 ),*( e + 1 ),*( e + 2 ),*( e + 3 ) ) ;
 
-	QTableWidget * table = m_ui->tableWidget ;
+	auto table = m_ui->tableWidget ;
 
 	table->setColumnWidth( 0,*( e + 4 ) ) ;
 	table->setColumnWidth( 1,*( e + 5 ) ) ;
@@ -496,20 +496,22 @@ void zuluCrypt::closeAllVolumes()
 
 		utility::Task::waitForOneSecond() ; // for ui effect
 
-		QTableWidget * table = m_ui->tableWidget ;
+		auto table = m_ui->tableWidget ;
 
-		int volumeCount = table->rowCount() ;
+		auto volumeCount = table->rowCount() ;
 
 		if( volumeCount > 0 ){
 
 			QVector< QTableWidgetItem * > tableItems( volumeCount ) ;
-			QTableWidgetItem ** it = tableItems.data() ;
+
+			auto it = tableItems.data() ;
 
 			for( int i = 0 ; i < volumeCount ; i++ ){
+
 				*( it + i ) = table->item( i,0 ) ;
 			}
 
-			QString exe = utility::appendUserUID( "%1 -q -d \"%2\"" ) ;
+			auto exe = utility::appendUserUID( "%1 -q -d \"%2\"" ) ;
 
 			for( int i = tableItems.count() - 1 ; i >= 0 ; i-- ){
 
@@ -1075,21 +1077,19 @@ void zuluCrypt::decryptFile( const QString& e )
 
 zuluCrypt::~zuluCrypt()
 {
-	QVector<int> e ;
-
 	auto q = m_ui->tableWidget ;
 
-	const QRect& r = this->window()->geometry() ;
+	const auto& r = this->window()->geometry() ;
 
-	e << r.x()
-	  << r.y()
-	  << r.width()
-	  << r.height()
-	  << q->columnWidth( 0 )
-	  << q->columnWidth( 1 )
-	  << q->columnWidth( 2 ) ;
+	using list = std::initializer_list<int> ;
 
-	utility::setWindowDimensions( e,"zuluCrypt" ) ;
+	utility::setWindowDimensions( "zuluCrypt",list{ r.x(),
+							r.y(),
+							r.width(),
+							r.height(),
+							q->columnWidth( 0 ),
+							q->columnWidth( 1 ),
+							q->columnWidth( 2 ) } ) ;
 
 	delete m_ui ;
 	delete m_trayIcon ;

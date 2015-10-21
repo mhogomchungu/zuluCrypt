@@ -39,7 +39,7 @@
 
 #include <functional>
 #include <memory>
-
+#include <array>
 #include <utility>
 
 #include <sys/types.h>
@@ -217,8 +217,10 @@ namespace utility
 
 	bool ProcessExecute( const QString& m_point,const QString& exe,const QString& env,int uid ) ;
 
-	QVector<int> getWindowDimensions( const QString& application ) ;
-	void setWindowDimensions( const QVector<int>&,const QString& application ) ;
+	using array_t = std::array< int,10 > ;
+
+	utility::array_t getWindowDimensions( const QString& application ) ;
+	void setWindowDimensions( const QString& application,const std::initializer_list<int>& ) ;
 
 	void createPlugInMenu( QMenu *,const QString&,const QString&,const QString&,bool ) ;
 

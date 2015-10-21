@@ -88,7 +88,7 @@ static inline QByteArray hmac_key_0( const QString& keyFile,const QString& passw
 			}
 
 			auto key = reinterpret_cast< const char * >( gcry_md_read( handle,0 ) ) ;
-			auto len = int( gcry_md_get_algo_dlen( GCRY_MD_SHA256 ) ) ;
+			auto len = static_cast< int >( gcry_md_get_algo_dlen( GCRY_MD_SHA256 ) ) ;
 
 			QByteArray r( key,len ) ;
 

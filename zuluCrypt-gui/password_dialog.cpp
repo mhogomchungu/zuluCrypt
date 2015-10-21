@@ -292,6 +292,7 @@ void passwordDialog::keyAndKeyFile()
 	}else{
 		this->passphraseOption() ;
 
+		m_ui->PassPhraseField->setEnabled( false ) ;
 		m_ui->PassPhraseField->setText( key ) ;
 	}
 }
@@ -332,6 +333,7 @@ void passwordDialog::passphraseOption()
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->pbKeyOption->setIcon( QIcon() ) ;
 	m_ui->pbKeyOption->setEnabled( false ) ;
+	m_ui->PassPhraseField->setFocus() ;
 	m_ui->PassPhraseField->setEnabled( true ) ;
 }
 
@@ -342,6 +344,7 @@ void passwordDialog::passphraseFromFileOption()
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
+	m_ui->pushButtonPassPhraseFromFile->setFocus() ;
 	m_ui->labelPassphrase->setText( tr( "KeyFile Path" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
@@ -733,10 +736,17 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 
 	if( r == 4 ){
 
-		if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
+		auto index = m_ui->cbKeyType->currentIndex() ;
+
+		if( index == passwordDialog::key ){
 
 			m_ui->PassPhraseField->clear() ;
 			m_ui->PassPhraseField->setFocus() ;
+
+		}else if( index == passwordDialog::keyKeyFile ){
+
+			m_ui->cbKeyType->setCurrentIndex( 0 ) ;
+			this->passphraseOption() ;
 		}
 	}
 }

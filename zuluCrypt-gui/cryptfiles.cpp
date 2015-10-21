@@ -432,6 +432,8 @@ void cryptfiles::cbChanged( int r )
 		m_ui->labelKey->setText( tr( "Key" ) ) ;
 		m_ui->labelKey2->setText( tr( "Repeat Key" ) ) ;
 
+		m_ui->lineEditPass_1->setEnabled( true ) ;
+
 		if( m_operation == "-E" ){
 			m_ui->labelKey2->setEnabled( true ) ;
 			m_ui->lineEditPass_2->setEnabled( true ) ;
@@ -447,6 +449,7 @@ void cryptfiles::cbChanged( int r )
 		m_ui->lineEditPass_1->setToolTip( tr( "Enter A Path To A Keyfile Location" ) ) ;
 		m_ui->labelKey->setText( tr( "keyfile path" ) ) ;
 		m_ui->pushButtonKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
+		m_ui->lineEditPass_1->setEnabled( true ) ;
 		m_ui->lineEditPass_2->setEnabled( false ) ;
 		m_ui->pushButtonKeyFile->setEnabled( true ) ;
 		m_ui->labelKey2->setEnabled( false ) ;
@@ -457,7 +460,10 @@ void cryptfiles::cbChanged( int r )
 	}else{
 		_key_ui() ;
 
-		new plugin( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		m_ui->lineEditPass_1->setEnabled( false ) ;
+		m_ui->lineEditPass_2->setEnabled( false ) ;
+
+		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_ui->lineEditPass_1->setText( key ) ;
 			m_ui->lineEditPass_2->setText( key ) ;

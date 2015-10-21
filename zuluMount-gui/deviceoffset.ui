@@ -106,7 +106,7 @@ or in terabytes if the entry ends with &quot;t&quot;</string>
      </rect>
     </property>
     <property name="text">
-     <string>&amp;ok</string>
+     <string>&amp;Ok</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pbCancel">

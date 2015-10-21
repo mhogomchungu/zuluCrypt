@@ -87,6 +87,7 @@ void luksdeletekey::Key( int e )
 		m_ui->pushButtonOpenKeyFile->setEnabled( false ) ;
 		m_ui->pushButtonOpenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 		m_ui->lineEditPassphrase->setFocus() ;
+		m_ui->lineEditPassphrase->setEnabled( true ) ;
 	} ;
 
 	if( e == 0 ){
@@ -101,8 +102,11 @@ void luksdeletekey::Key( int e )
 		m_ui->lineEditPassphrase->clear() ;
 		m_ui->pushButtonOpenKeyFile->setEnabled( true ) ;
 		m_ui->pushButtonOpenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
+		m_ui->lineEditPassphrase->setEnabled( true ) ;
 	}else{
 		_key_ui() ;
+
+		m_ui->lineEditPassphrase->setEnabled( false ) ;
 
 		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
@@ -288,8 +292,9 @@ only root user or members of group zulucrypt can do that" ) ) ;											break 
 	this->enableAll() ;
 
 	if( r == 2 ){
-		m_ui->lineEditPassphrase->clear() ;
-		m_ui->lineEditPassphrase->setFocus() ;
+
+		this->Key( 0 ) ;
+		m_ui->cbKey->setCurrentIndex( 0 ) ;
 	}
 }
 

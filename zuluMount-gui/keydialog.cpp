@@ -261,9 +261,9 @@ void keyDialog::enableAll()
 	m_ui->pbOpen->setEnabled( true ) ;
 	m_ui->label->setEnabled( true ) ;
 	m_ui->cbKeyType->setEnabled( true ) ;
-	if( m_ui->cbKeyType->currentIndex() != keyDialog::plugin ){
-		m_ui->lineEditKey->setEnabled( true ) ;
-	}
+
+	m_ui->lineEditKey->setEnabled( m_ui->cbKeyType->currentIndex() == keyDialog::Key ) ;
+
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
@@ -304,9 +304,14 @@ void keyDialog::KeyFile()
 
 void keyDialog::pbkeyOption()
 {
-	if( m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
+	int keyType = m_ui->cbKeyType->currentIndex() ;
+
+	if( keyType == keyDialog::plugin ){
+
 		this->Plugin() ;
-	}else if( m_ui->cbKeyType->currentIndex() == keyDialog::keyfile ){
+
+	}else if( keyType == keyDialog::keyfile ){
+
 		this->KeyFile() ;
 	}
 }
@@ -621,7 +626,8 @@ void keyDialog::openVolume()
 	}else{
 		m_veraCryptWarning.hide() ;
 
-		if( s.exitCode() == 12 && m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
+		int keyType = m_ui->cbKeyType->currentIndex() ;
+		if( s.exitCode() == 12 && keyType == keyDialog::plugin ){
 			/*
 			 * A user cancelled the plugin
 			 */
@@ -640,6 +646,13 @@ void keyDialog::openVolume()
 			}
 			this->enableAll() ;
 			m_ui->lineEditKey->setFocus() ;
+
+			if( keyType == keyDialog::keyKeyFile ){
+
+				m_ui->cbKeyType->setCurrentIndex( 0 ) ;
+
+				this->key() ;
+			}
 		}
 	}
 }
@@ -665,6 +678,7 @@ void keyDialog::keyAndKeyFile()
 	}else{
 		this->key() ;
 
+		m_ui->lineEditKey->setEnabled( false ) ;
 		m_ui->lineEditKey->setText( key ) ;
 	}
 }
