@@ -85,12 +85,8 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 
 	StringAppendInt( p,z ) ;
 
-	/*
-	 * cryptsetup 1.4.1 and previous have a bug and its triggered when the mapper has one or more bash
-	 * special characters, this functions substitute bash special characters for an underscore to
-	 * work around the bug.
-	 */
 	StringReplaceCharString( p,'_',BASH_SPECIAL_CHARS ) ;
+
 	return p ;
 }
 

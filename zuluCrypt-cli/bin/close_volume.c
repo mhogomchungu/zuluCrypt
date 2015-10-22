@@ -80,12 +80,20 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 
 	 /*
 	  * zuluCryptCloseVolume() is defined in ../lib/close_volume.c
+	  *
+	  * zuluCryptReuseMountPoint() is defined in create_mount_point.c
 	  */
-	 st = zuluCryptCloseVolume( mapper,&m_point ) ;
+
+	 if( zuluCryptReuseMountPoint() ){
+
+		 st = zuluCryptCloseVolume( mapper,NULL ) ;
+	 }else{
+		 st = zuluCryptCloseVolume( mapper,&m_point ) ;
+	 }
 
 	 if( st == 0 && m_point != NULL ){
 
-		for( i = 0 ; i < 2 ; i++ ){
+		 for( i = 0 ; i < 2 ; i++ ){
 
 			if( rmdir( m_point ) == 0 ){
 
@@ -93,10 +101,10 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 			}else{
 				sleep( 1 ) ;
 			}
-		}
-
-		StringFree( m_point ) ;
+		 }
 	 }
+
+	 StringFree( m_point ) ;
 
 	 zuluCryptSecurityDropElevatedPrivileges() ;
 	 return zuluExit( st,p ) ;

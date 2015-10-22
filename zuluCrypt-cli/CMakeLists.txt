@@ -41,7 +41,7 @@
  )
 
  SET( LIB
- lib/process_mountinfo.c
+ lib/mountinfo.c
  lib/create_mapper_name.c
  lib/is_path_valid.c
  lib/version.c

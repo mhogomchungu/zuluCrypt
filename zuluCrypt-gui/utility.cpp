@@ -82,7 +82,14 @@
 
 #include "../zuluCrypt-cli/utility/process/process.h"
 
+#include "reuse_mount_point.h"
+
 static int staticGlobalUserId = -1 ;
+
+bool utility::reUseMountPointPath()
+{
+	return REUSE_MOUNT_POINT ;
+}
 
 void utility::setUID( int uid )
 {
@@ -803,6 +810,11 @@ QString utility::mountPathPostFix( const QString& path )
 
 		return path ;
 	}else{
+		if( utility::reUseMountPointPath() ){
+
+			return path ;
+		}
+
 		auto _path_not_found = []( const QString& e ){ return !utility::pathExists( e ) ; } ;
 
 		QString e = utility::mountPath( path ) ;

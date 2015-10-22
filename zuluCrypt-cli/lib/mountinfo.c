@@ -148,6 +148,21 @@ stringList_t zuluCryptGetAListOfMountedVolumes( void )
 	return _volumeList( _get_mounted_device_list ) ;
 }
 
+int zuluCryptMountPointIsActive( const char * m_point )
+{
+	stringList_t stl = zuluCryptGetMoutedList() ;
+
+	string_t st = String_1( " ",m_point," ",NULL ) ;
+
+	ssize_t r = StringListHasSequence( stl,StringContent( st ) ) ;
+
+	StringListDelete( &stl ) ;
+
+	StringDelete( &st ) ;
+
+	return r != -1 ;
+}
+
 stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 {
 	const char * e ;

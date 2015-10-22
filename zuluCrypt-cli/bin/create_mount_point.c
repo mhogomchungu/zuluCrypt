@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include "mount_prefix_path.h"
+#include "reuse_mount_point.h"
 
 static void _chown( const char * x,uid_t y,gid_t z )
 {
@@ -40,13 +41,32 @@ static void _stat( const char * x,struct stat * y )
 	if( stat( x,y ) ){;}
 }
 
+int zuluCryptReuseMountPoint( void )
+{
+	return REUSE_MOUNT_POINT ;
+}
+
 static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 {
-	if( mkdir( m_point,S_IRWXU ) == 0 ){
+	if( zuluCryptReuseMountPoint() ){
 
-		_chown( m_point,uid,uid ) ;
+		/*
+		 *  zuluCryptMountPointIsActive() is defined in ../lib/process_mountinfo.c
+		 */
+		if( zuluCryptMountPointIsActive( m_point ) ){
+
+			StringDelete( &path ) ;
+		}else{
+			mkdir( m_point,S_IRWXU ) ;
+			_chown( m_point,uid,uid ) ;
+		}
 	}else{
-		StringDelete( &path ) ;
+		if( mkdir( m_point,S_IRWXU ) == 0 ){
+
+			_chown( m_point,uid,uid ) ;
+		}else{
+			StringDelete( &path ) ;
+		}
 	}
 
 	return path ;

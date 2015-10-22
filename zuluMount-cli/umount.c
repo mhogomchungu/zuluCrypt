@@ -116,11 +116,20 @@ ERROR: You can not umount volumes out of \"%s\" since you are not root and do no
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( status == 0 ){
+
 		if( m_point != NULL ){
-			zuluCryptSecurityGainElevatedPrivileges() ;
-			rmdir( m_point ) ;
-			zuluCryptSecurityDropElevatedPrivileges() ;
+
+			/*
+			 *  zuluCryptReuseMountPoint() is defined in ../zuluCrypt-cli/bin/create_mount_point.c
+			 */
+			if( !zuluCryptReuseMountPoint() ){
+
+				zuluCryptSecurityGainElevatedPrivileges() ;
+				rmdir( m_point ) ;
+				zuluCryptSecurityDropElevatedPrivileges() ;
+			}
 		}
+
 		return _zuluExit( 0,st,m_point,gettext( "SUCCESS: umount complete successfully" ) ) ;
 	}else{
 		switch( status ) {

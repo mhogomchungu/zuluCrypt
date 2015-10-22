@@ -112,6 +112,13 @@ else( LIB_SUFFIX )
 	endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 endif( LIB_SUFFIX )
 
+if( REUSEMOUNTPOINT )
+	file( WRITE  ${PROJECT_BINARY_DIR}/reuse_mount_point.h "\n#define REUSE_MOUNT_POINT 1\n" )
+else()
+	file( WRITE  ${PROJECT_BINARY_DIR}/reuse_mount_point.h "\n#define REUSE_MOUNT_POINT 0\n" )
+endif()
+
+
 set( PLUGINPATH "${LIB_PATH}/zuluCrypt" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTpluginPath      \"${PLUGINPATH}/\"\n" )

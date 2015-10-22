@@ -478,30 +478,37 @@ static int _create_mount_point( const char * label,const char * m_opts,uid_t uid
 
 static int _delete_mount_point( const char * m_path,uid_t uid )
 {
+	string_t st ;
+
+	int r = 0 ;
+
 	/*
-	 * zuluCryptGetUserName() is defined in ../zuluCrypt-cli/lib/user_home_path.c
+	 * zuluCryptReuseMountPoint() is defined in ../zuluCrypt-cli/bin/create_mount_point.c
 	 */
-	string_t st = zuluCryptGetUserName( uid ) ;
 
-	const char * e = StringPrepend( st,"/run/media/private/" ) ;
+	if( !zuluCryptReuseMountPoint() ){
 
-	int r ;
+		/*
+		 * zuluCryptGetUserName() is defined in ../zuluCrypt-cli/lib/user_home_path.c
+		 */
+		st = zuluCryptGetUserName( uid ) ;
 
-	if( StringPrefixEqual( m_path,e ) ){
+		if( StringPrefixEqual( m_path,StringPrepend( st,"/run/media/private/" ) ) ){
 
-		zuluCryptSecurityGainElevatedPrivileges() ;
+			zuluCryptSecurityGainElevatedPrivileges() ;
 
-		r = rmdir( m_path ) ;
+			r = rmdir( m_path ) ;
 
-		zuluCryptSecurityDropElevatedPrivileges() ;
+			zuluCryptSecurityDropElevatedPrivileges() ;
 
-	}else{
-		zuluCryptSecurityDropElevatedPrivileges() ;
+		}else{
+			zuluCryptSecurityDropElevatedPrivileges() ;
 
-		r = rmdir( m_path ) ;
+			r = rmdir( m_path ) ;
+		}
+
+		StringDelete( &st ) ;
 	}
-
-	StringDelete( &st ) ;
 
 	return r ;
 }

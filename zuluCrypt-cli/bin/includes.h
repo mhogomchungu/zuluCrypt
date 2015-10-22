@@ -274,4 +274,9 @@ u_int64_t zuluCryptGetVolumeSize( const char * device ) ;
  */
 stringList_t zuluCryptGetAListOfAllVolumes( void ) ;
 
+/*
+ * zuluCryptReuseMountPoint() is defined in create_mount_point.c
+ */
+int zuluCryptReuseMountPoint( void ) ;
+
 #endif
