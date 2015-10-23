@@ -810,16 +810,25 @@ QString utility::mountPathPostFix( const QString& path )
 
 		return path ;
 	}else{
-		if( utility::reUseMountPointPath() ){
+		auto _usable_mount_point = []( const QString& e ){
 
-			return path ;
-		}
+			if( utility::reUseMountPointPath() ){
 
-		auto _path_not_found = []( const QString& e ){ return !utility::pathExists( e ) ; } ;
+				if( utility::pathExists( e ) ){
+
+					return utility::pathPointsToAFolder( e ) ;
+				}else{
+					return true ;
+				}
+
+			}else{
+				return !utility::pathExists( e ) ;
+			}
+		} ;
 
 		QString e = utility::mountPath( path ) ;
 
-		if( _path_not_found( e ) ){
+		if( _usable_mount_point( e ) ){
 
 			return path ;
 		}else{
@@ -829,7 +838,7 @@ QString utility::mountPathPostFix( const QString& path )
 
 				z = QString::number( i ) ;
 
-				if( _path_not_found( QString( "%1_%2" ).arg( e,z ) ) ){
+				if( _usable_mount_point( QString( "%1_%2" ).arg( e,z ) ) ){
 
 					return QString( "%1_%2" ).arg( path,z ) ;
 				}
