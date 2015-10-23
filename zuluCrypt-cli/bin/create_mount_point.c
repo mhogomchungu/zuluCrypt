@@ -48,17 +48,33 @@ int zuluCryptReuseMountPoint( void )
 
 static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 {
+	struct stat st ;
+
 	if( zuluCryptReuseMountPoint() ){
 
-		/*
-		 *  zuluCryptMountPointIsActive() is defined in ../lib/mountinfo.c
-		 */
-		if( zuluCryptMountPointIsActive( m_point ) ){
+		if( stat( m_point,&st ) == 0 ){
 
-			StringDelete( &path ) ;
+			if( S_ISDIR( st.st_mode ) ){
+
+				/*
+				 *  zuluCryptMountPointIsActive() is defined in ../lib/mountinfo.c
+				 */
+				if( zuluCryptMountPointIsActive( m_point ) ){
+
+					StringDelete( &path ) ;
+				}else{
+					_chown( m_point,uid,uid ) ;
+				}
+			}else{
+				StringDelete( &path ) ;
+			}
 		}else{
-			mkdir( m_point,S_IRWXU ) ;
-			_chown( m_point,uid,uid ) ;
+			if( mkdir( m_point,S_IRWXU ) == 0 ){
+
+				_chown( m_point,uid,uid ) ;
+			}else{
+				StringDelete( &path ) ;
+			}
 		}
 	}else{
 		if( mkdir( m_point,S_IRWXU ) == 0 ){
