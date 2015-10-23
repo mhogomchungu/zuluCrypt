@@ -51,7 +51,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 	if( zuluCryptReuseMountPoint() ){
 
 		/*
-		 *  zuluCryptMountPointIsActive() is defined in ../lib/process_mountinfo.c
+		 *  zuluCryptMountPointIsActive() is defined in ../lib/mountinfo.c
 		 */
 		if( zuluCryptMountPointIsActive( m_point ) ){
 

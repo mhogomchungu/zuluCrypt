@@ -105,10 +105,10 @@ This option tells the build process to add KDE's secure storage of passwords.Set
 want KDE wallet support.
 
 -DREUSEMOUNTPOINT=false
-This option tells the project to demand exclusive control over the mount point path causing it complain when it find
+By default,the projet demands exclusive control over the mount point path causing it to complain when it finds
 the path to already be taken when mounting and to unconditionally delete it on unmount.
 Set this option to "true" if you want to overide the above behavior and this ability seems useful when mounting
-volumes in home a directory and wanting folder count to remain unchanged between volumes mounts.
+volumes in a home a directory and wanting folder count to remain unchanged between volumes mounts.
 
 Build errors/test fails/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/zuluCrypt/issues
 or using my private email address at: mhogomchungu@gmail.com
