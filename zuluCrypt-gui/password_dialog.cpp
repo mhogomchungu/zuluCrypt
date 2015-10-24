@@ -562,7 +562,7 @@ void passwordDialog::openVolume()
 			passtype = "-f" ;
 			keyPath = utility::resolvePath( m_key ).replace( "\"","\"\"\"" ) ;
 		}
-	}else if( keySource == passwordDialog::key || passwordDialog::keyKeyFile ){
+	}else if( keySource == passwordDialog::key || keySource == passwordDialog::keyKeyFile ){
 		passtype = "-f" ;
 		keyPath = utility::keyPath() ;
 		this->sendKey( keyPath ) ;
