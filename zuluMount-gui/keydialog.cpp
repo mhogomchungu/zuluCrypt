@@ -108,7 +108,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->lineEditMountPoint->setText( m_point ) ;
 
-	QAction * ac = new QAction( this ) ;
+	auto ac = new QAction( this ) ;
 	QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
 	ac->setShortcut( s ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
@@ -200,7 +200,7 @@ void keyDialog::showFileSystemOptionWindow()
 
 void keyDialog::doAction( QAction * ac )
 {
-	QString e = ac->text() ;
+	auto e = ac->text() ;
 
 	e.remove( "&" ) ;
 
@@ -242,8 +242,8 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 
 void keyDialog::pbMountPointPath()
 {
-	QString msg = tr( "Select A Folder To Create A Mount Point In" ) ;
-	QString Z = QFileDialog::getExistingDirectory( this,msg,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
+	auto msg = tr( "Select A Folder To Create A Mount Point In" ) ;
+	auto Z = QFileDialog::getExistingDirectory( this,msg,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
 		Z = Z + "/" + m_ui->lineEditMountPoint->text().split( "/" ).last() ;
@@ -293,8 +293,8 @@ void keyDialog::KeyFile()
 {
 	if( m_ui->cbKeyType->currentIndex() == keyDialog::keyfile ){
 
-		QString msg = tr( "Select A File To Be Used As A Keyfile" ) ;
-		QString Z = QFileDialog::getOpenFileName( this,msg,utility::homePath() ) ;
+		auto msg = tr( "Select A File To Be Used As A Keyfile" ) ;
+		auto Z = QFileDialog::getOpenFileName( this,msg,utility::homePath() ) ;
 
 		if( !Z.isEmpty() ){
 			m_ui->lineEditKey->setText( Z ) ;

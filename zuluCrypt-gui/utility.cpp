@@ -956,12 +956,75 @@ QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const
 	return defaulT ;
 }
 
+static QString _device_id_to_partition_id( const QString& id )
+{
+	if( id.startsWith( "/dev/disk/by-id" ) ){
+
+		auto l = id.split( '\t' ) ;
+
+		QDir d( l.first() ) ;
+
+		return d.canonicalPath() + '\t' + l.at( 1 ) ;
+	}else{
+		return id ;
+	}
+}
+
+static QString _partition_id_to_device_id( const QString& id,bool expand )
+{
+	if( id.startsWith( "/dev/" ) ){
+
+		QDir d( "/dev/disk/by-id" ) ;
+
+		QStringList l = d.entryList() ;
+
+		l.removeOne( "." ) ;
+		l.removeOne( ".." ) ;
+
+		QDir r ;
+
+		for( const auto& it : l ){
+
+			const QString& e = it ;
+
+			if( !e.startsWith( "dm" ) ){
+
+				QString q = QString( "/dev/disk/by-id/%1" ).arg( e ) ;
+
+				r.setPath( q ) ;
+
+				if( r.canonicalPath() == id ){
+
+					if( expand ){
+
+						return q ;
+					}else{
+						return e ;
+					}
+				}
+			}
+		}
+		return id ;
+	}else{
+		return id ;
+	}
+}
+
+QString utility::getVolumeID( const QString& id,bool expand )
+{
+	return _partition_id_to_device_id( id,expand ) ;
+}
+
 void utility::addToFavorite( const QString& dev,const QString& m_point )
 {
-	QString fav = QString( "%1\t%2\n" ).arg( dev,m_point ) ;
+	QString fav = QString( "%1\t%2\n" ).arg( _partition_id_to_device_id( dev,true ),m_point ) ;
+
 	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
+
 	f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
+
 	utility::changeFilePermissions( f ) ;
+
 	f.write( fav.toLatin1() ) ;
 }
 
@@ -971,7 +1034,18 @@ QStringList utility::readFavorites()
 
 	if( f.open( QIODevice::ReadOnly ) ){
 
-		return utility::split( f.readAll() ) ;
+		QStringList l ;
+
+		for( const auto& it : utility::split( f.readAll() ) ){
+
+			if( it.startsWith( "/dev/disk/by-id" ) ){
+
+				l.append( _device_id_to_partition_id( it ) ) ;
+			}else{
+				l.append( it ) ;
+			}
+		}
+		return l ;
 	}else{
 		return QStringList() ;
 	}
@@ -979,38 +1053,24 @@ QStringList utility::readFavorites()
 
 void utility::removeFavoriteEntry( const QString& entry )
 {
-	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
-	f.open( QIODevice::ReadOnly ) ;
-	QByteArray b = f.readAll() ;
-	f.close() ;
-	QByteArray c = b.remove( b.indexOf( entry ),entry.length() ) ;
-	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-	utility::changeFilePermissions( f ) ;
-	f.write( c ) ;
-	f.close() ;
-}
+	auto l = utility::readFavorites() ;
 
-QString utility::getVolumeID( const QString& id )
-{
-	if( id.startsWith( "/dev/" ) ){
-		QDir d( "/dev/disk/by-id" ) ;
-		QStringList l = d.entryList() ;
-		l.removeOne( "." ) ;
-		l.removeOne( ".." ) ;
-		QDir r ;
-		for( const auto& it : l ){
-			const QString& e = it ;
-			if( !e.startsWith( "dm" ) ){
-				r.setPath( QString( "/dev/disk/by-id/%1" ).arg( e ) ) ;
-				if( r.canonicalPath() == id ){
-					return e ;
-				}
-			}
-		}
-		return id ;
-	}else{
-		return id ;
+	l.removeOne( entry ) ;
+
+	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
+
+	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+
+	for( const auto& it : l ){
+
+		auto e = it.split( '\t' ) ;
+
+		auto q = QString( "%1\t%2\n" ).arg( _partition_id_to_device_id( e.at( 0 ),true ),e.at( 1 ) ) ;
+
+		f.write( q.toLatin1() ) ;
 	}
+
+	utility::changeFilePermissions( f ) ;
 }
 
 bool utility::userHasGoodVersionOfWhirlpool()
@@ -1081,7 +1141,7 @@ static utility::array_t _dimensions( const QString& path,const char * defaults,i
 
 	if( f.open( QIODevice::ReadOnly ) ){
 
-		auto l = QString( f.readAll() ).split( ' ',QString::SkipEmptyParts ) ;
+		auto l = utility::split( f.readAll(),' ' ) ;
 
 		utility::array_t p ;
 
@@ -1154,7 +1214,7 @@ QFont utility::getFont( QWidget * widget )
 
 	if( x.open( QIODevice::ReadOnly ) ){
 
-		QStringList l = utility::split( x.readAll() ) ;
+		auto l = utility::split( x.readAll() ) ;
 
 		if( l.size() >= 4 ){
 
@@ -1205,7 +1265,7 @@ void utility::saveFont( const QFont& Font )
 		utility::changeFileOwner( f ) ;
 		utility::changeFilePermissions( f ) ;
 
-		QString s = QString( "%1\n%2\n" ).arg( Font.family() ).arg( QString::number( Font.pointSize() ) ) ;
+		auto s = QString( "%1\n%2\n" ).arg( Font.family(),QString::number( Font.pointSize() ) ) ;
 
 		if( Font.style() == QFont::StyleNormal ){
 

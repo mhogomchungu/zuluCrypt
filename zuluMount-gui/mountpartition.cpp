@@ -72,7 +72,7 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,std::funct
 
 	m_ui->pbMountFolder->setVisible( false ) ;
 
-	QAction * ac = new QAction( this ) ;
+	auto ac = new QAction( this ) ;
 	QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
 	ac->setShortcut( s ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
@@ -144,7 +144,7 @@ void mountPartition::pbCancel()
 
 void mountPartition::pbMount()
 {
-	QString test_mount = m_ui->lineEdit->text() ;
+	auto test_mount = m_ui->lineEdit->text() ;
 
 	if( test_mount.contains( "/" ) ){
 		if( this->isVisible() ){
@@ -248,8 +248,8 @@ void mountPartition::pbOptions()
 
 void mountPartition::pbOpenMountPath()
 {
-	QString p = tr( "Select Path To Mount Point Folder" ) ;
-	QString Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
+	auto p = tr( "Select Path To Mount Point Folder" ) ;
+	auto Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
 		Z = Z + "/" + m_ui->lineEdit->text().split( "/" ).last() ;
