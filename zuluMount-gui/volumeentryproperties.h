@@ -95,6 +95,11 @@ public:
 	{
 		return QStringList{ m_volume,m_mountPoint,m_fileSystem,m_label,m_volumeSize,m_usedSpacePercentage } ;
 	}
+	volumeEntryProperties& setMountPoint( const QString& m )
+	{
+		m_mountPoint = m ;
+		return *this ;
+	}
 private:
 	void setValues( const QStringList& l,bool isSystem )
 	{

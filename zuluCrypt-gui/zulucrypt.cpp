@@ -749,27 +749,16 @@ void zuluCrypt::favClicked( QAction * e )
 	}else{
 		auto l = utility::split( r,'\t' ) ;
 
-		this->ShowPasswordDialog( l.at( 0 ),l.at( 1 ) ) ;
+		if( l.size() > 1 ){
+
+			this->ShowPasswordDialog( l.at( 0 ),l.at( 1 ) ) ;
+		}
 	}
 }
 
 void zuluCrypt::readFavorites()
 {
-	m_ui->menuFavorites->clear() ;
-
-	auto _add_action = [ this ]( const QString& e ){
-
-		return new QAction( e,m_ui->menuFavorites ) ;
-	} ;
-
-	m_ui->menuFavorites->addAction( _add_action( tr( "Manage Favorites" ) ) ) ;
-
-	m_ui->menuFavorites->addSeparator() ;
-
-	for( const auto& it : utility::readFavorites() ){
-
-		m_ui->menuFavorites->addAction( _add_action( it ) ) ;
-	}
+	utility::readFavorites( m_ui->menuFavorites ) ;
 }
 
 void zuluCrypt::addToFavorite()
@@ -787,7 +776,7 @@ void zuluCrypt::menuKeyPressed()
 
 void zuluCrypt::openFolder()
 {
-	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
+	auto item = m_ui->tableWidget->currentItem() ;
 	this->openFolder( m_ui->tableWidget->item( item->row(),1 )->text() ) ;
 }
 

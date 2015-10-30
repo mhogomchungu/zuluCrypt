@@ -104,7 +104,14 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->pbOpenMountPoint->setVisible( false ) ;
 
-	m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+	const auto& m = e.mountPoint() ;
+
+	if( m.isEmpty() || m == "Nil" ){
+
+		m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+	}else{
+		m_point = utility::mountPathPostFix( m ) ;
+	}
 
 	m_ui->lineEditMountPoint->setText( m_point ) ;
 

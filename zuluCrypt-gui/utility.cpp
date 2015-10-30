@@ -962,9 +962,21 @@ static QString _device_id_to_partition_id( const QString& id )
 
 		auto l = id.split( '\t' ) ;
 
-		QDir d( l.first() ) ;
+		if( l.size() > 1 ){
 
-		return d.canonicalPath() + '\t' + l.at( 1 ) ;
+			QDir d( l.first() ) ;
+
+			auto e = d.canonicalPath() ;
+
+			if( e.isEmpty() ){
+
+				return l.first() + '\t' + l.at( 1 ) ;
+			}else{
+				return e + '\t' + l.at( 1 ) ;
+			}
+		}else{
+			return id ;
+		}
 	}else{
 		return id ;
 	}
@@ -1017,7 +1029,12 @@ QString utility::getVolumeID( const QString& id,bool expand )
 
 void utility::addToFavorite( const QString& dev,const QString& m_point )
 {
-	QString fav = QString( "%1\t%2\n" ).arg( _partition_id_to_device_id( dev,true ),m_point ) ;
+	if( dev.isEmpty() || m_point.isEmpty() ){
+
+		return ;
+	}
+
+	auto fav = QString( "%1\t%2\n" ).arg( _partition_id_to_device_id( dev,true ),m_point ) ;
 
 	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
 
@@ -1045,6 +1062,7 @@ QStringList utility::readFavorites()
 				l.append( it ) ;
 			}
 		}
+
 		return l ;
 	}else{
 		return QStringList() ;
@@ -1071,6 +1089,41 @@ void utility::removeFavoriteEntry( const QString& entry )
 	}
 
 	utility::changeFilePermissions( f ) ;
+}
+
+void utility::readFavorites( QMenu * m,bool truncate )
+{
+	m->clear() ;
+
+	auto _add_action = [ m,truncate ]( const QString& e ){
+
+		auto ac = new QAction( m ) ;
+
+		if( truncate ){
+
+			auto l = utility::split( e,'\t' ) ;
+
+			if( l.size() > 0 ){
+
+				ac->setText( l.first() ) ;
+			}
+		}else{
+			ac->setText( e ) ;
+		}
+
+		ac->setEnabled( !e.startsWith( "/dev/disk/by-id" ) ) ;
+
+		return ac ;
+	} ;
+
+	m->addAction( new QAction( QObject::tr( "Manage Favorites" ),m ) ) ;
+
+	m->addSeparator() ;
+
+	for( const auto& it : utility::readFavorites() ){
+
+		m->addAction( _add_action( it ) ) ;
+	}
 }
 
 bool utility::userHasGoodVersionOfWhirlpool()

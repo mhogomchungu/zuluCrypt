@@ -299,6 +299,26 @@ void MainWindow::removeVolumeFromVisibleVolumeList( QAction * ac )
 	this->enableAll() ;
 }
 
+QString MainWindow::resolveFavoriteMountPoint( const QString& e )
+{
+	for( const auto& it : utility::readFavorites() ){
+
+		if( it.startsWith( e + '\t' ) ){
+
+			auto l = it.split( '\t' ) ;
+
+			if( l.size() > 1 ){
+
+				return l.at( 1 ) ;
+			}else{
+				return QString() ;
+			}
+		}
+	}
+
+	return QString() ;
+}
+
 void MainWindow::favoriteClicked( QAction * ac )
 {
 	auto e = ac->text() ;
@@ -308,27 +328,13 @@ void MainWindow::favoriteClicked( QAction * ac )
 
 		favorites::instance( this ) ;
 	}else{
-		this->showMoungDialog( e ) ;
+		this->showMoungDialog( e,this->resolveFavoriteMountPoint( e ) ) ;
 	}
 }
 
 void MainWindow::showFavorites()
 {
-	m_favorite_menu->clear() ;
-
-	auto _add_action = [ this ]( const QString& e ){
-
-		return new QAction( e,m_favorite_menu ) ;
-	} ;
-
-	m_favorite_menu->addAction( _add_action( tr( "Manage Favorites" ) ) ) ;
-
-	m_favorite_menu->addSeparator() ;
-
-	for( const auto& it : utility::readFavorites() ){
-
-		m_favorite_menu->addAction( _add_action( utility::split( it,'\t' ).first() ) ) ;
-	}
+	utility::readFavorites( m_favorite_menu,true ) ;
 }
 
 void MainWindow::setLocalizationLanguage( bool translate )
@@ -392,28 +398,30 @@ void MainWindow::quitApplication()
 	QCoreApplication::quit() ;
 }
 
-void MainWindow::autoMountVolume( volumeEntryProperties * e )
+void MainWindow::autoMountVolume( volumeEntryProperties * q )
 {
-	std::unique_ptr< volumeEntryProperties > entry( e ) ;
+	std::unique_ptr< volumeEntryProperties > r( q ) ;
 
-	if( entry && entry->entryisValid() ){
+	if( r && r->entryisValid() ){
 
-		QStringList l = entry->entryList() ;
+		auto& p = *r ;
 
-		if( entry->encryptedVolume() ){
+		if( p.encryptedVolume() ){
 
-			this->addEntryToTable( true,l ) ;
+			this->addEntryToTable( true,p ) ;
 		}else{
 			if( m_autoMount ){
+
+				this->disableAll() ;
 
 				mountPartition::instance( this,m_ui->tableWidget,[](){},[ this ]( const QString& e ){
 
 					this->openMountPointPath( e ) ;
 
-				} ).AutoMount( l ) ;
+				} ).AutoMount( p.setMountPoint( this->resolveFavoriteMountPoint( p.volumeName() ) ) ) ;
 
 			}else{
-				this->addEntryToTable( false,l ) ;
+				this->addEntryToTable( false,p ) ;
 			}
 		}
 	}
@@ -829,19 +837,17 @@ void MainWindow::showMoungDialog( const volumeEntryProperties& v )
 	}
 }
 
-void MainWindow::showMoungDialog( const QString& volume )
+void MainWindow::showMoungDialog( const QString& volume,const QString& m_point )
 {
 	if( !volume.isEmpty() ){
 
-		if( utility::pathPointsToAFile( volume ) ){
+		if( utility::pathPointsToAFolder( volume ) ){
 
+			this->mount( volumeEntryProperties( { volume,m_point,"encfs","Nil","Nil","Nil" } ) ) ;
+		}else{
 			this->disableAll() ;
 
-			this->showMoungDialog( zuluMountTask::getVolumeProperties( volume ).await() ) ;
-
-		}else if( utility::pathPointsToAFolder( volume ) ){
-
-			this->mount( volumeEntryProperties( { volume,"Nil","encfs","Nil","Nil","Nil" } ) ) ;
+			this->showMoungDialog( zuluMountTask::getVolumeProperties( volume ).await().setMountPoint( m_point ) ) ;
 		}
 	}
 }
@@ -876,7 +882,7 @@ void MainWindow::unlockencfs()
 
 QFont MainWindow::getSystemVolumeFont()
 {
-	QFont f = this->font() ;
+	auto f = this->font() ;
 	f.setItalic( !f.italic() ) ;
 	f.setBold( !f.bold() ) ;
 	return f ;
@@ -890,6 +896,11 @@ void MainWindow::addEntryToTable( bool systemVolume,const QStringList& l )
 	}else{
 		tablewidget::addRowToTable( m_ui->tableWidget,l ) ;
 	}
+}
+
+void MainWindow::addEntryToTable( bool systemVolume,const volumeEntryProperties& e )
+{
+	this->addEntryToTable( systemVolume,e.entryList() ) ;
 }
 
 void MainWindow::removeEntryFromTable( QString volume )

@@ -63,7 +63,7 @@ private slots:
 	void volumeMiniProperties( volumeEntryProperties * ) ;
 	void volumeMiniProperties_0( volumeEntryProperties * ) ;
 	void showMoungDialog( const volumeEntryProperties& ) ;
-	void showMoungDialog( const QString& ) ;
+	void showMoungDialog( const QString&,const QString& = QString() ) ;
 	void autoMountVolume( volumeEntryProperties * ) ;
 	void mount( const volumeEntryProperties& ) ;
 	void defaultButton( void ) ;
@@ -85,6 +85,7 @@ private slots:
 	void volumeRemoved( QString ) ;
 	void removeVolume( QString ) ;
 	void addEntryToTable( bool,const QStringList& ) ;
+	void addEntryToTable( bool,const volumeEntryProperties& ) ;
 	void quitApplication( void ) ;
 	void autoMountToggled( bool ) ;
 	void autoOpenFolderOnMount( bool ) ;
@@ -96,6 +97,7 @@ private slots:
 	void updateCheck( void ) ;
 	void languageMenu( QAction * ac ) ;
 private:
+	QString resolveFavoriteMountPoint( const QString& ) ;
 	void autoUpdateCheck( void ) ;
 	void updateVolumeList( const QVector< volumeEntryProperties >& ) ;
 	void openMountPoint( const QString& ) ;

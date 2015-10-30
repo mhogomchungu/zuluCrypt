@@ -111,7 +111,10 @@ void favorites::ShowUI()
 
 	auto _add_entry = [ this ]( const QStringList& l ){
 
-		this->addEntries( l.at( 0 ),l.at( 1 ) ) ;
+		if( l.size() > 1 ){
+
+			this->addEntries( l.at( 0 ),l.at( 1 ) ) ;
+		}
 	} ;
 
 	for( const auto& it : utility::readFavorites() ){
@@ -163,18 +166,21 @@ void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
 
 void favorites::removeEntryFromFavoriteList()
 {
-	QTableWidget * table = m_ui->tableWidget ;
+	auto table = m_ui->tableWidget ;
 
 	table->setEnabled( false ) ;
 
-	int row = table->currentRow() ;
+	auto row = table->currentRow() ;
 
-	QString txt1 = table->item( row,0 )->text() ;
-	QString txt2 = table->item( row,1 )->text() ;
+	auto p = table->item( row,0 )->text() ;
+	auto q = table->item( row,1 )->text() ;
 
-	utility::removeFavoriteEntry( QString( "%1\t%2" ).arg( txt1,txt2 ) ) ;
+	if( !p.isEmpty() && !q.isEmpty() ){
 
-	tablewidget::deleteRowFromTable( table,row ) ;
+		utility::removeFavoriteEntry( QString( "%1\t%2" ).arg( p,q ) ) ;
+
+		tablewidget::deleteRowFromTable( table,row ) ;
+	}
 
 	table->setEnabled( true ) ;
 }

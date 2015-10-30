@@ -175,6 +175,7 @@ namespace utility
 	bool notRunningInMixedMode( void ) ;
 	void addToFavorite( const QString& dev,const QString& m_point ) ;
 	QStringList readFavorites( void ) ;
+	void readFavorites( QMenu *,bool = false ) ;
 	void removeFavoriteEntry( const QString& ) ;
 	bool pathExists( const QString& ) ;
 	bool canCreateFile( const QString& ) ;

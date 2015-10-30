@@ -261,26 +261,46 @@ void mountPartition::ShowUI( const volumeEntryProperties& e )
 {
 	m_path  = e.volumeName() ;
 	m_label = e.label() ;
-	m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+
+	const auto& m = e.mountPoint() ;
+
+	if( m.isEmpty() || m == "Nil" ){
+
+		m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+	}else{
+		m_point = utility::mountPathPostFix( m ) ;
+	}
+
 	m_ui->lineEdit->setText( m_point ) ;
 
 	bool r = m_label != "Nil" ;
 
 	m_ui->checkBox->setEnabled( r ) ;
-	m_ui->checkBox->setChecked( r ) ;
+	m_ui->checkBox->setChecked( r && ( m.isEmpty() || m == "Nil" ) ) ;
 
 	this->show() ;
 }
 
-void mountPartition::AutoMount( const QStringList& entry )
+void mountPartition::AutoMount( const volumeEntryProperties& e )
 {
-	m_path = entry.at( 0 ) ;
-	QString label = entry.at( 3 ) ;
-	if( label != "Nil" ) {
-		m_point = utility::mountPathPostFix( label ) ;
+	m_path = e.volumeName() ;
+
+	const auto& label = e.label() ;
+
+	const auto& m = e.mountPoint() ;
+
+	if( m.isEmpty() || m == "Nil" ){
+
+		if( label != "Nil" ) {
+
+			m_point = utility::mountPathPostFix( label ) ;
+		}else{
+			m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+		}
 	}else{
-		m_point = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+		m_point = m ;
 	}
+
 	m_ui->lineEdit->setText( m_point ) ;
 	this->pbMount() ;
 }
@@ -295,7 +315,7 @@ void mountPartition::stateChanged( int i )
 	if( m_ui->checkBox->isChecked() ){
 		e = utility::mountPathPostFix( m_label ) ;
 	}else{
-		e = utility::mountPathPostFix( m_path.split( "/" ).last() ) ;
+		e = utility::mountPathPostFix( m_point ) ;
 	}
 
 	m_ui->lineEdit->setText( e ) ;
