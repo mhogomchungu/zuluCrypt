@@ -90,8 +90,7 @@ void favorites::devicePathTextChange( QString txt )
 
 void favorites::shortcutPressed()
 {
-	auto it = m_ui->tableWidget->currentItem() ;
-	itemClicked( it,false ) ;
+	this->itemClicked( m_ui->tableWidget->currentItem(),false ) ;
 }
 
 void favorites::deviceAddress()

@@ -318,18 +318,18 @@ void createvolume::setOptions( int e )
 
 			auto _add_option = [ & ]( const QString& algo ){
 
-				options->addItem( algo + ".xts-plain64.256.sha1" ) ;
 				options->addItem( algo + ".xts-plain64.256.sha256" ) ;
 				options->addItem( algo + ".xts-plain64.256.sha512" ) ;
+				options->addItem( algo + ".xts-plain64.256.sha1" ) ;
 				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
 
 				if( supportWhirlpool ){
 					options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
 				}
 
-				options->addItem( algo + ".xts-plain64.512.sha1" ) ;
 				options->addItem( algo + ".xts-plain64.512.sha256" ) ;
 				options->addItem( algo + ".xts-plain64.512.sha512" ) ;
+				options->addItem( algo + ".xts-plain64.512.sha1" ) ;
 				options->addItem( algo + ".xts-plain64.512.ripemd160" ) ;
 
 				if( supportWhirlpool ){
@@ -616,7 +616,7 @@ void createvolume::cbHiddenVolume( int r )
 		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
 
 			m_hiddenKey = key ;
-			
+
 			m_ui->lineEditHiddenKey->setText( m_hiddenKey ) ;
 			m_ui->lineEditHiddenKey1->setText( m_hiddenKey ) ;
 

@@ -80,6 +80,7 @@ void CryptTask::terminate()
 void CryptTask::run()
 {
 	if( m_keySource == "-p" ){
+
 		QString sockpath = utility::keyPath() ;
 
 		utility::keySend( sockpath,m_key ) ;

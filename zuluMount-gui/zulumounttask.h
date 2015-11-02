@@ -37,14 +37,14 @@ struct volumeMiniPropertiesTaskResult
 
 namespace zuluMountTask
 {
-	typedef enum
+	enum class devices
 	{
 		device,dm_device,md_device
-	}deviceTypes;
+	};
 
 	struct event
 	{
-		deviceTypes deviceType ;
+		zuluMountTask::devices deviceType ;
 		bool added ;
 		QString volumeName ;
 	};

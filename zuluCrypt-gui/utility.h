@@ -47,6 +47,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include <blkid/blkid.h>
+
 #include "task.h"
 #include "lxqt_wallet/frontend/lxqt_wallet.h"
 
@@ -201,6 +203,7 @@ namespace utility
 	QString walletName( void ) ;
 	QString applicationName( void ) ;
 	bool pathIsReadable( const QString& ) ;
+	bool pathIsWritable( const QString& ) ;
 	bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
 	bool getOpenVolumeReadOnlyOption( const QString& app ) ;
 	QString keyPath( void ) ;
@@ -258,19 +261,47 @@ namespace utility
 		bool open( const char * filePath,bool ro = true )
 		{
 			if( ro ){
+
 				m_fd = ::open( filePath,O_RDONLY ) ;
 			}else{
 				m_fd = ::open( filePath,O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
 			}
+
+			m_path = filePath ;
+
 			return m_fd != -1 ;
 		}
-		int open( const QString& filePath,bool ro = true )
+		bool open( const QString& filePath,bool ro = true )
 		{
 			return this->open( filePath.toLatin1().constData(),ro ) ;
+		}
+		bool isFile()
+		{
+			struct stat st ;
+			fstat( m_fd,&st ) ;
+			return S_ISREG( st.st_mode ) != 0 ;
+		}
+		bool isFolder()
+		{
+			struct stat st ;
+			fstat( m_fd,&st ) ;
+			return S_ISDIR( st.st_mode ) != 0 ;
+		}
+		quint64 size()
+		{
+			return static_cast< quint64 >( blkid_get_dev_size( m_fd ) ) ;
+		}
+		void unlink()
+		{
+			m_unlink = true ;
 		}
 		int handle() const
 		{
 			return m_fd ;
+		}
+		const char * path()
+		{
+			return m_path.constData() ;
 		}
 		bool opened() const
 		{
@@ -303,15 +334,25 @@ namespace utility
 		~fileHandle()
 		{
 			m_releaseResource( m_fd ) ;
+
+			if( m_unlink ){
+
+				::unlink( m_path.constData() ) ;
+			}
 		}
 	private:
+		bool m_unlink = false ;
+
 		int m_fd = -1 ;
+
+		QByteArray m_path ;
 
 		std::function< void( int ) > m_releaseResource = []( int fd ){
 
 			if( fd != -1 ){
+
 				::close( fd ) ;
-			}
+			}			
 		} ;
 	} ;
 }

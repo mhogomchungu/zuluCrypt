@@ -137,13 +137,13 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 
 			if( z.size() >= 3 ){
 
-				const QString& q = z.at( 2 ) ;
+				const auto& q = z.at( 2 ) ;
 
 				if( q.startsWith( "crypto_LUKS" ) ){
 
 					z.replace( 2,"luks" ) ;
 				}else{
-					QString e( q ) ;
+					auto e = q ;
 
 					e.remove( "crypto_" ) ;
 
@@ -217,9 +217,9 @@ void zuluCrypt::start()
 	 * runs.
 	 */
 
-	QStringList l  = QCoreApplication::arguments() ;
+	auto l         = QCoreApplication::arguments() ;
 
-	QString e      = utility::cmdArgumentValue( l,"-d" ) ;
+	auto e         = utility::cmdArgumentValue( l,"-d" ) ;
 
 	m_openPath     = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_startHidden  = l.contains( "-e" ) ;

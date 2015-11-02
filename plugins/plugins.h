@@ -34,7 +34,7 @@
 namespace plugins
 {
 
-typedef enum class plugin{ gpg,hmac_key,hmac_key_0,keyKeyFile,luks,steghide } type ;
+enum class plugin{ gpg,hmac_key,hmac_key_0,keyKeyFile,luks,steghide } ;
 
 static inline QByteArray gpg( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {

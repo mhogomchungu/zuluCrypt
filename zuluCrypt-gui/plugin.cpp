@@ -37,7 +37,7 @@
 
 #include <memory>
 
-plugin::plugin( QDialog * parent,plugins::type t,std::function< void( const QString& ) > function,const QString& e,const QVector<QString>& exe ) :
+plugin::plugin( QDialog * parent,plugins::plugin t,std::function< void( const QString& ) > function,const QString& e,const QVector<QString>& exe ) :
 	QDialog( parent ),m_ui( new Ui::plugin ),m_function( std::move( function ) ),m_pluginType( t ),m_exe( exe )
 {
 	m_ui->setupUi( this ) ;

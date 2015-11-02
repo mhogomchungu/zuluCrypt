@@ -557,10 +557,11 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 	QString device = QString( "/dev/%1" ).arg( deviceProperty.volumeName ) ;
 
 	switch( deviceProperty.deviceType ){
-		case zuluMountTask::device    : return _normalDevice( device ) ;
-		case zuluMountTask::md_device : return _mdRaidDevice( device ) ;
-		case zuluMountTask::dm_device : return _dmDevice( device )     ;
-		default                       : return _shouldNotGetHere() ;
+
+		case zuluMountTask::devices::device    : return _normalDevice( device ) ;
+		case zuluMountTask::devices::md_device : return _mdRaidDevice( device ) ;
+		case zuluMountTask::devices::dm_device : return _dmDevice( device )     ;
+		default                                : return _shouldNotGetHere() ;
 	}
 }
 

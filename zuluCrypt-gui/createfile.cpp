@@ -71,6 +71,7 @@ void createfile::fileTextChange( QString txt )
 	QString p = m_ui->lineEditFilePath->text() ;
 
 	if( p.isEmpty() ){
+
 		QString x = utility::homePath() + "/" + txt.split( "/" ).last() ;
 		m_ui->lineEditFilePath->setText( x ) ;
 		return ;
@@ -80,6 +81,7 @@ void createfile::fileTextChange( QString txt )
 	if( i == -1 ){
 		return ;
 	}
+
 	p = p.mid( 0,i ) + "/" + txt.split( "/" ).last() ;
 
 	m_ui->lineEditFilePath->setText( p ) ;

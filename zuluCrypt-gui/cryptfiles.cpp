@@ -101,13 +101,18 @@ void cryptfiles::sourceTextChanged( QString source )
 
 	int size = p.size() ;
 	QString path ;
+
 	for( int i = 0 ; i < size - 1 ; i++ ){
+
 		path += p.at( i ) + "/" ;
 	}
+
 	path += dest ;
 
 	if( m_operation == "-D" ){
+
 		if( path.endsWith( ".zc" ) || path.endsWith( ".zC" ) ){
+
 			path = path.mid( 0,path.size() - 3 ) ;
 		}
 	}
@@ -195,8 +200,8 @@ void cryptfiles::enableAll()
 
 	m_ui->labelDestinationPath->setEnabled( true ) ;
 	m_ui->labelSourcePath->setEnabled( true ) ;
-	m_ui->lineEditDestinationPath->setEnabled( true ) ;
-	m_ui->lineEditSourcePath->setEnabled( true ) ;
+	//m_ui->lineEditDestinationPath->setEnabled( true ) ;
+	//m_ui->lineEditSourcePath->setEnabled( true ) ;
 	m_ui->pbCreate->setEnabled( true ) ;
 	m_ui->pbOpenFolder->setEnabled( true ) ;
 	m_ui->pushButtonFile->setEnabled( true ) ;
@@ -230,16 +235,25 @@ void cryptfiles::pbCreate()
 	QString source = utility::resolvePath( m_ui->lineEditSourcePath->text() ) ;
 
 	if( source.isEmpty() ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Path to source field is empty" ) ) ;
 	}
+
 	QString dest = utility::resolvePath( m_ui->lineEditDestinationPath->text() ) ;
 
 	if( !utility::pathExists( source ) ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to source file" ) ) ;
 	}
 	if( utility::pathExists( dest ) ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Destination path already taken" ) ) ;
 	}
+	if( !utility::canCreateFile( dest ) ){
+
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "You dont seem to have writing access to the destination folder" ) ) ;
+	}
+
 	QString key_1 = m_ui->lineEditPass_1->text() ;
 	QString key_2 = m_ui->lineEditPass_2->text() ;
 
@@ -302,23 +316,17 @@ void cryptfiles::pbCreate()
 
 void cryptfiles::cryptFile( const char * s,const char * d,const char * k,unsigned long l,bool encrypt )
 {
-	struct foo
-	{
-		foo( std::function< int( int ) > function ) : update( std::move( function ) )
-		{
-		}
+	using function_t = std::function< int( int ) > ;
 
-		std::function< int( int ) > update ;
-	} ;
+	function_t foo = [ this ]( int e ){ emit progressUpdate( e ) ; return 0 ; } ;
 
-	foo bar( [ this ]( int e ){ emit progressUpdate( e ) ; return 0 ; } ) ;
-
-	auto f = reinterpret_cast< void * >( &bar ) ;
+	auto f = reinterpret_cast< void * >( &foo ) ;
 
 	auto u = []( int e,void * f )
 	{
-		auto r = reinterpret_cast< foo * >( f ) ;
-		return r->update( e ) ;
+		auto function = reinterpret_cast< function_t * >( f ) ;
+
+		return ( *function )( e ) ;
 	} ;
 
 	auto r = Task::await< lxqt_wallet_error >( [ & ]{
@@ -495,10 +503,12 @@ void cryptfiles::pbOpenFile()
 
 void cryptfiles::pbKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath(),0 ) ;
+	QString e = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath(),0 ) ;
 
-	m_ui->lineEditPass_1->setText( Z ) ;
+	m_ui->lineEditPass_1->setText( e ) ;
+
 	if( m_ui->lineEditSourcePath->text().isEmpty() ){
+
 		m_ui->lineEditSourcePath->setFocus() ;
 	}else{
 		m_ui->pbCreate->setFocus() ;

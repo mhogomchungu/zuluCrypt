@@ -206,11 +206,11 @@ void events::run()
 			e.added      = event->mask == IN_CREATE ;
 
 			if( event->wd == dm ){
-				e.deviceType = zuluMountTask::dm_device ;
+				e.deviceType = zuluMountTask::devices::dm_device ;
 			}else if( event->wd == md ){
-				e.deviceType = zuluMountTask::md_device ;
+				e.deviceType = zuluMountTask::devices::md_device ;
 			}else{
-				e.deviceType = zuluMountTask::device ;
+				e.deviceType = zuluMountTask::devices::device ;
 			}
 
 			Task::exec( [ this,e ](){

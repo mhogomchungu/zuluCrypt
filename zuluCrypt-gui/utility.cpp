@@ -68,7 +68,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <blkid/blkid.h>
 
 #include <gcrypt.h>
 
@@ -290,14 +289,19 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 		QByteArray key ;
 
 		if( volumeID.startsWith( "UUID=" ) ){
+
 			key = wallet->readValue( volumeID ) ;
 		}else{
 			QString uuid = utility::getUUIDFromPath( volumeID ).get() ;
+
 			if( uuid.isEmpty() ){
+
 				key = wallet->readValue( utility::getVolumeID( volumeID ) ) ;
 			}else{
 				key = wallet->readValue( uuid ) ;
+
 				if( key.isEmpty() ){
+
 					key = wallet->readValue( volumeID ) ;
 				}
 			}
@@ -323,6 +327,7 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 			uuid.remove( "\n" ) ;
 
 			if( uuid == "UUID=\"\"" ){
+
 				return QString() ;
 			}else{
 				return uuid ;
@@ -494,16 +499,14 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 
 static quint64 _volumeSize( const QString& e )
 {
-	quint64 r = 0 ;
+	utility::fileHandle h ;
 
-	int f = open( e.toLatin1().constData(),O_RDONLY ) ;
+	if( h.open( e ) ){
 
-	if( f != -1 ){
-		r = quint64( blkid_get_dev_size( f ) ) ;
-		close( f ) ;
+		return h.size() ;
+	}else{
+		return 0 ;
 	}
-
-	return r ;
 }
 
 static int _openVolume( const QString& e )
@@ -513,7 +516,7 @@ static int _openVolume( const QString& e )
 
 static std::function< void( int ) > _closeFunction( const QString& e )
 {
-	return [ e ]( int fd ){
+	return [ & ]( int fd ){
 
 		if( fd != -1 ){
 
@@ -546,6 +549,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 		int r = utility::Task( utility::appendUserUID( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ).exitCode() ;
 
 		if( r != 0 ){
+
 			return r ;
 		}else{
 			QString volumeMapperPath = utility::mapperPath( volume ) ;
@@ -567,6 +571,11 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 
 				quint64 size         = _volumeSize( volumeMapperPath ) ;
 				quint64 size_written = 0 ;
+
+				if( size == 0 ){
+
+					return 0 ;
+				}
 
 				while( _writeToVolume( fd,buffer,bufferSize ) ){
 
@@ -616,14 +625,12 @@ and a secondary publicly accessible \"mirror\" mount point will be created in \"
 
 QString utility::shareMountPointToolTip( const QString& path )
 {
-	struct stat st ;
-	QString s = QString( "/run/media/public/" ) + path.split( "/" ).last() ;
-	QByteArray x = s.toLatin1() ;
-	const char * y = x.constData() ;
-	if( stat( y,&st ) == 0 ){
+	auto s = QString( "/run/media/public/" ) + path.split( "/" ).last() ;
+
+	if( QFile::exists( s ) ){
+
 		return "public mount point: " + s ;
 	}else{
-		//return QString( "no public mount point" ) ;
 		return QString() ;
 	}
 }
@@ -631,13 +638,13 @@ QString utility::shareMountPointToolTip( const QString& path )
 QString utility::sharedMountPointPath( const QString& path )
 {
 	if( path == "/" ){
+
 		return QString() ;
-	}else{
-		struct stat st ;
-		QString s = "/run/media/public/" + path.split( "/" ).last() ;
-		QByteArray x = s.toLatin1() ;
-		const char * y = x.constData() ;
-		if( stat( y,&st ) == 0 ){
+	}else{		
+		auto s = "/run/media/public/" + path.split( "/" ).last() ;
+
+		if( QFile::exists( s ) ){
+
 			return s ;
 		}else{
 			return QString() ;
@@ -647,10 +654,11 @@ QString utility::sharedMountPointPath( const QString& path )
 
 bool utility::pathPointsToAFile( const QString& path )
 {
-	struct stat st ;
-	QByteArray b = path.toLatin1() ;
-	if( stat( b.constData(),&st ) == 0 ){
-		return S_ISREG( st.st_mode ) != 0 ;
+	utility::fileHandle h ;
+
+	if( h.open( path ) ){
+
+		return h.isFile() ;
 	}else{
 		return false ;
 	}
@@ -658,10 +666,11 @@ bool utility::pathPointsToAFile( const QString& path )
 
 bool utility::pathPointsToAFolder( const QString& path )
 {
-	struct stat st ;
-	QByteArray b = path.toLatin1() ;
-	if( stat( b.constData(),&st ) == 0 ){
-		return S_ISDIR( st.st_mode ) != 0 ;
+	utility::fileHandle h ;
+
+	if( h.open( path ) ){
+
+		return h.isFolder() ;
 	}else{
 		return false ;
 	}
@@ -716,9 +725,19 @@ QString utility::applicationName()
 
 bool utility::pathIsReadable( const QString& path )
 {
-	int fd = open( path.toLatin1().constData(),O_RDONLY ) ;
-	if( fd != -1 ){
-		close( fd ) ;
+	utility::fileHandle h ;
+
+	return h.open( path ) ;
+}
+
+bool utility::pathIsWritable( const QString& path )
+{
+	utility::fileHandle h ;
+
+	if( h.open( path,false ) ){
+
+		h.unlink() ;
+
 		return true ;
 	}else{
 		return false ;
@@ -782,6 +801,7 @@ QStringList utility::split( const QByteArray& str,char token )
 bool utility::mapperPathExists( const QString& path )
 {
 	if( utility::pathExists( utility::mapperPath( path ) ) ){
+
 		return true ;
 	}else{
 		return utility::pathExists( utility::mapperPath( path,"-VERA-" ) ) ;
@@ -880,59 +900,68 @@ QString utility::mapperPath( const QString& r,const QString& component )
 
 QString utility::hashPath( const QByteArray& p )
 {
-	size_t l = p.size() ;
-	uint32_t hash ;
-	uint32_t i ;
-	const char * key = p.constData() ;
-	i = hash = 0 ;
-	for( ; i < l ; i++ ){
-		hash += key[ i ] ;
+	int l = p.size() ;
+
+	uint32_t hash = 0 ;
+
+	auto key = p.constData() ;
+
+	for( int i = 0 ; i < l ; i++ ){
+
+		hash += *( key + i ) ;
+
 		hash += ( hash << 10 ) ;
+
 		hash ^= ( hash >> 6 ) ;
 	}
+
 	hash += ( hash << 3 ) ;
+
 	hash ^= ( hash >> 11 ) ;
+
 	hash += ( hash << 15 ) ;
+
 	return QString( "-" ) + QString::number( hash ) ;
 }
 
 bool utility::pathExists( const QString& path )
 {
-	struct stat st ;
-	return stat( path.toLatin1().data(),&st ) == 0 ;
+	return QFile::exists( path ) ;
 }
 
 bool utility::canCreateFile( const QString& path )
 {
-	QByteArray q = path.toLatin1() ;
-
-	int i = open( q.constData(),O_WRONLY|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-
-	if( i == -1 ){
-		return false ;
-	}else{
-		close( i ) ;
-		remove( q ) ;
-		return true ;
-	}
+	return utility::pathIsWritable( path ) ;
 }
 
 QString utility::resolvePath( const QString& path )
 {
 	if( path.size() == 1 && path.at( 0 ) == QChar( '~' ) ){
+
 		return utility::homePath() + "/" ;
+
 	}else if( path.startsWith( "~/" ) ){
+
 		return utility::homePath() + "/" + path.mid( 2 ) ;
+
 	}else if( path.startsWith( "UUID=") ){
+
 		return path ;
+
 	}else if( path.startsWith( "/dev/" ) ){
+
 		return path ;
+
 	}else if( path.startsWith( "file://" ) ){
+
 		return path.mid( 7 ) ;
 	}else{
 		QDir r( path ) ;
-		QString rp = r.canonicalPath() ;
+
+		auto rp = r.canonicalPath() ;
+
 		if( rp.isEmpty() ) {
+
 			return path ;
 		}else{
 			return rp ;
@@ -943,9 +972,13 @@ QString utility::resolvePath( const QString& path )
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )
 {
 	int j = l.size() ;
+
 	for( int i = 0 ; i < j ; i++ ){
+
 		if( l.at( i ) == arg ){
+
 			if( i + 1 < j ){
+
 				return l.at( i + 1 ) ;
 			}else{
 				return defaulT ;
@@ -1379,7 +1412,7 @@ bool utility::userBelongsToGroup( const char * groupname )
 
 int utility::pluginKey( QDialog * w,QString * key,const QString& p )
 {
-	plugins::type pluginType ;
+	plugins::plugin pluginType ;
 	QString pluginString ;
 	QVector<QString> exe ;
 

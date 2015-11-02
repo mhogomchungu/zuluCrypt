@@ -95,15 +95,16 @@ void tcrypt::dropEvent( QDropEvent * e )
 {
 	for( const auto& it : e->mimeData()->urls() ){
 
-		tablewidget::addRowToTable( m_ui->tableWidget,QStringList{ it.path() } ) ;
+		tablewidget::addRowToTable( m_ui->tableWidget,QStringList( it.path() ) ) ;
 	}
 }
 
 void tcrypt::pbSend()
 {
-	QStringList l = tablewidget::tableColumnEntries( m_ui->tableWidget ) ;
+	auto l = tablewidget::tableColumnEntries( m_ui->tableWidget ) ;
 
 	if( l.isEmpty() ){
+
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "At least one keyfile is required" ) ) ;
 	}else{
@@ -127,12 +128,11 @@ void tcrypt::pbCancel()
 
 void tcrypt::pbAddKeyFIle()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),utility::homePath(),0 ) ;
-	if( !Z.isEmpty() ){
-		QTableWidget * table = m_ui->tableWidget ;
-		QStringList l ;
-		l.append( Z ) ;
-		tablewidget::addRowToTable( table,l ) ;
+	auto e = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),utility::homePath(),0 ) ;
+
+	if( !e.isEmpty() ){
+
+		tablewidget::addRowToTable( m_ui->tableWidget,QStringList( e ) ) ;
 	}
 }
 
