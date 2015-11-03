@@ -183,39 +183,31 @@ static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
 static int _not_removed( stringList_t stl,StringListIterator it,StringListIterator * end )
 {
 	string_t st = *it ;
-	string_t xt ;
 
-	/*
-	 * 8 comes from a length of something like "/dev/sdc"
-	 */
-	int x = StringLengthMatch( st,8 ) && StringStartsWithAtLeastOne( st,"/dev/hd","/dev/sd",NULL ) ;
+	StringListIterator e = it + 1 ;
 
-	/*
-	 * 11 comes from a length of something like "/dev/mmcblk"
-	 */
-	int y = StringStartsWith( st,"/dev/mmcblk" ) ;
+	if( StringStartsWithAtLeastOne( st,"/dev/hd","/dev/sd","/dev/mmcblk",NULL ) ){
 
-	if( x || y ){
 		/*
 		 * we have a partition,lets continue
 		 */
-		if( it + 1 != *end ){
+
+		if( e != *end ){
 
 			/*
 			 * we are not at the end of the list,ie,there is atleast one more entry
 			 */
 
-			xt = *( it + 1 ) ;
-
-			if( StringStartsWith_1( xt,st ) ){
+			if( StringStartsWith_1( *e,st ) ){
 				/*
-				 * xt will contain something like "/dev/sdc3"
+				 * *e will contain something like "/dev/sdc3"
 				 * st will contain something like "/dev/sdc"
 				 *
 				 * This device is partitioned and hence we remove the "/dev/sdc" entry
 				 * from the list since we dont care about it.
 				 */
 				StringListRemoveAt_1( stl,it,end ) ;
+
 				return 0 ;
 			}
 		}
