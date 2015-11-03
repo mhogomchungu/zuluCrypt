@@ -188,7 +188,14 @@ static int _not_removed( stringList_t stl,StringListIterator it,StringListIterat
 	/*
 	 * 8 comes from a length of something like "/dev/sdc"
 	 */
-	if( StringLengthMatch( st,8 ) && StringStartsWithAtLeastOne( st,"/dev/hd","/dev/sd",NULL ) ){
+	int x = StringLengthMatch( st,8 ) && StringStartsWithAtLeastOne( st,"/dev/hd","/dev/sd",NULL ) ;
+
+	/*
+	 * 11 comes from a length of something like "/dev/mmcblk"
+	 */
+	int y = StringStartsWith( st,"/dev/mmcblk" ) ;
+
+	if( x || y ){
 		/*
 		 * we have a partition,lets continue
 		 */
@@ -240,6 +247,7 @@ static stringList_t _remove_root_devices( stringList_t stl )
 	while( it != end ){
 
 		if( _not_removed( stl,it,&end ) ){
+
 			it++ ;
 		}
 	}
@@ -249,7 +257,7 @@ static stringList_t _remove_root_devices( stringList_t stl )
 
 static int _supported_device( const char * device )
 {
-	return StringAtLeastOnePrefixMatch( device,"/dev/sd","/dev/hd","/dev/loop","/dev/sr","/dev/md",NULL ) ;
+	return StringAtLeastOnePrefixMatch( device,"/dev/sd","/dev/hd","/dev/loop","/dev/sr","/dev/md","/dev/mmcblk",NULL ) ;
 }
 
 static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
@@ -424,6 +432,7 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 
 	StringReplaceString( st,"/dev/","/sys/block/" ) ;
 	path = StringAppend( st,"/removable" ) ;
+
 	/*
 	 * path will be something like "/sys/block/sda/removable"
 	 */
