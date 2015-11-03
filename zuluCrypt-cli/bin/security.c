@@ -43,26 +43,13 @@
 
 #define ZULUDEBUG 0
 
-static int create_group( const char * groupname ) __attribute__((unused)) ;
-
-static int create_group( const char * groupname )
-{
-	process_t p ;
-	int r ;
-	zuluCryptSecurityGainElevatedPrivileges() ;
-	p = Process( ZULUCRYPTgroupadd,"-f",groupname,NULL ) ;
-	ProcessStart( p ) ;
-	r = ProcessWaitUntilFinished( &p ) ;
-	zuluCryptSecurityDropElevatedPrivileges();
-	return r == 0 ;
-}
-
 int zuluCryptSecurityGainElevatedPrivileges( void )
 {
 	/*
-	printf( "GAINING:uid=%d:euid=%d\n",getuid(),geteuid() ) ;
-	*/
+	 * printf( "GAINING:uid=%d:euid=%d\n",getuid(),geteuid() ) ;
+	 */
 	if( seteuid( 0 ) == 0 ){
+
 		return 1 ;
 	}else{
 		if( zuluCryptSecurityPrivilegeElevationError ){
@@ -106,7 +93,9 @@ int zuluCryptSecurityDropElevatedPrivileges( void )
 	 printf( "DROPPING:uid=%d:euid=%d\n",getuid(),geteuid() ) ;
 	 */
 	if( seteuid( global_variable_user_uid ) != 0 ){
+
 		if( zuluCryptSecurityPrivilegeElevationError ){
+
 			zuluCryptSecurityPrivilegeElevationError( "ERROR: seteuid() failed" ) ;
 		}
 	}
@@ -134,6 +123,7 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	 * the plugins
 	 */
 	while( *env ){
+
 		stl = StringListAppend( stl,*env ) ;
 		env++ ;
 	}
@@ -141,10 +131,15 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
+
 		st = *it ;
+
 		it++ ;
+
 		index = StringIndexOfChar( st,0,'=' ) ;
+
 		if( index >= 0 ){
+
 			unsetenv( StringSubChar( st,index,'\0' ) ) ;
 			StringSubChar( st,index,'=' ) ;
 		}
@@ -155,14 +150,14 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 
 int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid )
 {
-	if( device ){ ; }
-	if( uid ){ ; }
+	if( device && uid ){ ; }
 	return 0 ;
 }
 
 void zuluCryptSecurityLockMemory_1( string_t st )
 {
 	if( st != StringVoid ){
+
 		mlock( StringContent( st ),StringLength( st ) ) ;
 	}
 }
@@ -171,10 +166,15 @@ void zuluCryptSecurityUnlockMemory_1( string_t st )
 {
 	void * e ;
 	size_t f ;
+
 	if( st != StringVoid ){
+
 		e = ( void * )StringContent( st ) ;
+
 		f = StringLength( st ) ;
+
 		memset( e,'\0',f ) ;
+
 		munlock( e,f ) ;
 	}
 }
@@ -183,11 +183,17 @@ void zuluCryptSecurityLockMemory( stringList_t stl )
 {
 	StringListIterator it   ;
 	StringListIterator end  ;
+
 	string_t st ;
+
 	StringListGetIterators( stl,&it,&end ) ;
+
 	while( it != end ){
+
 		st = *it ;
+
 		it++ ;
+
 		mlock( StringContent( st ),StringLength( st ) ) ;
 	}
 }
@@ -205,12 +211,19 @@ void zuluCryptSecurityUnlockMemory( stringList_t stl )
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
+
 		st = *it ;
+
 		it++ ;
+
 		if( st != StringVoid ){
+
 			e = ( void * )StringContent( st ) ;
+
 			f = StringLength( st ) ;
+
 			memset( e,'\0',f ) ;
+
 			munlock( e,f ) ;
 		}
 	}

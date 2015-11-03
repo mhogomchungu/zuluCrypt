@@ -54,9 +54,11 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 		while( ( entry = readdir( dir ) ) != NULL ){
 
 			if( !StringAtLeastOneMatch_1( entry->d_name,".","..","control",NULL ) ){
+
 				/*
 				 * zuluCryptConvertIfPathIsLVM() is defined in ../lib/resolve_paths.c
 				 */
+
 				xt = zuluCryptConvertIfPathIsLVM( StringAppendAt( st,12,entry->d_name ) ) ;
 
 				if( StringStartsWith( xt,"/dev/mapper/" ) ){
@@ -149,11 +151,13 @@ static stringList_t _remove_btfs_multiple_devices( stringList_t stl )
 				blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) ;
 
 				if( StringListHasNoEntry( stx,e ) ){
+
 					/*
 					 * we got a btrfs volume with UUID we do not know about,
 					 * This will be the only device with this btrfs UUID we support and
 					 * all device operations must happen through this device and this device only.
 					 */
+
 					stz = StringListAppendString( stz,st ) ;
 					stx = StringListAppend( stx,e ) ;
 				}else{
@@ -199,6 +203,7 @@ static int _not_removed( stringList_t stl,StringListIterator it,StringListIterat
 			 */
 
 			if( StringStartsWith_1( *e,st ) ){
+
 				/*
 				 * *e will contain something like "/dev/sdc3"
 				 * st will contain something like "/dev/sdc"
@@ -206,6 +211,7 @@ static int _not_removed( stringList_t stl,StringListIterator it,StringListIterat
 				 * This device is partitioned and hence we remove the "/dev/sdc" entry
 				 * from the list since we dont care about it.
 				 */
+
 				StringListRemoveAt_1( stl,it,end ) ;
 
 				return 0 ;

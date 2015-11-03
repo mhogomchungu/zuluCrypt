@@ -188,12 +188,16 @@ void utility::keySend( const QString& path,const QString& key )
 		auto handle = ::zuluCryptPluginManagerOpenConnection( path.toLatin1().constData() ) ;
 
 		if( handle ){
+
 			size_t size = key.size() ;
+
 			/*
 			 * ZULUCRYPT_KEYFILE_MAX_SIZE is defined in ../zuluCrypt-cli/constants.h
 			 * The variable holds the maximum keyfile size
 			 */
+
 			if( size > ZULUCRYPT_KEYFILE_MAX_SIZE ){
+
 				size = ZULUCRYPT_KEYFILE_MAX_SIZE ;
 			}
 
@@ -213,9 +217,11 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 	if( utility::notRunningInMixedMode() ){
 
 		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ){
+
 			l.append( b ) ;
 		}
 		if( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ){
+
 			l.append( c ) ;
 		}
 	}
@@ -259,26 +265,28 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 {
 	return ::Task::run<QStringList>( [ volumePath ](){
 
-		QString e = utility::appendUserUID( "%1 -b -d \"%2\"" ) ;
+		auto e = utility::appendUserUID( "%1 -b -d \"%2\"" ) ;
 
 		auto r = utility::Task( e.arg( ZULUCRYPTzuluCrypt,volumePath ) ) ;
 
-		QStringList l ;
-
 		if( r.success() ){
 
-			const QByteArray& s = r.output() ;
+			const auto& s = r.output() ;
+
 			int i = 0 ;
+
 			for( const auto& it : s ){
+
 				if( it == '1' || it == '3' ){
+
 					i++ ;
 				}
 			}
-			l.append( QString::number( i ) ) ;
-			l.append( QString::number( s.size() - 1 ) ) ;
+
+			return QStringList{ QString::number( i ),QString::number( s.size() - 1 ) } ;
 		}
 
-		return l ;
+		return QStringList() ;
 	} ) ;
 }
 
@@ -384,8 +392,8 @@ char * const * utility::Array::value()
 
 bool utility::ProcessExecute( const QString& m,const QString& e,const QString& env,int uid )
 {
-	QByteArray exe     = e.toLatin1() ;
-	QByteArray m_point = m.toLatin1() ;
+	auto exe     = e.toLatin1() ;
+	auto m_point = m.toLatin1() ;
 
 	if( !exe.startsWith( "/" ) ){
 
@@ -393,14 +401,14 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 
 		if( e.failed() ){
 
-			return true ;
+			return false ;
 		}
 
 		exe = e.splitOutput( '\n' ).first().toLatin1() ;
 	}else{
 		if( !utility::pathExists( exe ) ){
 
-			return true ;
+			return false ;
 		}
 	}
 
@@ -419,14 +427,14 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 		ProcessStart( p ) ;
 	}
 
-	return ProcessWaitUntilFinished( &p ) != 0 ;
+	return ProcessWaitUntilFinished( &p ) == 0 ;
 }
 
 ::Task::future<bool>& utility::openMountPoint( const QString& path,const QString& opener,const QString& env )
 {
 	return ::Task::run<bool>( [ env,path,opener ](){
 
-		return utility::ProcessExecute( path,opener,env,utility::getUID() ) ;
+		return utility::ProcessExecute( path,opener,env,utility::getUID() ) == false ;
 	} ) ;
 }
 
@@ -542,7 +550,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 {
 	return ::Task::run<int>( [ volume,exit,function ](){
 
-		QString volumePath = volume ;
+		auto volumePath = volume ;
 
 		volumePath.replace( "\"","\"\"\"" ) ;
 
@@ -552,7 +560,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 
 			return r ;
 		}else{
-			QString volumeMapperPath = utility::mapperPath( volume ) ;
+			auto volumeMapperPath = utility::mapperPath( volume ) ;
 
 			utility::fileHandle f( _openVolume( volumeMapperPath ),_closeFunction( volumePath ) ) ;
 
@@ -617,10 +625,9 @@ bool utility::userIsRoot()
 
 QString utility::shareMountPointToolTip()
 {
-	QString s = QObject::tr( "\
+	return QObject::tr( "\
 if the option is checked,a primary private mount point will be created in \"/run/media/private/$USER/\"\n\
 and a secondary publicly accessible \"mirror\" mount point will be created in \"/run/media/public/\"" ) ;
-	return s ;
 }
 
 QString utility::shareMountPointToolTip( const QString& path )
@@ -794,18 +801,12 @@ QStringList utility::split( const QString& str,char token )
 
 QStringList utility::split( const QByteArray& str,char token )
 {
-	QString s = str ;
-	return s.split( token,QString::SkipEmptyParts ) ;
+	return QString( str ).split( token,QString::SkipEmptyParts ) ;
 }
 
 bool utility::mapperPathExists( const QString& path )
 {
-	if( utility::pathExists( utility::mapperPath( path ) ) ){
-
-		return true ;
-	}else{
-		return utility::pathExists( utility::mapperPath( path,"-VERA-" ) ) ;
-	}
+	return utility::pathExists( utility::mapperPath( path ) ) ;
 }
 
 QString utility::mountPath( const QString& path )
@@ -846,7 +847,7 @@ QString utility::mountPathPostFix( const QString& path )
 			}
 		} ;
 
-		QString e = utility::mountPath( path ) ;
+		auto e = utility::mountPath( path ) ;
 
 		if( _usable_mount_point( e ) ){
 
@@ -871,14 +872,16 @@ QString utility::mountPathPostFix( const QString& path )
 
 QString utility::mapperPath( const QString& r,const QString& component )
 {
-	QString rpath = r ;
+	auto rpath = r ;
 
-	QString path = utility::cryptMapperPath() + "zuluCrypt-" + utility::getStringUserID() ;
+	auto path = utility::cryptMapperPath() + "zuluCrypt-" + utility::getStringUserID() ;
 
 	if( rpath.startsWith( "UUID=" ) ){
 
 		rpath.remove( QChar( '\"' ) ) ;
+
 		rpath.replace( "UUID=","UUID-" ) ;
+
 		path += QString( "-" ) + rpath + utility::hashPath( rpath.toLatin1() ) ;
 	}else{
 		if( component.isEmpty() ){
@@ -889,7 +892,7 @@ QString utility::mapperPath( const QString& r,const QString& component )
 		}
 	}
 
-	QString z = QString( BASH_SPECIAL_CHARS ) ;
+	QString z = BASH_SPECIAL_CHARS ;
 
 	for( const auto& it : z ){
 

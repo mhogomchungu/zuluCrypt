@@ -665,7 +665,7 @@ void MainWindow::openMountPoint( const QString& m_point )
 	utility::openMountPoint( m_point,m_folderOpener,m_env ).then( [ this ]( bool failed ){
 
 		if( failed ){
-			QString x = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
+			auto x = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "Warning" ),x ) ;
 		}
@@ -684,10 +684,10 @@ void MainWindow::volumeProperties()
 {
 	this->disableAll() ;
 
-	QString volume     = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ;
-	QString volumeType = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),2 )->text() ;
+	auto volume     = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),0 )->text() ;
+	auto volumeType = m_ui->tableWidget->item( m_ui->tableWidget->currentRow(),2 )->text() ;
 
-	QString r = zuluMountTask::volumeProperties( volume,volumeType ).await() ;
+	auto r = zuluMountTask::volumeProperties( volume,volumeType ).await() ;
 
 	DialogMsg msg( this ) ;
 
