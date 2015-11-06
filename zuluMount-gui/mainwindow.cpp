@@ -59,7 +59,10 @@
 
 #include <memory>
 
-MainWindow::MainWindow( QWidget * parent ) : QWidget( parent )
+MainWindow::MainWindow( QWidget * parent ) :
+	QWidget( parent ),
+	m_mountInfo( monitor_mountinfo::instance( this,true,[ this ](){ this->quitApplication() ; } ) ),
+	m_events( events::instance( this,m_mountInfo.stop() ) )
 {
 }
 
@@ -118,8 +121,8 @@ void MainWindow::setUpApp( const QString& volume )
 
 	this->setUpFont() ;
 
-	m_trayIcon = new QSystemTrayIcon( this ) ;
-	m_trayIcon->setIcon( QIcon( ":/zuluMount.png" ) ) ;
+	m_trayIcon.setParent( this ) ;
+	m_trayIcon.setIcon( QIcon( ":/zuluMount.png" ) ) ;
 
 	auto trayMenu = new QMenu( this ) ;
 
@@ -187,16 +190,16 @@ void MainWindow::setUpApp( const QString& volume )
 	trayMenu->addAction( ac ) ;
 
 	trayMenu->addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
-	m_trayIcon->setContextMenu( trayMenu ) ;
+	m_trayIcon.setContextMenu( trayMenu ) ;
 
-	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
+	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
 
-	m_ui->pbmenu->setMenu( m_trayIcon->contextMenu() ) ;
+	m_ui->pbmenu->setMenu( m_trayIcon.contextMenu() ) ;
 
 	this->setLocalizationLanguage( false ) ;
 
-	m_trayIcon->show() ;
+	m_trayIcon.show() ;
 
 	QString dirPath = utility::homePath() + "/.zuluCrypt/" ;
 	QDir dir( dirPath ) ;
@@ -372,17 +375,13 @@ bool MainWindow::autoOpenFolderOnMount( void )
 
 void MainWindow::startAutoMonitor()
 {
-	m_mountInfo = new monitor_mountinfo( this,[ this ](){ this->quitApplication() ; } ) ;
-
-	m_events = new events( this,m_mountInfo->stop() ) ;
-
-	m_mountInfo->start() ;
-	m_events->start() ;
+	m_mountInfo.start() ;
+	m_events.start() ;
 }
 
 void MainWindow::closeApplication()
 {
-	m_events->stop() ;
+	m_events.stop() ;
 }
 
 /*
@@ -390,7 +389,7 @@ void MainWindow::closeApplication()
  */
 void MainWindow::pbMenu()
 {
-	m_events->stop() ;
+	m_events.stop() ;
 }
 
 void MainWindow::quitApplication()

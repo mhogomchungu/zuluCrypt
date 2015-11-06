@@ -447,7 +447,7 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 		return LxQt::Wallet::getWalletBackend( e ) ;
 	} ;
 
-	typedef std::unique_ptr< LxQt::Wallet::Wallet > storage_t ;
+	using storage_t = std::unique_ptr< LxQt::Wallet::Wallet > ;
 
 	if( storage == LxQt::Wallet::kwalletBackEnd ){
 
@@ -456,6 +456,7 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 		w.opened = e->await_open( "default",utility::applicationName() ) ;
 
 		if( w.opened ){
+
 			w.key = utility::getKeyFromWallet( e.get(),keyID ).await() ;
 		}
 
@@ -463,8 +464,8 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 
 	}else if( storage == LxQt::Wallet::internalBackEnd ){
 
-		QString walletName = utility::walletName() ;
-		QString appName    = utility::applicationName() ;
+		auto walletName = utility::walletName() ;
+		auto appName    = utility::applicationName() ;
 
 		if( LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,walletName,appName ) ){
 
@@ -475,6 +476,7 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 			w.opened = e->await_open( walletName,appName,pwd ) ;
 
 			if( w.opened ){
+
 				w.key = utility::getKeyFromWallet( e.get(),keyID ).await() ;
 				w.password = e->qObject()->objectName() ;
 				w.notConfigured = false ;
@@ -493,6 +495,7 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 		w.opened = e->await_open( utility::walletName(),utility::applicationName() ) ;
 
 		if( w.opened ){
+
 			w.key = utility::getKeyFromWallet( e.get(),keyID ).await() ;
 		}
 

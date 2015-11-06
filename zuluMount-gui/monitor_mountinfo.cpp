@@ -27,8 +27,8 @@
 #include "../zuluCrypt-gui/task.h"
 #include "zulumounttask.h"
 
-monitor_mountinfo::monitor_mountinfo( QObject * parent,std::function< void() > f ) :
-	QThread( parent ),m_stop( std::move( f ) )
+monitor_mountinfo::monitor_mountinfo( QObject * parent,bool e,std::function< void() > f ) :
+	QThread( parent ),m_stop( std::move( f ) ),m_announceChanges( e )
 {
 	m_babu = parent ;
 	m_baba = this ;
@@ -64,6 +64,11 @@ void monitor_mountinfo::failedToStart()
 	m_running = false ;
 }
 
+void monitor_mountinfo::silenceEvents( bool s )
+{
+	m_silenceEvents = s ;
+}
+
 void monitor_mountinfo::run()
 {
 	m_mtoto = this ;
@@ -71,14 +76,17 @@ void monitor_mountinfo::run()
 	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
 
-	connect( this,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
-		 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
+	if( m_announceChanges ){
 
-	connect( this,SIGNAL( volumeMiniProperties_0( volumeEntryProperties * ) ),
-		 m_babu,SLOT( volumeMiniProperties_0( volumeEntryProperties * ) ) ) ;
+		connect( this,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
+			 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
 
-	connect( this,SIGNAL( volumeRemoved( QString ) ),
-		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
+		connect( this,SIGNAL( volumeMiniProperties_0( volumeEntryProperties * ) ),
+			 m_babu,SLOT( volumeMiniProperties_0( volumeEntryProperties * ) ) ) ;
+
+		connect( this,SIGNAL( volumeRemoved( QString ) ),
+			 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
+	}
 
 	utility::monitor_mountinfo monitor ;
 
@@ -131,6 +139,11 @@ void monitor_mountinfo::run()
 	} ;
 
 	while( monitor.gotEvent() ){
+
+		if( !m_silenceEvents ){
+
+			emit gotEvent() ;
+		}
 
 		newMountList = zuluMountTask::mountedVolumeList() ;
 

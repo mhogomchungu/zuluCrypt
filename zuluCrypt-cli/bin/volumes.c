@@ -190,7 +190,7 @@ static int _not_removed( stringList_t stl,StringListIterator it,StringListIterat
 
 	StringListIterator e = it + 1 ;
 
-	if( StringStartsWithAtLeastOne( st,"/dev/hd","/dev/sd","/dev/mmcblk",NULL ) ){
+	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd","/dev/mmcblk",NULL ) ){
 
 		/*
 		 * we have a partition,lets continue

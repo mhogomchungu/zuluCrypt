@@ -25,6 +25,8 @@
 #include <QStringList>
 #include <QSystemTrayIcon>
 
+#include "../zuluMount-gui/monitor_mountinfo.h"
+
 class QWidget ;
 class QTableWidgetItem ;
 class QDragEnterEvent ;
@@ -92,7 +94,6 @@ private slots :
 	void updateVolumeListAction( void ) ;
 	void minimizeToTray( void ) ;
 	void closeAllVolumes( void ) ;
-	void closeStatus( int ) ;
 	void menuKeyPressed( void ) ;
 	void ShowCreateFile( void ) ;
 	void ShowFavoritesEntries( void ) ;
@@ -131,11 +132,12 @@ private slots :
 	void openpdf( void ) ;
 	void updateCheck( void ) ;
 	void cinfo( void ) ;
+	void updateVolumeList( const QString& = QString() ) ;
 private:
+	void quitApplication( void ) ;
 	void removeRowFromTable( int ) ;
 	void openFolder( const QString& ) ;
 	void autoUpdateCheck( void ) ;
-	void updateVolumeList( const QString& volume = QString() ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 
@@ -152,13 +154,18 @@ private:
 	void closeStatusErrorMessage( int ) ;
 	void setUpApp( const QString& ) ;
 	void decryptFile( const QString& ) ;
-	Ui::zuluCrypt * m_ui = nullptr ;
-	QSystemTrayIcon * m_trayIcon = nullptr ;
+
+	Ui::zuluCrypt * m_ui            = nullptr ;
+	LxQt::Wallet::Wallet * m_wallet = nullptr ;
+
+	QSystemTrayIcon m_trayIcon ;
+
 	QString m_openPath ;
 	bool m_startHidden ;
-	LxQt::Wallet::Wallet * m_wallet = nullptr ;
 	int m_userID ;
 	QString m_env ;
+
+	monitor_mountinfo& m_mountInfo ;
 };
 
 #endif // ZULUCRYPT_H

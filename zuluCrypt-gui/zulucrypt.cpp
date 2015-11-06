@@ -75,7 +75,9 @@
 
 #include <memory>
 
-zuluCrypt::zuluCrypt( QWidget * parent ) : QMainWindow( parent ),m_trayIcon( 0 )
+zuluCrypt::zuluCrypt( QWidget * parent ) :
+	QMainWindow( parent ),
+	m_mountInfo( monitor_mountinfo::instance( this,false,[ this ](){ this->quitApplication() ; } ) )
 {
 }
 
@@ -109,6 +111,8 @@ void zuluCrypt::setUpApp( const QString& volume )
 	this->autoUpdateCheck() ;
 	this->setLocalizationLanguage( false ) ;
 	this->updateVolumeList( volume ) ;
+
+	m_mountInfo.start() ;
 }
 
 void zuluCrypt::updateVolumeList( const QString& volume )
@@ -189,7 +193,7 @@ void zuluCrypt::raiseWindow()
 {
 	if( m_startHidden ){
 
-		m_trayIcon->setVisible( true ) ;
+		m_trayIcon.setVisible( true ) ;
 	}else{
 		this->setVisible( true ) ;
 		this->show() ;
@@ -239,14 +243,14 @@ void zuluCrypt::start()
 
 void zuluCrypt::initTray()
 {
-	utility::showTrayIcon( m_ui->actionTray_icon,m_trayIcon ) ;
+	utility::showTrayIcon( m_ui->actionTray_icon,&m_trayIcon ) ;
 }
 
 void zuluCrypt::trayProperty()
 {
 	m_ui->actionTray_icon->setEnabled( false ) ;
 
-	utility::trayProperty( m_trayIcon ) ;
+	utility::trayProperty( &m_trayIcon ) ;
 
 	m_ui->actionTray_icon->setEnabled( true ) ;
 }
@@ -257,8 +261,8 @@ void zuluCrypt::setupUIElements()
 
 	this->setWindowIcon( QIcon( ":/zuluCrypt.png" ) ) ;
 
-	m_trayIcon = new QSystemTrayIcon( this ) ;
-	m_trayIcon->setIcon( QIcon( ":/zuluCrypt.png" ) ) ;
+	m_trayIcon.setParent( this ) ;
+	m_trayIcon.setIcon( QIcon( ":/zuluCrypt.png" ) ) ;
 
 	auto trayMenu = new QMenu( this ) ;
 
@@ -266,7 +270,7 @@ void zuluCrypt::setupUIElements()
 
 	trayMenu->addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
 
-	m_trayIcon->setContextMenu( trayMenu ) ;
+	m_trayIcon.setContextMenu( trayMenu ) ;
 
 	auto f = utility::getWindowDimensions( "zuluCrypt" ) ;
 
@@ -314,7 +318,7 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->menuFavorites,SIGNAL( aboutToShow() ),this,SLOT( readFavorites() ) ) ;
 	connect( m_ui->menuFavorites,SIGNAL( aboutToHide() ),this,SLOT( favAboutToHide() ) ) ;
 	connect( m_ui->actionTray_icon,SIGNAL( triggered() ),this,SLOT( trayProperty() ) ) ;
-	connect( m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( trayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
+	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( trayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
 	connect( m_ui->menuFavorites,SIGNAL( triggered( QAction * ) ),this,SLOT( favClicked( QAction * ) ) ) ;
 	connect( m_ui->action_close,SIGNAL( triggered() ),this,SLOT( closeApplication() ) ) ;
 	connect( m_ui->action_update_volume_list,SIGNAL( triggered() ),this,SLOT( updateVolumeListAction() ) ) ;
@@ -351,6 +355,8 @@ void zuluCrypt::setupConnections()
 	}
 
 	connect( m_ui->menuOptions,SIGNAL( aboutToShow() ),this,SLOT( optionMenuAboutToShow() ) ) ;
+
+	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,SLOT( updateVolumeList() ) ) ;
 
 	m_ui->actionManage_system_partitions->setEnabled( utility::userIsRoot() ) ;
 	m_ui->actionManage_non_system_partitions->setEnabled( utility::userIsRoot() ) ;
@@ -492,6 +498,8 @@ void zuluCrypt::closeAllVolumes()
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
+	m_mountInfo.silenceEvents( true ) ;
+
 	Task::await( [ this ](){
 
 		utility::Task::waitForOneSecond() ; // for ui effect
@@ -515,9 +523,9 @@ void zuluCrypt::closeAllVolumes()
 
 			for( int i = tableItems.count() - 1 ; i >= 0 ; i-- ){
 
-				QTableWidgetItem * e = *( it + i ) ;
+				auto e = *( it + i ) ;
 
-				QString device = e->text().replace( "\"","\"\"\"" ) ;
+				auto device = e->text().replace( "\"","\"\"\"" ) ;
 
 				auto r = utility::Task( exe.arg( ZULUCRYPTzuluCrypt,device ) ) ;
 
@@ -529,16 +537,24 @@ void zuluCrypt::closeAllVolumes()
 
 	} ) ;
 
+	m_mountInfo.silenceEvents( false ) ;
+
 	m_ui->tableWidget->setEnabled( true ) ;
 }
 
 void zuluCrypt::closeAll( QTableWidgetItem * item,int st )
 {
 	if( st ){
+
 		this->closeStatusErrorMessage( st ) ;
 	}else{
 		this->removeRowFromTable( item->row() ) ;
 	}
+}
+
+void zuluCrypt::removeRowFromTable( int x )
+{
+	tablewidget::deleteRowFromTable( m_ui->tableWidget,x ) ;
 }
 
 void zuluCrypt::minimizeToTray()
@@ -554,12 +570,15 @@ void zuluCrypt::minimizeToTray()
 
 void zuluCrypt::closeEvent( QCloseEvent * e )
 {
-	if( m_trayIcon->isVisible() ){
+	e->ignore() ;
+
+	if( m_trayIcon.isVisible() ){
+
 		this->hide() ;
-		e->ignore() ;
 	}else{
 		this->hide() ;
-		e->accept() ;
+
+		this->closeApplication() ;
 	}
 }
 
@@ -581,11 +600,16 @@ void zuluCrypt::dropEvent( QDropEvent * e )
 	}
 }
 
-void zuluCrypt::closeApplication()
+void zuluCrypt::quitApplication()
 {
-	m_trayIcon->hide() ;
+	m_trayIcon.hide() ;
 	this->hide() ;
 	QCoreApplication::quit() ;
+}
+
+void zuluCrypt::closeApplication()
+{
+	m_mountInfo.stop()() ;
 }
 
 void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )
@@ -689,23 +713,18 @@ again after the header is restored if the header on the volume get corrupted.\n\
 	m.ShowUIInfo( tr( "Important Information On Volume Header Backup" ),msg ) ;
 }
 
-void zuluCrypt::removeRowFromTable( int x )
-{
-	tablewidget::deleteRowFromTable( m_ui->tableWidget,x ) ;
-}
-
 void zuluCrypt::volume_property()
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
-	QString x = m_ui->tableWidget->item( item->row(),0 )->text() ;
+	auto item = m_ui->tableWidget->currentItem() ;
+	auto x = m_ui->tableWidget->item( item->row(),0 )->text() ;
 
 	x.replace( "\"","\"\"\"" ) ;
 
 	Task::run<QString>( [ x ](){
 
-		QString e = utility::appendUserUID( "%1 -s -d \"%2\"" ) ;
+		auto e = utility::appendUserUID( "%1 -s -d \"%2\"" ) ;
 
 		auto r = utility::Task( e.arg( ZULUCRYPTzuluCrypt,x ) ) ;
 
@@ -882,21 +901,11 @@ void zuluCrypt::UIMessage( QString title,QString message )
 	msg.ShowUIOK( title,message ) ;
 }
 
-void zuluCrypt::closeStatus( int st )
-{
-	m_ui->tableWidget->setEnabled( true ) ;
-
-	if( st == 0 ){
-
-		this->removeRowFromTable( m_ui->tableWidget->currentItem()->row() ) ;
-	}else{
-		this->closeStatusErrorMessage( st ) ;
-	}
-}
-
 void zuluCrypt::closeStatusErrorMessage( int st )
 {
 	switch ( st ) {
+
+		case 0 :break ;
 		case 1 :UIMessage( tr( "ERROR!" ),tr( "Close failed, volume is not open or was opened by a different user" ) ) ;			break ;
 		case 2 :UIMessage( tr( "ERROR!" ),tr( "Close failed, one or more files in the volume are in use." ) ) ;					break ;
 		case 3 :UIMessage( tr( "ERROR!" ),tr( "Close failed, volume does not have an entry in /etc/mtab" ) ) ;					break ;
@@ -919,7 +928,7 @@ void zuluCrypt::close()
 
 	auto path = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
 
-	this->closeStatus( Task::await<int>( [ this,item,path ](){
+	auto r = Task::await<int>( [ this,item,path ](){
 
 		auto exe = utility::appendUserUID( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ;
 
@@ -927,9 +936,11 @@ void zuluCrypt::close()
 
 		return utility::Task( exe ).exitCode() ;
 
-	} ) ) ;
+	} ) ;
 
 	m_ui->tableWidget->setEnabled( true ) ;
+
+	this->closeStatusErrorMessage( r ) ;
 }
 
 void zuluCrypt::volumeRestoreHeader()
@@ -1081,5 +1092,4 @@ zuluCrypt::~zuluCrypt()
 							q->columnWidth( 2 ) } ) ;
 
 	delete m_ui ;
-	delete m_trayIcon ;
 }

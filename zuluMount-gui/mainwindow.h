@@ -119,9 +119,6 @@ private:
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	void setUpApp( const QString& ) ;
-	QSystemTrayIcon * m_trayIcon ;
-	events * m_events = nullptr ;
-	monitor_mountinfo * m_mountInfo = nullptr ;
 	QAction * m_autoMountAction = nullptr ;
 	QMenu * m_favorite_menu = nullptr ;
 	QMenu * m_hidden_volume_menu = nullptr ;
@@ -135,6 +132,11 @@ private:
 	bool m_autoOpenFolderOnMount ;
 	bool m_removeAllVolumes = false ;
 	QString m_env ;
+
+	QSystemTrayIcon m_trayIcon ;
+
+	monitor_mountinfo& m_mountInfo ;
+	events& m_events ;
 };
 
 #endif // MAINWINDOW_H

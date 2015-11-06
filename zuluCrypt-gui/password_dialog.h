@@ -86,7 +86,6 @@ private :
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void success( const QByteArray& ) ;
 	void failed( int ) ;
 	void failed( void ) ;
 	Ui::PasswordDialog * m_ui ;

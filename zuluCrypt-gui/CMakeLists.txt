@@ -46,6 +46,7 @@ set( MOC_FILES
 		walletconfig.h
 		walletconfiginput.h
 		../zuluMount-gui/oneinstance.h
+		../zuluMount-gui/monitor_mountinfo.h
 		contactinfo.h
  )
 
@@ -72,6 +73,8 @@ set( SRC
 	walletconfig.cpp
 	walletconfiginput.cpp
 	../zuluMount-gui/oneinstance.cpp
+	../zuluMount-gui/monitor_mountinfo.cpp
+	../zuluMount-gui/zulumounttask.cpp
 	contactinfo.cpp
 )
 

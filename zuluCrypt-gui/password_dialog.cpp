@@ -645,51 +645,24 @@ void passwordDialog::openVolume()
 
 	if( r.success() ){
 
-		this->success( r.output() ) ;
+		if( utility::mapperPathExists( m_device ) ){
+
+			m_openFolder( utility::mountPath( m_point ) ) ;
+
+			this->HideUI() ;
+		}else{
+			/*
+			 * we arrive here if zuluCrypt-cli reports a volume was opened but it was not.
+			 * most likely reason for getting here is if it crashed.
+			 */
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "An error has occured and the volume could not be opened" ) ) ;
+			this->HideUI() ;
+		}
 	}else{
 		this->failed( r.exitCode() ) ;
 
 		m_veraCryptWarning.hide() ;
-	}
-}
-
-void passwordDialog::success( const QByteArray& r )
-{
-	if( utility::mapperPathExists( m_device ) ){
-
-		QStringList list ;
-
-		list.append( utility::resolvePath( m_ui->OpenVolumePath->text() ) ) ;
-
-		QString m_p = utility::mountPath( m_point ) ;
-
-		list.append( m_p ) ;
-
-		if( r.contains( "luks" ) ){
-			list.append( "luks" ) ;
-		}else if( r.contains( "plain" ) ){
-			list.append( "plain" ) ;
-		}else if( r.contains( "tcrypt" ) ){
-			list.append( "tcrypt" ) ;
-		}else if( r.contains( "vcrypt" ) ){
-			list.append( "vcrypt" ) ;
-		}else{
-			list.append( "Nil" ) ;
-		}
-
-		tablewidget::addRowToTable( m_table,list ) ;
-
-		m_openFolder( m_p ) ;
-
-		this->HideUI() ;
-	}else{
-		/*
-		 * we arrive here if zuluCrypt-cli reports a volume was opened but it was not.
-		 * most likely reason for getting here is if it crashed.
-		 */
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "An error has occured and the volume could not be opened" ) ) ;
-		this->HideUI() ;
 	}
 }
 

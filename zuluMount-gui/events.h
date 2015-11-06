@@ -31,6 +31,10 @@ class events : public QThread
 {
 	Q_OBJECT
 public:
+	static events& instance( QObject * parent,std::function< void() >f )
+	{
+		return *( new events( parent,std::move( f ) ) ) ;
+	}
 	explicit events( QObject * parent,std::function< void() > ) ;
 	~events() ;
 	void stop( void ) ;
