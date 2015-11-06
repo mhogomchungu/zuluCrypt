@@ -148,19 +148,27 @@ stringList_t zuluCryptGetAListOfMountedVolumes( void )
 	return _volumeList( _get_mounted_device_list ) ;
 }
 
-int zuluCryptMountPointIsActive( const char * m_point )
+static int _mounted( ssize_t( *function )( stringList_t,const char * ),string_t st )
 {
 	stringList_t stl = zuluCryptGetMoutedList() ;
 
-	string_t st = String_1( " ",m_point," ",NULL ) ;
-
-	ssize_t r = StringListHasSequence( stl,StringContent( st ) ) ;
+	ssize_t r = function( stl,StringContent( st ) ) ;
 
 	StringListDelete( &stl ) ;
 
 	StringDelete( &st ) ;
 
 	return r != -1 ;
+}
+
+int zuluCryptMountPointIsActive( const char * m_point )
+{
+	return _mounted( StringListHasSequence,String_1( " ",m_point," ",NULL ) ) ;
+}
+
+int zuluCryptPartitionIsMounted( const char * path )
+{
+	return _mounted( StringListHasStartSequence,String_1( path," ",NULL ) ) ;
 }
 
 stringList_t zuluCryptOpenedVolumesList( uid_t uid )
@@ -207,16 +215,20 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 		it++ ;
 
 		if( StringPrefixNotEqual( c,t ) ){
+
 			/*
 			 * we only care about zuluCrypt volumes and these volumes that we care about starts with
 			 * "/dev/mapper/zuluCrypt-"
 			 */
+
 			continue ;
 		}
 		if( StringHasComponent( c,"/run/media/public/" ) ){
+
 			/*
 			 * dont show mirror images due to bind mounts
 			 */
+
 			continue ;
 		}
 
@@ -317,19 +329,4 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 			return StringDeleteHandle( &st ) ;
 		}
 	}
-}
-
-int zuluCryptPartitionIsMounted( const char * path )
-{
-	stringList_t stl = zuluCryptGetMoutedList() ;
-
-	string_t st = String( path ) ;
-
-	ssize_t e = StringListHasStartSequence( stl,StringAppend( st," " ) ) ;
-
-	StringListDelete( &stl ) ;
-
-	StringDelete( &st ) ;
-
-	return e != -1 ;
 }
