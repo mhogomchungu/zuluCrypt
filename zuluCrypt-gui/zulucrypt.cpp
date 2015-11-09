@@ -498,7 +498,7 @@ void zuluCrypt::closeAllVolumes()
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	m_mountInfo.silenceEvents( true ) ;
+	m_mountInfo.announceEvents( false ) ;
 
 	Task::await( [ this ](){
 
@@ -537,7 +537,7 @@ void zuluCrypt::closeAllVolumes()
 
 	} ) ;
 
-	m_mountInfo.silenceEvents( false ) ;
+	m_mountInfo.announceEvents( true ) ;
 
 	m_ui->tableWidget->setEnabled( true ) ;
 }

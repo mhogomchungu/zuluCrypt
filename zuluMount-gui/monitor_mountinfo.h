@@ -41,7 +41,7 @@ public:
 	}
 	monitor_mountinfo( QObject * parent,bool,std::function< void() > ) ;
 	std::function< void() > stop() ;
-	void silenceEvents( bool ) ;
+	void announceEvents( bool ) ;
 	~monitor_mountinfo() ;
 signals:
 	void gotEvent( void ) ;
@@ -60,7 +60,7 @@ private:
 	bool m_running ;
 	std::function< void() > m_stop ;
 	bool m_announceChanges ;
-	bool m_silenceEvents ;
+	bool m_announceEvents ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

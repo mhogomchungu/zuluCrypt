@@ -28,7 +28,7 @@
 #include "zulumounttask.h"
 
 monitor_mountinfo::monitor_mountinfo( QObject * parent,bool e,std::function< void() > f ) :
-	QThread( parent ),m_stop( std::move( f ) ),m_announceChanges( e )
+	QThread( parent ),m_stop( std::move( f ) ),m_announceChanges( e ),m_announceEvents( true )
 {
 	m_babu = parent ;
 	m_baba = this ;
@@ -64,9 +64,9 @@ void monitor_mountinfo::failedToStart()
 	m_running = false ;
 }
 
-void monitor_mountinfo::silenceEvents( bool s )
+void monitor_mountinfo::announceEvents( bool s )
 {
-	m_silenceEvents = s ;
+	m_announceEvents = s ;
 }
 
 void monitor_mountinfo::run()
@@ -97,13 +97,14 @@ void monitor_mountinfo::run()
 		return this->failedToStart() ;
 	}
 
-	auto _unmountProperty = [&]( const QString& volume ){
+	auto _unmountProperty = [ & ]( const QString& volume ){
 
 		Task::exec( [ &,volume ](){
 
 			auto r = zuluMountTask::volumeMiniProperties( volume ) ;
 
 			if( r.volumeRemoved ){
+
 				emit volumeRemoved( r.volumeName ) ;
 			}else{
 				emit volumeMiniProperties( r.entry ) ;
@@ -111,7 +112,7 @@ void monitor_mountinfo::run()
 		} ) ;
 	} ;
 
-	auto _mountProperty = [&]( const QString& volume ){
+	auto _mountProperty = [ & ]( const QString& volume ){
 
 		Task::exec( [ &,volume ](){
 
@@ -119,55 +120,56 @@ void monitor_mountinfo::run()
 		} ) ;
 	} ;
 
-	QStringList oldMountList = zuluMountTask::mountedVolumeList() ;
-	QStringList newMountList ;
+	auto oldMountList = zuluMountTask::mountedVolumeList() ;
 
-	auto _volumeWasUnMounted = [&](){
-		return oldMountList.size() > newMountList.size() ;
-	} ;
+	decltype( oldMountList ) newMountList ;
 
-	auto _volumeWasMounted = [&](){
-		return oldMountList.size() < newMountList.size() ;
-	} ;
+	auto _volumeWasUnMounted = [ & ](){ return oldMountList.size() > newMountList.size() ; } ;
 
-	auto _unmountedVolume = [&]( const QString& e ){
-		return !newMountList.contains( e ) ;
-	} ;
+	auto _volumeWasMounted   = [ & ](){ return oldMountList.size() < newMountList.size() ; } ;
 
-	auto _mountedVolume = [&]( const QString& e ){
-		return !oldMountList.contains( e ) ;
-	} ;
+	auto _unmountedVolume    = [ & ]( const QString& e ){ return !newMountList.contains( e ) ; } ;
+
+	auto _mountedVolume      = [ & ]( const QString& e ){ return !oldMountList.contains( e ) ; } ;
 
 	while( monitor.gotEvent() ){
 
-		if( !m_silenceEvents ){
+		if( m_announceEvents ){
 
 			emit gotEvent() ;
 		}
 
-		newMountList = zuluMountTask::mountedVolumeList() ;
+		if( m_announceChanges ){
 
-		if( _volumeWasUnMounted() ){
+			newMountList = zuluMountTask::mountedVolumeList() ;
 
-			for( const auto& it : oldMountList ){
-				if( _unmountedVolume( it ) ){
-					_unmountProperty( it ) ;
+			if( _volumeWasUnMounted() ){
+
+				for( const auto& it : oldMountList ){
+
+					if( _unmountedVolume( it ) ){
+
+						_unmountProperty( it ) ;
+					}
 				}
-			}
-		}else if( _volumeWasMounted() ){
 
-			for( const auto& it : newMountList ){
-				if( _mountedVolume( it ) ){
-					_mountProperty( it ) ;
+			}else if( _volumeWasMounted() ){
+
+				for( const auto& it : newMountList ){
+
+					if( _mountedVolume( it ) ){
+
+						_mountProperty( it ) ;
+					}
 				}
+			}else{
+				/*
+				 * mount/unmount just happened but volume count remain the same,
+				 * possible reason is because of a bind mount
+				 */
 			}
-		}else{
-			/*
-			 * mount/unmount just happened but volume count remain the same,
-			 * possible reason is because of a bind mount
-			 */
+
+			oldMountList = newMountList ;
 		}
-
-		oldMountList = newMountList ;
 	}
 }
