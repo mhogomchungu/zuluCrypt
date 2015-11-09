@@ -19,11 +19,10 @@
 #include <stddef.h>
 #include "keystrength.h"
 #include "can_build_pwquality.h"
+#include "utility.h"
 
 #include <pwd.h>
 #include <unistd.h>
-
-#include <QString>
 
 #if BUILD_PWQUALITY
 
@@ -40,6 +39,7 @@ bool keystrength::canCheckQuality()
 int keystrength::quality( const QString& key )
 {
 	auto h = reinterpret_cast< pwquality_settings_t * >( m_handle ) ;
+
 	return pwquality_check( h,key.toLatin1().constData(),nullptr,nullptr,nullptr ) ;
 }
 

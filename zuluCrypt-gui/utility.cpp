@@ -650,7 +650,7 @@ QString utility::sharedMountPointPath( const QString& path )
 	if( path == "/" ){
 
 		return QString() ;
-	}else{		
+	}else{
 		auto s = "/run/media/public/" + path.split( "/" ).last() ;
 
 		if( QFile::exists( s ) ){
@@ -1027,7 +1027,7 @@ static QString _partition_id_to_device_id( const QString& id,bool expand )
 
 		QDir d( "/dev/disk/by-id" ) ;
 
-		QStringList l = d.entryList() ;
+		auto l = d.entryList() ;
 
 		l.removeOne( "." ) ;
 		l.removeOne( ".." ) ;
@@ -1036,11 +1036,11 @@ static QString _partition_id_to_device_id( const QString& id,bool expand )
 
 		for( const auto& it : l ){
 
-			const QString& e = it ;
+			const auto& e = it ;
 
 			if( !e.startsWith( "dm" ) ){
 
-				QString q = QString( "/dev/disk/by-id/%1" ).arg( e ) ;
+				auto q = QString( "/dev/disk/by-id/%1" ).arg( e ) ;
 
 				r.setPath( q ) ;
 
@@ -1068,20 +1068,18 @@ QString utility::getVolumeID( const QString& id,bool expand )
 
 void utility::addToFavorite( const QString& dev,const QString& m_point )
 {
-	if( dev.isEmpty() || m_point.isEmpty() ){
+	if( !( dev.isEmpty() || m_point.isEmpty() ) ){
 
-		return ;
+		auto fav = QString( "%1\t%2\n" ).arg( _partition_id_to_device_id( dev,true ),m_point ) ;
+
+		QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
+
+		f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
+
+		utility::changeFilePermissions( f ) ;
+
+		f.write( fav.toLatin1() ) ;
 	}
-
-	auto fav = QString( "%1\t%2\n" ).arg( _partition_id_to_device_id( dev,true ),m_point ) ;
-
-	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
-
-	f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
-
-	utility::changeFilePermissions( f ) ;
-
-	f.write( fav.toLatin1() ) ;
 }
 
 QStringList utility::readFavorites()

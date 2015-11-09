@@ -19,7 +19,7 @@
 #ifndef KEYSTRENGTH_H
 #define KEYSTRENGTH_H
 
-class QString ;
+#include <QString>
 
 class keystrength
 {

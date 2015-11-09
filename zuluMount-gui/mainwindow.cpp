@@ -1240,4 +1240,5 @@ MainWindow::~MainWindow()
 							q->columnWidth( 4 ),
 							q->columnWidth( 5 ) } ) ;
 
+	delete m_ui ;
 }
