@@ -193,7 +193,7 @@ void walletconfig::ShowUI( LxQt::Wallet::walletBackEnd backEnd )
 
 void walletconfig::walletIsOpen( bool opened )
 {
-	typedef QVector<LxQt::Wallet::walletKeyValues> walletKeys ;
+	using walletKeys = QVector<LxQt::Wallet::walletKeyValues> ;
 
 	if( opened ){
 
@@ -228,19 +228,15 @@ void walletconfig::walletIsOpen( bool opened )
 				 *
 				 */
 
-				QStringList s ;
 				auto table = m_ui->tableWidget ;
 
 				for( const auto& it : keys ){
 
-					const QString& acc = it.getKey() ;
+					const auto& acc = it.getKey() ;
 
 					if( !acc.endsWith( COMMENT ) ){
 
-						s.clear() ;
-						s.append( acc ) ;
-						s.append( _getEntry( acc + COMMENT ) ) ;
-						tablewidget::addRowToTable( table,s ) ;
+						tablewidget::addRowToTable( table,{ acc,_getEntry( acc + COMMENT ) } ) ;
 					}
 				}
 			} ;

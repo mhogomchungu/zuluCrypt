@@ -33,6 +33,7 @@ DialogMsg::DialogMsg( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::Dialo
 
 		this->setFont( parent->font() ) ;
 	}
+
 	connect( m_ui->pbNo,SIGNAL( clicked() ),this,SLOT( pbNo() ) ) ;
 	connect( m_ui->pbYes,SIGNAL( clicked() ),this,SLOT( pbYes() ) ) ;
 	connect( m_ui->pbOk,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
@@ -104,8 +105,11 @@ Alternatively,you can add yourself to group \"zulucrypt\" and \"zulumount\" and 
 void DialogMsg::ShowPermissionProblem( const QString& msg,const QString& device )
 {
 	QString msg1 ;
+
 	if( device.startsWith( "/dev/" ) ){
+
 		if( msg == "reading" ){
+
 			msg1 = tr( "Insufficient privilege to access a system device,\nonly root user or members of group zulucrypt can do that" ) ;
 		}else{
 			msg1 = tr( "Insufficient privilege to access a system device in read/write mode,\nonly root user or members of group zulucrypt-write can do that" ) ;
@@ -122,21 +126,29 @@ void DialogMsg::setDimentions( const QString& msg )
 	int len = msg.size() ;
 
 	if( len <= 30 ){
+
 		this->setFixedSize( 270,90 ) ;
+
 		m_ui->label->setGeometry( 10,10,251,31 ) ;
 		m_ui->label->setFixedSize( m_ui->label->size() ) ;
 		m_ui->pbOk->setGeometry( 100,50,75,31 ) ;
 		m_ui->pbYes->setGeometry( 70,50,71,31 ) ;
 		m_ui->pbNo->setGeometry( 140,50,75,31 ) ;
+
 	}else if( len <= 130 ){
+
 		this->setFixedSize( 372,118 ) ;
+
 		m_ui->label->setGeometry( 10,10,351,61 ) ;
 		m_ui->label->setFixedSize( m_ui->label->size() ) ;
 		m_ui->pbOk->setGeometry( 150,80,75,31 ) ;
 		m_ui->pbYes->setGeometry( 120,80,71,31 ) ;
 		m_ui->pbNo->setGeometry( 190,80,75,31 ) ;
+
 	}else if( len > 130 ){
+
 		this->setFixedSize( 372,146 ) ;
+
 		m_ui->label->setGeometry( 10,10,351,91 ) ;
 		m_ui->label->setFixedSize( m_ui->label->size() ) ;
 		m_ui->pbOk->setGeometry( 150,110,75,31 ) ;
@@ -240,7 +252,9 @@ void DialogMsg::ShowUIInfo( const QString& title,const QString& msg )
 	m_ui->pbOk->setHidden( false ) ;
 
 	m_ui->label->setAlignment( Qt::AlignLeft|Qt::AlignVCenter ) ;
+
 	this->setFixedSize( 562,338 ) ;
+
 	m_ui->label->setGeometry( 20,10,531,271 ) ;
 	m_ui->label->setFixedSize( m_ui->label->size() ) ;
 	m_ui->pbOk->setGeometry( 240,290,81,31 ) ;
@@ -265,6 +279,7 @@ void DialogMsg::SetUpButtons()
 	m_ui->pbYes->setHidden( false ) ;
 	m_ui->pbNo->setHidden( false ) ;
 	m_ui->pbOk->setHidden( true ) ;
+
 	this->HideLabels() ;
 }
 
@@ -273,6 +288,7 @@ int DialogMsg::ShowUIYesNo( const QString& title,const QString& msg )
 	this->SetUpButtons() ;
 	this->setDimentions( msg ) ;
 	this->ShowUI( title,msg ) ;
+
 	return m_status;
 }
 
@@ -280,18 +296,21 @@ int  DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
 {
 	this->SetUpButtons() ;
 	this->setDimentions( msg ) ;
+
 	m_ui->pbNo->setFocus() ;
+
 	this->ShowUI( title,msg ) ;
+
 	return m_status;
 }
 
 bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg )
 {
-	QCheckBox * checkBox = new QCheckBox( tr( "Do not show this dialog again" ),this ) ;
+	QCheckBox checkBox( tr( "Do not show this dialog again" ),this ) ;
 
 	this->setFixedSize( 270,110 ) ;
 
-	checkBox->setGeometry( 30,40,251,31 ) ;
+	checkBox.setGeometry( 30,40,251,31 ) ;
 
 	m_ui->label->setGeometry( 10,10,251,31 ) ;
 	m_ui->label->setFixedSize( m_ui->label->size() ) ;
@@ -305,11 +324,7 @@ bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg
 
 	this->ShowUI( title,msg ) ;
 
-	bool st = checkBox->isChecked() ;
-
-	checkBox->deleteLater() ;
-
-	return st ;
+	return checkBox.isChecked() ;
 }
 
 DialogMsg::~DialogMsg()

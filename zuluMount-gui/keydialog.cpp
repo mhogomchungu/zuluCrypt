@@ -238,9 +238,13 @@ void keyDialog::cbMountReadOnlyStateChanged( int state )
 	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 	m_ui->checkBoxOpenReadOnly->setChecked( utility::setOpenVolumeReadOnly( this,state == Qt::Checked,QString( "zuluMount-gui" ) ) ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
+
 	if( m_ui->lineEditKey->text().isEmpty() ){
+
 		m_ui->lineEditKey->setFocus() ;
+
 	}else if( m_ui->lineEditMountPoint->text().isEmpty() ){
+
 		m_ui->lineEditMountPoint->setFocus() ;
 	}else{
 		m_ui->pbOpen->setFocus() ;
@@ -253,6 +257,7 @@ void keyDialog::pbMountPointPath()
 	auto Z = QFileDialog::getExistingDirectory( this,msg,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
+
 		Z = Z + "/" + m_ui->lineEditMountPoint->text().split( "/" ).last() ;
 		m_ui->lineEditMountPoint->setText( Z ) ;
 	}
@@ -304,6 +309,7 @@ void keyDialog::KeyFile()
 		auto Z = QFileDialog::getOpenFileName( this,msg,utility::homePath() ) ;
 
 		if( !Z.isEmpty() ){
+
 			m_ui->lineEditKey->setText( Z ) ;
 		}
 	}
@@ -311,7 +317,7 @@ void keyDialog::KeyFile()
 
 void keyDialog::pbkeyOption()
 {
-	int keyType = m_ui->cbKeyType->currentIndex() ;
+	auto keyType = m_ui->cbKeyType->currentIndex() ;
 
 	if( keyType == keyDialog::plugin ){
 
@@ -363,7 +369,7 @@ void keyDialog::pbOpen()
 
 		utility::wallet w ;
 
-		QString wallet = m_ui->lineEditKey->text() ;
+		auto wallet = m_ui->lineEditKey->text() ;
 
 		if( wallet == tr( KWALLET ) ){
 
@@ -392,10 +398,15 @@ void keyDialog::pbOpen()
 		if( w.opened ){
 
 			if( w.key.isEmpty() ){
+
 				DialogMsg msg( this ) ;
+
 				msg.ShowUIOK( tr( "ERROR" ),tr( "The volume does not appear to have an entry in the wallet" ) ) ;
+
 				this->enableAll() ;
+
 				if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
+
 					m_ui->lineEditKey->setEnabled( false ) ;
 				}
 			}else{
@@ -434,11 +445,16 @@ void keyDialog::encfsMount()
 		this->HideUI() ;
 	}else{
 		DialogMsg msg( this ) ;
+
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nWrong password or not an encfs volume" ) ) ;
+
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+
 			m_ui->lineEditKey->clear() ;
 		}
+
 		m_ui->lineEditKey->setFocus() ;
+
 		return this->enableAll() ;
 	}
 }
@@ -481,44 +497,50 @@ void keyDialog::openVolume()
 
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "Plug in name field is empty" ) ) ;
+
 			m_ui->lineEditKey->setFocus() ;
+
 			return this->enableAll() ;
 
 		}else if( keyType == keyDialog::keyfile ){
 
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "Keyfile field is empty" ) ) ;
+
 			m_ui->lineEditKey->setFocus() ;
+
 			return this->enableAll() ;
 		}
 	}
 
-	QString test_name = m_ui->lineEditMountPoint->text() ;
+	auto test_name = m_ui->lineEditMountPoint->text() ;
 
 	if( test_name.contains( "/" ) ){
 
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
+
 		m_ui->lineEditKey->setFocus() ;
+
 		return this->enableAll() ;
 	}
 
 	QString m ;
 	if( keyType == keyDialog::Key || keyType == keyDialog::keyKeyFile ){
 
-		QString addr = utility::keyPath() ;
+		auto addr = utility::keyPath() ;
 		m = QString( "-f %1" ).arg( addr ) ;
 
 		utility::keySend( addr,m_ui->lineEditKey->text() ) ;
 
 	}else if( keyType == keyDialog::keyfile ){
 
-		QString e = m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
+		auto e = m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 		m = "-f \"" + utility::resolvePath( e ) + "\"" ;
 
 	}else if( keyType == keyDialog::plugin ){
 
-		QString r = m_ui->lineEditKey->text() ;
+		auto r = m_ui->lineEditKey->text() ;
 
 		if( r == "hmac" || r == "gpg" || r == "keykeyfile" ){
 
@@ -532,14 +554,14 @@ void keyDialog::openVolume()
 			m = "-G " + m_ui->lineEditKey->text().replace( "\"","\"\"\"" ) ;
 		}else{
 
-			QString addr = utility::keyPath() ;
+			auto addr = utility::keyPath() ;
 			m = QString( "-f %1" ).arg( addr ) ;
 
 			utility::keySend( addr,m_key ) ;
 		}
 	}else if( keyType == keyDialog::tcryptKeys ){
 
-		QString addr = utility::keyPath() ;
+		auto addr = utility::keyPath() ;
 		m = QString( "-f %1 " ).arg( addr ) ;
 
 		utility::keySend( addr,m_key ) ;
@@ -547,24 +569,26 @@ void keyDialog::openVolume()
 		qDebug() << "ERROR: Uncaught condition" ;
 	}
 
-	QString volume = m_path ;
+	auto volume = m_path ;
 	volume.replace( "\"","\"\"\"" ) ;
 
 	QString exe = zuluMountPath ;
 
 	if( m_ui->checkBoxShareMountPoint->isChecked() ){
+
 		exe += " -M -m -d \"" + volume + "\"" ;
 	}else{
 		exe += " -m -d \"" + volume + "\"" ;
 	}
 
 	if( m_ui->checkBoxOpenReadOnly->isChecked() ){
+
 		exe += " -e ro" ;
 	}else{
 		exe += "  e rw" ;
 	}
 
-	QString mountPoint = m_ui->lineEditMountPoint->text() ;
+	auto mountPoint = m_ui->lineEditMountPoint->text() ;
 	mountPoint.replace( "\"","\"\"\"" ) ;
 
 	exe += " -z \"" + mountPoint + "\"" ;
@@ -583,7 +607,7 @@ void keyDialog::openVolume()
 
 		for( const auto& it : m_keyFiles ){
 
-			QString e = it ;
+			auto e = it ;
 			e.replace( "\"","\"\"\"" ) ;
 
 			exe += " -F \"" + e + "\"" ;
@@ -615,9 +639,11 @@ void keyDialog::openVolume()
 	if( s.success() ){
 
 		if( utility::mapperPathExists( m_path ) ) {
+
 			/*
 			 * The volume is reported as opened and it actually is
 			 */
+
 			m_success( utility::mountPath( mountPoint ) ) ;
 		}else{
 			/*
@@ -633,11 +659,14 @@ void keyDialog::openVolume()
 	}else{
 		m_veraCryptWarning.hide() ;
 
-		int keyType = m_ui->cbKeyType->currentIndex() ;
+		auto keyType = m_ui->cbKeyType->currentIndex() ;
+
 		if( s.exitCode() == 12 && keyType == keyDialog::plugin ){
+
 			/*
 			 * A user cancelled the plugin
 			 */
+
 			this->enableAll() ;
 		}else{
 
@@ -649,9 +678,12 @@ void keyDialog::openVolume()
 			msg.ShowUIOK( tr( "ERROR" ),z ) ;
 
 			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+
 				m_ui->lineEditKey->clear() ;
 			}
+
 			this->enableAll() ;
+
 			m_ui->lineEditKey->setFocus() ;
 
 			if( keyType == keyDialog::keyKeyFile ){
@@ -667,6 +699,7 @@ void keyDialog::openVolume()
 void keyDialog::cbActicated( int e )
 {
 	switch( e ){
+
 		case keyDialog::Key        : return this->key() ;
 		case keyDialog::keyfile    : return this->keyFile() ;
 		case keyDialog::keyKeyFile : return this->keyAndKeyFile() ;

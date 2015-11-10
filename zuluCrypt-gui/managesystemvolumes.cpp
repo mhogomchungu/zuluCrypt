@@ -97,7 +97,7 @@ void manageSystemVolumes::readSystemPartitions()
 
 	if( file.open( QIODevice::ReadOnly ) ){
 
-		QStringList l = utility::split( file.readAll() ) ;
+		auto l = utility::split( file.readAll() ) ;
 
 		l.removeDuplicates() ;
 
@@ -117,9 +117,7 @@ void manageSystemVolumes::writeSystemPartitions()
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Could not open \"%1\" for writing" ).arg( m_path ) ) ;
 	}else{
-		QTableWidgetItem * it ;
-
-		QTableWidget * table = m_ui->tableWidget ;
+		auto table = m_ui->tableWidget ;
 
 		int j = m_ui->tableWidget->rowCount() ;
 
@@ -127,7 +125,7 @@ void manageSystemVolumes::writeSystemPartitions()
 
 			for( int i = 0 ; i < j ; i++ ){
 
-				it = table->item( i,0 ) ;
+				auto it = table->item( i,0 ) ;
 
 				file.write( it->text().toLatin1() ) ;
 
@@ -173,9 +171,9 @@ void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 
 void manageSystemVolumes::removeCurrentRow()
 {
-	QTableWidgetItem * it = m_ui->tableWidget->currentItem() ;
+	auto it = m_ui->tableWidget->currentItem() ;
 
-	QString m = tr( "Are you sure you want to remove \n\"%1\"\n from the list?" ).arg( it->text() ) ;
+	auto m = tr( "Are you sure you want to remove \n\"%1\"\n from the list?" ).arg( it->text() ) ;
 
 	DialogMsg msg( this ) ;
 
@@ -190,10 +188,8 @@ void manageSystemVolumes::addItemsToTable( QString path )
 	if( path.isEmpty() ){
 
 		m_ui->tableWidget->setFocus() ;
-	}else{
-		QStringList l ;
-		l.append( path ) ;
-		this->addItemsToTable( l ) ;
+	}else{		 
+		this->addItemsToTable( QStringList( path ) ) ;
 	}
 }
 
@@ -210,7 +206,7 @@ void manageSystemVolumes::pbDone()
 
 void manageSystemVolumes::pbFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select Path To System Volume" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Select Path To System Volume" ),utility::homePath(),0 ) ;
 
 	this->addItemsToTable( Z ) ;
 }

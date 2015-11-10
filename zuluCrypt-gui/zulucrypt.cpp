@@ -287,7 +287,7 @@ void zuluCrypt::setupUIElements()
 
 void zuluCrypt::itemEntered( QTableWidgetItem * item )
 {
-	QString m_point = item->tableWidget()->item( item->row(),1 )->text() ;
+	auto m_point = item->tableWidget()->item( item->row(),1 )->text() ;
 
 	if( !m_point.isEmpty() ){
 
@@ -369,7 +369,7 @@ void zuluCrypt::setupConnections()
 
 void zuluCrypt::optionMenuAboutToShow()
 {
-	bool b = LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ;
+	auto b = LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ;
 	m_ui->actionChange_internal_wallet_password->setEnabled( b ) ;
 }
 
@@ -560,6 +560,7 @@ void zuluCrypt::removeRowFromTable( int x )
 void zuluCrypt::minimizeToTray()
 {
 	if( m_ui->actionTray_icon->isChecked() ){
+
 		this->hide() ;
 	}else{
 		m_ui->actionTray_icon->setChecked( true ) ;
@@ -743,7 +744,7 @@ void zuluCrypt::volume_property()
 
 		if( r.isEmpty() ){
 
-			msg.ShowUIOK( tr( "ERROR!"),tr( "Volume is not open or was opened by a different user" ) ) ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume is not open or was opened by a different user" ) ) ;
 		}else{
 			msg.ShowUIVolumeProperties( tr( "Volume Properties" ),r ) ;
 		}
@@ -782,9 +783,9 @@ void zuluCrypt::readFavorites()
 
 void zuluCrypt::addToFavorite()
 {
-	QTableWidgetItem * item = m_ui->tableWidget->currentItem() ;
-	QString x = m_ui->tableWidget->item( item->row(),0 )->text() ;
-	QString y = x.split( "/" ).last() ;
+	auto item = m_ui->tableWidget->currentItem() ;
+	auto x = m_ui->tableWidget->item( item->row(),0 )->text() ;
+	auto y = x.split( "/" ).last() ;
 	utility::addToFavorite( x,y ) ;
 }
 
@@ -833,10 +834,14 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 	m.addSeparator() ;
 
 	if( m_ui->tableWidget->item( item->row(),2 )->text() == "luks" ){
+
 		m.addSeparator() ;
+
 		connect( m.addAction( tr( "Add Key" ) ),SIGNAL( triggered() ),this,SLOT( luksAddKeyContextMenu() ) ) ;
 		connect( m.addAction( tr( "Remove Key" ) ),SIGNAL( triggered() ),this,SLOT( luksDeleteKeyContextMenu() ) ) ;
+
 		m.addSeparator() ;
+
 		connect( m.addAction( tr( "Backup LUKS Header" ) ),SIGNAL( triggered() ),this,SLOT( luksHeaderBackUpContextMenu() ) ) ;
 	}
 
@@ -957,7 +962,7 @@ void zuluCrypt::luksHeaderBackUpContextMenu()
 {
 	auto item = m_ui->tableWidget->currentItem() ;
 
-	QString device = m_ui->tableWidget->item( item->row(),0 )->text() ;
+	auto device = m_ui->tableWidget->item( item->row(),0 )->text() ;
 
 	managevolumeheader::instance( this ).backUpHeader( device ) ;
 }

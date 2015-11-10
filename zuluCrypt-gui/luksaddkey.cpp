@@ -136,13 +136,21 @@ void luksaddkey::ShowUI()
 void luksaddkey::setFieldFocus()
 {
 	if( m_ui->textEditPathToVolume->text().isEmpty() ){
+
 		m_ui->textEditPathToVolume->setFocus() ;
+
 	}else if( m_ui->textEditExistingPassphrase->text().isEmpty() ){
+
 		m_ui->textEditExistingPassphrase->setFocus() ;
+
 	}else if( m_ui->textEditPassphraseToAdd->text().isEmpty() ){
+
 		m_ui->textEditPassphraseToAdd->setFocus() ;
+
 	}else if( m_ui->cbNewKey->currentIndex() == 0 ){
+
 		if( m_ui->lineEditReEnterPassphrase->text().isEmpty() ){
+
 			m_ui->lineEditReEnterPassphrase->setFocus() ;
 		}else{
 			m_ui->pushButtonAdd->setFocus() ;
@@ -188,6 +196,7 @@ void luksaddkey::cbExistingKey( int e )
 		m_ui->textEditExistingPassphrase->setEnabled( true ) ;
 	}else{
 		_key_ui() ;
+
 		m_ui->textEditExistingPassphrase->setEnabled( false ) ;
 
 		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
@@ -239,6 +248,7 @@ void luksaddkey::cbNewKey( int e )
 		m_ui->textEditPassphraseToAdd->setEnabled( true ) ;
 	}else{
 		_key_ui() ;
+
 		m_ui->textEditPassphraseToAdd->setEnabled( false ) ;
 		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
 
@@ -263,28 +273,37 @@ void luksaddkey::cbNewKey( int e )
 
 void luksaddkey::pbOpenExisitingKeyFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Existing KeyFile" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Existing KeyFile" ),utility::homePath(),0 ) ;
+
 	if( !Z.isEmpty() ){
+
 		m_ui->textEditExistingPassphrase->setText( Z ) ;
 	}
+
 	this->setFieldFocus() ;
 }
 
 void luksaddkey::pbOpenNewKeyFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "New KeyFile" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "New KeyFile" ),utility::homePath(),0 ) ;
+
 	if( !Z.isEmpty() ){
+
 		m_ui->textEditPassphraseToAdd->setText( Z ) ;
 	}
+
 	this->setFieldFocus() ;
 }
 
 void luksaddkey::pbOpenFile( void )
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Encrypted Volume Path" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Encrypted Volume Path" ),utility::homePath(),0 ) ;
+
 	if( !Z.isEmpty() ){
+
 		m_ui->textEditPathToVolume->setText( Z ) ;
 	}
+
 	this->setFieldFocus() ;
 }
 
@@ -300,10 +319,10 @@ void luksaddkey::pbOpenPartition( void )
 void luksaddkey::pbAdd( void )
 {
 	DialogMsg msg( this ) ;
-	QString ExistingKey = m_ui->textEditExistingPassphrase->text() ;
+	auto ExistingKey = m_ui->textEditExistingPassphrase->text() ;
 
-	QString NewKey = m_ui->textEditPassphraseToAdd->text() ;
-	QString NewKey_1 = m_ui->lineEditReEnterPassphrase->text() ;
+	auto NewKey = m_ui->textEditPassphraseToAdd->text() ;
+	auto NewKey_1 = m_ui->lineEditReEnterPassphrase->text() ;
 
 	m_volumePath = m_ui->textEditPathToVolume->text() ;
 
@@ -335,9 +354,11 @@ void luksaddkey::pbAdd( void )
 		if( NewKey != NewKey_1 ){
 
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "Keys do not match" ) ) ;
+
 			m_ui->textEditPassphraseToAdd->clear() ;
 			m_ui->lineEditReEnterPassphrase->clear() ;
 			m_ui->textEditPassphraseToAdd->setFocus() ;
+
 			return ;
 		}
 	}
@@ -352,7 +373,7 @@ void luksaddkey::pbAdd( void )
 		existingPassType = "-u" ;
 		ExistingKey = utility::keyPath() + "-existingKey" ;
 
-		QString k = m_ui->textEditExistingPassphrase->text() ;
+		auto k = m_ui->textEditExistingPassphrase->text() ;
 
 		utility::keySend( ExistingKey,k ) ;
 	}
@@ -374,8 +395,11 @@ void luksaddkey::pbAdd( void )
 	}
 
 	const QString& a = QString( ZULUCRYPTzuluCrypt ) ;
+
 	QString b = m_volumePath ;
+
 	b.replace( "\"","\"\"\"" ) ;
+
 	const QString& c = existingPassType ;
 	const QString& d = ExistingKey ;
 	const QString& e = newPassType ;
@@ -383,7 +407,7 @@ void luksaddkey::pbAdd( void )
 
 	auto r = "%1 -a -d \"%2\" %3 \"%4\" %5 \"%6\"" ;
 
-	QString exe = utility::appendUserUID( r ).arg( a,b,c,d,e,f ) ;
+	auto exe = utility::appendUserUID( r ).arg( a,b,c,d,e,f ) ;
 
 	m_isWindowClosable = false ;
 
@@ -418,6 +442,7 @@ void luksaddkey::taskFinished( int r )
 {
 	m_isWindowClosable = true ;
 	DialogMsg msg( this ) ;
+
 	switch( r ){
 		case 0  : return this->keyAdded() ;
 		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented key does not match any key in the volume" ) ) ;		      	break ;
@@ -489,12 +514,16 @@ void luksaddkey::enableAll()
 	auto index = m_ui->cbNewKey->currentIndex() ;
 
 	if( index == 1 ){
+
 		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
 	}
+
 	if( index == 2 ){
+
 		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
 		m_ui->textEditPassphraseToAdd->setEnabled( false ) ;
 	}
+
 	m_ui->label->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
 }

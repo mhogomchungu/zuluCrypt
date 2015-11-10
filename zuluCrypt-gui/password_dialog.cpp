@@ -130,7 +130,7 @@ void passwordDialog::pbPlugin()
 
 void passwordDialog::pbPluginEntryClicked( QAction * e )
 {
-	QString text = e->text() ;
+	auto text = e->text() ;
 
 	text.remove( "&" ) ;
 
@@ -207,20 +207,22 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 	}
 
 	m_open_with_path = true ;
+
 	this->passphraseOption() ;
+
 	m_ui->OpenVolumePath->setText( volumePath ) ;
 	m_ui->OpenVolumePath->setEnabled( false ) ;
 	m_ui->PushButtonVolumePath->setEnabled( false ) ;
 	m_ui->MountPointPath->setText( m_point ) ;
 	m_ui->PassPhraseField->setFocus() ;
-	QString vp = volumePath.mid( 0,5 ) ;
 
-	if( vp == "/dev/" || vp == "UUID=" ){
+	if( volumePath.startsWith( "/dev/" ) || volumePath.startsWith( "UUID=" ) ){
 
 		m_ui->PushButtonVolumePath->setIcon( QIcon( ":/partition.png" ) ) ;
 	}else{
 		m_ui->PushButtonVolumePath->setIcon( QIcon( ":/file.png" ) ) ;
 	}
+
 	this->show() ;
 }
 
@@ -238,7 +240,8 @@ void passwordDialog::ShowUI( QString dev )
 {
 	this->setTitle() ;
 
-	QString m_point = utility::homePath() + "/" + dev.split( "/" ).last() ;
+	auto m_point = utility::homePath() + "/" + dev.split( "/" ).last() ;
+
 	this->ShowUI( dev,m_point ) ;
 }
 
@@ -249,8 +252,10 @@ void passwordDialog::ShowUI()
 	this->setTitle() ;
 
 	this->passphraseOption() ;
+
 	m_ui->OpenVolumePath->setFocus() ;
 	m_ui->PushButtonVolumePath->setIcon( QIcon( ":/file.png" ) ) ;
+
 	this->show() ;
 }
 
@@ -274,6 +279,7 @@ void passwordDialog::mountPointPath( QString path )
 void passwordDialog::cbActicated( int e )
 {
 	switch( e ){
+
 		case passwordDialog::key         : return this->passphraseOption() ;
 		case passwordDialog::keyfile     : return this->passphraseFromFileOption() ;
 		case passwordDialog::keyKeyFile  : return this->keyAndKeyFile() ;
@@ -300,6 +306,7 @@ void passwordDialog::keyAndKeyFile()
 void passwordDialog::pbKeyOption()
 {
 	if( m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
+
 		this->pbPlugin() ;
 	}else{
 		this->clickedPassPhraseFromFileButton() ;
@@ -357,31 +364,39 @@ void passwordDialog::passphraseFromFileOption()
 void passwordDialog::clickedPassPhraseFromFileButton()
 {
 	QString msg ;
+
 	if( m_ui->cbKeyType->currentIndex() == passwordDialog::keyfile ){
+
 		msg = tr( "Select A KeyFile" ) ;
 	}else{
 		msg = tr( "Select A Key Module" ) ;
 	}
 
-	QString Z = QFileDialog::getOpenFileName( this,msg,utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,msg,utility::homePath(),0 ) ;
+
 	if( !Z.isEmpty() ){
+
 		m_ui->PassPhraseField->setText( Z ) ;
 	}
 }
 
 void passwordDialog::mount_point( void )
 {
-	QString p = tr( "Select Path To Mount Point Folder" ) ;
-	QString Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
+	auto p = tr( "Select Path To Mount Point Folder" ) ;
+	auto Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
+
 		Z = Z + "/" + m_ui->OpenVolumePath->text().split( "/" ).last() ;
 		m_ui->MountPointPath->setText( Z ) ;
 	}
 
 	if( m_ui->MountPointPath->text().isEmpty() ){
+
 		m_ui->MountPointPath->setFocus() ;
+
 	}else if( m_ui->PassPhraseField->text().isEmpty() ){
+
 		m_ui->PassPhraseField->setFocus() ;
 	}
 }
@@ -389,9 +404,12 @@ void passwordDialog::mount_point( void )
 void passwordDialog::file_path( void )
 {
 
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select Encrypted volume" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Select Encrypted volume" ),utility::homePath(),0 ) ;
+
 	m_ui->OpenVolumePath->setText( Z ) ;
+
 	if( !Z.isEmpty() ){
+
 		m_ui->MountPointPath->setText( utility::mountPathPostFix( Z.split( "/" ).last() ) ) ;
 	}
 }
@@ -399,6 +417,7 @@ void passwordDialog::file_path( void )
 void passwordDialog::HideUI()
 {
 	if( !m_working ){
+
 		this->hide() ;
 		this->deleteLater() ;
 	}
@@ -410,8 +429,8 @@ void passwordDialog::buttonOpenClicked( void )
 
 	if( m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
 
-		QString wallet = m_ui->PassPhraseField->text() ;
-		QString keyID = m_ui->OpenVolumePath->text() ;
+		auto wallet = m_ui->PassPhraseField->text() ;
+		auto keyID = m_ui->OpenVolumePath->text() ;
 
 		utility::wallet w ;
 
@@ -444,8 +463,11 @@ void passwordDialog::buttonOpenClicked( void )
 		if( w.opened ){
 
 			if( w.key.isEmpty() ){
+
 				DialogMsg msg( this ) ;
+
 				msg.ShowUIOK( tr( "ERROR!" ),tr( "The volume does not appear to have an entry in the wallet" ) ) ;
+
 				this->enableAll() ;
 			}else{
 				m_key = w.key ;
@@ -503,11 +525,13 @@ void passwordDialog::enableAll()
 	m_ui->cbKeyType->setEnabled( true ) ;
 
 	if( m_open_with_path ){
+
 		m_ui->OpenVolumePath->setEnabled( false ) ;
 		m_ui->PushButtonVolumePath->setEnabled( false ) ;
 	}
 
 	if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
+
 		m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 		m_ui->pushButtonPlugin->setEnabled( false ) ;
 		m_ui->PassPhraseField->setEnabled( true ) ;
@@ -517,6 +541,7 @@ void passwordDialog::enableAll()
 	}
 
 	if( m_ui->cbKeyType->currentIndex() == passwordDialog::keyfile ){
+
 		m_ui->pushButtonPlugin->setEnabled( false ) ;
 	}
 }
@@ -526,22 +551,31 @@ void passwordDialog::openVolume()
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
 	m_point = m_ui->MountPointPath->text() ;
+
 	if( m_point.isEmpty() || m_device.isEmpty() ){
+
 		DialogMsg msg( this ) ;
+
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+
 		return this->enableAll() ;
 	}
 
 	if( m_point.contains( "/" ) ){
+
 		DialogMsg msg( this ) ;
+
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "\"/\" character is not allowed in mount name field" ) ) ;
+
 		m_ui->OpenVolumePath->setFocus() ;
+
 		return this->enableAll() ;
 	}
 
 	QString mode ;
 
 	if( m_ui->checkBoxReadOnly->isChecked() ){
+
 		mode =" ro" ;
 	}else{
 		mode = "rw" ;
@@ -554,22 +588,33 @@ void passwordDialog::openVolume()
 	int keySource = m_ui->cbKeyType->currentIndex() ;
 
 	if( keySource == passwordDialog::keyfile ){
+
 		if( m_key.isEmpty() ){
+
 			DialogMsg msg( this ) ;
+
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+
 			return this->enableAll() ;
 		}else{
 			passtype = "-f" ;
 			keyPath = utility::resolvePath( m_key ).replace( "\"","\"\"\"" ) ;
 		}
 	}else if( keySource == passwordDialog::key || keySource == passwordDialog::keyKeyFile ){
+
 		passtype = "-f" ;
 		keyPath = utility::keyPath() ;
+
 		this->sendKey( keyPath ) ;
+
 	}else if( keySource == passwordDialog::plugin ){
+
 		if( m_key.isEmpty() ){
+
 			DialogMsg msg( this ) ;
+
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+
 			return this->enableAll() ;
 		}else{
 			QString r = m_ui->PassPhraseField->text() ;
@@ -578,6 +623,7 @@ void passwordDialog::openVolume()
 
 				passtype = "-f" ;
 				keyPath = utility::keyPath() ;
+
 				this->sendKey( keyPath ) ;
 
 			}else if( r == "hmac" || r == "gpg" || r == "keykeyfile" ){
@@ -597,8 +643,10 @@ void passwordDialog::openVolume()
 			}
 		}
 	}else if( keySource == passwordDialog::tcryptKeys ){
+
 		passtype = "-f" ;
 		keyPath = utility::keyPath() ;
+
 		this->sendKey( keyPath ) ;
 	}else{
 		qDebug() << "Error: uncaught condition" ;
@@ -676,6 +724,7 @@ void passwordDialog::failed( int r )
 	}
 
 	DialogMsg msg( this ) ;
+
 	switch ( r ){
 		case 0 : ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;

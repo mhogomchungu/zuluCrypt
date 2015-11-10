@@ -106,6 +106,7 @@ private:
 		m_isSystem = isSystem ;
 
 		if( l.size() >= 6 ){
+			
 			m_volume      = l.at( 0 ) ;
 			m_mountPoint  = l.at( 1 ) ;
 			m_fileSystem  = l.at( 2 ) ;
@@ -114,7 +115,9 @@ private:
 			m_usedSpacePercentage = l.at( 5 ) ;
 
 			int index = m_fileSystem.indexOf( "/" ) ;
+
 			if( index != -1 ){
+
 				m_fileSystem = m_fileSystem.replace( "/","\n(" ) + ")" ;
 			}
 

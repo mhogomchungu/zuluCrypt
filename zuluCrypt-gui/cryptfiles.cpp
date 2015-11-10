@@ -92,14 +92,16 @@ void cryptfiles::sourceTextChanged( QString source )
 	QString dest ;
 
 	if( m_operation == "-E" ){
+
 		dest = source.split( "/" ).last() + ".zC" ;
 	}else{
 		dest = source.split( "/" ).last() ;
 	}
 
-	QStringList p = m_ui->lineEditDestinationPath->text().split( "/" ) ;
+	auto p = m_ui->lineEditDestinationPath->text().split( "/" ) ;
 
-	int size = p.size() ;
+	auto size = p.size() ;
+
 	QString path ;
 
 	for( int i = 0 ; i < size - 1 ; i++ ){
@@ -129,9 +131,10 @@ QString cryptfiles::destinationPath( const QString& e )
 		int r = e.lastIndexOf( '/' ) ;
 
 		if( r == -1 ){
+
 			return utility::homePath() + "/" ;
 		}else{
-			QString x = e ;
+			auto x = e ;
 			x.truncate( r ) ;
 			return x + "/" ;
 		}
@@ -141,7 +144,9 @@ QString cryptfiles::destinationPath( const QString& e )
 void cryptfiles::encrypt()
 {
 	m_operation = "-E" ;
+
 	this->setWindowTitle( tr( "Create An Encrypted Version Of A File" ) ) ;
+
 	this->show() ;
 }
 
@@ -150,6 +155,7 @@ void cryptfiles::decrypt()
 	m_operation = "-D" ;
 	m_ui->labelKey2->setEnabled( false ) ;
 	m_ui->lineEditPass_2->setEnabled( false ) ;
+
 	this->setWindowTitle( tr( "Create A Decrypted Version Of An encrypted File" ) ) ;
 	this->show() ;
 }
@@ -161,6 +167,7 @@ void cryptfiles::decrypt( const QString& e )
 	m_ui->labelKey2->setEnabled( false ) ;
 	m_ui->lineEditPass_2->setEnabled( false ) ;
 	m_ui->lineEditDestinationPath->setText( this->destinationPath( e )  ) ;
+
 	this->sourceTextChanged( e ) ;
 	this->setWindowTitle( tr( "Create A Decrypted Version Of An encrypted File" ) ) ;
 	this->show() ;
@@ -191,6 +198,7 @@ void cryptfiles::HideUI()
 void cryptfiles::enableAll()
 {
 	if( m_operation == "-E" ){
+
 		m_ui->labelKey2->setEnabled( true ) ;
 		m_ui->lineEditPass_2->setEnabled( true ) ;
 	}
@@ -200,8 +208,6 @@ void cryptfiles::enableAll()
 
 	m_ui->labelDestinationPath->setEnabled( true ) ;
 	m_ui->labelSourcePath->setEnabled( true ) ;
-	//m_ui->lineEditDestinationPath->setEnabled( true ) ;
-	//m_ui->lineEditSourcePath->setEnabled( true ) ;
 	m_ui->pbCreate->setEnabled( true ) ;
 	m_ui->pbOpenFolder->setEnabled( true ) ;
 	m_ui->pushButtonFile->setEnabled( true ) ;
@@ -232,14 +238,14 @@ void cryptfiles::pbCreate()
 {
 	DialogMsg msg( this ) ;
 
-	QString source = utility::resolvePath( m_ui->lineEditSourcePath->text() ) ;
+	auto source = utility::resolvePath( m_ui->lineEditSourcePath->text() ) ;
 
 	if( source.isEmpty() ){
 
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Path to source field is empty" ) ) ;
 	}
 
-	QString dest = utility::resolvePath( m_ui->lineEditDestinationPath->text() ) ;
+	auto dest = utility::resolvePath( m_ui->lineEditDestinationPath->text() ) ;
 
 	if( !utility::pathExists( source ) ){
 
@@ -254,8 +260,8 @@ void cryptfiles::pbCreate()
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "You dont seem to have writing access to the destination folder" ) ) ;
 	}
 
-	QString key_1 = m_ui->lineEditPass_1->text() ;
-	QString key_2 = m_ui->lineEditPass_2->text() ;
+	auto key_1 = m_ui->lineEditPass_1->text() ;
+	auto key_2 = m_ui->lineEditPass_2->text() ;
 
 	QString keySource ;
 
@@ -411,7 +417,9 @@ void cryptfiles::pbOpenFolder( void )
 		Z = utility::homePath() ;
 	}
 	QString path ;
+
 	if( m_operation == "-E" ){
+
 		path = Z + "/" + m_ui->lineEditSourcePath->text().split( "/" ).last() + ".zC" ;
 	}else{
 		path = Z + "/" + m_ui->lineEditSourcePath->text().split( "/" ).last() ;
@@ -419,7 +427,9 @@ void cryptfiles::pbOpenFolder( void )
 	}
 
 	m_ui->lineEditDestinationPath->setText( path ) ;
+
 	if( m_ui->lineEditSourcePath->text().isEmpty() ){
+
 		m_ui->lineEditSourcePath->setFocus() ;
 	}else{
 		m_ui->pbCreate->setFocus() ;
@@ -443,6 +453,7 @@ void cryptfiles::cbChanged( int r )
 		m_ui->lineEditPass_1->setEnabled( true ) ;
 
 		if( m_operation == "-E" ){
+
 			m_ui->labelKey2->setEnabled( true ) ;
 			m_ui->lineEditPass_2->setEnabled( true ) ;
 		}
@@ -489,10 +500,12 @@ void cryptfiles::cbChanged( int r )
 void cryptfiles::pbOpenFile()
 {
 	QString Z ;
+
 	if( m_operation == "-E" ){
+
 		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Encrypt" ),utility::homePath(),0 ) ;
 	}else{
-		QString x = tr( "zuluCrypt encrypted files ( *.zc ) ;; All Files ( * )" ) ;
+		auto x = tr( "zuluCrypt encrypted files ( *.zc ) ;; All Files ( * )" ) ;
 		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Decrypt" ),utility::homePath(),x ) ;
 	}
 	m_ui->lineEditSourcePath->setText( Z ) ;
@@ -503,7 +516,7 @@ void cryptfiles::pbOpenFile()
 
 void cryptfiles::pbKeyFile()
 {
-	QString e = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath(),0 ) ;
+	auto e = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath(),0 ) ;
 
 	m_ui->lineEditPass_1->setText( e ) ;
 
@@ -561,6 +574,7 @@ void cryptfiles::taskFinished( int st )
 	this->enableAll() ;
 
 	if( status == CryptTask::wrongKey  ){
+
 		m_ui->lineEditPass_1->clear() ;
 		m_ui->lineEditPass_1->setFocus() ;
 	}

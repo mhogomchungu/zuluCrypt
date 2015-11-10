@@ -77,10 +77,13 @@ bool favorites::eventFilter( QObject * watched,QEvent * event )
 void favorites::devicePathTextChange( QString txt )
 {
 	if( txt.isEmpty() ){
+
 		m_ui->lineEditMountPath->clear() ; ;
 	}else{
-		QString s = txt.split( "/" ).last() ;
+		auto s = txt.split( "/" ).last() ;
+
 		if( s.isEmpty() ){
+
 			m_ui->lineEditMountPath->setText( txt ) ;
 		}else{
 			m_ui->lineEditMountPath->setText( s ) ;
@@ -193,13 +196,15 @@ void favorites::add()
 {
 	DialogMsg msg( this ) ;
 
-	QString dev = m_ui->lineEditDeviceAddress->text() ;
-	QString m_path = m_ui->lineEditMountPath->text() ;
+	auto dev = m_ui->lineEditDeviceAddress->text() ;
+	auto m_path = m_ui->lineEditMountPath->text() ;
 
 	if( dev.isEmpty() ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Device address field is empty" ) ) ;
 	}
 	if( m_path.isEmpty() ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount point path field is empty" ) ) ;
 	}
 
@@ -217,9 +222,11 @@ void favorites::add()
 
 void favorites::fileAddress()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Path To An Encrypted Volume" ),QDir::homePath(),0 ) ;
-	if( !Z.isEmpty() ){
-		m_ui->lineEditDeviceAddress->setText( Z ) ;
+	auto e = QFileDialog::getOpenFileName( this,tr( "Path To An Encrypted Volume" ),QDir::homePath(),0 ) ;
+
+	if( !e.isEmpty() ){
+
+		m_ui->lineEditDeviceAddress->setText( e ) ;
 	}
 }
 

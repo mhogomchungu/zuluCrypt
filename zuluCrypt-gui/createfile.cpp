@@ -36,6 +36,7 @@ createfile::createfile( QWidget * parent,std::function< void( const QString& ) >
 	QDialog( parent ),m_ui( new Ui::createfile ),m_function( std::move( f ) )
 {
 	m_ui->setupUi( this ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
@@ -68,7 +69,7 @@ bool createfile::eventFilter( QObject * watched,QEvent * event )
 
 void createfile::fileTextChange( QString txt )
 {
-	QString p = m_ui->lineEditFilePath->text() ;
+	auto p = m_ui->lineEditFilePath->text() ;
 
 	if( p.isEmpty() ){
 
@@ -78,13 +79,13 @@ void createfile::fileTextChange( QString txt )
 	}
 
 	int i = p.lastIndexOf( "/" ) ;
-	if( i == -1 ){
-		return ;
+
+	if( i != -1 ){
+
+		p = p.mid( 0,i ) + "/" + txt.split( "/" ).last() ;
+
+		m_ui->lineEditFilePath->setText( p ) ;
 	}
-
-	p = p.mid( 0,i ) + "/" + txt.split( "/" ).last() ;
-
-	m_ui->lineEditFilePath->setText( p ) ;
 }
 
 void createfile::closeEvent( QCloseEvent * e )
@@ -123,12 +124,14 @@ void createfile::disableAll()
 void createfile::showUI()
 {
 	this->enableAll() ;
+
 	m_ui->comboBox->setCurrentIndex( 1 ) ;
 	m_ui->lineEditFileName->clear() ;
 	m_ui->lineEditFilePath->setText( utility::homePath() + "/" ) ;
 	m_ui->lineEditFileSize->clear() ;
 	m_ui->progressBar->setValue( 0 ) ;
 	m_ui->lineEditFileName->setFocus() ;
+
 	this->show() ;
 }
 
@@ -136,9 +139,9 @@ void createfile::pbCreate()
 {
 	DialogMsg msg( this ) ;
 
-	QString fileName = m_ui->lineEditFileName->text() ;
-	QString filePath = m_ui->lineEditFilePath->text() ;
-	QString fileSize = m_ui->lineEditFileSize->text() ;
+	auto fileName = m_ui->lineEditFileName->text() ;
+	auto filePath = m_ui->lineEditFilePath->text() ;
+	auto fileSize = m_ui->lineEditFileSize->text() ;
 
 	if( fileName.isEmpty()){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File name field is empty" ) ) ;
@@ -207,10 +210,14 @@ void createfile::pbCreate()
 	int r = utility::clearVolume( filePath,&m_exit,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
 
 	if( r == 5 ){
+
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
 		QFile::remove( filePath ) ;
+
 	}else if( r == 0 ){
+
 		m_function( filePath ) ;
+
 	}else{
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
 		QFile::remove( filePath ) ;
@@ -225,12 +232,13 @@ void createfile::pbCancel()
 {
 	if( m_running ){
 
-		QString x = tr( "Terminating file creation process" ) ;
-		QString y = tr( "Are you sure you want to stop file creation process?" ) ;
+		auto x = tr( "Terminating file creation process" ) ;
+		auto y = tr( "Are you sure you want to stop file creation process?" ) ;
 
 		DialogMsg msg( this ) ;
 
 		if( msg.ShowUIYesNoDefaultNo( x,y ) == QMessageBox::Yes ){
+
 			m_exit = true ;
 		}
 	}else{
@@ -251,11 +259,12 @@ void createfile::setProgress( int p )
 
 void createfile::pbOpenFolder()
 {
-	QString p = tr( "Select Path to where the file will be created" ) ;
-	QString q = utility::homePath() ;
-	QString Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
+	auto p = tr( "Select Path to where the file will be created" ) ;
+	auto q = utility::homePath() ;
+	auto Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
+
 		Z = Z + "/" + m_ui->lineEditFilePath->text().split( "/" ).last() ;
 		m_ui->lineEditFilePath->setText( Z ) ;
 	}

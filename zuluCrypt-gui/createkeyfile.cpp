@@ -67,14 +67,17 @@ bool createkeyfile::eventFilter( QObject * watched,QEvent * event )
 
 void createkeyfile::keyTextChange( QString txt )
 {
-	QString p = m_ui->lineEditPath->text() ;
+	auto p = m_ui->lineEditPath->text() ;
 
 	if( p.isEmpty() ){
-		QString x = utility::homePath() + "/" + txt.split( "/" ).last() ;
+
+		auto x = utility::homePath() + "/" + txt.split( "/" ).last() ;
 		m_ui->lineEditPath->setText( x ) ;
 	}else{
 		int i = p.lastIndexOf( "/" ) ;
+
 		if( i != -1 ){
+
 			p = p.mid( 0,i ) + "/" + txt.split( "/" ).last() ;
 			m_ui->lineEditPath->setText( p ) ;
 		}
@@ -98,12 +101,14 @@ void createkeyfile::ShowUI()
 	m_ui->lineEditFileName->clear() ;
 	m_ui->lineEditPath->setText( utility::homePath() + "/" ) ;
 	m_ui->comboBoxRNG->setCurrentIndex( 0 ) ;
+
 	this->show() ;
 }
 
 void createkeyfile::pbCancel()
 {
 	if( m_running ){
+
 		m_stop = true ;
 	}else{
 		this->HideUI() ;
@@ -138,19 +143,23 @@ void createkeyfile::pbCreate()
 {
 	DialogMsg msg( this ) ;
 
-	QString fileName = m_ui->lineEditFileName->text() ;
-	QString path = m_ui->lineEditPath->text() ;
+	auto fileName = m_ui->lineEditFileName->text() ;
+	auto path = m_ui->lineEditPath->text() ;
 
 	if( fileName.isEmpty() ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "The key name field is empth" ) ) ;
 	}
 	if( path.isEmpty() ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Folder path to where the key will be created is empty" ) ) ;
 	}
 	if( utility::pathExists( path ) ){
+
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File with the same name and at the destination folder already exist" ) ) ;
 	}
 	if( !utility::canCreateFile( path ) ){
+
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "You dont seem to have writing access to the destination folder" ) ) ;
 		m_ui->lineEditPath->setFocus() ;
 		return ;
@@ -203,6 +212,7 @@ void createkeyfile::pbCreate()
 	m_running = false ;
 
 	if( m_stop ){
+
 		msg.ShowUIOK( tr( "WARNING!" ),tr( "Process interrupted,key not fully generated" ) ) ;
 		this->enableAll() ;
 	}else{
@@ -213,11 +223,12 @@ void createkeyfile::pbCreate()
 
 void createkeyfile::pbOpenFolder()
 {
-	QString p = tr( "Select A Folder To Create A Key File In" ) ;
-	QString q = utility::homePath() ;
-	QString Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
+	auto p = tr( "Select A Folder To Create A Key File In" ) ;
+	auto q = utility::homePath() ;
+	auto Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
+
 		Z = Z + "/" + m_ui->lineEditPath->text().split( "/" ).last() ;
 		m_ui->lineEditPath->setText( Z ) ;
 	}

@@ -67,11 +67,13 @@ void erasedevice::ShowUI()
 	m_option = 0 ;
 
 	DialogMsg msg( this ) ;
-	QString x = tr ( "\
+
+	auto x = tr ( "\
 The next dialog will write random data to a device leading to permanent loss of all contents on the device.\n\n\
 Are you sure you want to continue? " ) ;
 
 	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),x ) == QMessageBox::Yes ){
+
 		this->show() ;
 	}else{
 		this->HideUI() ;
@@ -93,6 +95,7 @@ void erasedevice::taskResult( int st )
 	DialogMsg msg( this ) ;
 
 	switch( st ){
+
 		case 0 : m_ui->progressBar->setValue( 100 ) ;
 			 msg.ShowUIOK( tr( "SUCCESS!" ),tr( "Data on the device successfully erased" ) )			;break ;
 		case 1: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create mapper" ) )						;break ;
@@ -123,7 +126,7 @@ void erasedevice::HideUI()
 
 void erasedevice::pbStart()
 {
-	QString path = m_ui->lineEdit->text() ;
+	auto path = m_ui->lineEdit->text() ;
 
 	DialogMsg msg( this ) ;
 
@@ -229,6 +232,7 @@ void erasedevice::setProgress( int st )
 void erasedevice::pbCancel()
 {
 	if( m_running ){
+
 		m_exit = true ;
 	}else{
 		this->HideUI() ;
@@ -237,7 +241,7 @@ void erasedevice::pbCancel()
 
 void erasedevice::pbFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Enter Path To Volume To Be Erased" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Enter Path To Volume To Be Erased" ),utility::homePath(),0 ) ;
 	m_ui->lineEdit->setText( Z ) ;
 }
 

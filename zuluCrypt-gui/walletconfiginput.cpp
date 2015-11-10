@@ -82,28 +82,36 @@ void walletconfiginput::HideUI()
 
 void walletconfiginput::pbAdd()
 {
-	QString volumeID  = m_ui->lineEditVolumeID->text() ;
-	QString comment   = m_ui->lineEditComment->text()  ;
-	QString key       = m_ui->lineEditKey->text()      ;
-	QString repeatKey = m_ui->lineEditRepeatKey->text() ;
+	auto volumeID  = m_ui->lineEditVolumeID->text() ;
+	auto comment   = m_ui->lineEditComment->text()  ;
+	auto key       = m_ui->lineEditKey->text()      ;
+	auto repeatKey = m_ui->lineEditRepeatKey->text() ;
 
 	if( volumeID.isEmpty() || key.isEmpty() || repeatKey.isEmpty() ){
+
 		DialogMsg msg( this ) ;
+
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+
 		return ;
 	}
 
 	if( key != repeatKey ){
+
 		DialogMsg msg( this ) ;
+
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;
+
 		return ;
 	}
 
 	if( comment.isEmpty() ){
+
 		comment = "Nil" ;
 	}
 
 	m_add( volumeID,comment,key ) ;
+
 	this->HideUI() ;
 }
 
@@ -115,7 +123,7 @@ void walletconfiginput::slotCancel()
 
 void walletconfiginput::pbImageFilePath()
 {
-	QString x = QFileDialog::getOpenFileName( this,tr( "Select A Volume" ),utility::homePath(),0 ) ;
+	auto x = QFileDialog::getOpenFileName( this,tr( "Select A Volume" ),utility::homePath(),0 ) ;
 
 	if( !x.isEmpty() ){
 
@@ -137,7 +145,7 @@ void walletconfiginput::setvolumeID( QString id )
 
 		m_ui->lineEditVolumeID->setText( id ) ;
 	}else{
-		QString z = Task::await<QString>( utility::getUUIDFromPath( id ) ) ;
+		auto z = Task::await<QString>( utility::getUUIDFromPath( id ) ) ;
 
 		if( z.isEmpty() ){
 
@@ -153,10 +161,15 @@ void walletconfiginput::setvolumeID( QString id )
 void walletconfiginput::focus()
 {
 	if( m_ui->lineEditComment->text().isEmpty() ){
+
 		m_ui->lineEditComment->setFocus() ;
+
 	}else if( m_ui->lineEditKey->text().isEmpty() ){
+
 		m_ui->lineEditKey->setFocus() ;
+
 	}else if( m_ui->lineEditRepeatKey->text().isEmpty() ){
+
 		m_ui->lineEditRepeatKey->setFocus() ;
 	}else{
 		m_ui->pushButtonAdd->setFocus() ;

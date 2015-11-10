@@ -26,34 +26,34 @@
 
 #include <functional>
 
-static void _for_each_column( QTableWidget * table,int row,std::function< void( int,int ) > _function )
+using count_t = decltype( QTableWidget().rowCount() ) ;
+
+using function_t = std::function< void( count_t,count_t ) > ;
+
+static void _for_each_column( QTableWidget * table,count_t row,function_t function )
 {
 	if( row >= 0 && row < table->rowCount() ){
 
-		auto col = table->columnCount() ;
+		count_t col = table->columnCount() ;
 
-		decltype( col ) i ;
+		for( count_t i = 0 ; i < col ; i++ ){
 
-		for( i = 0 ; i < col ; i++ ){
-
-			_function( row,i ) ;
+			function( row,i ) ;
 		}
 
 		table->setCurrentCell( row,col - 1 ) ;
 	}
 }
 
-static void _for_each_row( QTableWidget * table,int col,std::function< void( int,int ) > _function )
+static void _for_each_row( QTableWidget * table,count_t col,function_t function )
 {
 	if( col >= 0 && col < table->columnCount() ){
 
-		auto row = table->rowCount() ;
+		count_t row = table->rowCount() ;
 
-		decltype( row ) i ;
+		for( count_t i = 0 ; i < row ; i++ ){
 
-		for( i = 0 ; i < row ; i++ ){
-
-			_function( i,col ) ;
+			function( i,col ) ;
 		}
 	}
 }
@@ -63,10 +63,11 @@ static void _update_table_row( QTableWidgetItem * item,bool setSelected )
 	if( item ){
 
 		auto table = item->tableWidget() ;
-		auto row   = item->row() ;
-		auto col   = table->columnCount() ;
 
-		for( int i = 0 ; i < col ; i++ ){
+		count_t row = item->row() ;
+		count_t col = table->columnCount() ;
+
+		for( count_t i = 0 ; i < col ; i++ ){
 
 			table->item( row,i )->setSelected( setSelected ) ;
 		}
@@ -80,8 +81,9 @@ static void _update_table_row( QTableWidgetItem * item,bool setSelected )
 	}
 }
 
-static QTableWidgetItem *
-_set_item( QTableWidgetItem * item,const QString& text = QString(),const QFont& font = QFont() )
+static QTableWidgetItem * _set_item( QTableWidgetItem * item,
+				     const QString& text = QString(),
+				     const QFont& font = QFont() )
 {
 	item->setText( text ) ;
 	item->setTextAlignment( Qt::AlignCenter ) ;
@@ -94,6 +96,7 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 	if( current && previous && previous->row() == current->row() ){
 
 		auto table = current->tableWidget() ;
+
 		table->setCurrentCell( current->row(),table->columnCount() - 1 ) ;
 		table->setFocus() ;
 	}else{
@@ -104,11 +107,11 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 
 int tablewidget::addEmptyRow( QTableWidget * table )
 {
-	int row = table->rowCount() ;
+	count_t row = table->rowCount() ;
 
 	table->insertRow( row ) ;
 
-	_for_each_column( table,row,[ table ]( int row,int col ){
+	_for_each_column( table,row,[ table ]( count_t row,count_t col ){
 
 		table->setItem( row,col,_set_item( new QTableWidgetItem ) ) ;
 	} ) ;
@@ -122,9 +125,9 @@ int tablewidget::columnHasEntry( QTableWidget * table,const QString& entry,int c
 
 		return -1 ;
 	}else{
-		int rows = table->rowCount() ;
+		count_t rows = table->rowCount() ;
 
-		for( int i = 0 ; i < rows ; i++ ){
+		for( count_t i = 0 ; i < rows ; i++ ){
 
 			if( table->item( i,column )->text() == entry ){
 
@@ -138,17 +141,17 @@ int tablewidget::columnHasEntry( QTableWidget * table,const QString& entry,int c
 
 void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list,const QFont& font )
 {
-	int j = list.size() ;
+	count_t j = list.size() ;
 
 	if( j != table->columnCount() ){
 
 		qDebug() << "ERROR: Table column count is NOT the same as QStringList size" ;
 	}else{
-		int row = table->rowCount() ;
+		count_t row = table->rowCount() ;
 
 		table->insertRow( row ) ;
 
-		_for_each_column( table,row,[ & ]( int row,int col ){
+		_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
 			table->setItem( row,col,_set_item( new QTableWidgetItem,list.at( col ),font ) ) ;
 		} ) ;
@@ -157,13 +160,13 @@ void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list,co
 
 void tablewidget::updateRowInTable( QTableWidget * table,const QStringList& list,int row,const QFont& font )
 {
-	int j = list.size() ;
+	count_t j = list.size() ;
 
 	if( j != table->columnCount() ){
 
 		qDebug() << "ERROR: table column count is NOT the same as QStringList size" ;
 	}else{
-		_for_each_column( table,row,[ & ]( int row,int col ){
+		_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
 			_set_item( table->item( row,col ),list.at( col ),font ) ;
 		} ) ;
@@ -172,7 +175,7 @@ void tablewidget::updateRowInTable( QTableWidget * table,const QStringList& list
 
 void tablewidget::setRowFont( QTableWidget * table ,int row,const QFont& font )
 {
-	_for_each_column( table,row,[ & ]( int row,int col ){
+	_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
 		table->item( row,col )->setFont( font ) ;
 	} ) ;
@@ -190,8 +193,7 @@ void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
 
 void tablewidget::deleteTableRow( QTableWidget * table,const QString& value,int column )
 {
-	int r = tablewidget::columnHasEntry( table,value,column ) ;
-	tablewidget::deleteRowFromTable( table,r ) ;
+	tablewidget::deleteRowFromTable( table,tablewidget::columnHasEntry( table,value,column ) ) ;
 }
 
 void tablewidget::selectRow( QTableWidget * table,int row )
@@ -223,7 +225,7 @@ QStringList tablewidget::tableColumnEntries( QTableWidget * table,int col )
 {
 	QStringList l ;
 
-	_for_each_row( table,col,[ & ]( int row,int col ){
+	_for_each_row( table,col,[ & ]( count_t row,count_t col ){
 
 		l.append( table->item( row,col )->text() ) ;
 	} ) ;
@@ -235,7 +237,7 @@ QStringList tablewidget::tableRowEntries( QTableWidget * table,int row )
 {
 	QStringList l ;
 
-	_for_each_column( table,row,[ & ]( int row,int col ){
+	_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
 		l.append( table->item( row,col )->text() ) ;
 	} ) ;
@@ -245,7 +247,9 @@ QStringList tablewidget::tableRowEntries( QTableWidget * table,int row )
 
 void tablewidget::clearTable( QTableWidget * table )
 {
-	while( table->rowCount() > 0 ){
+	auto j = table->rowCount() ;
+
+	for( decltype( j ) i = 0 ; i < j ; i++ ){
 
 		table->removeRow( 0 ) ;
 	}

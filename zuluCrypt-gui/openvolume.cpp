@@ -66,7 +66,8 @@ openvolume::openvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::ope
 
 	this->addAction( m_action ) ;
 
-	QTableWidget * tw = m_ui->tableWidget ;
+	auto tw = m_ui->tableWidget ;
+	
 	tw->setColumnWidth( 0,183 ) ;
 	tw->setColumnWidth( 1,90 ) ;
 	//tw->setColumnWidth( 2,110 ) ;
@@ -129,6 +130,7 @@ void openvolume::pbHelp()
 void openvolume::pbUUID()
 {
 	if( m_ui->pbUUID->isFlat() ){
+
 		m_ui->pbUUID->setFlat( false ) ;
 	}else{
 		m_ui->pbUUID->setFlat( true ) ;

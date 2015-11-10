@@ -23,6 +23,7 @@ createVolumeDialog::createVolumeDialog( const QString& path,QWidget * parent,std
 	QDialog( parent ),m_ui( new Ui::createVolumeDialog ),m_path( path ),m_function( std::move( f ) )
 {
 	m_ui->setupUi( this ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
@@ -38,9 +39,11 @@ createVolumeDialog::createVolumeDialog( const QString& path,QWidget * parent,std
 
 void createVolumeDialog::ShowUI()
 {
-	QString msg = tr( "This operation will lead to permanent destrunction \
+	auto msg = tr( "This operation will lead to permanent destrunction \
 of all present data in \"%1\".\n\nAre you sure you want to continue?" ).arg( m_path ) ;
+
 	m_ui->label_1->setText( msg ) ;
+
 	this->show() ;
 }
 
