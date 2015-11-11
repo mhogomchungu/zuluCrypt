@@ -70,6 +70,7 @@ public slots:
 	void raiseWindow( QString ) ;
 signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
+	void updateVolumeListSignal( QString,QString ) ;
 private slots :
 	void languageMenu( QAction * ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
@@ -133,6 +134,7 @@ private slots :
 	void updateCheck( void ) ;
 	void cinfo( void ) ;
 	void updateVolumeList( const QString& = QString() ) ;
+	void updateVolumeListSlot( QString,QString ) ;
 private:
 	void quitApplication( void ) ;
 	void removeRowFromTable( int ) ;

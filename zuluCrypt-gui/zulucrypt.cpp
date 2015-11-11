@@ -121,7 +121,7 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 
 	tablewidget::clearTable( m_ui->tableWidget ) ;
 
-	auto r = Task::await< QString >( [](){
+	emit updateVolumeListSignal( volume,Task::await< QString >( [](){
 
 		auto r = utility::Task( QString( "%1 -L" ).arg( ZULUCRYPTzuluCrypt ) ) ;
 
@@ -131,8 +131,11 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 		}else{
 			return QString() ;
 		}
-	} ) ;
+	} ) ) ;
+}
 
+void zuluCrypt::updateVolumeListSlot( QString volume,QString r )
+{
 	if( !r.isEmpty() ){
 
 		for( const auto& it : utility::split( r,'\n' ) ){
@@ -298,6 +301,9 @@ void zuluCrypt::itemEntered( QTableWidgetItem * item )
 void zuluCrypt::setupConnections()
 {
 	m_ui->tableWidget->setMouseTracking( true ) ;
+
+	connect( this,SIGNAL( updateVolumeListSignal( QString,QString ) ),this,SLOT( updateVolumeListSlot( QString,QString ) ),Qt::QueuedConnection ) ;
+
 	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->actionErase_data_on_device,SIGNAL( triggered() ),this,SLOT( ShowEraseDataDialog() ) ) ;
 	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( ShowOpenPartition() ) ) ;

@@ -97,9 +97,11 @@ void events::run()
 		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 
 	utility::fileHandle f( inotify_init() ) ;
+
 	int fd = f.handle() ;
 
 	if( fd == -1 ){
+
 		return this->failedToStart() ;
 	}
 
@@ -108,6 +110,7 @@ void events::run()
 	int md  = -1 ;
 
 	if( utility::pathExists( "/dev/dm" ) ){
+
 		md = inotify_add_watch( fd,"/dev/md",IN_DELETE ) ;
 	}
 
@@ -139,14 +142,19 @@ void events::run()
 		if( event->wd == dev && event->mask & IN_CREATE ){
 
 			if( _stringsAreEqual( "md",event->name ) ){
+
 				md = inotify_add_watch( fd,"/dev/md",IN_DELETE ) ;
+
 				return false ;
 			}
 		}
 
 		if( event->wd == dev && event->mask & IN_DELETE ){
+
 			if( _stringsAreEqual( "md",event->name ) ){
+
 				inotify_rm_watch( md,dev ) ;
+
 				return false ;
 			}
 		}
@@ -206,9 +214,13 @@ void events::run()
 			e.added      = event->mask == IN_CREATE ;
 
 			if( event->wd == dm ){
+
 				e.deviceType = zuluMountTask::devices::dm_device ;
+
 			}else if( event->wd == md ){
+
 				e.deviceType = zuluMountTask::devices::md_device ;
+
 			}else{
 				e.deviceType = zuluMountTask::devices::device ;
 			}
@@ -218,6 +230,7 @@ void events::run()
 				auto r = zuluMountTask::deviceProperties( e ) ;
 
 				if( r.volumeRemoved ){
+
 					emit volumeRemoved( r.volumeName ) ;
 				}else{
 					emit volumeMiniProperties( r.entry ) ;
@@ -238,6 +251,7 @@ void events::run()
 				auto event = _cast( currentEvent ) ;
 
 				if( event ){
+
 					_processEvent( event ) ;
 					currentEvent += _eventSize + event->len ;
 				}else{
