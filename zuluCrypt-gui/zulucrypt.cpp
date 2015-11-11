@@ -119,8 +119,6 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	tablewidget::clearTable( m_ui->tableWidget ) ;
-
 	emit updateVolumeListSignal( volume,Task::await< QString >( [](){
 
 		auto r = utility::Task( QString( "%1 -L" ).arg( ZULUCRYPTzuluCrypt ) ) ;
@@ -136,6 +134,8 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 
 void zuluCrypt::updateVolumeListSlot( QString volume,QString r )
 {
+	tablewidget::clearTable( m_ui->tableWidget ) ;
+
 	if( !r.isEmpty() ){
 
 		for( const auto& it : utility::split( r,'\n' ) ){

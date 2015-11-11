@@ -155,11 +155,7 @@ void walletconfig::pbAdd()
 
 			if( success ){
 
-				QStringList entry ;
-				entry.append( m_volumeID ) ;
-				entry.append( m_comment ) ;
-
-				tablewidget::addRowToTable( m_ui->tableWidget,entry ) ;
+				tablewidget::addRowToTable( m_ui->tableWidget,QStringList{ m_volumeID,m_comment } ) ;
 			}else{
 				DialogMsg msg( this ) ;
 				msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed To Add the Key In The Wallet." ) ) ;

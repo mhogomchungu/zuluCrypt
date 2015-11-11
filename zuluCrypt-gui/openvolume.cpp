@@ -67,7 +67,7 @@ openvolume::openvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::ope
 	this->addAction( m_action ) ;
 
 	auto tw = m_ui->tableWidget ;
-	
+
 	tw->setColumnWidth( 0,183 ) ;
 	tw->setColumnWidth( 1,90 ) ;
 	//tw->setColumnWidth( 2,110 ) ;
@@ -231,7 +231,7 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 
 		if( z.size() >= 4 ){
 
-			const QString& fs = z.at( 3 ) ;
+			const auto& fs = z.at( 3 ) ;
 
 			if( !fs.contains( "member" ) ){
 
@@ -245,6 +245,7 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 				const QString& size = z.at( 1 ) ;
 
 				if( size == "1.0 KB" || size == "Nil" ){
+
 					continue ;
 				}
 				if( m_showLuksOnly ){
@@ -301,7 +302,7 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 
 				DialogMsg m( this ) ;
 
-				QString e = tr( "Insufficient privileges to operate on a system volume.\nRestart zuluCrypt from root's account to proceed" ) ;
+				auto e = tr( "Insufficient privileges to operate on a system volume.\nRestart zuluCrypt from root's account to proceed" ) ;
 
 				return m.ShowUIOK( tr( "ERROR" ),e ) ;
 			}

@@ -279,7 +279,7 @@ void createvolume::ShowFile( QString volume )
 
 void createvolume::eraseDataPartition()
 {
-	QString path = m_ui->lineEditVolumePath->text() ;
+	auto path = m_ui->lineEditVolumePath->text() ;
 
 	if( path.startsWith( "/dev/" ) ){
 
@@ -345,6 +345,7 @@ void createvolume::setOptions( int e )
 				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
 
 				if( supportWhirlpool ){
+
 					options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
 				}
 
@@ -354,6 +355,7 @@ void createvolume::setOptions( int e )
 				options->addItem( algo + ".xts-plain64.512.ripemd160" ) ;
 
 				if( supportWhirlpool ){
+
 					options->addItem( algo + ".xts-plain64.512.whirlpool" ) ;
 				}
 			} ;
@@ -393,6 +395,7 @@ void createvolume::setOptions( int e )
 				}
 
 				if( supportWhirlpool ){
+
 					options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
 				}
 			} ;
@@ -459,7 +462,7 @@ void createvolume::pbCancelClicked()
 {
 	if( m_created == false ){
 
-		QString s = m_ui->lineEditVolumePath->text() ;
+		auto s = m_ui->lineEditVolumePath->text() ;
 
 		if( !s.startsWith( "/dev/" ) ){
 
@@ -520,6 +523,7 @@ void createvolume::tcryptGui( bool e )
 		}
 
 		if( m_normalVolume ){
+
 			m_key.clear() ;
 			m_keyFiles.clear() ;
 		}else{
@@ -580,6 +584,7 @@ void createvolume::cbNormalVolume( int r )
 			if( key.isEmpty() ){
 
 				m_ui->cbNormalVolume->setCurrentIndex( 0 ) ;
+
 				this->cbNormalVolume( 0 ) ;
 			}else{
 				if( m_keyStrength.canCheckQuality() ){
@@ -654,6 +659,7 @@ void createvolume::cbHiddenVolume( int r )
 			if( key.isEmpty() ){
 
 				m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
+				
 				this->cbHiddenVolume( 0 ) ;
 			}else{
 				if( m_keyStrength.canCheckQuality() ){
@@ -692,6 +698,7 @@ void createvolume::enableAll()
 	m_ui->lineEditPassphrase1->setEnabled( true ) ;
 
 	if( m_ui->cbNormalVolume->currentIndex() == 0 ){
+
 		m_ui->lineEditPassPhrase2->setEnabled( true ) ;
 	}
 
@@ -747,13 +754,14 @@ void createvolume::pbCreateClicked()
 {
 	DialogMsg msg( this ) ;
 
-	QString volumePath   = m_ui->lineEditVolumePath->text() ;
-	QString passphrase_1 = m_ui->lineEditPassphrase1->text() ;
-	QString passphrase_2 = m_ui->lineEditPassPhrase2->text() ;
+	auto volumePath   = m_ui->lineEditVolumePath->text() ;
+	auto passphrase_1 = m_ui->lineEditPassphrase1->text() ;
+	auto passphrase_2 = m_ui->lineEditPassPhrase2->text() ;
 
 	createvolume::createVolumeType type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
 
 	if( volumePath.isEmpty() ){
+
 		return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume path field is empty" ) ) ;
 	}
 
@@ -762,6 +770,7 @@ void createvolume::pbCreateClicked()
 		auto x = m_ui->lineEditHiddenSize->text() ;
 
 		if( x.isEmpty() ){
+
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 		}
 
@@ -769,22 +778,31 @@ void createvolume::pbCreateClicked()
 		x.toUInt( &ok ) ;
 
 		if( !ok ){
+
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Illegal character detected in the hidden volume size field" ) ) ;
 		}
 
 		if( m_ui->cbHiddenVolume->currentIndex() < 3 ){
+
 			if( m_ui->cbHiddenVolume->currentIndex() == 0 ){
+
 				if( m_ui->lineEditHiddenKey->text() != m_ui->lineEditHiddenKey1->text() ){
+
 					return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Hidden passphrases do not match" ) ) ;
 				}
+
 			}else if( m_ui->cbHiddenVolume->currentIndex() == 1 ){
+
 				if( m_ui->lineEditHiddenKey->text().isEmpty() ){
+
 					return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 				}
 			}
 		}
 		if( !m_ui->comboBoxFS->currentText().contains( "fat" ) && m_warned == false ){
+
 			m_warned = true ;
+
 			return msg.ShowUIOK( tr( "WARNING" ),tr( "It is best to create a hidden volume with vfat/fat file system." ) ) ;
 		}
 	}
