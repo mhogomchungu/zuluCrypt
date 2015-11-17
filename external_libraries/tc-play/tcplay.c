@@ -1683,17 +1683,17 @@ static int _string_ends_with(const char *e, size_t ee, const char *s, size_t ss)
 		return 0;
 }
 
-static int _string_starts_and_ends_with(const char *a, const char *b, const char *c)
-{
-	if (strncmp(a, b, strlen(b)) == 0)
-		return _string_ends_with( a, strlen(a), c,strlen(c));
-	else
-		return 0;
-}
-
 static int _string_starts_with(const char *a, const char *b)
 {
 	return strncmp( a, b, strlen(b)) == 0;
+}
+
+static int _string_starts_and_ends_with(const char *a, const char *b, const char *c)
+{
+	if (_string_starts_with(a, b))
+		return _string_ends_with( a, strlen(a), c,strlen(c));
+	else
+		return 0;
 }
 
 void tc_api_get_volume_type(char *buffer, size_t size, const char *map_name)

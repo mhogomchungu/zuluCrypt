@@ -430,7 +430,7 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 	return ProcessWaitUntilFinished( &p ) == 0 ;
 }
 
-::Task::future<bool>& utility::openMountPoint( const QString& path,const QString& opener,const QString& env )
+::Task::future<bool>& utility::openPath( const QString& path,const QString& opener,const QString& env )
 {
 	return ::Task::run<bool>( [ env,path,opener ](){
 

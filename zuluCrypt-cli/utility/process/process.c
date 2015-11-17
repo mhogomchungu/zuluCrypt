@@ -441,17 +441,17 @@ size_t ProcessGetOutPut( process_t p,char ** data,ProcessIO std_io )
 		return 0 ;
 	}
 
+	switch( std_io ){
+		case ProcessStdOut   : fd = p->fd_1[ 0 ] ; break ;
+		case ProcessStdError : fd = p->fd_2[ 0 ] ; break ;
+		default  : return 0 ;
+	}
+
 	buffer = malloc( sizeof( char ) * BUFFER_SIZE ) ;
 
 	if( buffer == NULL ){
 		_ProcessError() ;
 		return 0 ;
-	}
-
-	switch( std_io ){
-		case ProcessStdOut   : fd = p->fd_1[ 0 ] ; break ;
-		case ProcessStdError : fd = p->fd_2[ 0 ] ; break ;
-		default  : return 0 ;
 	}
 
 	while( 1 ) {

@@ -654,16 +654,17 @@ void MainWindow::slotOpenSharedFolder()
 void MainWindow::slotOpenFolder()
 {
 	auto item = m_ui->tableWidget->currentItem() ;
-	QString path = m_ui->tableWidget->item( item->row(),1 )->text() ;
+	auto path = m_ui->tableWidget->item( item->row(),1 )->text() ;
 
 	this->openMountPoint( path ) ;
 }
 
 void MainWindow::openMountPoint( const QString& m_point )
 {
-	utility::openMountPoint( m_point,m_folderOpener,m_env ).then( [ this ]( bool failed ){
+	utility::openPath( m_point,m_folderOpener,m_env ).then( [ this ]( bool failed ){
 
 		if( failed ){
+
 			auto x = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "Warning" ),x ) ;

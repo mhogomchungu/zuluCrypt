@@ -105,7 +105,7 @@ static int _zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid
 			 * they are the one that created it
 			 */
 			/*
-			* zuluCryptSecurityMountPointPrefixMatch() is defined in ./security.c
+			* zuluCryptMountPointPrefixMatch() is defined in create_mount_point.c
 			*/
 			k = zuluCryptMountPointPrefixMatch( g,uid,NULL ) ;
 		}

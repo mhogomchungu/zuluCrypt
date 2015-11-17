@@ -132,7 +132,7 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 	} ) ) ;
 }
 
-void zuluCrypt::updateVolumeListSlot( QString volume,QString r )
+void zuluCrypt::updateVolumeList( QString volume,QString r )
 {
 	tablewidget::clearTable( m_ui->tableWidget ) ;
 
@@ -169,11 +169,6 @@ void zuluCrypt::updateVolumeListSlot( QString volume,QString r )
 
 		this->ShowPasswordDialog( volume,volume.split( "/" ).last() ) ;
 	}
-}
-
-void zuluCrypt::updateVolumeListAction()
-{
-	this->updateVolumeList() ;
 }
 
 void zuluCrypt::initKeyCombo()
@@ -302,7 +297,7 @@ void zuluCrypt::setupConnections()
 {
 	m_ui->tableWidget->setMouseTracking( true ) ;
 
-	connect( this,SIGNAL( updateVolumeListSignal( QString,QString ) ),this,SLOT( updateVolumeListSlot( QString,QString ) ),Qt::QueuedConnection ) ;
+	connect( this,SIGNAL( updateVolumeListSignal( QString,QString ) ),this,SLOT( updateVolumeList( QString,QString ) ),Qt::QueuedConnection ) ;
 
 	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->actionErase_data_on_device,SIGNAL( triggered() ),this,SLOT( ShowEraseDataDialog() ) ) ;
@@ -327,7 +322,7 @@ void zuluCrypt::setupConnections()
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),this,SLOT( trayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
 	connect( m_ui->menuFavorites,SIGNAL( triggered( QAction * ) ),this,SLOT( favClicked( QAction * ) ) ) ;
 	connect( m_ui->action_close,SIGNAL( triggered() ),this,SLOT( closeApplication() ) ) ;
-	connect( m_ui->action_update_volume_list,SIGNAL( triggered() ),this,SLOT( updateVolumeListAction() ) ) ;
+	connect( m_ui->action_update_volume_list,SIGNAL( triggered() ),this,SLOT( updateVolumeList() ) ) ;
 	connect( m_ui->actionMinimize_to_tray,SIGNAL( triggered() ),this,SLOT( minimizeToTray() ) ) ;
 	connect( m_ui->actionClose_all_opened_volumes,SIGNAL( triggered() ),this,SLOT( closeAllVolumes() ) ) ;
 	connect( m_ui->actionEncrypt_file,SIGNAL( triggered() ),this,SLOT( encryptFile() ) ) ;
@@ -377,16 +372,6 @@ void zuluCrypt::optionMenuAboutToShow()
 {
 	auto b = LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ;
 	m_ui->actionChange_internal_wallet_password->setEnabled( b ) ;
-}
-
-void zuluCrypt::openpdf()
-{
-	if( Task::await< bool >( [ this ](){ return utility::Task( m_openPath + PDF_PATH ).failed() ; } ) ){
-
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "WARNING!" ),tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
-	}
 }
 
 void zuluCrypt::updateCheck()
@@ -808,12 +793,26 @@ void zuluCrypt::openFolder()
 
 void zuluCrypt::openFolder( const QString& path )
 {
-	utility::openMountPoint( path,m_openPath,m_env ).then( [ this ]( bool failed ){
+	utility::openPath( path,m_openPath,m_env ).then( [ this ]( bool failed ){
 
 		if( failed ){
 
 			DialogMsg msg( this ) ;
+
 			msg.ShowUIOK( tr( "WARNING!" ),tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ) ;
+		}
+	} ) ;
+}
+
+void zuluCrypt::openpdf()
+{
+	utility::openPath( PDF_PATH,m_openPath ).then( [ this ]( bool failed ){
+
+		if( failed ){
+
+			DialogMsg msg( this ) ;
+
+			msg.ShowUIOK( tr( "WARNING!" ),tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
 		}
 	} ) ;
 }

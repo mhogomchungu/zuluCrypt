@@ -240,7 +240,7 @@ namespace utility
 	::Task::future< QStringList >& luksEmptySlots( const QString& volumePath ) ;
 	::Task::future< QString >& getUUIDFromPath( const QString& ) ;
 	::Task::future<QString>& getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& volumeID ) ;
-	::Task::future< bool >& openMountPoint( const QString& path,const QString& opener,const QString& env = QString() ) ;
+	::Task::future< bool >& openPath( const QString& path,const QString& opener,const QString& env = QString() ) ;
 }
 
 namespace utility

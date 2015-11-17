@@ -92,7 +92,6 @@ private slots :
 	void trayClicked( QSystemTrayIcon::ActivationReason  ) ;
 	void trayProperty( void ) ;
 	void closeApplication( void ) ;
-	void updateVolumeListAction( void ) ;
 	void minimizeToTray( void ) ;
 	void closeAllVolumes( void ) ;
 	void menuKeyPressed( void ) ;
@@ -134,7 +133,7 @@ private slots :
 	void updateCheck( void ) ;
 	void cinfo( void ) ;
 	void updateVolumeList( const QString& = QString() ) ;
-	void updateVolumeListSlot( QString,QString ) ;
+	void updateVolumeList( QString,QString ) ;
 private:
 	void quitApplication( void ) ;
 	void removeRowFromTable( int ) ;
