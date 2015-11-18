@@ -373,10 +373,15 @@ pid_t ProcessStart( process_t p )
 		}
 
 		if( p->str.env == NULL ){
-			p->str.env = env ;
-		}
 
-		execve( p->str.args[ 0 ],p->str.args,p->str.env ) ;
+			execve( p->str.args[ 0 ],p->str.args,env ) ;
+
+		}else if( p->str.env[ 0 ] == NULL ){
+
+			execv( p->str.args[ 0 ],p->str.args ) ;
+		}else{
+			execve( p->str.args[ 0 ],p->str.args,p->str.env ) ;
+		}
 
 		/*
 		 * execv has failed :-(

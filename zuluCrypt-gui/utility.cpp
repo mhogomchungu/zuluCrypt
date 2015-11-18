@@ -348,7 +348,11 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 
 utility::Array::Array( const QString& s,char splitter )
 {
-	m_list = s.toLatin1().split( splitter ) ;
+	if( !s.isEmpty() ){
+
+		m_list = s.toLatin1().split( splitter ) ;
+	}
+
 	this->setUp() ;
 }
 
@@ -371,13 +375,11 @@ void utility::Array::setUp()
 {
 	auto p = m_list.size() ;
 
-	decltype( p ) i ;
-
 	m_vector.resize( p + 1 ) ;
 
 	auto q = m_vector.data() ;
 
-	for( i = 0 ; i < p ; i++ ){
+	for( decltype( p ) i = 0 ; i < p ; i++ ){
 
 		*( q + i ) = m_list.at( i ).constData() ;
 	}
@@ -416,16 +418,11 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 
 	ProcessSetOptionUser( p,uid ) ;
 
-	if( env.isEmpty() ){
+	utility::Array array( env ) ;
 
-		ProcessStart( p ) ;
-	}else{
-		utility::Array array( env ) ;
+	ProcessSetEnvironmentalVariable( p,array.value() ) ;
 
-		ProcessSetEnvironmentalVariable( p,array.value() ) ;
-
-		ProcessStart( p ) ;
-	}
+	ProcessStart( p ) ;
 
 	return ProcessWaitUntilFinished( &p ) == 0 ;
 }
