@@ -191,6 +191,27 @@ void tc_set_iteration_count(int iteration_count)
 	}
 }
 
+static int _string_ends_with(const char *e, size_t ee, const char *s, size_t ss)
+{
+	if (ee >= ss)
+		return memcmp(e + ee - ss, s, ss) == 0;
+	else
+		return 0;
+}
+
+static int _string_starts_with(const char *a, const char *b)
+{
+	return strncmp( a, b, strlen(b)) == 0;
+}
+
+static int _string_starts_and_ends_with(const char *a, const char *b, const char *c)
+{
+	if (_string_starts_with(a, b))
+		return _string_ends_with( a, strlen(a), c,strlen(c));
+	else
+		return 0;
+}
+
 struct tc_cipher_chain *tc_cipher_chains[MAX_CIPHER_CHAINS];
 
 static
@@ -410,7 +431,7 @@ static
 int
 _not_a_device_with_partitions(const char *dev)
 {
-	if (strncmp(dev, "/dev/sd",7) == 0 || strncmp(dev, "/dev/hd",7) == 0)
+	if (_string_starts_with(dev, "/dev/sd") || _string_starts_with(dev, "/dev/hd"))
 		return 0 ;
 	return 1 ;
 }
@@ -1673,27 +1694,6 @@ error:
 		free_safe_mem(tc_table);
 
 	return NULL;
-}
-
-static int _string_ends_with(const char *e, size_t ee, const char *s, size_t ss)
-{
-	if (ee >= ss)
-		return memcmp(e + ee - ss, s, ss) == 0;
-	else
-		return 0;
-}
-
-static int _string_starts_with(const char *a, const char *b)
-{
-	return strncmp( a, b, strlen(b)) == 0;
-}
-
-static int _string_starts_and_ends_with(const char *a, const char *b, const char *c)
-{
-	if (_string_starts_with(a, b))
-		return _string_ends_with( a, strlen(a), c,strlen(c));
-	else
-		return 0;
 }
 
 void tc_api_get_volume_type(char *buffer, size_t size, const char *map_name)

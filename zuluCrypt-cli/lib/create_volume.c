@@ -39,17 +39,15 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 	char * e = NULL ;
 	process_t p ;
 
-	char * const env[ 2 ] = { "PATH=/bin:/usr/bin:/sbin:/usr/sbin",NULL } ;
 	/*
 	 * zulucryptFileSystemIsSupported() is defined in mount_fs_options.c
 	 */
 	if( zulucryptFileSystemIsSupported( fs ) == 0 ){
+
 		return 1 ;
 	}
 
 	p = Process( ZULUCRYPTmkfs,NULL ) ;
-
-	ProcessSetEnvironmentalVariable( p,env ) ;
 
 	if( StringAtLeastOneMatch_1( fs,"ext2","ext3","ext4",NULL ) ){
 

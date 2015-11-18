@@ -125,9 +125,9 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 
 		if( r.success() ){
 
-			return QString( r.output() ) ;
+			return r.output() ;
 		}else{
-			return QString() ;
+			return QByteArray() ;
 		}
 	} ) ) ;
 }
@@ -722,7 +722,7 @@ void zuluCrypt::volume_property()
 
 		if( r.success() ){
 
-			QByteArray data = r.output() ;
+			auto data = r.output() ;
 
 			return QString( " %1" ).arg( QString( data.mid( data.indexOf( '\n' ) + 2 ) ) ) ;
 		}else{
@@ -852,11 +852,11 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m.addSeparator() ;
 
-	QString volume_id = m_ui->tableWidget->item( item->row(),0 )->text() + "\t" ;
+	auto volume_id = m_ui->tableWidget->item( item->row(),0 )->text() + "\t" ;
 
 	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
 
-	QByteArray data ;
+	decltype( f.readAll() ) data ;
 
 	if( f.open( QIODevice::ReadOnly ) ){
 

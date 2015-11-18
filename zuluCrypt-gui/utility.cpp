@@ -294,13 +294,13 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 {
 	return ::Task::run<QString>( [ wallet,volumeID ](){
 
-		QByteArray key ;
+		decltype( wallet->readValue( volumeID ) ) key ;
 
 		if( volumeID.startsWith( "UUID=" ) ){
 
 			key = wallet->readValue( volumeID ) ;
 		}else{
-			QString uuid = utility::getUUIDFromPath( volumeID ).get() ;
+			auto uuid = utility::getUUIDFromPath( volumeID ).get() ;
 
 			if( uuid.isEmpty() ){
 
@@ -323,9 +323,9 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 {
 	return ::Task::run<QString>( [ dev ](){
 
-		QString device = dev ;
+		auto device = dev ;
 		device = device.replace( "\"", "\"\"\"" ) ;
-		QString exe = utility::appendUserUID( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,device ) ;
+		auto exe = utility::appendUserUID( "%1 -U -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,device ) ;
 
 		auto r = utility::Task( exe ) ;
 

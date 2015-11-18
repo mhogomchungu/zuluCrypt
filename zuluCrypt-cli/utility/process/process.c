@@ -331,7 +331,7 @@ void ProcessSetOptionPriority( process_t p,int priority )
 
 pid_t ProcessStart( process_t p )
 {
-	const char * exe ;
+	char * const env[] = { "PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin",NULL } ;
 
 	if( pipe( p->fd_0 ) == -1 ){
 		return -1 ;
@@ -372,17 +372,16 @@ pid_t ProcessStart( process_t p )
 			setpriority( PRIO_PROCESS,0,p->str.priority ) ;
 		}
 
-		exe = p->str.args[ 0 ] ;
-
-		if( p->str.env != NULL ){
-			execve( exe,p->str.args,p->str.env ) ;
-		}else{
-			execv( exe,p->str.args ) ;
+		if( p->str.env == NULL ){
+			p->str.env = env ;
 		}
+
+		execve( p->str.args[ 0 ],p->str.args,p->str.env ) ;
 
 		/*
 		 * execv has failed :-(
 		 */
+
 		_Exit( 1 ) ;
 		/*
 		 * child process block ends here
