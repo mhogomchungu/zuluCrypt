@@ -489,7 +489,7 @@ void keyDialog::openVolume()
 
 	if( m_ui->lineEditKey->text().isEmpty() ){
 
-		if( keyType == keyDialog::Key || keyDialog::keyKeyFile ){
+		if( keyType == keyDialog::Key || keyType == keyDialog::keyKeyFile ){
 
 			;
 
