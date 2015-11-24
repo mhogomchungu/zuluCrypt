@@ -101,7 +101,7 @@ void luksaddkey::keyChanged_1( QString key )
 
 void luksaddkey::keyChanged_0( QString key )
 {
-	int st = m_keystrength.quality( key ) ;
+	auto st = m_keystrength.quality( key ) ;
 
 	if( st < 0 ){
 
@@ -199,7 +199,7 @@ void luksaddkey::cbExistingKey( int e )
 
 		m_ui->textEditExistingPassphrase->setEnabled( false ) ;
 
-		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key,[ this ]( const QString& key ){
 
 			m_ui->textEditExistingPassphrase->setText( key ) ;
 
@@ -252,7 +252,7 @@ void luksaddkey::cbNewKey( int e )
 		m_ui->textEditPassphraseToAdd->setEnabled( false ) ;
 		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
 
-		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key,[ this ]( const QString& key ){
 
 			m_ui->textEditPassphraseToAdd->setText( key ) ;
 			m_ui->lineEditReEnterPassphrase->setText( key ) ;
@@ -326,8 +326,8 @@ void luksaddkey::pbAdd( void )
 
 	m_volumePath = m_ui->textEditPathToVolume->text() ;
 
-	bool existingKeyIsKeyFile = m_ui->cbExistingKey->currentIndex() == 1 ;
-	bool newKeyIsKeyFile = m_ui->cbNewKey->currentIndex() == 1 ;
+	auto existingKeyIsKeyFile = m_ui->cbExistingKey->currentIndex() == 1 ;
+	auto newKeyIsKeyFile = m_ui->cbNewKey->currentIndex() == 1 ;
 
 	if( m_volumePath.isEmpty() ){
 
@@ -422,7 +422,7 @@ void luksaddkey::keyAdded()
 
 	auto l = utility::luksEmptySlots( m_volumePath ).await() ;
 
-	QString success ;
+	decltype( tr( "" ) ) success ;
 
 	if( l.isEmpty() ){
 

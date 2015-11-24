@@ -97,11 +97,6 @@ void plugin::pbSetKey()
 
 	DialogMsg msg( this ) ;
 
-	//if( passphrase.isEmpty() ){
-
-	//	return msg.ShowUIOK( tr( "ERROR" ),tr( "Passphrase Not Set" ) ) ;
-	//}
-
 	if( keyFile.isEmpty() ){
 
 		return msg.ShowUIOK( tr( "ERROR" ),tr( "KeyFile Not Set" ) ) ;
@@ -116,13 +111,13 @@ void plugin::pbSetKey()
 
 			return plugins::gpg( m_exe,keyFile,passphrase ) ;
 
+		case plugins::plugin::hmac_key_1:
+
+			return plugins::hmac_key_1( m_exe,keyFile,passphrase ) ;
+
 		case plugins::plugin::hmac_key:
 
-			return plugins::hmac_key( m_exe,keyFile,passphrase ) ;
-
-		case plugins::plugin::hmac_key_0:
-
-			return plugins::hmac_key_0( keyFile,passphrase ) ;
+			return plugins::hmac_key( keyFile,passphrase ) ;
 
 		case plugins::plugin::keyKeyFile:
 

@@ -34,7 +34,7 @@
 namespace plugins
 {
 
-enum class plugin{ gpg,hmac_key,hmac_key_0,keyKeyFile,luks,steghide } ;
+enum class plugin{ gpg,hmac_key,hmac_key_1,keyKeyFile,luks,steghide } ;
 
 static inline QByteArray gpg( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {
@@ -65,7 +65,7 @@ static inline QByteArray gpg( const QVector<QString>& exe,const QString& keyFile
 	return p.readAllStandardOutput() ;
 }
 
-static inline QByteArray hmac_key_0( const QString& keyFile,const QString& password )
+static inline QByteArray hmac_key( const QString& keyFile,const QString& password )
 {
 	auto _getKey = []( gcry_md_hd_t handle,const QString& keyFile ){
 
@@ -126,10 +126,10 @@ static inline QByteArray hmac_key_0( const QString& keyFile,const QString& passw
 	return key ;
 }
 
-static inline QByteArray hmac_key( const QVector<QString>& exe,const QString& keyFile,const QString& password )
+static inline QByteArray hmac_key_1( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {
 	Q_UNUSED( exe ) ;
-	return hmac_key_0( keyFile,password ) ;
+	return hmac_key( keyFile,password ) ;
 }
 
 static inline QByteArray keyKeyFile( const QVector<QString>& exe,const QString& keyFile,const QString& password )

@@ -208,22 +208,22 @@ void events::run()
 
 		if( _device_action( event ) && _allowed_device( event->name ) ){
 
-			zuluMountTask::event e ;
+			auto _device = [ & ](){
 
-			e.volumeName = event->name ;
-			e.added      = event->mask == IN_CREATE ;
+				if( event->wd == dm ){
 
-			if( event->wd == dm ){
+					return zuluMountTask::devices::dm_device ;
 
-				e.deviceType = zuluMountTask::devices::dm_device ;
+				}else if( event->wd == md ){
 
-			}else if( event->wd == md ){
+					return zuluMountTask::devices::md_device ;
 
-				e.deviceType = zuluMountTask::devices::md_device ;
+				}else{
+					return zuluMountTask::devices::device ;
+				}
+			} ;
 
-			}else{
-				e.deviceType = zuluMountTask::devices::device ;
-			}
+			zuluMountTask::event e{ _device(),event->mask == IN_CREATE,event->name } ;
 
 			Task::exec( [ this,e ](){
 

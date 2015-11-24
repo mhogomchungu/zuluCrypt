@@ -110,7 +110,7 @@ void luksdeletekey::Key( int e )
 
 		m_ui->lineEditPassphrase->setEnabled( false ) ;
 
-		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key,[ this ]( const QString& key ){
 
 			m_ui->lineEditPassphrase->setText( key ) ;
 

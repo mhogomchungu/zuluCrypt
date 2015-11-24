@@ -26,7 +26,7 @@ int main( int argc,char * argv[] )
 {
 	QApplication a( argc,argv ) ;
 
-	MainWindow w( plugins::hmac_key ) ;
+	MainWindow w( plugins::hmac_key_1 ) ;
 
 	w.setToken( argv ) ;
 	w.setApplicationName( "hmac" ) ;

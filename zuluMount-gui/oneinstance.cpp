@@ -92,7 +92,7 @@ void oneinstance::gotConnection()
 
 	s->waitForReadyRead() ;
 
-	QByteArray data = s->readAll() ;
+	auto data = s->readAll() ;
 
 	if( data.isEmpty() ){
 

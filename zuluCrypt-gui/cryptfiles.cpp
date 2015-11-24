@@ -482,7 +482,7 @@ void cryptfiles::cbChanged( int r )
 		m_ui->lineEditPass_1->setEnabled( false ) ;
 		m_ui->lineEditPass_2->setEnabled( false ) ;
 
-		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key,[ this ]( const QString& key ){
 
 			m_ui->lineEditPass_1->setText( key ) ;
 			m_ui->lineEditPass_2->setText( key ) ;

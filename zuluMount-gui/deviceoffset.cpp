@@ -26,8 +26,10 @@ deviceOffset::deviceOffset( QWidget * parent,bool e,std::function< void( const Q
 	QDialog( parent ),m_ui( new Ui::deviceOffset ),m_function( std::move( f ) )
 {
 	m_ui->setupUi( this ) ;
+
 	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;

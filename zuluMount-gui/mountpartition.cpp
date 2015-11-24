@@ -161,7 +161,7 @@ void mountPartition::pbMount()
 
 	QString exe = zuluMountPath ;
 
-	QString volume = m_path ;
+	auto volume = m_path ;
 	volume.replace( "\"","\"\"\"" ) ;
 
 	if( m_ui->checkBoxShareMountPoint->isChecked() ){
@@ -308,17 +308,16 @@ void mountPartition::AutoMount( const volumeEntryProperties& e )
 void mountPartition::stateChanged( int i )
 {
 	Q_UNUSED( i ) ;
+
 	m_ui->checkBox->setEnabled( false ) ;
 
-	QString e ;
-
 	if( m_ui->checkBox->isChecked() ){
-		e = utility::mountPathPostFix( m_label ) ;
+
+		m_ui->lineEdit->setText( utility::mountPathPostFix( m_label ) ) ;
 	}else{
-		e = utility::mountPathPostFix( m_point ) ;
+		m_ui->lineEdit->setText( utility::mountPathPostFix( m_point ) ) ;
 	}
 
-	m_ui->lineEdit->setText( e ) ;
 	m_ui->checkBox->setEnabled( true ) ;
 }
 

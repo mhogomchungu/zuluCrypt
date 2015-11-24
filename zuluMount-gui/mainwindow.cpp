@@ -201,10 +201,11 @@ void MainWindow::setUpApp( const QString& volume )
 
 	m_trayIcon.show() ;
 
-	QString dirPath = utility::homePath() + "/.zuluCrypt/" ;
+	auto dirPath = utility::homePath() + "/.zuluCrypt/" ;
 	QDir dir( dirPath ) ;
 
 	if( !dir.exists() ){
+
 		dir.mkdir( dirPath ) ;
 	}
 
@@ -215,6 +216,7 @@ void MainWindow::setUpApp( const QString& volume )
 	this->updateVolumeList( zuluMountTask::updateVolumeList().await() ) ;
 
 	if( volume.isEmpty() ) {
+
 		this->enableAll() ;
 	}else{
 		this->showMoungDialog( volume ) ;
@@ -354,11 +356,12 @@ void MainWindow::languageMenu( QAction * ac )
 
 void MainWindow::autoOpenFolderOnMount( bool b )
 {
-	QString x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
+	auto x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
 
 	m_autoOpenFolderOnMount = b ;
 
-	if( b ){
+	if( m_autoOpenFolderOnMount ){
+
 		QFile::remove( x ) ;
 	}else{
 		QFile f( x ) ;
@@ -369,7 +372,7 @@ void MainWindow::autoOpenFolderOnMount( bool b )
 
 bool MainWindow::autoOpenFolderOnMount( void )
 {
-	QString x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
+	auto x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
 	return !QFile::exists( x ) ;
 }
 
@@ -432,7 +435,7 @@ void MainWindow::volumeRemoved( QString volume )
 
 		auto table = m_ui->tableWidget ;
 
-		int row = tablewidget::columnHasEntry( table,volume ) ;
+		auto row = tablewidget::columnHasEntry( table,volume ) ;
 
 		if( row != -1 ){
 			tablewidget::deleteRowFromTable( table,row ) ;
@@ -461,13 +464,15 @@ void MainWindow::removeVolume( QString volume )
 
 void MainWindow::itemEntered( QTableWidgetItem * item )
 {
-	int row = item->row() ;
+	auto row = item->row() ;
 	auto table = item->tableWidget() ;
-	QString m_point = table->item( row,1 )->text() ;
+	auto m_point = table->item( row,1 )->text() ;
 
-	QString x = table->item( row,3 )->text() ;
-	QString z ;
-	QString y ;
+	using string_t = decltype( table->item( row,3 )->text() ) ;
+
+	string_t x = table->item( row,3 )->text() ;
+	string_t z ;
+	string_t y ;
 
 	if( m_point == "/" ){
 		/*
@@ -480,17 +485,23 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 		z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 
 	}else if( m_point == "Nil" ){
+
 		/*
 		 * volume is not mounted,cant know its LABEL value
 		 */
+
 		x.clear() ;
+
 		z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 	}else{
 		if( x == "Nil" ){
 			x.clear() ;
 		}
+
 		y = utility::shareMountPointToolTip( m_point ) ;
+
 		if( y.isEmpty() ){
+
 			z += tr( "LABEL=\"%1\"" ).arg( x ) ;
 		}else{
 			z += tr( "LABEL=\"%1\"\n%2" ).arg( x,y ) ;
@@ -525,7 +536,7 @@ void MainWindow::raiseWindow( QString volume )
 
 void MainWindow::Show()
 {
-	QStringList l = QCoreApplication::arguments() ;
+	auto l = QCoreApplication::arguments() ;
 
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
@@ -533,7 +544,7 @@ void MainWindow::Show()
 
 	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
-	QString volume = utility::cmdArgumentValue( l,"-d" ) ;
+	auto volume = utility::cmdArgumentValue( l,"-d" ) ;
 
 	oneinstance::instance( this,"zuluMount-gui.socket","startGUI",volume,[ this,volume ]( QObject * instance ){
 
@@ -550,18 +561,16 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	m.setFont( this->font() ) ;
 
-	int row = item->row() ;
+	auto row = item->row() ;
 
-	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
-
-	QString device = m_ui->tableWidget->item( row,0 )->text() ;
+	auto mt = m_ui->tableWidget->item( row,1 )->text() ;
 
 	if( mt == "Nil" ){
 
 		connect( m.addAction( tr( "Mount" ) ),SIGNAL( triggered() ),this,SLOT( slotMount() ) ) ;
 	}else{
-		QString mp = QString( "/run/media/private/%1/" ).arg( utility::userName() ) ;
-		QString mp_1 = QString( "/home/%1/" ).arg( utility::userName() ) ;
+		auto mp   = QString( "/run/media/private/%1/" ).arg( utility::userName() ) ;
+		auto mp_1 = QString( "/home/%1/" ).arg( utility::userName() ) ;
 
 		if( mt.startsWith( mp ) || mt.startsWith( mp_1 ) ){
 
@@ -569,7 +578,7 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			m.addSeparator() ;
 
-			QString fs = m_ui->tableWidget->item( row,2 )->text() ;
+			auto fs = m_ui->tableWidget->item( row,2 )->text() ;
 
 			if( fs != "encfs" ){
 
@@ -620,9 +629,9 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 	if( itemClicked ){
 		m.exec( QCursor::pos() ) ;
 	}else{
-		QPoint p = this->pos() ;
-		int x = p.x() + 100 + m_ui->tableWidget->columnWidth( 0 ) ;
-		int y = p.y() + 50 + m_ui->tableWidget->rowHeight( 0 ) * item->row() ;
+		auto p = this->pos() ;
+		auto x = p.x() + 100 + m_ui->tableWidget->columnWidth( 0 ) ;
+		auto y = p.y() + 50 + m_ui->tableWidget->rowHeight( 0 ) * item->row() ;
 		p.setX( x ) ;
 		p.setY( y ) ;
 		m.exec( p ) ;
@@ -636,10 +645,11 @@ void MainWindow::itemClicked( QTableWidgetItem * item )
 
 void MainWindow::defaultButton()
 {
-	int row = m_ui->tableWidget->currentRow() ;
-	QString mt = m_ui->tableWidget->item( row,1 )->text() ;
+	auto row = m_ui->tableWidget->currentRow() ;
+	auto mt = m_ui->tableWidget->item( row,1 )->text() ;
 
 	if( mt == "Nil" ){
+
 		this->slotMount() ;
 	}else{
 		this->showContextMenu( m_ui->tableWidget->currentItem(),false ) ;
@@ -819,7 +829,7 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 void MainWindow::slotMount()
 {
 	auto table = m_ui->tableWidget ;
-	int row = table->currentRow() ;
+	auto row = table->currentRow() ;
 
 	this->mount( volumeEntryProperties( tablewidget::tableRowEntries( table,row ) ) ) ;
 }
@@ -856,7 +866,7 @@ void MainWindow::pbMount()
 {
 	this->disableAll() ;
 
-	QString path = QFileDialog::getOpenFileName( this,tr( "Select An Image File To Mount" ),utility::homePath() ) ;
+	auto path = QFileDialog::getOpenFileName( this,tr( "Select An Image File To Mount" ),utility::homePath() ) ;
 
 	if( path.isEmpty() ){
 
@@ -870,7 +880,7 @@ void MainWindow::unlockencfs()
 {
 	this->disableAll() ;
 
-	QString path = QFileDialog::getExistingDirectory( this,tr( "Select An Encfs Volume Directory" ),utility::homePath(),QFileDialog::ShowDirsOnly ) ;
+	auto path = QFileDialog::getExistingDirectory( this,tr( "Select An Encfs Volume Directory" ),utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( path.isEmpty() ){
 
@@ -907,7 +917,7 @@ void MainWindow::removeEntryFromTable( QString volume )
 {
 	auto table = m_ui->tableWidget ;
 
-	int r = tablewidget::columnHasEntry( table,volume ) ;
+	auto r = tablewidget::columnHasEntry( table,volume ) ;
 
 	if( r != -1 ){
 
@@ -949,7 +959,7 @@ void MainWindow::updateList( const volumeEntryProperties& entry )
 
 		auto table = m_ui->tableWidget ;
 
-		int row = tablewidget::columnHasEntry( table,entry.volumeName() ) ;
+		auto row = tablewidget::columnHasEntry( table,entry.volumeName() ) ;
 
 		if( row == -1 ){
 
@@ -970,14 +980,14 @@ void MainWindow::pbUmount()
 {
 	this->disableAll() ;
 
-	int row = m_ui->tableWidget->currentRow() ;
+	auto row = m_ui->tableWidget->currentRow() ;
 
-	QString path = m_ui->tableWidget->item( row,0 )->text() ;
-	QString type = m_ui->tableWidget->item( row,2 )->text() ;
+	auto path = m_ui->tableWidget->item( row,0 )->text() ;
+	auto type = m_ui->tableWidget->item( row,2 )->text() ;
 
 	if( type == "encfs" ){
 
-		QString m = m_ui->tableWidget->item( row,1 )->text() ;
+		auto m = m_ui->tableWidget->item( row,1 )->text() ;
 
 		if( !zuluMountTask::encfsUnmount( m ).await() ){
 
@@ -1003,23 +1013,25 @@ void MainWindow::unMountAll()
 
 	auto table = m_ui->tableWidget ;
 
-	QStringList x = tablewidget::tableColumnEntries( table,1 ) ;
-	QStringList y = tablewidget::tableColumnEntries( table,0 ) ;
-	QStringList z = tablewidget::tableColumnEntries( table,2 ) ;
+	using list_t = decltype( tablewidget::tableColumnEntries( table,1 ) ) ;
 
-	QStringList p ;
-	QStringList q ;
-	QStringList n ;
+	list_t x = tablewidget::tableColumnEntries( table,1 ) ;
+	list_t y = tablewidget::tableColumnEntries( table,0 ) ;
+	list_t z = tablewidget::tableColumnEntries( table,2 ) ;
 
-	QString a = utility::userName() ;
-	QString b = utility::mountPath( QString() ) ;
-	QString c = utility::homeMountPath( QString() ) ;
+	list_t p ;
+	list_t q ;
+	list_t n ;
+
+	auto a = utility::userName() ;
+	auto b = utility::mountPath( QString() ) ;
+	auto c = utility::homeMountPath( QString() ) ;
 
 	int k = x.size() ;
 
 	for( int i = 0 ; i < k ; i++ ){
 
-		const QString& e = x.at( i ) ;
+		const auto& e = x.at( i ) ;
 
 		if( e.startsWith( b ) || e.startsWith( c ) ){
 
@@ -1039,7 +1051,7 @@ void MainWindow::unMountAll()
 		}else{
 			for( int i = p.size() - 1 ; i >= 0 ; i-- ){
 
-				const QString& e = q.at( i ) ;
+				const auto& e = q.at( i ) ;
 
 				if( e == "encfs" ){
 
@@ -1082,6 +1094,7 @@ void MainWindow::updateVolumeList( const QVector< volumeEntryProperties >& r )
 		for( const auto& it : r ){
 
 			if( it.entryisValid() ){
+
 				this->updateList( it ) ;
 			}
 		}
@@ -1097,12 +1110,13 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	 */
 
 	if( entries.isEmpty() ){
+
 		return this->enableAll() ;
 	}
 
 	auto table = m_ui->tableWidget ;
 
-	QStringList l = tablewidget::tableColumnEntries( table,0 ) ;
+	auto l = tablewidget::tableColumnEntries( table,0 ) ;
 
 	auto _hasNoEntry = [&]( const QString& volume ){
 
@@ -1126,7 +1140,7 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 		return true ;
 	} ;
 
-	QStringList z ;
+	decltype( l ) z ;
 
 	for( const auto& it : l ){
 

@@ -27,8 +27,8 @@
 
 static QString _convert_lvm_path( const QString& dev )
 {
-	QString volume = dev ;
-	QByteArray e = dev.toLatin1() ;
+	auto volume = dev ;
+	auto e = dev.toLatin1() ;
 
 	char * begin = e.data() ;
 	char * end = begin + e.size() ;
@@ -63,10 +63,10 @@ static QString _convert_lvm_path( const QString& dev )
 
 static QString _convert_md_raid_path( const QString& dev,bool wait )
 {
-	QString volume = dev ;
+	auto volume = dev ;
 
-	QString dev_1 ;
-	QDir d( "/dev/md/" ) ;
+	decltype( volume ) dev_1 ;
+
 	QDir f ;
 
 	if( wait ){
@@ -76,9 +76,9 @@ static QString _convert_md_raid_path( const QString& dev,bool wait )
 		utility::Task::wait( 4 ) ;
 	}
 
-	if( d.exists() ){
+	if( utility::pathExists( "/dev/md/" ) ){
 
-		QStringList l = d.entryList() ;
+		auto l = utility::directoryList( "/dev/md/" ) ;
 
 		for( const auto& it : l ){
 
@@ -100,9 +100,10 @@ static QString _convert_md_raid_path( const QString& dev,bool wait )
 static QString _device( const QString& device )
 {
 	if( device.startsWith( "UUID" ) ){
+
 		return device ;
 	}else{
-		QString d = device ;
+		auto d = device ;
 		return d.replace( "\"","\"\"\"" ) ;
 	}
 }
@@ -119,7 +120,7 @@ QStringList zuluMountTask::mountedVolumeList( void )
 
 volumeEntryProperties _getVolumeProperties( const QString& e )
 {
-	QString device = _device( e ) ;
+	auto device = _device( e ) ;
 
 	auto r = utility::Task( utility::appendUserUID( "%1 -L -d \"%2\"" ).arg( zuluMountPath,device ) ) ;
 
@@ -145,7 +146,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 			return QString() ;
 		}
 
-		QString volume = _device( v ) ;
+		auto volume = _device( v ) ;
 
 		auto r = utility::Task( utility::appendUserUID( "%1 -s -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
@@ -159,7 +160,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 				* this could be a plain volume opened with an offset
 				*/
 
-				QString e = utility::appendUserUID( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ) ;
+				auto e = utility::appendUserUID( "%1 -s -o bogusNecessaryArgument -d \"%2\"" ) ;
 				r = utility::Task( e.arg( zuluMountPath,volume ) ) ;
 
 				if( r.ok() ){
@@ -188,7 +189,7 @@ utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QStr
 		return e ;
 	} ;
 
-	QString volume = _device( volumePath ) ;
+	auto volume = _device( volumePath ) ;
 
 	auto r = _run( utility::appendUserUID( "%1 -u -d \"%2\"" ).arg( zuluMountPath,volume ) ) ;
 
@@ -248,17 +249,16 @@ struct deviceList
 
 static QVector< deviceList > _getDevices()
 {
-	const char * p = "/dev/disk/by-id/" ;
+	auto p = "/dev/disk/by-id/" ;
 
-	QDir d( p ) ;
 	QDir e ;
 
-	QStringList l = d.entryList() ;
+	auto l = utility::directoryList( p ) ;
 
 	l.removeOne( "." ) ;
 	l.removeOne( ".." ) ;
 
-	QVector< deviceList > devices ;
+	decltype( _getDevices() ) devices ;
 
 	if( l.isEmpty() ){
 
@@ -299,7 +299,7 @@ void zuluMountTask::addVolumeToHiddenVolumeList( const QString& e )
 
 	if( f.open( QIODevice::WriteOnly | QIODevice::Append ) ){
 
-		QString a = _getUniqueName( e ) ;
+		auto a = _getUniqueName( e ) ;
 
 		if( !a.isEmpty() ){
 
@@ -314,11 +314,11 @@ QStringList zuluMountTask::hiddenVolumeList()
 
 	if( f.open( QIODevice::ReadOnly ) ){
 
-		QVector< deviceList > l = _getDevices() ;
+		auto l = _getDevices() ;
 
-		QStringList e ;
+		decltype( _split( f ) ) e ;
 
-		QStringList g = _split( f ) ;
+		auto g = _split( f ) ;
 
 		for( const auto& it : l ){
 
@@ -328,7 +328,7 @@ QStringList zuluMountTask::hiddenVolumeList()
 			}
 		}
 
-		return  e ;
+		return e ;
 	}else{
 		return QStringList() ;
 	}
@@ -340,11 +340,9 @@ void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 
 	if( f.open( QIODevice::ReadOnly ) ){
 
-		QStringList l = _split( f ) ;
+		auto l = _split( f ) ;
 
 		l.removeAll( _getUniqueName( e ) ) ;
-
-		f.close() ;
 
 		if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
@@ -363,7 +361,7 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 {
 	return Task::run< QVector< volumeEntryProperties > >( [](){
 
-		QStringList l = zuluMountTask::hiddenVolumeList() ;
+		auto l = zuluMountTask::hiddenVolumeList() ;
 
 		auto _validEntry = [ & ]( const QString& e ){
 
@@ -425,34 +423,34 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 {
 	auto _loopDeviceIsGone =[]( const QString& device ){
 
-		QDir d( "/sys/block" ) ;
-		QStringList l = d.entryList() ;
-		QString e ;
-		QString dev = QString( "%1\n" ).arg( device ) ;
-		QByteArray s ;
 		QFile f ;
 
-		for( const auto& it : l ){
+		auto dev = QString( "%1\n" ).arg( device ) ;
 
-			if( it.startsWith( "loop" ) ){
+		auto _match = [ & ]( const QString& path ){
 
-				e = QString( "/sys/block/%1/loop/backing_file" ).arg( it ) ;
+			f.setFileName( QString( "/sys/block/%1/loop/backing_file" ).arg( path ) ) ;
 
-				f.setFileName( e ) ;
+			auto r = false ;
 
-				if( f.open( QIODevice::ReadOnly ) ){
+			if( f.open( QIODevice::ReadOnly ) ){
 
-					s = f.readAll() ;
+				r = f.readAll() == dev ;
+			}
 
-					f.close() ;
-				}
+			f.close() ;
 
-				if( s == dev ){
+			return r ;
+		} ;
 
-					return false ;
-				}
+		for( const auto& it : utility::directoryList( "/sys/block" ) ){
+
+			if( it.startsWith( "loop" ) && _match( it ) ){
+
+				return false ;
 			}
 		}
+
 		return true ;
 	} ;
 
@@ -491,9 +489,9 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 
 volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountTask::event& deviceProperty )
 {
-	auto _mdRaidDevice = [&]( const QString& device ){
+	auto _mdRaidDevice = [ & ]( const QString& device ){
 
-		QString d = _convert_md_raid_path( device,true ) ;
+		auto d = _convert_md_raid_path( device,true ) ;
 
 		volumeMiniPropertiesTaskResult s{ d,false,nullptr } ;
 
@@ -507,9 +505,9 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 		return s ;
 	} ;
 
-	auto _dmDevice = [&]( const QString& device ){
+	auto _dmDevice = [ & ]( const QString& device ){
 
-		QString d = _convert_lvm_path( device ) ;
+		auto d = _convert_lvm_path( device ) ;
 
 		volumeMiniPropertiesTaskResult s{ d,false,nullptr } ;
 
@@ -554,7 +552,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 		return volumeMiniPropertiesTaskResult{ QString(),false,nullptr } ;
 	} ;
 
-	QString device = QString( "/dev/%1" ).arg( deviceProperty.volumeName ) ;
+	auto device = QString( "/dev/%1" ).arg( deviceProperty.volumeName ) ;
 
 	switch( deviceProperty.deviceType ){
 
@@ -657,9 +655,7 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 
 		QDir d( p ) ;
 
-		QStringList l = d.entryList( QDir::Hidden | QDir::Files ) ;
-
-		for( const auto& it : l ){
+		for( const auto& it : d.entryList( QDir::Hidden | QDir::Files ) ){
 
 			if( it.startsWith( ".encfs" ) && it.endsWith( ".xml" ) ){
 

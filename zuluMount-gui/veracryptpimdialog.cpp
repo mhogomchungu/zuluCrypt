@@ -73,7 +73,7 @@ void VeraCryptPIMDialog::pbSet()
 {
 	bool ok ;
 
-	int e = m_ui->lineEditPIM->text().toInt( &ok ) ;
+	auto e = m_ui->lineEditPIM->text().toInt( &ok ) ;
 
 	if( ok ){
 

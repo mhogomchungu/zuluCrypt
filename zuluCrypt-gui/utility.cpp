@@ -1022,9 +1022,7 @@ static QString _partition_id_to_device_id( const QString& id,bool expand )
 {
 	if( id.startsWith( "/dev/" ) ){
 
-		QDir d( "/dev/disk/by-id" ) ;
-
-		auto l = d.entryList() ;
+		auto l = utility::directoryList( "/dev/disk/by-id" ) ;
 
 		l.removeOne( "." ) ;
 		l.removeOne( ".." ) ;
@@ -1419,7 +1417,7 @@ int utility::pluginKey( QDialog * w,QString * key,const QString& p )
 
 	if( p == "hmac" ){
 
-		pluginType   = plugins::plugin::hmac_key_0 ;
+		pluginType   = plugins::plugin::hmac_key ;
 		pluginString = QObject::tr( "hmac plugin.\n\nThis plugin generates a key using below formular:\n\nkey = hmac(sha256,passphrase,keyfile contents)" ) ;
 
 	}else if( p == "keykeyfile" ){
@@ -1617,4 +1615,10 @@ void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac,const char * app 
 	DialogMsg msg( w ) ;
 
 	msg.ShowUIOK( QObject::tr( "INFO" ),QObject::tr( "Translation will be done the next time you restart." ) ) ;
+}
+
+QStringList utility::directoryList( const QString& e )
+{
+	QDir d( e ) ;
+	return d.entryList() ;
 }

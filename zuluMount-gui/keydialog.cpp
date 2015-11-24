@@ -64,7 +64,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_working = false ;
 	m_volumeIsEncFs = e.fileSystem() == "encfs" ;
 
-	QString msg ;
+	decltype( tr( "" ) ) msg ;
 
 	if( e.fileSystem() == "crypto_LUKS" ){
 
@@ -426,7 +426,7 @@ void keyDialog::encfsMount()
 {
 	auto m = utility::mountPath( utility::mountPathPostFix( m_ui->lineEditMountPoint->text() ) ) ;
 
-	bool ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
+	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
 	if( zuluMountTask::encfsMount( m_path,m,m_key,ro ).await() ){
 
@@ -461,7 +461,7 @@ void keyDialog::encfsMount()
 
 void keyDialog::openVolume()
 {
-	int keyType = m_ui->cbKeyType->currentIndex() ;
+	auto keyType = m_ui->cbKeyType->currentIndex() ;
 
 	if( m_volumeIsEncFs ){
 

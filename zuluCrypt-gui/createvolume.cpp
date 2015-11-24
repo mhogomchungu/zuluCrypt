@@ -574,7 +574,7 @@ void createvolume::cbNormalVolume( int r )
 		m_ui->lineEditPassphrase1->setEnabled( false ) ;
 		m_ui->lineEditPassPhrase2->setEnabled( false ) ;
 
-		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key,[ this ]( const QString& key ){
 
 			m_key = key ;
 
@@ -649,7 +649,7 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey->setEnabled( false ) ;
 		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
 
-		plugin::instance( this,plugins::plugin::hmac_key_0,[ this ]( const QString& key ){
+		plugin::instance( this,plugins::plugin::hmac_key,[ this ]( const QString& key ){
 
 			m_hiddenKey = key ;
 
