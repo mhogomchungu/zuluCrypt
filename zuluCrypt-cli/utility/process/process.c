@@ -329,6 +329,11 @@ void ProcessSetOptionPriority( process_t p,int priority )
 	}
 }
 
+static void _execve( process_t p,char * const * env )
+{
+	execve( p->str.args[ 0 ],p->str.args,env ) ;
+}
+
 pid_t ProcessStart( process_t p )
 {
 	char * const env[] = { "PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin",NULL } ;
@@ -372,15 +377,17 @@ pid_t ProcessStart( process_t p )
 			setpriority( PRIO_PROCESS,0,p->str.priority ) ;
 		}
 
-		if( p->str.env == NULL ){
+		if( p->str.env == NULL || p->str.env[ 0 ] == NULL ){
 
-			execve( p->str.args[ 0 ],p->str.args,env ) ;
+			if( environ[ 0 ] == NULL ){
 
-		}else if( p->str.env[ 0 ] == NULL ){
+				_execve( p,env ) ;
+			}else{
+				_execve( p,environ ) ;
+			}
 
-			execv( p->str.args[ 0 ],p->str.args ) ;
 		}else{
-			execve( p->str.args[ 0 ],p->str.args,p->str.env ) ;
+			_execve( p,p->str.env ) ;
 		}
 
 		/*

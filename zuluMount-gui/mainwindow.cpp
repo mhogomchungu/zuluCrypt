@@ -111,7 +111,6 @@ void MainWindow::setUpApp( const QString& volume )
 		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->pbmount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
 	connect( m_ui->pbupdate,SIGNAL( clicked()),this,SLOT( pbUpdate() ) ) ;
-	connect( m_ui->pbmenu,SIGNAL( clicked() ),this,SLOT( pbMenu() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->pbunlockencfs,SIGNAL( clicked() ),this,SLOT( unlockencfs() ) ) ;
 
@@ -382,15 +381,10 @@ void MainWindow::startAutoMonitor()
 	m_events.start() ;
 }
 
-void MainWindow::closeApplication()
-{
-	m_events.stop() ;
-}
-
 /*
  * This should be the only function that closes the application
  */
-void MainWindow::pbMenu()
+void MainWindow::closeApplication()
 {
 	m_events.stop() ;
 }
@@ -1027,9 +1021,9 @@ void MainWindow::unMountAll()
 	auto b = utility::mountPath( QString() ) ;
 	auto c = utility::homeMountPath( QString() ) ;
 
-	int k = x.size() ;
+	auto k = x.size() ;
 
-	for( int i = 0 ; i < k ; i++ ){
+	for( decltype( k ) i = 0 ; i < k ; i++ ){
 
 		const auto& e = x.at( i ) ;
 
@@ -1049,7 +1043,7 @@ void MainWindow::unMountAll()
 
 			utility::Task::waitForOneSecond() ;
 		}else{
-			for( int i = p.size() - 1 ; i >= 0 ; i-- ){
+			for( decltype( p.size() ) i = p.size() - 1 ; i >= 0 ; i-- ){
 
 				const auto& e = q.at( i ) ;
 

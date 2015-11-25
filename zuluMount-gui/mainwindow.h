@@ -74,7 +74,6 @@ private slots:
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
 	void pbUmount( void ) ;
-	void pbMenu( void ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;

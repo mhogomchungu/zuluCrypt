@@ -294,7 +294,7 @@ static string_t set_mount_options( m_struct * mst )
 	StringRemoveString( opt,"rw" ) ;
 
 	if( mst->m_flags & MS_RDONLY ){
-		
+
 		StringPrepend( opt,"ro," ) ;
 	}else{
 		StringPrepend( opt,"rw," ) ;
@@ -353,11 +353,7 @@ static int _mount_FUSEfs( const m_struct * mst,string_t st )
 {
 	const char * opts = _mount_options( mst->m_flags,st ) ;
 
-	char * const env[ 2 ] = { "PATH=/bin:/usr/bin:/sbin:/usr/sbin",NULL } ;
-
 	process_t p = Process( ZULUCRYPTmount,NULL ) ;
-
-	ProcessSetEnvironmentalVariable( p,env ) ;
 
 	if( StringsAreEqual( mst->fs,"ntfs" ) ){
 

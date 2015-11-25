@@ -141,7 +141,7 @@ add_definitions( -I${PROJECT_SOURCE_DIR}/external_libraries/tc-play )
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "internal version of tcplay will be used to create and open TrueCrypt and VeraCrypt volumes." )
 message ( STATUS "internal version of tcplay will be used to create and restore TrueCrypt volume headers." )
-message ( STATUS "creation and restoration of VeraCrypt volumes is currently disabled." )
+message ( STATUS "creation and restoration of VeraCrypt volume headers is currently disabled." )
 message ( STATUS "---------------------------------------------------------------------------" )
 
 if( HOMEMOUNTPREFIX )
