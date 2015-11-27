@@ -218,30 +218,9 @@ static QString _excludeVolumePath()
 
 struct deviceList
 {
-	deviceList( const QString& dev,const QString& n ) : uniqueName( n )
-	{
-		if( dev.startsWith( "/dev/dm-" ) ){
-
-			QFile file( "/sys/block/" + dev.split( '/' ).last() + "/dm/name" ) ;
-
-			if( file.open( QIODevice::ReadOnly ) ){
-
-				QString e = file.readAll() ;
-				e.truncate( e.size() - 1 ) ;
-				device = _convert_lvm_path( "/dev/" + e ) ;
-			}else{
-				device = dev ;
-			}
-
-		}else if( dev.startsWith( "/dev/md" ) ){
-
-			device = _convert_md_raid_path( dev,false ) ;
-		}else{
-			device = dev ;
-		}
-	}
-	deviceList()
-	{
+	deviceList( const QString& dev = QString(),const QString& n = QString() ) :
+		device( dev ),uniqueName( n )
+	{		
 	}
 	QString device ;
 	QString uniqueName ;
@@ -264,11 +243,52 @@ static QVector< deviceList > _getDevices()
 
 		return devices ;
 	}else{
+		auto _not_present = [ &devices ]( const QString& e ){
+
+			for( const auto& it : devices ){
+
+				if( it.device == e ){
+
+					return false ;
+				}
+			}
+
+			return true ;
+		} ;
+
+		auto _device_path = []( const QString& dev ){
+
+			if( dev.startsWith( "/dev/dm-" ) ){
+
+				QFile file( "/sys/block/" + dev.split( '/' ).last() + "/dm/name" ) ;
+
+				if( file.open( QIODevice::ReadOnly ) ){
+
+					QString e = file.readAll() ;
+					e.truncate( e.size() - 1 ) ;
+					return _convert_lvm_path( "/dev/" + e ) ;
+				}else{
+					return dev ;
+				}
+
+			}else if( dev.startsWith( "/dev/md" ) ){
+
+				return _convert_md_raid_path( dev,false ) ;
+			}else{
+				return dev ;
+			}
+		} ;
+
 		for( const auto& it : l ){
 
 			e.setPath ( p + it ) ;
 
-			devices.append( deviceList( e.canonicalPath(),it ) ) ;
+			const auto& q = _device_path( e.canonicalPath() ) ;
+
+			if( _not_present( q ) ){
+
+				devices.append( deviceList( q,it ) ) ;
+			}
 		}
 	}
 
@@ -336,17 +356,35 @@ QStringList zuluMountTask::hiddenVolumeList()
 
 void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 {
-	QFile f( _excludeVolumePath() ) ;
+	auto _get_hidden_volume_list = [](){
 
-	if( f.open( QIODevice::ReadOnly ) ){
+		QFile f( _excludeVolumePath() ) ;
 
-		auto l = _split( f ) ;
+		if( f.open( QIODevice::ReadOnly ) ){
 
-		l.removeAll( _getUniqueName( e ) ) ;
+			return _split( f ) ;
+		}else{
+			return QStringList() ;
+		}
+	} ;
 
-		if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
+	auto _remove_entry = []( QStringList l,const QString& e ){
 
-			if( !l.isEmpty() ){
+		if( !l.isEmpty() ){
+
+			l.removeAll( _getUniqueName( e ) ) ;
+		}
+
+		return l ;
+	} ;
+
+	auto _update_list = []( const QStringList& l ){
+
+		if( !l.isEmpty() ){
+
+			QFile f( _excludeVolumePath() ) ;
+
+			if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
 				for( const auto& it : l ){
 
@@ -354,7 +392,9 @@ void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 				}
 			}
 		}
-	}
+	} ;
+
+	_update_list( _remove_entry( _get_hidden_volume_list(),e ) ) ;
 }
 
 Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeList()
