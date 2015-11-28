@@ -218,11 +218,7 @@ static QString _excludeVolumePath()
 
 struct deviceList
 {
-	deviceList( const QString& dev = QString(),const QString& n = QString() ) :
-		device( dev ),uniqueName( n )
-	{		
-	}
-	QString device ;
+	QString deviceName ;
 	QString uniqueName ;
 };
 
@@ -230,12 +226,7 @@ static QVector< deviceList > _getDevices()
 {
 	auto p = "/dev/disk/by-id/" ;
 
-	QDir e ;
-
 	auto l = utility::directoryList( p ) ;
-
-	l.removeOne( "." ) ;
-	l.removeOne( ".." ) ;
 
 	decltype( _getDevices() ) devices ;
 
@@ -247,7 +238,7 @@ static QVector< deviceList > _getDevices()
 
 			for( const auto& it : devices ){
 
-				if( it.device == e ){
+				if( it.deviceName == e ){
 
 					return false ;
 				}
@@ -279,15 +270,17 @@ static QVector< deviceList > _getDevices()
 			}
 		} ;
 
+		QDir e ;
+
 		for( const auto& it : l ){
 
-			e.setPath ( p + it ) ;
+			e.setPath( p + it ) ;
 
 			const auto& q = _device_path( e.canonicalPath() ) ;
 
 			if( _not_present( q ) ){
 
-				devices.append( deviceList( q,it ) ) ;
+				devices.append( { q,it } ) ;
 			}
 		}
 	}
@@ -299,7 +292,7 @@ static QString _getUniqueName( const QString& device )
 {
 	for( const auto& it : _getDevices() ){
 
-		if( it.device == device ){
+		if( it.deviceName == device ){
 
 			return it.uniqueName ;
 		}
@@ -344,7 +337,7 @@ QStringList zuluMountTask::hiddenVolumeList()
 
 			if( g.contains( it.uniqueName ) ){
 
-				e.append( it.device ) ;
+				e.append( it.deviceName ) ;
 			}
 		}
 

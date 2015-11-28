@@ -1024,9 +1024,6 @@ static QString _partition_id_to_device_id( const QString& id,bool expand )
 
 		auto l = utility::directoryList( "/dev/disk/by-id" ) ;
 
-		l.removeOne( "." ) ;
-		l.removeOne( ".." ) ;
-
 		QDir r ;
 
 		for( const auto& it : l ){
@@ -1620,5 +1617,11 @@ void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac,const char * app 
 QStringList utility::directoryList( const QString& e )
 {
 	QDir d( e ) ;
-	return d.entryList() ;
+
+	auto l = d.entryList() ;
+
+	l.removeOne( "." ) ;
+	l.removeOne( ".." ) ;
+
+	return l ;
 }
