@@ -1261,19 +1261,19 @@ static utility::array_t _dimensions( const QString& path,const char * defaults,i
 
 utility::array_t utility::getWindowDimensions( const QString& application )
 {
-	QString path = utility::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
+	auto path = utility::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
 
 	if( application == "zuluCrypt" ){
 
-		return _dimensions( path,"0 0 782 419 298 336 100",7 ) ;
+		return _dimensions( path,"297 189 782 419 298 336 100",7 ) ;
 	}else{
-		return _dimensions( path,"0 0 910 477 220 320 145 87 87",9 ) ;
+		return _dimensions( path,"205 149 910 477 220 320 145 87 87",9 ) ;
 	}
 }
 
 void utility::setWindowDimensions( const QString& application,const std::initializer_list<int>& e )
 {
-	QString path = utility::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
+	auto path = utility::homePath() + "/.zuluCrypt/" + application + "-gui-ui-options" ;
 
 	QFile f( path ) ;
 
