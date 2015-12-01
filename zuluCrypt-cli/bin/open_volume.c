@@ -93,13 +93,17 @@ static char * _device_path( const char * device )
 	char * path ;
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
+
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
 		 */
 		path = zuluCryptLoopDeviceAddress_1( device ) ;
+
 		zuluCryptSecurityDropElevatedPrivileges() ;
+
 		if( path == NULL ){
+
 			return StringCopy_2( device ) ;
 		}else{
 			return path ;
@@ -123,19 +127,28 @@ static void _printResult( const char * device,const char * m_point )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( StringHasComponent( e,"LUKS" ) ){
+
 		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"luks" ) ;
+
 	}else if( StringHasComponent( e,"PLAIN" ) ){
+
 		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"plain" ) ;
+
 	}else if( StringHasComponent( e,"TCRYPT" ) ){
+
 		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"tcrypt" ) ;
+
 	}else if( StringHasComponent( e,"VCRYPT" ) ){
+
 		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"vcrypt" ) ;
 	}else{
 		printf( gettext( "SUCCESS: volume opened successfully\n" ) ) ;
 	}
 
 	StringFree( e ) ;
+
 	if( m_point != NULL ){
+
 		printf( gettext( "volume mounted at: %s\n" ),m_point ) ;
 	}
 }
@@ -143,6 +156,7 @@ static void _printResult( const char * device,const char * m_point )
 static int zuluExit( int st,const char * device,const char * m_point,stringList_t stl )
 {
 	switch( st ){
+
 		case 0 : _printResult( device,m_point ) ;											break ;
 		case 1 : printf( gettext( "ERROR: Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?\n" ) ) 	;break ;
 		case 2 : printf( gettext( "ERROR: There seem to be an open volume accociated with given address\n" ) ) ;			break ;
@@ -184,8 +198,11 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 static int zuluExit_1( int st,const struct_opts * opts,const char * device,const char * m_point,stringList_t stl )
 {
 	if( opts->open_mount && st != 0 ){
+
 		zuluCryptSecurityGainElevatedPrivileges() ;
+
 		rmdir( m_point ) ;
+
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}
 	return zuluExit( st,device,m_point,stl ) ;
@@ -295,12 +312,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 	}
 	if( m_opts == NULL ){
+
 		m_opts = "rw" ;
 	}
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ){
+
 		return zuluExit( 5,device,mount_point,stl ) ;
 	}
 	if( StringHasComponent( m_opts,"rw" ) ){
@@ -322,6 +341,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * 4-common error
 	 */
 	switch( st ){
+
 		case 0 :  break ;
 		case 1 :  return zuluExit( 6,device,mount_point,stl ) ;
 		case 2 :  return zuluExit( 6,device,mount_point,stl ) ;
@@ -335,15 +355,20 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		* zuluCryptCreateMountPoint() is defined in create_mount_point.c
 		*/
 		*m_point = zuluCryptCreateMountPoint( device,mount_point,m_opts,uid ) ;
+
 		mount_point = StringContent( *m_point ) ;
+
 		if( mount_point == NULL ){
+
 			return zuluExit( 9,device,mount_point,stl ) ;
 		}
 	}else{
 		if( uid != 0 ){
+
 			return zuluExit( 7,device,mount_point,stl ) ;
 		}
 		if( mount_point != NULL ){
+
 			return zuluExit( 8,device,mount_point,stl ) ;
 		}
 	}
@@ -353,6 +378,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 * zuluCryptBindSharedMountPointPathTaken() is defined in bind.c
 		 */
 		if( zuluCryptBindSharedMountPointPathTaken( *m_point ) ){
+
 			return zuluExit_1( 10,opts,device,mount_point,stl ) ;
 		}
 	}
@@ -369,6 +395,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	e = StringMultipleAppend( *mapper_path,"/",mapper_name,NULL ) ;
 
 	if( stat( e,&statstr ) == 0 ){
+
 		return zuluExit_1( 11,opts,device,mount_point,stl ) ;
 	}
 
@@ -388,42 +415,56 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		StringFree( uuid ) ;
 
 		if( st != 0 || *passphrase == StringVoid ){
+
 			return zuluExit_1( 12,opts,device,mount_point,stl ) ;
 		}
 
 		key_len = StringLength( *passphrase ) ;
 		key = StringContent( *passphrase ) ;
+
 		zuluCryptSecurityLockMemory_1( *passphrase ) ;
+
 	}else if( source == NULL && tcrypt_keyfiles[ 0 ] == NULL ){
+
 		printf( gettext( "Enter passphrase: " ) ) ;
 		/*
 		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 		 */
 		switch( StringSilentlyGetFromTerminal_1( passphrase,ZULUCRYPT_KEY_MAX_SIZE ) ){
+
 			case 1 : return zuluExit_1( 13,opts,device,mount_point,stl ) ;
 			case 2 : return zuluExit_1( 14,opts,device,mount_point,stl ) ;
 		}
+
 		printf( "\n" ) ;
 		key = StringContent( *passphrase ) ;
 		key_len = StringLength( *passphrase ) ;
+
 		zuluCryptSecurityLockMemory_1( *passphrase ) ;
 	}else{
 		if( source == NULL || pass == NULL ){
+
 			if( tcrypt_keyfiles == NULL ){
+
 				return zuluExit_1( 15,opts,device,mount_point,stl ) ;
 			}
 		}
 		if( StringsAreEqual( source,"-p" ) ){
+
 			key = pass ;
 			key_len = StringSize( pass ) ;
+
 		}else if( StringsAreEqual( source,"-f" ) ){
+
 			if( StringHasNoComponent( pass,"/.zuluCrypt-socket" ) ){
+
 				tcrypt_keyfile = 1 ;
 			}
 			/*
 			 * function is defined at "path_access.c"
 			 */
 			switch( zuluCryptGetPassFromFile( pass,uid,data ) ){
+
 				case 1 : return zuluExit_1( 16,opts,device,mount_point,stl ) ;
 				case 2 : return zuluExit_1( 17,opts,device,mount_point,stl ) ;
 				case 4 : return zuluExit_1( 18,opts,device,mount_point,stl ) ;
@@ -431,6 +472,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			}
 			key = StringContent( *data ) ;
 			key_len = StringLength( *data ) ;
+
 			zuluCryptSecurityLockMemory_1( *data ) ;
 		}
 	}
@@ -438,6 +480,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	memset( &volume,'\0',sizeof( open_struct_t ) ) ;
 
 	if( key != NULL ){
+
 		volume.key     = key ;
 		volume.key_len = key_len ;
 	}else{
@@ -470,10 +513,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.luks_detached_header = StringHasComponent( plugin_path,"luks" ) ;
 
 	if( tcrypt_keyfile ){
+
 		volume.key_source = TCRYPT_KEYFILE ;
 	}
 
 	if( tcrypt_keyfiles[ 0 ] != NULL ){
+
 		/*
 		 * Here, we take a list of keyfiles supplied by the user and then copy them to a safe
 		 * location at "/run/zuluCrypt" and then we pass these safe copies to cryptsetup.
@@ -512,6 +557,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),NULL ) ;
 
 	if( st == 0 && share ){
+
 		/*
 		 * user wish to share the mount point bind the mount point to a publicly accessed path at /run/media/public/
 		 */

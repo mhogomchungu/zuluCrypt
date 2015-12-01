@@ -33,10 +33,15 @@ static int _fileSystemIsSupported( const char * fs )
 	int r = 0 ;
 
 	while( it != end ){
+
 		xt = *it ;
+
 		it++ ;
+
 		if( !StringStartsWith( xt,"nodev" ) ){
+
 			if( StringContains( xt,fs ) ){
+
 				r = 1 ;
 				break ;
 			}
@@ -59,9 +64,13 @@ int zulucryptFileSystemIsSupported( const char * fs )
 		return 0 ;
 	}else{
 		while( 1 ){
+
 			if( *e == NULL ){
+
 				return _fileSystemIsSupported( fs ) ;
+
 			}else if( StringsAreEqual( fs,*e ) ){
+
 				return 1 ;
 			}else{
 				e++ ;
@@ -73,7 +82,9 @@ int zulucryptFileSystemIsSupported( const char * fs )
 static inline int _check_options( const char ** e,stringList_t stl )
 {
 	while( *e != NULL ){
+
 		StringListRemoveIfStringContains( stl,*e ) ;
+
 		e++ ;
 	}
 	return StringListSize( stl ) > 0 ;

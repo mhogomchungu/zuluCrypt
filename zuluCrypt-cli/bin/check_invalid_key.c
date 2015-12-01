@@ -40,12 +40,17 @@ void zuluCryptCheckInvalidKey( const char * device )
 		;
 	}else{
 		c = d - 1 ;
+
 		while( *++c ){
+
 			if( *c == '2' ){
+
 				fprintf( stderr,"WARNING: key slot number: %d is corrupted\n",e ) ;
 			}
+
 			e++ ;
 		}
-		free( d ) ;
+
+		StringFree( d ) ;
 	}
 }

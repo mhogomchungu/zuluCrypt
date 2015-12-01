@@ -30,13 +30,16 @@ static int has_device_access( const char * path,int c )
 	int f ;
 
 	if( c == ZULUCRYPTread ){
+
 		f = open( path,O_RDONLY ) ;
 	}else{
 		f = open( path,O_WRONLY ) ;
 	}
 
 	if( f == -1 ){
+
 		switch( errno ){
+
 			case EACCES : return 1 ; /* permission denied */
 			case ENOENT : return 2 ; /* invalid path*/
 			default     : return 4 ; /* common error */
@@ -61,15 +64,20 @@ static int path_is_accessible( const char * path,uid_t uid,int action )
 	if( uid ){;}
 
 	if( StringPrefixEqual( path,"/dev/shm/" ) ){
+
 		return 4 ;
 	}
 	if( StringPrefixEqual( path,"/dev/" ) ){
+
 		if( StringPrefixEqual( path,"/dev/loop" ) ){
+
 			/*
 			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
 			 */
 			e = zuluCryptLoopDeviceAddress_1( path ) ;
+
 			if( e != NULL ){
+
 				st = has_device_access( e,action ) ;
 				StringFree( e ) ;
 			}else{
@@ -137,6 +145,7 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 		m = StringGetFromFileMemoryLocked( st,path,0,8192000 ) ;
 
 		switch( m ){
+
 			case 0 : return 0 ;
 			case 1 : return 4 ;
 			case 2 : return 2 ;
@@ -159,6 +168,7 @@ char * zuluCryptEvaluateDeviceTags( const char * tag,const char * path )
 	 * zuluCryptDeviceFromLabel() is defined in ../lib/blkid_evaluate_tag.c
 	 */
 	if( StringsAreEqual( tag,"UUID" ) ){
+
 		r = zuluCryptDeviceFromUUID( path ) ;
 	}else{
 		r = zuluCryptDeviceFromLabel( path ) ;

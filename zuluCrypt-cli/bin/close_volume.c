@@ -70,6 +70,7 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	  * zuluCryptBindUnmountVolume() is defined in ./bind.c
 	  */
 	 switch( zuluCryptBindUnmountVolume( StringListVoid,mapper,uid ) ){
+
 		 case 3 : return zuluExit( 7,p ) ;
 		 case 4 : return zuluExit( 8,p ) ;
 		 case 5 : return zuluExit( 9,p ) ;

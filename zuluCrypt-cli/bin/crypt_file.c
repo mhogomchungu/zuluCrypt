@@ -34,6 +34,7 @@
 static int zuluExit( int st )
 {
 	switch( st ){
+
 		case 0 : printf( gettext( "SUCCESS: Encrypted file created successfully\n" ) )				; break ;
 		case 1 : printf( gettext( "SUCCESS: Decrypted file created successfully\n" ) ) 				; break ;
 		case 2 : printf( gettext( "ERROR: Could not open key file for reading\n" ) )   				; break ;
@@ -70,30 +71,36 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	return zuluExit( 16 ) ;
 
 	if( dest == NULL ){
+
 		return zuluExit( 9 ) ;
 	}
 	if( source == NULL ){
+
 		return zuluExit( 14 ) ;
 	}
 	/*
 	 * zuluCryptPathStartsWith() is defined in real_path.c
 	 */
 	if( zuluCryptPathStartsWith( dest,"/dev/" ) ){
+
 		return zuluExit( 10 ) ;
 	}
 	if( zuluCryptPathStartsWith( source,"/dev/" ) ){
+
 		return zuluExit( 15 ) ;
 	}
 	/*
 	 * zuluCryptPathIsValid() is defined in ../lib/is_path_valid.c
 	 */
 	if( zuluCryptPathIsValid( dest ) ){
+
 		return zuluExit( 5 ) ;
 	}
 	/*
 	 * zuluCryptPathIsNotValid() is defined in ../lib/is_path_valid.c
 	 */
 	if( zuluCryptPathIsNotValid( source ) ){
+
 		return zuluExit( 6 ) ;
 	}
 
@@ -101,9 +108,11 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	 * below two functions are defined in path_access.c
 	 */
 	if( zuluCryptCanOpenPathForWriting( dest,uid ) == 1 ){
+
 		return zuluExit( 10 ) ;
 	}
 	if( zuluCryptCanOpenPathForReading( source,uid ) == 1 ){
+
 		return zuluExit( 15 ) ;
 	}
 	if( type == NULL ){
@@ -113,12 +122,15 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 		 */
 		switch( StringSilentlyGetFromTerminal_1( &p,ZULUCRYPT_KEY_MAX_SIZE ) ){
+
 			case 1 : return zuluExit( 12 ) ;
 			case 2 : return zuluExit( 13 ) ;
 		}
 
 		printf( gettext( "\nRe enter passphrase: " ) ) ;
+
 		switch( StringSilentlyGetFromTerminal_1( &q,ZULUCRYPT_KEY_MAX_SIZE ) ){
+
 			case 1 : StringClearDelete( &p ) ;
 				 return zuluExit( 12 ) ;
 			case 2 : StringClearDelete( &p ) ;
@@ -128,21 +140,29 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 		printf( "\n" ) ;
 
 		if( !StringEqualString( p,q ) ){
+
 			StringClearDelete( &p ) ;
 			StringClearDelete( &q ) ;
+
 			return zuluExit( 8 ) ;
 		}else{
 			StringDelete( &q ) ;
 		}
 	}else{
 		if( type == NULL ){
+
 			return zuluExit( 9 ) ;
 		}
 		if( StringsAreEqual( type,"-p" ) ){
+
 			p = String( passphrase ) ;
+
 		}else if( StringsAreEqual( type,"-f" ) ){
+
 			p = StringGetFromFile( passphrase ) ;
+
 			if( p == NULL ){
+
 				return zuluExit( 2 ) ;
 			}
 		}else{
@@ -165,6 +185,7 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	StringClearDelete( &p ) ;
 
 	switch( st ){
+
 		case 1 : return zuluExit( 4 ) ;
 		case 2 : return zuluExit( 11 ) ;
 	}
@@ -173,6 +194,7 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 	_ignore_result( chown( dest,uid,uid ) ) ;
 
 	if( opt == 1 ){
+
 		return zuluExit( 1 ) ;
 	}else{
 		return zuluExit( 0 ) ;

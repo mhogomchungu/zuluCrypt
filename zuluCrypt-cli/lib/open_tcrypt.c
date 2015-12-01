@@ -61,10 +61,12 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	#define path_does_not_exist( x ) stat( x,&statstr ) != 0
 
 	if( path_does_not_exist( "/run" ) ){
+
 		mkdir( "/run",S_IRWXU | S_IRGRP | S_IXGRP | S_IXOTH | S_IROTH ) ;
 		_chown( "/run",0,0 ) ;
 	}
 	if( path_does_not_exist( "/run/zuluCrypt" ) ){
+
 		mkdir( "/run/zuluCrypt",S_IRWXU ) ;
 		_chown( "/run/zuluCrypt",0,0 ) ;
 	}
@@ -74,6 +76,7 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	fd = open( file,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 
 	if( fd == -1 ){
+
 		StringDelete( &st ) ;
 	}else{
 		_write( fd,key,key_len ) ;

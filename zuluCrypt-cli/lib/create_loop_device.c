@@ -30,12 +30,16 @@
 static int zuluExit( int result,string_t st,int fd_loop,int fd_path )
 {
 	if( st == 0 ){
+
 		StringDelete( &st ) ;
+
 		if( fd_loop != -1 ){
+
 			close( fd_loop ) ;
 		}
 	}
 	if( fd_path != -1 ){
+
 		close( fd_path ) ;
 	}
 	return result ;

@@ -28,6 +28,7 @@ typedef struct{
 	size_t       key_0_len ;
 	const char * key_1 ;
 	size_t       key_1_len ;
+
 }arguments ;
 
 static int zuluExit( int st,struct crypt_device * cd )
@@ -43,15 +44,19 @@ static int _add_key( const char * device,const resolve_path_t * opts )
 	const arguments * args = opts->args ;
 
 	if( zuluCryptVolumeIsNotLuks( device ) ){
+
 		return 3 ;
 	}
 	if( crypt_init( &cd,device ) != 0 ){
+
 		return 2 ;
 	}
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
+
 		return zuluExit( 2,cd ) ;
 	}
 	if( crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,args->key_0,
+
 		args->key_0_len,args->key_1,args->key_1_len ) < 0 ){
 		return zuluExit( 1,cd ) ;
 	}else{

@@ -40,6 +40,7 @@ int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_
 	 * zuluCryptPathIsNotValid() is defined in is_path_valid.c
 	 */
 	if( zuluCryptPathIsNotValid( opts->device ) ){
+
 		return 3 ;
 	}
 	/*
@@ -53,12 +54,14 @@ int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_
 	 * zuluCryptPathIsValid() is defined in is_path_valid.c
 	 */
 	if( zuluCryptPathIsValid( mapper ) ){
+
 		return zuluExit( 2,p ) ;
 	}
 
 	h = function( opts ) ;
 
 	switch( h ){
+
 		case 1 : return zuluExit( 4,p ) ;
 		case 2 : return zuluExit( 8,p ) ;
 		case 3 : return zuluExit( 3,p ) ;
@@ -100,6 +103,7 @@ int zuluCryptOpenVolume( const char * dev,const char * mapper,const char * m_poi
 	opts.key_len     = key_len ;
 
 	if( m_flags & MS_RDONLY ){
+
 		opts.m_opts = "ro" ;
 	}else{
 		opts.m_opts = "rw" ;
@@ -134,6 +138,7 @@ static int _open_mapper( const open_struct_t * opts )
 		 * zuluCryptOpenLuks_2() is defined in open_luks.c
 		 */
 		r = zuluCryptOpenLuks_2( opts ) ;
+
 		if( r != 0 ){
 			/*
 			 * just assumed wrong password when a volume fail to unlock
@@ -184,8 +189,11 @@ static int _open_tcrypt( open_struct_t * opts )
 int zuluCryptOpenVolume_2( const open_struct_t * opts )
 {
 	int r ;
+
 	open_struct_t opts_1 ;
+
 	string_t zt = StringVoid ;
+
 	const char * keyfile ;
 
 	if( opts->offset != NULL ){
@@ -207,6 +215,7 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 				zt = zuluCryptCreateKeyFile( opts_1.key,opts_1.key_len,"keyfile" ) ;
 
 				if( zt != StringVoid ){
+
 					keyfile = StringContent( zt ) ;
 					opts_1.tcrypt_keyfiles_count = 1 ;
 					opts_1.tcrypt_keyfiles       = &keyfile ;
@@ -218,6 +227,7 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 					 * zuluCryptDeleteFile() is defined in file_path_security.c
 					 */
 					zuluCryptDeleteFile( keyfile ) ;
+
 					StringDelete( &zt ) ;
 				}else{
 					r = -1 ;

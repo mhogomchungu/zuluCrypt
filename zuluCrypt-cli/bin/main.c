@@ -57,11 +57,12 @@ static int zuluCryptEXEGetDevice( const char * device )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( c == NULL ){
+
 		printf( gettext( "ERROR: Could not get device address from mapper address\n" ) ) ;
 		st = 1 ;
 	}else{
 		printf( "%s\n",c ) ;
-		free( c ) ;
+		StringFree( c ) ;
 		st = 0 ;
 	}
 
@@ -81,6 +82,7 @@ static int zuluCryptEXECheckIfLuks( const char * device )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( status ){
+
 		printf( gettext( "Device is a luks volume\n" ) ) ;
 	}else{
 		printf( gettext( "Device is not a luks volume\n" ) ) ;
@@ -91,38 +93,53 @@ static int zuluCryptEXECheckIfLuks( const char * device )
 static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 {
 	string_t st_key     = StringVoid ;
+
 	const char * device = clargs->device ;
 	const char * key    = clargs->key ;
 	const char * source = clargs->key_source ;
+
 	size_t key_len ;
+
 	int st = 1 ;
+
 	if( key == NULL ){
+
 		printf( gettext( "ERROR: Key argument is missing\n" ) ) ;
 		return 1 ;
 	}
 	if( source == NULL ){
+
 		printf( gettext( "ERROR: Key source argument is missing\n" ) ) ;
 		return 1 ;
 	}
 	if( StringsAreEqual( source,"-p" ) ){
+
 		zuluCryptSecurityGainElevatedPrivileges() ;
+
 		/*
 		 * zuluCryptGetVolumeType() is defined in ../lib/volume_type.c
 		 */
+
 		if( zuluCryptGetVolumeType( device,key,strlen( key ) ) == 2 ){
+
 			printf( gettext( "\"%s\" is a tcrypt device\n" ),device ) ;
 			st = 0 ;
 		}
+
 		zuluCryptSecurityDropElevatedPrivileges() ;
+
 	}else if( StringsAreEqual( source,"-f" ) ){
 		/*
 		 * zuluCryptGetPassFromFile() is defined in path_access.c
 		 */
 		if( zuluCryptGetPassFromFile( key,uid,&st_key ) == 0 ){
+
 			key = StringContent( st_key ) ;
 			key_len = StringLength( st_key ) ;
 			zuluCryptSecurityGainElevatedPrivileges() ;
+
 			if( zuluCryptGetVolumeType( device,key,key_len ) == 2 ){
+
 				printf( gettext( "\"%s\" is a tcrypt device\n" ),device ) ;
 				st =  0 ;
 			}else{
@@ -155,9 +172,11 @@ static int zuluCryptEXECheckEmptySlots( const char * device )
 	 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
 	 */
 	c = zuluCryptEmptySlots( device ) ;
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( c == NULL ){
+
 		printf( gettext( "Device \"%s\" is not a luks device\n" ),device ) ;
 		status = 2 ;
 	}else{
@@ -183,7 +202,9 @@ static int zuluCryptEXEHeaderMatchBackUpHeader( const char * device,const char *
 	int r = zuluCryptPartitionIsSystemPartition( device,uid ) ;
 
 	if( r == 1 ){
+
 		if( uid != 0 || !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+
 			printf( gettext( "ERROR: Insufficient privilges to operate on a system device\n" ) ) ;
 			return 1 ;
 		}
@@ -192,6 +213,7 @@ static int zuluCryptEXEHeaderMatchBackUpHeader( const char * device,const char *
 	 * zuluCryptHeaderMatchBackUpHeader() is defined in save_and_restore_luks_header.c
 	 */
 	r = zuluCryptHeaderMatchBackUpHeader( device,header_backup,uid ) ;
+
 	if( r ){
 		printf( gettext( "Header backup match the one on the device\n" ) ) ;
 		return 0 ;
@@ -204,6 +226,7 @@ static int zuluCryptEXEHeaderMatchBackUpHeader( const char * device,const char *
 static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t uid )
 {
 	switch( clargs->action ){
+
 		case 'H' : return zuluCryptEXEHeaderMatchBackUpHeader( clargs->device,clargs->key,uid ) ;
 		case 'W' : return zuluCryptEXECheckIfTcrypt( clargs,uid ) ;
 		case 'B' : return zuluCryptEXESaveAndRestoreVolumeHeader( clargs,uid,VOLUME_HEADER_SAVE ) ;
@@ -224,6 +247,7 @@ static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t ui
 		case 'E' : return zuluCryptExeFileEncrypt( clargs,uid ) ;
 		case 'D' : return zuluCryptExeFileDecrypt( clargs,uid ) ;
 	}
+
 	printf( gettext( "ERROR!!!!!!!!!!: cli option missed!\n" ) ) ;
 	return 200 ; /* shouldnt get here */
 }
@@ -235,9 +259,11 @@ static int zuluExit( int st,stringList_t stl,stringList_t stx,char * const * env
 	StringListDelete( &stx ) ;
 
 	if( env != NULL ){
-		free( ( char * )env ) ;
+
+		StringFree( env ) ;
 	}
 	if( msg != NULL ){
+
 		printf( "%s\n",msg ) ;
 	}
 	return st ;
@@ -255,12 +281,14 @@ static int _print_uuid_from_path( const char * device )
 	 * zuluCryptSecurityUUIDFromPath() is defined in path_access.c
 	 */
 	char * e = zuluCryptUUIDFromPath( device ) ;
+
 	if( e == NULL ){
+
 		puts( "UUID=\"Nil\"" ) ;
 		return 1 ;
 	}else{
 		printf( "UUID=\"%s\"\n",e ) ;
-		free( e ) ;
+		StringFree( e ) ;
 		return 0 ;
 	}
 }
@@ -293,11 +321,17 @@ static int _printOpenedVolumes( uid_t uid )
 	 * zuluCryptOpenedVolumesList() is defined in ../lib/process_mountinfo.c
 	 */
 	stringList_t stl ;
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	stl = zuluCryptOpenedVolumesList( uid ) ;
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
+
 	StringListPrintList( stl ) ;
+
 	StringListDelete( &stl ) ;
+
 	return 0 ;
 }
 
@@ -331,6 +365,7 @@ int main( int argc,char * argv[] )
 	sigaction( SIGSEGV,&sa,NULL ) ;
 
 	if( argc >= 2 && StringsAreEqual( argv[ 1 ],"--test" ) ){
+
 		/*
 		 * zuluCryptRunTest() is defined in test.c
 		 */
@@ -341,10 +376,13 @@ int main( int argc,char * argv[] )
 	 * setgroups() requires seteuid(0) ;
 	 */
 	_seteuid( 0 ) ;
+
 	if( setgroups( 1,&gid ) != 0 ){
+
 		_privilegeEvelationError( gettext( "ERROR: setgroups() failed" ) ) ;
 	}
 	if( setegid( uid ) != 0 ){
+
 		_privilegeEvelationError( gettext( "ERROR: setegid() failed" ) ) ;
 	}
 
@@ -402,17 +440,24 @@ int main( int argc,char * argv[] )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( argc == 1 ){
+
 		zuluCryptEXEHelp();
 		return 1;
 	}
 	if( argc == 2 ){
+
 		ac = argv[ 1 ] ;
+
 		if( StringAtLeastOneMatch_1( ac,"-h","--help","-help",NULL ) ){
+
 			zuluCryptEXEHelp();
+
 			return 0 ;
 		}
 		if( StringAtLeastOneMatch_1( ac,"-v","-version","--version",NULL ) ){
+
 			printf( "%s\n",zuluCryptVersion() );
+
 			return 0 ;
 		}
 	}
@@ -440,8 +485,11 @@ int main( int argc,char * argv[] )
 	q = StringListAssignString( stl,String( "" ) ) ;
 
 	if( argc > 0 ){
+
 		while( *argv ){
+
 			StringMultipleAppend( q,*argv," ",NULL ) ;
+
 			argv++ ;
 		}
 		StringSubChar( q,StringLength( q ) - 1,'\0' ) ;
@@ -454,33 +502,40 @@ int main( int argc,char * argv[] )
 	 * Best way to pass keys to zuluCrypt-cli is to use libzuluCryptPluginManager API
 	 */
 	#define hide( z ) strncpy( ( char * )z,"x",StringLength( q ) ) ;
+
 	if( clargs.key != NULL ){
+
 		q = StringListAssignString( stl,String( clargs.key ) ) ;
 		hide( clargs.key ) ;
 		clargs.key = StringContent( q ) ;
 	}
 	if( clargs.new_key != NULL ){
+
 		q = StringListAssignString( stl,String( clargs.new_key ) ) ;
 		hide( clargs.new_key ) ;
 		clargs.new_key = StringContent( q ) ;
 		clargs.tcrypt_hidden_volume_key = clargs.new_key ;
 	}
 	if( clargs.existing_key != NULL ){
+
 		q = StringListAssignString( stl,String( clargs.existing_key ) ) ;
 		hide( clargs.existing_key ) ;
 		clargs.existing_key = StringContent( q ) ;
 	}
 	if( clargs.device != NULL ){
+
 		q = StringListAssignString( stl,String( clargs.device ) ) ;
 		hide( clargs.device ) ;
 		clargs.device = StringContent( q ) ;
 	}
 	if( clargs.type != NULL ){
+
 		q = StringListAssignString( stl,String( clargs.type ) ) ;
 		hide( clargs.type ) ;
 		clargs.type = StringContent( q ) ;
 	}
 	if( clargs.rng != NULL ){
+
 		q = StringListAssignString( stl,String( clargs.rng ) ) ;
 		hide( clargs.rng ) ;
 		clargs.rng = StringContent( q ) ;
@@ -518,6 +573,7 @@ int main( int argc,char * argv[] )
 	 * zuluCryptSecurityCheckPartitionPermissions() is defined in security.c
 	 */
 	switch( action ){
+
 		case 'A':
 		case 'N':
 		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type,uid ) ;
@@ -527,12 +583,15 @@ int main( int argc,char * argv[] )
 	}
 
 	if( action == '\0' ){
+
 		return zuluExit( 130,stl,stx,env,gettext( "ERROR: \"action\" argument is missing" ) ) ;
 	}
 	if( device == NULL ){
+
 		return zuluExit( 120,stl,stx,env,gettext( "ERROR: Required option( device path ) is missing for this operation" ) ) ;
 	}
 	if( action == 'U' ){
+
 		st = _print_uuid_from_path( device ) ;
 		return zuluExit( st,stl,stx,env,NULL ) ;
 	}
@@ -550,6 +609,7 @@ int main( int argc,char * argv[] )
 		ac = zuluCryptEvaluateDeviceTags( "UUID",mapping_name + 5 ) ;
 
 		if( ac != NULL ) {
+
 			clargs.device = ac ;
 			st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
 			StringFree( ac ) ;
@@ -564,6 +624,7 @@ int main( int argc,char * argv[] )
 		 * this function is defined in ../zuluCrypt-lib/file_path_security.c
 		 */
 		switch( zuluCryptGetDeviceFileProperties( device,&fd,&fd1,&dev,uid ) ){
+
 			case 0 : break ;
 			case 1 : return zuluExit( 111,stl,stx,env,gettext( "ERROR: Devices in /dev/shm/ path is not suppored" ) ) ;
 			case 2 : return zuluExit( 112,stl,stx,env,gettext( "ERROR: Given path is a directory" ) ) ;
@@ -574,10 +635,13 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 		}
 
 		if( dev == NULL ){
+
 			if( fd1 != -1 ){
+
 				close( fd1 ) ;
 			}
 			if( fd != -1 ){
+
 				close( fd ) ;
 			}
 			return zuluExit( 114,stl,stx,env,gettext( "ERROR: Could not resolve path to device" ) ) ;
@@ -586,14 +650,20 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 			 * zuluCryptDeviceIsSupported() is defined in partitions.c
 			 */
 			if( zuluCryptDeviceIsSupported( dev,uid ) ){
+
 				clargs.device = dev ;
+
 				if( StringPrefixEqual( dev,"/dev/loop" ) ){
+
 					/*
 					 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
 					 */
 					ac_1 = zuluCryptLoopDeviceAddress_1( dev ) ;
+
 					i = StringLastIndexOfChar_1( ac_1,'/' ) ;
+
 					if( i != -1 ){
+
 						mapping_name =  ac_1 + i + 1  ;
 					}else{
 						mapping_name =  dev  ;
@@ -603,7 +673,9 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 					StringFree( ac_1 ) ;
 				}else{
 					i = StringLastIndexOfChar_1( dev,'/' ) ;
+
 					if( i != -1 ){
+
 						mapping_name =  dev + i + 1  ;
 					}else{
 						mapping_name =  dev  ;
@@ -620,9 +692,11 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 			StringFree( dev ) ;
 
 			if( fd1 != -1 ){
+
 				close( fd1 ) ;
 			}
 			if( fd != -1 ){
+
 				close( fd ) ;
 			}
 			return zuluExit( st,stl,stx,env,NULL ) ;

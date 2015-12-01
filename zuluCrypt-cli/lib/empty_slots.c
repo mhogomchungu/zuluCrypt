@@ -43,28 +43,34 @@ static char * _empty_slots( const char * device,const resolve_path_t * opts )
 	if( opts ){;}
 
 	if( crypt_init( &cd,device ) != 0 ){
+
 		return zuluExit( NULL,NULL ) ;
 	}
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
+
 		return zuluExit( NULL,cd ) ;
 	}
 
 	type = crypt_get_type( cd ) ;
 
 	if( type == NULL ){
+
 		return zuluExit( NULL,cd ) ;
 	}
 
 	k = crypt_keyslot_max( type ) ;
 
 	if( k < 0 ){
+
 		return zuluExit( NULL,cd ) ;
 	}
 
 	p = StringEmpty() ;
 
 	for( j = 0 ; j < k ; j++ ){
+
 		switch( crypt_keyslot_status( cd,j ) ){
+
 			case CRYPT_SLOT_INACTIVE   : StringAppend( p,"0" ) ; break ;
 			case CRYPT_SLOT_ACTIVE     : StringAppend( p,"1" ) ; break ;
 			case CRYPT_SLOT_INVALID    : StringAppend( p,"2" ) ; break ;

@@ -23,7 +23,9 @@
 static char * _resolve_path( char * path )
 {
 	char * e ;
+
 	if( path == NULL ){
+
 		return NULL ;
 	}else{
 		/*
@@ -63,6 +65,7 @@ char * zuluCryptUUIDFromPath_1( const char * device )
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
 
 	if( blkid != NULL ){
+
 		blkid_do_probe( blkid ) ;
 		blkid_probe_lookup_value( blkid,"UUID",&c,NULL ) ;
 		r = StringCopy_2( c ) ;
@@ -75,9 +78,13 @@ char * zuluCryptUUIDFromPath_1( const char * device )
 int zuluCryptFileSystemIsFUSEbased( const char * device )
 {
 	const char * cf = NULL ;
+
 	int st ;
+
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+
 	if( blkid != NULL ){
+
 		blkid_do_probe( blkid ) ;
 		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
 #if 1
@@ -95,9 +102,13 @@ int zuluCryptFileSystemIsFUSEbased( const char * device )
 string_t zuluCryptGetFileSystemFromDevice( const char * device )
 {
 	string_t st = StringVoid ;
+
 	const char * cf = NULL ;
+
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
+
 	if( blkid != NULL ){
+
 		blkid_do_probe( blkid ) ;
 		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
 		st = String( cf ) ;
@@ -114,6 +125,7 @@ int zuluCryptDeviceHasAgivenFileSystem( const char * device,const char * fs )
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
 
 	if( blkid != NULL ){
+
 		blkid_do_probe( blkid ) ;
 		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
 		r = StringsAreEqual( cf,fs ) ;

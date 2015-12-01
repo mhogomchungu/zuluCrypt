@@ -67,6 +67,7 @@ static int zuluExit_1( const char * type,stringList_t stl )
 	printf( gettext( "SUCCESS: Volume created successfully\n" ) ) ;
 
 	if( StringAtLeastOneMatch_1( type,"luks","tcrypt","truecrypt","veracrypt","vera","vcrypt",NULL ) ){
+
 		printf( gettext( "\nCreating a backup of the \"%s\" volume header is strongly adviced.\n" ),type ) ;
 		printf( gettext( "Please read documentation on why this is important\n\n" ) ) ;
 	}
@@ -138,13 +139,16 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * zulucryptFileSystemIsNotSupported() is defined in ../lib/mount_fs_options.c
 	 */
 	if( !zulucryptFileSystemIsSupported( fs ) ){
+
 		return zuluExit( 1,stl ) ;
 	}
 	/*
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./volumess.c
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
+
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+
 			return zuluExit( 2,stl ) ;
 		}
 	}
@@ -160,6 +164,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * 4-common error
 	 */
 	switch( st ){
+
 		case 0 : break ;
 		case 1 : return zuluExit( 4,stl ) ;
 		case 2 : return zuluExit( 4,stl ) ;
@@ -182,20 +187,26 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	k = zuluCryptPartitionIsMounted( device ) ;
 
 	if( j == 1 ){
+
 		return zuluExit( 5,stl ) ;
 	}
 	if( k == 1 ){
+
 		return zuluExit( 6,stl ) ;
 	}
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
+
 		zuluCryptSecurityGainElevatedPrivileges() ;
 		/*
 		 * zuluCryptGetVolumeSize() is defined in volumes.c
 		 */
 		size = zuluCryptGetVolumeSize( device ) ;
+
 		zuluCryptSecurityDropElevatedPrivileges() ;
+
 		if( size < 3145728 ){
+
 			return zuluExit( 7,stl ) ;
 		}
 	}
@@ -205,18 +216,23 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 * File systems are created not through file systems APIs but through mkfs.xxx executables started using exec call.
 	 */
 	if( zuluCryptPathIsNotValid( ZULUCRYPTmkfs ) ){
+
 		return zuluExit( 8,stl ) ;
 	}
 	if( ask_confirmation ){
+
 		printf( gettext( "\nThis operation will destroy all data in a device at: \"%s\"\n" ),device ) ;
 		printf( gettext( "Are you sure you want to proceed?\n" ) ) ;
 		printf( gettext( "Type \"YES\" and press enter if you want to process: " ) ) ;
 
 		*confirm = StringGetFromTerminal_1( 3 ) ;
+
 		if( *confirm == StringVoid ){
+
 			return zuluExit( 9,stl ) ;
 		}else{
 			if( StringNotEqual( *confirm,gettext( "YES" ) ) ){
+
 				return zuluExit( 10,stl ) ;
 			}
 		}
@@ -226,17 +242,23 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	veracrypt_volume = StringAtLeastOneMatch_1( type,"vcrypt","veracrypt","vera",NULL ) ;
 
 	if( key_source == NULL ){
+
 		printf( gettext( "Enter passphrase: " ) ) ;
+
 		/*
 		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 		 */
+
 		switch( StringSilentlyGetFromTerminal_1( pass_1,ZULUCRYPT_KEY_MAX_SIZE ) ){
+
 			case 1 : return zuluExit( 11,stl ) ;
 			case 2 : return zuluExit( 12,stl ) ;
 		}
 
 		printf( gettext( "\nRe enter passphrase: " ) ) ;
+
 		switch( StringSilentlyGetFromTerminal_1( pass_2,ZULUCRYPT_KEY_MAX_SIZE ) ){
+
 			case 1 : return zuluExit( 11,stl ) ;
 			case 2 : return zuluExit( 12,stl ) ;
 		}
@@ -244,19 +266,25 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		printf( "\n" ) ;
 
 		if( !StringEqualString( *pass_1,*pass_2 ) ){
+
 			return zuluExit( 13,stl ) ;
 		}
 
 		tcrypt_source = TCRYPT_PASSPHRASE ;
 	}else{
 		if( StringsAreEqual( key_source,"-p" ) ){
+
 			*pass_1 = String( pass ) ;
 			tcrypt_source = TCRYPT_PASSPHRASE ;
+
 		}else if( StringsAreEqual( key_source,"-f" ) ){
+
 			/*
 			 * function is defined at "path_access.c"
 			 */
+
 			switch( zuluCryptGetPassFromFile( pass,uid,pass_1 ) ){
+
 				case 1 : return zuluExit( 14,stl ) ;
 				case 4 : return zuluExit( 15,stl ) ;
 				case 2 : return zuluExit( 16,stl ) ;
@@ -264,6 +292,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			}
 
 			if( StringHasComponent( pass,"/.zuluCrypt-socket" ) ){
+
 				tcrypt_source = TCRYPT_PASSPHRASE ;
 			}else{
 				tcrypt_source = TCRYPT_KEYFILE ;
@@ -276,37 +305,46 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	if( tcrypt_hidden_volume_size != NULL ){
 
 		if( !( truecrypt_volume || veracrypt_volume ) ){
+
 			return zuluExit( 23,stl ) ;
 		}else{
 			hidden_volume_size = StringConvertToInt( tcrypt_hidden_volume_size ) ;
 
 			if( tcrypt_hidden_volume_key_file != NULL ){
+
 				/*
 				 * function is defined in "path_access.c"
 				 */
+
 				switch( zuluCryptGetPassFromFile( tcrypt_hidden_volume_key_file,uid,pass_3 ) ){
+
 					case 1 : return zuluExit( 14,stl ) ;
 					case 4 : return zuluExit( 15,stl ) ;
 					case 2 : return zuluExit( 16,stl ) ;
 					case 5 : return zuluExit( 17,stl ) ;
 				}
 				if( StringHasComponent( tcrypt_hidden_volume_key_file,"/.zuluCrypt-socket" ) ){
+
 					tcrypt_source_h = TCRYPT_PASSPHRASE ;
 				}else{
 					tcrypt_source_h = TCRYPT_KEYFILE ;
 				}
 			}else if( tcrypt_hidden_volume_key == NULL ){
+
 				printf( gettext( "Enter tcrypt hidden passphrase: " ) ) ;
 				/*
 				 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 				 */
 				switch( StringSilentlyGetFromTerminal_1( pass_3,ZULUCRYPT_KEY_MAX_SIZE ) ){
+
 					case 1 : return zuluExit( 19,stl ) ;
 					case 2 : return zuluExit( 20,stl ) ;
 				}
 
 				printf( gettext( "\nRe enter tcrypt hidden passphrase: " ) ) ;
+
 				switch( StringSilentlyGetFromTerminal_1( pass_4,ZULUCRYPT_KEY_MAX_SIZE ) ){
+
 					case 1 : return zuluExit( 19,stl ) ;
 					case 2 : return zuluExit( 20,stl ) ;
 				}
@@ -314,11 +352,14 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				printf( "\n" ) ;
 
 				if( !StringEqualString( *pass_3,*pass_4 ) ){
+
 					return zuluExit( 21,stl ) ;
 				}
 
 				tcrypt_source_h = TCRYPT_PASSPHRASE ;
+
 			}else if( tcrypt_hidden_volume_key != NULL ){
+
 				*pass_3 = String( tcrypt_hidden_volume_key ) ;
 				tcrypt_source_h = TCRYPT_PASSPHRASE ;
 			}else{
@@ -433,6 +474,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	}
 
 	if( st == 0 ){
+
 		return zuluExit_1( type,stl ) ;
 	}else{
 		return zuluExit( 22,stl ) ;

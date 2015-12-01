@@ -53,6 +53,7 @@ int zuluCryptSecurityGainElevatedPrivileges( void )
 		return 1 ;
 	}else{
 		if( zuluCryptSecurityPrivilegeElevationError ){
+
 			zuluCryptSecurityPrivilegeElevationError( "WARNING: failed to seteuid root" ) ;
 		}
 	}

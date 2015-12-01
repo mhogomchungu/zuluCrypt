@@ -53,16 +53,22 @@ static int _zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
+
 		/*
 		 * zuluCryptLoopDeviceAddress_2() is defined in ../lib/create_loop_device.c
 		 */
+
 		st = zuluCryptLoopDeviceAddress_2( device ) ;
+
 		/*
 		 * Add a space at the end of the device name to make sure we check the full device name to avoid possible collisions
 		 * that may exist if one device is named "/home/abc" and another "/home/abcdef"
 		 */
+
 		zt = StringListHasStartSequence_1( stx,StringAppend( st," " ) ) ;
+
 		StringRemoveRight( st,1 ) ;
+
 		device = h = StringDeleteHandle( &st ) ;
 	}else{
 		/*
@@ -133,6 +139,7 @@ static int _zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid
 			f = StringRemoveRight( xt,1 ) ;
 
 			if( zt == StringVoid ){
+
 				/*
 				 * volume is not shared
 				 */
@@ -142,18 +149,23 @@ static int _zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid
 				 * a volume is assumed to be shared if its device path in mountinfo has two mount points,one
 				 * in /run/media/private/$USER and the other in /run/media/public/
 				 */
+
 				if( StringStartsWith( zt,device ) ){
+
 					f = zuluCryptDecodeMountEntry( xt ) ;
 					/*
 					 * good,the device associated with the shared mount is the same as that of the
 					 * private mount,try to unmount it.
 					 */
 					r = 3 ;
+
 					for( k = 0 ; k < 3 ; k++ ){
+
 						/*
 						 * try to unmount 3 times before giving up
 						 */
 						if( umount( f ) == 0 ){
+
 							rmdir( f ) ;
 							r = 0 ;
 							break ;
@@ -186,9 +198,11 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	int r ;
 
 	if( stx == StringListVoid ){
+
 		/*
 		 * zuluCryptGetMoutedList() is defined in ../lib/process_mountinfo.c
 		 */
+
 		stl = zuluCryptGetMoutedList() ;
 
 		r = _zuluCryptBindUnmountVolume( stl,device,uid ) ;
@@ -204,11 +218,17 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 int zuluCryptBindSharedMountPointPathTaken( string_t path )
 {
 	struct stat str ;
+
 	ssize_t index = StringLastIndexOfChar( path,'/' ) ;
+
 	string_t st = String( "/run/media/public" ) ;
+
 	const char * e = StringAppend( st,StringContent( path ) + index ) ;
+
 	int r = stat( e,&str ) ;
+
 	StringDelete( &st ) ;
+
 	return r == 0 ;
 }
 
@@ -226,14 +246,17 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	stringList_t stl ;
 
 	if( index == -1 ){
+
 		return 1 ;
 	}
 	if( device ){;}
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	/*
 	 * zuluCryptGetMoutedList() is defined in ../lib/process_mountinfo.c
 	 */
+
 	stl = zuluCryptGetMoutedList() ;
 
 	path = String( "/run/media/public/" ) ;
@@ -245,6 +268,7 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 	zuluCryptCreateMountPath( "/run/media/public" ) ;
 
 	if( stat( m_path,&st ) == 0 ){
+
 		_chmod( m_path,st.st_mode | S_IXOTH | S_IROTH ) ;
 		/*
 		 * bind mount point exists,this will happen if the mount point is already taken or a mount point folder
@@ -254,9 +278,11 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		e = StringAppend( tmp," " ) ;
 
 		if( StringListHasSequence( stl,e ) != -1 ){
+
 			/*
 			 * An attempt is made to bind mount on a path already bind mounted path,dont attempt to mount
 			 */
+
 			xt = 1 ;
 		}else{
 			/*
@@ -267,8 +293,11 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 		StringDelete( &tmp ) ;
 	}else{
 		zuluCryptCreateMountPath( m_path ) ;
+
 		xt = mount( o_path,m_path,"",flags|MS_BIND,"" ) ;
+
 		if( xt != 0 ){
+
 			rmdir( m_path ) ;
 		}
 	}

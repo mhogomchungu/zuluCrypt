@@ -41,12 +41,14 @@ int zuluCryptCheckOpenedMapper( const char * mapper )
 	while( ( entry = readdir( dir ) ) != NULL ){
 
 		d = strstr( entry->d_name,"zuluCrypt-" ) ;
+
 		if( d != NULL ){
 
 			while( *++d != '-' ) { ; }
 			while( *++d != '-' ) { ; }
 
-			if( strcmp( c,d ) == 0 ){
+			if( StringsAreEqual( c,d ) ){
+
 				st = 1 ;
 				break ;
 			}

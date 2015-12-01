@@ -56,15 +56,19 @@ static int _open_luks_2( const char * device,const resolve_path_t * opt )
 	const open_struct_t * opts = opt->args ;
 
 	if( zuluCryptPathIsNotValid( device ) ){
+
 		return 3 ;
 	}
 	if( crypt_init( &cd,device ) != 0 ){
+
 		return 2 ;
 	}
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
+
 		return zuluExit( 2,cd ) ;
 	}
 	if( opt->open_mode == O_RDONLY ){
+
 		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
@@ -74,8 +78,11 @@ static int _open_luks_2( const char * device,const resolve_path_t * opt )
 					   opts->key,opts->key_len,flags ) ;
 
 	if( st >= 0 ){
+
 		return zuluExit( 0,cd ) ;
+
 	}else if( st == -1 ){
+
 		return zuluExit( 1,cd ) ;
 	}else{
 		return zuluExit( 2,cd ) ;
@@ -155,15 +162,19 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 	luks_header_file = StringContent( st ) ;
 
 	if( crypt_init( &cd,luks_header_file ) != 0 ){
+
 		return zuluExit_1( 1,cd,st ) ;
 	}
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
+
 		return zuluExit_1( 1,cd,st ) ;
 	}
 	if( crypt_set_data_device( cd,device ) != 0 ){
+
 		return zuluExit_1( 1,cd,st ) ;
 	}
 	if( opt->open_mode == O_RDONLY ){
+
 		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
@@ -172,6 +183,7 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 	r = crypt_activate_by_passphrase( cd,opts->mapper_name,CRYPT_ANY_SLOT,key,key_len,flags ) ;
 
 	if( r == 0 ){
+
 		return zuluExit_1( 0,cd,st ) ;
 	}else{
 		return zuluExit_1( 1,cd,st ) ;

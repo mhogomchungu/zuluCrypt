@@ -36,9 +36,13 @@ int zuluCryptSecureOpenFile( const char * path,int * fd,string_t * file,uid_t ui
 	int f = -1 ;
 	uid_t org = geteuid() ;
 	char * dev ;
+
 	_ignore_result( seteuid( uid ) ) ;
+
 	f = open( path,O_RDONLY ) ;
+
 	if( f != -1 ){
+
 		dev = zuluCryptGetFileNameFromFileDescriptor( f ) ;
 		*file = StringInherit( &dev ) ;
 		*fd = f ;
@@ -55,12 +59,18 @@ void zuluCryptDeleteFile( const char * file )
 	int fd ;
 	void * map ;
 	struct stat st ;
+
 	if( file != NULL ){
+
 		fd = open( file,O_WRONLY ) ;
+
 		if( fd != -1 ){
+
 			fstat( fd,&st ) ;
 			map =  mmap( 0,st.st_size,PROT_WRITE,MAP_PRIVATE,fd,0 ) ;
+
 			if( map != MAP_FAILED ){
+
 				memset( map,'\0',st.st_size ) ;
 				munmap( map,st.st_size ) ;
 			}
@@ -84,7 +94,9 @@ static int _check_if_device_is_supported( int st,uid_t uid,char ** dev )
 		* zuluCryptGetFileSystemFromDevice() is defined in blkid_evaluate_tag.c
 		*/
 		fs = zuluCryptGetFileSystemFromDevice( *dev ) ;
+
 		_ignore_result( seteuid( uid ) ) ;
+
 		if( fs != StringVoid ){
 			if( StringHasAtLeastOneComponent( fs,"member","swap",NULL ) ){
 				st = 100 ;
@@ -122,6 +134,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 	*fd_path = open( file,O_RDONLY ) ;
 
 	if( *fd_path != -1 ){
+
 		fstat( *fd_path,&stat_st ) ;
 		fcntl( *fd_path,F_SETFD,FD_CLOEXEC ) ;
 		/*
@@ -184,7 +197,8 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 			}
 		}else{
 			if( S_ISBLK( stat_st.st_mode ) ){
-				if( uid == 0 ) {
+
+				if( uid == 0 ){
 					/*
 					 * we got a block device and we are root,accept it
 					 */
@@ -202,7 +216,9 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 						st = 0 ;
 					}
 				}
+
 			}else if( S_ISDIR( stat_st.st_mode ) ){
+
 				st = 2 ;
 			}else{
 				/*
@@ -223,6 +239,7 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 		*fd_path = open( file,O_RDONLY ) ;
 
 		if( *fd_path != -1 ){
+
 			fstat( *fd_path,&stat_st ) ;
 			/*
 			 * zuluCryptGetFileNameFromFileDescriptor() is defined in ./create_loop_device.c
@@ -230,11 +247,13 @@ int zuluCryptGetDeviceFileProperties( const char * file,int * fd_path,int * fd_l
 			*dev = zuluCryptGetFileNameFromFileDescriptor( *fd_path ) ;
 
 			if( S_ISBLK( stat_st.st_mode ) ){
+
 				if( StringPrefixEqual( *dev,"/dev/shm/" ) ){
 					/*
 					* we do not support this path
 					*/
 					st = 1 ;
+
 				}else if( StringPrefixEqual( *dev,"/dev/" ) ){
 					/*
 					* got a block device,accept it

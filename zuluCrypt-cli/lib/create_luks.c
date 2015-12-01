@@ -28,15 +28,20 @@ typedef struct{
 	const char * key ;
 	size_t       key_len ;
 	const char * options ;
+
 }arguments ;
 
 static int zuluExit( int st,struct crypt_device * cd,stringList_t stl,char * const * options )
 {
 	StringFree( options ) ;
+
 	StringListDelete( &stl ) ;
+
 	if( cd != NULL ){
+
 		crypt_free( cd ) ;
 	}
+
 	return st ;
 }
 
@@ -73,6 +78,7 @@ static int _not_supported_argument_encountered( char * const * options )
 					 * zuluCryptWhirlpoolIsSupported() is defined in include.h
 					 */
 					if( zuluCryptWhirlpoolIsSupported() ){
+
 						return 0 ;
 					}else{
 						return 1 ;
@@ -159,16 +165,19 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 	params.data_alignment = 4096 ;
 
 	if( StringsAreEqual( rng,"/dev/random" ) ){
+
 		crypt_set_rng_type( cd,CRYPT_RNG_RANDOM ) ;
 	}else{
 		crypt_set_rng_type( cd,CRYPT_RNG_URANDOM ) ;
 	}
 
 	if( iterations != 0 ){
+
 		crypt_set_iteration_time( cd,iterations ) ;
 	}
 
 	if( crypt_format( cd,CRYPT_LUKS1,algo,cipher,NULL,NULL,keySize,&params ) != 0 ){
+
 		return zuluExit( 2,cd,stl,options ) ;
 	}
 

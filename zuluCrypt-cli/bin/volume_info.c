@@ -41,6 +41,7 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( output != NULL ){
+
 		printf( "%s\n",output ) ;
 		StringFree( output ) ;
 		xt = 0 ;
@@ -48,7 +49,9 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 		printf( gettext( "ERROR: Could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
 		xt = 2 ;
 	}
+
 	StringDelete( &p ) ;
+
 	return xt ;
 }
 

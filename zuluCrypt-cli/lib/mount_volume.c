@@ -41,9 +41,12 @@ typedef enum { FAT_FAMILY_FS,OTHER_FAMILY_FS,READ_ONLY_FS,DEFAULT_FS_TYPE } FS_T
 static int zuluExit( int st,int fd,string_t x,string_t y,string_t z )
 {
 	StringMultipleDelete( &x,&y,&z,NULL ) ;
+
 	if( fd != -1 ){
+
 		close( fd ) ;
 	}
+
 	return st ;
 }
 

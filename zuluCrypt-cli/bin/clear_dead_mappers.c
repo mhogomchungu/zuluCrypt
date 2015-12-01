@@ -73,6 +73,7 @@ void zuluCryptClearDeadMappers( uid_t uid )
 	string_t z ;
 
 	if( dir == NULL ){
+
 		return ;
 	}
 
@@ -125,11 +126,14 @@ void zuluCryptClearDeadMappers( uid_t uid )
 				if( crypt_init_by_name( &cd,e ) == 0 ){
 
 					if( crypt_get_device_name( cd ) == NULL ){
+
 						/*
-						* we will get here if none LUKS mapper is active but the underlying device is gone
-						*/
+						 * we will get here if none LUKS mapper is active but the underlying device is gone
+						 */
+
 						_remove_mapper( e,stl,uid ) ;
 					}
+
 					crypt_free( cd ) ;
 				}else{
 					/*

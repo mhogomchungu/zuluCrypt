@@ -26,6 +26,7 @@ typedef struct{
 
 	const char * key ;
 	size_t       key_len ;
+
 }arguments ;
 
 static int zuluExit( int st,struct crypt_device * cd )
@@ -43,21 +44,26 @@ static int _remove_key( const char * device,const resolve_path_t * opts )
 	const arguments * args = opts->args ;
 
 	if( zuluCryptVolumeIsNotLuks( device ) ){
+
 		return 1 ;
 	}
 	if( crypt_init( &cd,device ) != 0 ){
+
 		return 3 ;
 	}
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
+
 		return zuluExit( 3,cd ) ;
 	}
 
 	slot = crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,args->key,args->key_len,0 ) ;
 
 	if( slot < 0 ){
+
 		return zuluExit( 2,cd ) ;
 	}
 	if( crypt_keyslot_destroy( cd,slot ) < 0 ){
+
 		return zuluExit( 2,cd ) ;
 	}else{
 		return zuluExit( 0,cd ) ;

@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 
 typedef struct{
+
 	const char * device ;
 	const char * existing_key ;
 	size_t 	     existing_key_size ;
@@ -32,6 +33,7 @@ typedef struct{
 	const char * new_key ;
 	size_t 	     new_key_size ;
 	size_t       new_key_is_keyfile ;
+
 }tcrypt_opts ;
 
 /*
@@ -64,12 +66,17 @@ static int _zuluCryptCheckEmptySlots( const char * device )
 			r = 1 ;
 		}else{
 			d = c - 1 ;
+
 			while( *++d ){
+
 				if( *d == '0' ){
+
 					r = 2 ;
+
 					break ;
 				}
 			}
+
 			StringFree( c ) ;
 		}
 	}else{
@@ -132,15 +139,18 @@ static int _replace_truecrypt_key( const tcrypt_opts * opts )
 	 * zuluCryptDeleteFile_1() is defined in ../lib/file_path_security.c
 	 */
 	if( st != StringVoid ){
+
 		zuluCryptDeleteFile_1( st ) ;
 		StringDelete( &st ) ;
 	}
 	if( xt != StringVoid ){
+
 		zuluCryptDeleteFile_1( xt ) ;
 		StringDelete( &xt ) ;
 	}
 
 	if( r == 0 ){
+
 		return 0 ;
 	}else{
 		return 1 ;
@@ -186,21 +196,34 @@ static int zuluGetKeys( string_t * key1,string_t * key2,string_t * key3 )
 	 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 	 */
 	printf( gettext( "Enter an existing passphrase: " ) ) ;
+
 	st = StringSilentlyGetFromTerminal_1( key1,ZULUCRYPT_KEY_MAX_SIZE ) ;
+
 	if( st != 0 ){
+
 		return st ;
 	}
+
 	printf( gettext( "\nEnter the new passphrase: " ) ) ;
+
 	st = StringSilentlyGetFromTerminal_1( key2,ZULUCRYPT_KEY_MAX_SIZE ) ;
+
 	if( st != 0 ){
+
 		StringClearDelete( key1 ) ;
+
 		return st ;
 	}
+
 	printf( gettext( "\nRe enter the new passphrase: " ) ) ;
+
 	st = StringSilentlyGetFromTerminal_1( key3,ZULUCRYPT_KEY_MAX_SIZE ) ;
+
 	if( st != 0 ){
+
 		StringClearDelete( key1 ) ;
 		StringClearDelete( key2 ) ;
+
 		return st ;
 	}
 
@@ -249,7 +272,9 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
+
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+
 			return zuluExit( 4,stl ) ;
 		}
 	}
@@ -264,6 +289,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * 4-common error
 	 */
 	switch( status ){
+
 		case 0 :  break ;
 		case 1 :  return zuluExit( 5,stl ) ;
 		case 2 :  return zuluExit( 5,stl ) ;
@@ -273,18 +299,22 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	}
 
 	switch( _zuluCryptCheckEmptySlots( device ) ){
+
 		case 0 : return zuluExit( 6,stl ) ;
 		case 1 : return zuluExit( 2,stl ) ;
 		case 2 : /* no complains,continue */ ;
 	}
 
 	if( keyType1 == NULL && keyType2 == NULL ){
+
 		switch( zuluGetKeys( presentKey,newKey_1,newKey_2 ) ){
+
 			case 1 : return zuluExit( 7,stl ) ;
 			case 2 : return zuluExit( 8,stl ) ;
 		}
 
 		if( StringEqualString( *newKey_1,*newKey_2 ) ){
+
 			key1 = StringContent( *presentKey ) ;
 			len1 = StringLength ( *presentKey ) ;
 			key2 = StringContent( *newKey_1   ) ;
@@ -294,13 +324,17 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		}
 	}else{
 		if( newKey == NULL || existingKey == NULL ){
+
 			return zuluExit( 10,stl ) ;
 		}
 		if( StringsAreEqual( keyType1,"-f" ) ){
+
 			/*
 			 * this function is defined at "path_access.c"
 			 */
+
 			switch( zuluCryptGetPassFromFile( existingKey,uid,ek ) ){
+
 				case 1 : return zuluExit( 11,stl ) ;
 				case 4 : return zuluExit( 12,stl ) ;
 				case 2 : return zuluExit( 13,stl ) ;
@@ -311,14 +345,18 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len1 = StringLength( *ek ) ;
 
 			if( StringHasNoComponent( existingKey,"/.zuluCrypt-socket" ) ){
+
 				tcrypt.existing_key_is_keyfile = 1 ;
 			}
 		}
 		if( StringsAreEqual( keyType2,"-f" ) ){
+
 			/*
 			 * this function is defined at "path_access.c"
 			 */
+
 			switch( zuluCryptGetPassFromFile( newKey,uid,nk ) ){
+
 				case 1 : return zuluExit( 11,stl ) ;
 				case 4 : return zuluExit( 12,stl ) ;
 				case 2 : return zuluExit( 13,stl ) ;
@@ -329,20 +367,28 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			len2 = StringLength( *nk ) ;
 
 			if( StringHasNoComponent( newKey,"/.zuluCrypt-socket" ) ){
+
 				tcrypt.new_key_is_keyfile = 1 ;
 			}
 		}
 		if( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-f" ) ){
+
 			;
+
 		}else if( StringsAreEqual( keyType1,"-p" ) && StringsAreEqual( keyType2,"-p" ) ){
+
 			key1 = existingKey ;
 			len1 = StringSize( existingKey ) ;
 			key2 = newKey ;
 			len2 = StringSize( newKey ) ;
+
 		}else if( StringsAreEqual( keyType1,"-p" ) && StringsAreEqual( keyType2,"-f" ) ){
+
 			key1 = existingKey ;
 			len1 = StringSize( existingKey ) ;
+
 		}else if( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-p" ) ){
+
 			key2 = newKey ;
 			len2 = StringSize( newKey ) ;
 		}else{

@@ -148,6 +148,7 @@ static string_t _create_mount_point_0( const char * label,uid_t uid,string_t pat
 	const char * e ;
 
 	if( q == NULL ){
+
 		StringAppend( path,label ) ;
 	}else{
 		if( *( q + 1 ) == '\0' ){
@@ -156,6 +157,7 @@ static string_t _create_mount_point_0( const char * label,uid_t uid,string_t pat
 			 * from the right and use it as the last "/".
 			 */
 			e = q - 1 ;
+
 			if( e < label ){
 				/*
 				 * -m option was given with a single "/".
@@ -164,13 +166,19 @@ static string_t _create_mount_point_0( const char * label,uid_t uid,string_t pat
 				return StringVoid ;
 			}
 			while( 1 ){
+
 				if( e == label ){
+
 					StringAppend( path,e + 1 ) ;
 					StringRemoveRight( path,1 ) ;
+
 					break ;
+
 				}else if( *e == '/' ){
+
 					StringAppend( path,e + 1 ) ;
 					StringRemoveRight( path,1 ) ;
+
 					break ;
 				}else{
 					e-- ;
@@ -202,6 +210,7 @@ static string_t create_home_mount_point( const char * device,const char * label,
 	string_t path = zuluCryptGetUserHomePath( uid ) ;
 
 	if( label == NULL ){
+
 		return _create_home_default_mount_point( device,uid,path ) ;
 	}else{
 		return _create_home_custom_mount_point( label,uid,path ) ;
@@ -233,6 +242,7 @@ static int mount_point_prefix_match_0( const char * m_path,uid_t uid,string_t * 
 	st = StringPrefixEqual( m_path,str ) ;
 
 	if( m_point ){
+
 		*m_point = uname ;
 	}else{
 		StringDelete( &uname ) ;
@@ -306,15 +316,21 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 {
 	string_t path = zuluCryptGetUserName( uid ) ;
 
+	const char * e = StringPrepend( path,"/run/media/private/" ) ;
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	zuluCryptCreateMountPath( StringPrepend( path,"/run/media/private/" ) ) ;
+	zuluCryptCreateMountPath( e ) ;
+
+	_chmod( e,S_IREAD | S_IXUSR | S_IRGRP | S_IXGRP ) ;
+	_chown( e,uid,uid ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	StringAppendChar( path,'/' ) ;
 
 	if( label == NULL ){
+
 		return _create_default_mount_point( device,uid,path ) ;
 	}else{
 		return _create_custom_mount_point( label,uid,path ) ;
@@ -329,10 +345,13 @@ static int home_mount_prefix( void )
 string_t zuluCryptCreateMountPoint( const char * device,const char * label,const char * m_opts,uid_t uid )
 {
 	if( home_mount_prefix() ){
+
 		return create_home_mount_point( device,label,uid ) ;
 	}else{
 		if( StringHasComponent( m_opts,"mount-prefix=home" ) ){
+
 			if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
+
 				return create_home_mount_point( device,label,uid ) ;
 			}else{
 				return StringVoid ;
@@ -346,9 +365,11 @@ string_t zuluCryptCreateMountPoint( const char * device,const char * label,const
 int zuluCryptMountPointPrefixMatch( const char * m_path,uid_t uid,string_t * m_point )
 {
 	if( home_mount_prefix() ){
+
 		return home_mount_point_prefix_match( m_path,uid,m_point ) ;
 	}else{
 		if( mount_point_prefix_match( m_path,uid,m_point ) ){
+
 			return 1 ;
 		}else{
 			return home_mount_point_prefix_match( m_path,uid,m_point ) ;

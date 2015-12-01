@@ -67,6 +67,7 @@ static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 	opts.key_len = e->passphrase_size ;
 
 	if( e->keyfiles != NULL ){
+
 		opts.tcrypt_keyfiles       = e->keyfiles ;
 		opts.tcrypt_keyfiles_count = e->keyfiles_number ;
 	}
@@ -103,6 +104,7 @@ static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 		opts.key_len = e->passphrase_h_size ;
 
 		if( e->keyfiles_h != NULL ){
+
 			opts.tcrypt_keyfiles       = e->keyfiles_h ;
 			opts.tcrypt_keyfiles_count = e->keyfiles_h_number ;
 		}
@@ -150,7 +152,9 @@ static string_t _root_device( const char * device,const char ** sys_device )
 		 * is cut off the string from p to end iwth "/dev/mmcblk0"
 		 */
 		r = StringIndexOfChar( st,0,'p' ) ;
+
 		if( r != -1 ){
+
 			e = StringLength( st ) - ( size_t )r ;
 			*sys_device = StringRemoveRight( st,e ) ;
 		}else{
@@ -236,8 +240,10 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 }
 
 static const struct{
+
 	const char * first ;
 	const char * second;
+
 } pair[] = {
 	{ "aes"                ,"AES-256-XTS" },
 	{ "twofish"            ,"TWOFISH-256-XTS" },

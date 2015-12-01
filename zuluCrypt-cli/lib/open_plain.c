@@ -38,6 +38,7 @@ static u_int64_t _offset( const char * offset )
 	size_t s = StringSize( offset ) ;
 
 	if( s == 0 ){
+
 		return 0 ;
 	}else{
 		f = *( offset + s - 1 ) ;
@@ -101,11 +102,13 @@ static int _open_plain( const char * device,const resolve_path_t * opts )
 	params.offset = _offset( opt->offset ) ;
 
 	if( opts->open_mode == O_RDONLY ){
+
 		flags = CRYPT_ACTIVATE_READONLY ;
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
 	}
 	if( crypt_format( cd,CRYPT_PLAIN,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 ){
+
 		return zuluExit( 2,cd ) ;
 	}
 	if( crypt_activate_by_passphrase( cd,opt->mapper_name,CRYPT_ANY_SLOT,

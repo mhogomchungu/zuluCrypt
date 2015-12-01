@@ -109,6 +109,7 @@ typedef struct{
 	const char * pass ;
 	size_t       pass_size ;
 	const char * rng ;
+
 }arguments ;
 
 static int _create_volume( const char * device,const resolve_path_t * opts )

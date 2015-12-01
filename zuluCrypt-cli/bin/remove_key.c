@@ -28,18 +28,24 @@ static int _zuluCryptExECheckEmptySlots( const char * device )
 	char * d  ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	c = zuluCryptEmptySlots( device ) ;
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( c == NULL ){
+
 		return 1 ;
 	}
 
 	d = c - 1 ;
 
 	while( *++d ){
+
 		if( *d == '3' ){
+
 			status = 3 ;
+
 			break ;
 		}
 	}
@@ -58,6 +64,7 @@ static int zuluExit( int st,stringList_t stl )
 	StringListClearDelete( &stl ) ;
 
 	switch ( st ){
+
 		case 0 : printf( gettext( "SUCCESS: Key removed successfully\n" ) ) ;					break ;
 		case 2 : printf( gettext( "ERROR: There is no key in the volume that match the presented key\n" ) ) ;	break ;
 		case 3 : printf( gettext( "ERROR: Could not open the volume\n" ) ) ;					break ;
@@ -106,7 +113,9 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partitions.c
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
+
 		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+
 			return zuluExit( 4,stl ) ;
 		}
 	}
@@ -122,6 +131,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	 * 4-common error
 	 */
 	switch( status ){
+
 		case 0 : break ;
 		case 1 : return zuluExit( 5,stl ) ;
 		case 2 : return zuluExit( 5,stl ) ;
@@ -131,14 +141,20 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	}
 
 	if( _zuluCryptExECheckEmptySlots( device ) == 3 ){
+
 		if( ask_confirmation ){
+
 			printf( gettext( "WARNING: There is only one key in the volume and all data in it will be lost if you continue.\n" ) ) ;
 			printf( gettext( "Do you still want to continue? Type \"YES\" if you do: " ) ) ;
+
 			*confirm = StringGetFromTerminal_1( 3 ) ;
+
 			if( *confirm == StringVoid ){
+
 				return zuluExit( 6,stl ) ;
 			}
 			if( !StringEqual( *confirm,gettext( "YES" ) ) ){
+
 				return zuluExit( 7,stl ) ;
 			}
 		}
@@ -151,16 +167,20 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 		 * ZULUCRYPT_KEY_MAX_SIZE is set in ../constants.h
 		 */
 		switch( StringSilentlyGetFromTerminal_1( pass,ZULUCRYPT_KEY_MAX_SIZE ) ){
+
 			case 1 : return zuluExit( 8,stl ) ;
 			case 2 : return zuluExit( 9,stl ) ;
 		}
 
 		printf( "\n" ) ;
+
 		key = StringContent( *pass ) ;
 		key_size = StringLength( *pass ) ;
+
 		zuluCryptSecurityLockMemory_1( *pass ) ;
 	}else{
 		if( keyType == NULL || keytoremove == NULL ){
+
 			return zuluExit( 10,stl ) ;
 		}
 		if( StringsAreEqual( keyType,"-f" ) ){
@@ -168,15 +188,19 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			 * zuluCryptGetPassFromFile() is defined at path_access.c"
 			 */
 			switch( zuluCryptGetPassFromFile( keytoremove,uid,pass ) ){
+
 				case 1 : return zuluExit( 11,stl )  ;
 				case 2 : return zuluExit( 12,stl )  ;
 				case 4 : return zuluExit( 13,stl ) ;
 				case 5 : return zuluExit( 14,stl ) ;
 			}
+
 			key = StringContent( *pass ) ;
 			key_size = StringLength( *pass ) ;
+
 			zuluCryptSecurityLockMemory_1( *pass ) ;
 		}else if( StringsAreEqual( keyType, "-p" ) ){
+
 			key = keytoremove ;
 			key_size = StringSize( keytoremove ) ;
 		}else{
@@ -192,6 +216,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( status == 1 ){
+
 		status = zuluExit_1( status,device,stl ) ;
 	}else{
 		status = zuluExit( status,stl ) ;

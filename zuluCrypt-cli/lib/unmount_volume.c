@@ -53,6 +53,7 @@ static int _unmount( int( *function )( const char * m_dir ),const char * m_dir )
 		h = function( m_dir ) ;
 
 		if( h == 0 ){
+
 			break ;
 		}else{
 			sleep( 1 ) ;

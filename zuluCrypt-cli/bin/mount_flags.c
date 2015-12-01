@@ -28,6 +28,7 @@
 static int _user_has_no_access( uid_t uid )
 {
 	if( uid == 0 ){
+
 		return 0 ;
 	}else{
 		/*
@@ -42,15 +43,19 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	unsigned long flg = 0 ;
 
 	if( mode == NULL ){
+
 		flg |= MS_NODEV | MS_NOSUID | MS_NOEXEC | MS_RELATIME ;
 		*flags = flg ;
 		return 0 ;
 	}
 	if( StringHasComponent( mode,"ro" ) ){
+
 		flg |= MS_RDONLY ;
 	}
 	if( StringHasComponent( mode,"dev" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 	}else{
@@ -58,6 +63,7 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	}
 #if MOUNT_WITH_NOEXEC_BY_DEFAULT
 	if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount-exec" ) ){
+
 		/*
 		 * user is a member of a group,mount volume with exec option by default
 		 */
@@ -69,7 +75,9 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 		}
 	}else{
 		if( StringHasComponent( mode,"exec" ) ){
+
 			if( _user_has_no_access( uid ) ){
+
 				return 1 ;
 			}
 		}else{
@@ -85,38 +93,50 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	}
 #endif
 	if( StringHasComponent( mode,"suid" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 	}else{
 		flg |= MS_NOSUID ;
 	}
 	if( StringHasComponent( mode,"bind" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_BIND ;
 	}
 	if( StringHasComponent( mode,"mandlock" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_MANDLOCK ;
 	}
 	if( StringHasComponent( mode,"move" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_MOVE ;
 	}
 	if( StringHasComponent( mode,"noatime" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_NOATIME ;
 	}
 	if( StringHasComponent( mode,"strictatime" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_STRICTATIME ;
@@ -144,31 +164,40 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	if( StringHasComponent( mode,"relatime" ) ){
 
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_RELATIME ;
 	}
 #endif
 	if( StringHasComponent( mode,"nodiratime" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_NODIRATIME ;
 	}
 	if( StringHasComponent( mode,"remount" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_REMOUNT ;
 	}
 	if( StringHasComponent( mode,"silent" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_SILENT ;
 	}
 	if( StringHasComponent( mode,"synchronous" ) ){
+
 		if( _user_has_no_access( uid ) ){
+
 			return 1 ;
 		}
 		flg |= MS_SYNCHRONOUS ;
