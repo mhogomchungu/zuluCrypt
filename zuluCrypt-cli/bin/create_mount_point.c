@@ -322,7 +322,7 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 
 	zuluCryptCreateMountPath( e ) ;
 
-	_chmod( e,S_IREAD | S_IXUSR | S_IRGRP | S_IXGRP ) ;
+	_chmod( e,S_IREAD | S_IXUSR ) ;
 	_chown( e,uid,uid ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
