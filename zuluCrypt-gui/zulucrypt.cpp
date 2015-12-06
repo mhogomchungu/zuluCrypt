@@ -257,10 +257,13 @@ void zuluCrypt::setupUIElements()
 {
 	m_ui->setupUi( this ) ;
 
-	this->setWindowIcon( QIcon( ":/zuluCrypt.png" ) ) ;
+	const auto& icon = utility::getIcon( "zuluCrypt" ) ;
+
+	this->setWindowIcon( icon ) ;
 
 	m_trayIcon.setParent( this ) ;
-	m_trayIcon.setIcon( QIcon( ":/zuluCrypt.png" ) ) ;
+
+	m_trayIcon.setIcon( icon ) ;
 
 	auto trayMenu = new QMenu( this ) ;
 

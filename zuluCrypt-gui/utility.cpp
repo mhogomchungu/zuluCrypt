@@ -63,6 +63,7 @@
 #include "readonlywarning.h"
 #include "../plugins/plugins.h"
 #include "plugin.h"
+#include "install_prefix.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1624,4 +1625,9 @@ QStringList utility::directoryList( const QString& e )
 	l.removeOne( ".." ) ;
 
 	return l ;
+}
+
+QIcon utility::getIcon( const QString& application )
+{
+	return QIcon( INSTALL_PREFIX "/share/pixmaps/" + application + ".png" ) ;
 }

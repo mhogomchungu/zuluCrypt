@@ -112,6 +112,8 @@ else( LIB_SUFFIX )
 	endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 endif( LIB_SUFFIX )
 
+file( WRITE  ${PROJECT_BINARY_DIR}/install_prefix.h "\n#define INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}/\"\n" )
+
 if( REUSEMOUNTPOINT )
 	file( WRITE  ${PROJECT_BINARY_DIR}/reuse_mount_point.h "\n#define REUSE_MOUNT_POINT 1\n" )
 else()

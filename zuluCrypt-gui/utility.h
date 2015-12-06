@@ -36,6 +36,7 @@
 #include <QVector>
 #include <QSystemTrayIcon>
 #include <QAction>
+#include <QIcon>
 
 #include <functional>
 #include <memory>
@@ -171,6 +172,8 @@ namespace utility
 	wallet getKeyFromWallet( LxQt::Wallet::walletBackEnd,const QString& keyID,const QString& pwd = QString() ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
+
+	QIcon getIcon( const QString& ) ;
 
 	bool userBelongsToGroup( const char * groupname ) ;
 	bool runningInMixedMode( void ) ;

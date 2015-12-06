@@ -101,9 +101,6 @@ void MainWindow::setUpApp( const QString& volume )
 #endif
 	m_ui->tableWidget->verticalHeader()->setMinimumSectionSize( 30 ) ;
 
-	this->setAcceptDrops( true ) ;
-	this->setWindowIcon( QIcon( ":/zuluMount.png" ) ) ;
-
 	m_ui->tableWidget->setMouseTracking( true ) ;
 
 	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
@@ -120,8 +117,13 @@ void MainWindow::setUpApp( const QString& volume )
 
 	this->setUpFont() ;
 
+	const auto& icon = utility::getIcon( "zuluMount" ) ;
+
+	this->setAcceptDrops( true ) ;
+	this->setWindowIcon( icon ) ;
+
 	m_trayIcon.setParent( this ) ;
-	m_trayIcon.setIcon( QIcon( ":/zuluMount.png" ) ) ;
+	m_trayIcon.setIcon( icon ) ;
 
 	auto trayMenu = new QMenu( this ) ;
 
