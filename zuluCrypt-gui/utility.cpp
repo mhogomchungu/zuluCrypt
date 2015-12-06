@@ -1629,5 +1629,5 @@ QStringList utility::directoryList( const QString& e )
 
 QIcon utility::getIcon( const QString& application )
 {
-	return QIcon( INSTALL_PREFIX "/share/pixmaps/" + application + ".png" ) ;
+	return QIcon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + application + ".png" ) ;
 }
