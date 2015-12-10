@@ -276,11 +276,14 @@ static QVector< deviceList > _getDevices()
 
 			e.setPath( p + it ) ;
 
-			const auto& q = _device_path( e.canonicalPath() ) ;
+			if( !it.startsWith( "edd-int13_dev" ) ){
 
-			if( _not_present( q ) ){
+				const auto& q = _device_path( e.canonicalPath() ) ;
 
-				devices.append( { q,it } ) ;
+				if( _not_present( q ) ){
+
+					devices.append( { q,it } ) ;
+				}
 			}
 		}
 	}
