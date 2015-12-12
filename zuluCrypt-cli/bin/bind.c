@@ -200,7 +200,7 @@ int zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
 	if( stx == StringListVoid ){
 
 		/*
-		 * zuluCryptGetMoutedList() is defined in ../lib/process_mountinfo.c
+		 * zuluCryptGetMoutedList() is defined in ../lib/mountinfo.c
 		 */
 
 		stl = zuluCryptGetMoutedList() ;

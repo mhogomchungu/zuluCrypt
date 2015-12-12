@@ -182,7 +182,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	j = zuluCryptCheckOpenedMapper( StringContent( *mapper ) ) ;
 
 	/*
-	 * defined in ../lib/process_mountinfo.c
+	 * defined in ../lib/mountinfo.c
 	 */
 	k = zuluCryptPartitionIsMounted( device ) ;
 

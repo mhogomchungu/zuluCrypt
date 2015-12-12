@@ -44,12 +44,15 @@ int zuluMountCryptoMount( ARGS * args )
 	string_t str = StringVoid ;
 
 	if( UUID == NULL ){
+
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
 			/*
 			* zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
 			*/
 			path = zuluCryptLoopDeviceAddress_1( device ) ;
+
 			if( path == NULL ){
+
 				return 20 ;
 			}else{
 				mapping_name = path + StringLastIndexOfChar_1( path,'/' ) + 1 ;
@@ -69,6 +72,7 @@ int zuluMountCryptoMount( ARGS * args )
 	zuluCryptEXEGetOptsSetDefault( &opts ) ;
 
 	if( StringPrefixEqual( key_source,"-G" ) ){
+		
 		opts.plugin_path = key ;
 	}
 

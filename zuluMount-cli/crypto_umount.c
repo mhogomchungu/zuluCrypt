@@ -23,7 +23,6 @@ int zuluMountCryptoUMount( ARGS * args )
 	const char * device    = args->device ;
 	const char * UUID      = args->uuid   ;
 	uid_t        uid       = args->uid    ;
-	int mount_point_option = args->mpo    ;
 
 	const char * mapping_name ;
 	char * path = NULL ;
@@ -32,15 +31,18 @@ int zuluMountCryptoUMount( ARGS * args )
 
 	string_t str = StringVoid ;
 
-	if( mount_point_option ){;}
-
 	if( UUID == NULL ){
+
 		if( StringPrefixEqual( device,"/dev/loop" ) ){
+
 			/*
-			* zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
-			*/
+			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/create_loop_device.c
+			 */
+
 			path = zuluCryptLoopDeviceAddress_1( device ) ;
+
 			if( path == NULL ){
+
 				return 20 ;
 			}else{
 				device = path ;

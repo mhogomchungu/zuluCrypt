@@ -40,12 +40,12 @@ class tcrypt : public QDialog
 {
 	Q_OBJECT
 public:
-	static tcrypt * instance( QWidget * parent,
+	static tcrypt& instance( QWidget * parent,
 				  bool b,
 				  std::function< void( const QString&,const QStringList& ) > e,
 				  std::function< void() > f )
 	{
-		return new tcrypt( parent,b,std::move( e ),std::move( f ) ) ;
+		return *( new tcrypt( parent,b,std::move( e ),std::move( f ) ) ) ;
 	}
 	tcrypt( QWidget * parent,
 		bool,

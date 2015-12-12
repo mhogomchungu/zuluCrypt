@@ -25,8 +25,6 @@ int zuluMountUMount( ARGS * args )
 {
 	const char * device    = args->device ;
 	uid_t        uid       = args->uid    ;
-	const char * mode      = args->m_opts   ;
-	int mount_point_option = args->mpo    ;
 	char * loop_device ;
 	char * m_point = NULL ;
 	int status ;
@@ -36,13 +34,12 @@ int zuluMountUMount( ARGS * args )
 ERROR: You can not umount volumes out of \"%s\" since you are not root and do not belong to group \"zulumount\"\n" ) ;
 	string_t xt ;
 
-	if( 0 && mode && mount_point_option ) {;}
-
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_devices.c
 		 */
 		loop_device = zuluCryptLoopDeviceAddress( device ) ;
+
 		if( loop_device == NULL ){
 			/*
 			 * the error msg is a lie,but its harmless since the user will most likely never see it as
@@ -56,7 +53,9 @@ ERROR: You can not umount volumes out of \"%s\" since you are not root and do no
 			 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 			 */
 			m_point = zuluCryptGetMountPointFromPath( dev ) ;
+
 			if( m_point == NULL ){
+
 				return _zuluExit( 100,st,m_point,gettext( "ERROR: Device does not appear to be mounted" ) ) ;
 			}
 		}
@@ -65,7 +64,9 @@ ERROR: You can not umount volumes out of \"%s\" since you are not root and do no
 		 * zuluCryptGetMountPointFromPath() is defined in defined in ../zuluCrypt-cli/lib/process_mountinfo.c
 		*/
 		m_point = zuluCryptGetMountPointFromPath( device ) ;
+
 		if( m_point == NULL ){
+
 			return _zuluExit( 100,st,m_point,gettext( "ERROR: Device does not appear to be mounted" ) ) ;
 		}
 	}
@@ -74,12 +75,14 @@ ERROR: You can not umount volumes out of \"%s\" since you are not root and do no
 	 * zuluCryptMountPointPrefixMatch() is defined in ../zuluCrypt-cli/bin/create_mount_point.c
 	 */
 	if( zuluCryptMountPointPrefixMatch( m_point,uid,&xt ) ){
+
 		StringDelete( &xt ) ;
 	}else{
 		/*
 		 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt-cli/bin/security.c
 		 */
 		if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
+
 			StringDelete( &xt ) ;
 		}else{
 			printf( errorMsg,StringContent( xt ) ) ;
@@ -95,6 +98,7 @@ ERROR: You can not umount volumes out of \"%s\" since you are not root and do no
 	 * zuluCryptBindUnmountVolume() is defined in ../zuluCrypt-cli/bin/bind.c
 	 */
 	switch( zuluCryptBindUnmountVolume( StringListVoid,device,uid ) ){
+
 		case 3 : return _zuluExit( 107,st,m_point,gettext( "ERROR: Shared mount point appear to be busy" ) ) ;
 		case 4 : return _zuluExit( 108,st,m_point,gettext( "ERROR: Shared mount point appear to belong to a different user" ) ) ;
 		case 5 : return _zuluExit( 109,st,m_point,gettext( "ERROR: Shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ) ;
@@ -125,7 +129,9 @@ ERROR: You can not umount volumes out of \"%s\" since you are not root and do no
 			if( !zuluCryptReuseMountPoint() ){
 
 				zuluCryptSecurityGainElevatedPrivileges() ;
+
 				rmdir( m_point ) ;
+
 				zuluCryptSecurityDropElevatedPrivileges() ;
 			}
 		}
@@ -133,6 +139,7 @@ ERROR: You can not umount volumes out of \"%s\" since you are not root and do no
 		return _zuluExit( 0,st,m_point,gettext( "SUCCESS: umount complete successfully" ) ) ;
 	}else{
 		switch( status ) {
+
 			case 1 : return _zuluExit( 103,st,m_point,gettext( "ERROR: Device does not exist" ) ) ;
 			case 2 : return _zuluExit( 104,st,m_point,gettext( "ERROR: Failed to unmount,the mount point and/or one or more files are in use" ) ) ;
 			case 4 : return _zuluExit( 105,st,m_point,gettext( "ERROR: Failed to unmount,could not get a lock on /etc/mtab~" ) ) ;

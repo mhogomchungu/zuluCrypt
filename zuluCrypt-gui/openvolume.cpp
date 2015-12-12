@@ -291,7 +291,6 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 		}else{
 			m_ui->pbUUID->setFlat( true ) ;
 		}
-
 	}
 
 	if( m_option == openvolume::nonSystemVolumes ) {
