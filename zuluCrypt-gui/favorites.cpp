@@ -115,7 +115,7 @@ void favorites::ShowUI()
 
 		if( l.size() > 1 ){
 
-			this->addEntries( l.at( 0 ),l.at( 1 ) ) ;
+			this->addEntries( l ) ;
 		}
 	} ;
 
@@ -137,9 +137,9 @@ void favorites::HideUI()
 	this->deleteLater() ;
 }
 
-void favorites::addEntries( const QString& dev,const QString& m_point )
+void favorites::addEntries( const QStringList& l )
 {
-	tablewidget::addRowToTable( m_ui->tableWidget,QStringList{ dev,m_point } ) ;
+	tablewidget::addRowToTable( m_ui->tableWidget,l ) ;
 }
 
 void favorites::itemClicked( QTableWidgetItem * current )
@@ -210,7 +210,7 @@ void favorites::add()
 
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	this->addEntries( dev,m_path ) ;
+	this->addEntries( { dev,m_path } ) ;
 
 	utility::addToFavorite( dev,m_path ) ;
 

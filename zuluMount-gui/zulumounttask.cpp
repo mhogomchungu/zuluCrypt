@@ -457,7 +457,7 @@ void zuluMountTask::checkUnMount( const QString& volume )
 
 volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QString& volume )
 {
-	auto _loopDeviceIsGone =[]( const QString& device ){
+	auto _loopDeviceIsGone = []( const QString& device ){
 
 		QFile f ;
 

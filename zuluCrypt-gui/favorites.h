@@ -22,6 +22,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <QStringList>
 
 class QAction ;
 class QWidget ;
@@ -61,7 +62,7 @@ private slots:
 private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void addEntries( const QString&,const QString& ) ;
+	void addEntries( const QStringList& ) ;
 	Ui::favorites * m_ui ;
 	QAction * m_ac ;
 };
