@@ -398,8 +398,13 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 	auto exe     = e.toLatin1() ;
 	auto m_point = m.toLatin1() ;
 
-	if( !exe.startsWith( "/" ) ){
+	if( exe.startsWith( "/" ) ){
 
+		if( !utility::pathExists( exe ) ){
+
+			return false ;
+		}
+	}else{
 		auto e = utility::Task( "which " + exe ) ;
 
 		if( e.failed() ){
@@ -408,11 +413,6 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 		}
 
 		exe = e.splitOutput( '\n' ).first().toLatin1() ;
-	}else{
-		if( !utility::pathExists( exe ) ){
-
-			return false ;
-		}
 	}
 
 	auto p = Process( exe.constData(),m_point.constData(),nullptr ) ;

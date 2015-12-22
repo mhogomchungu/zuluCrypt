@@ -29,10 +29,8 @@
 #include "dialogmsg.h"
 #include "version_1.h"
 
-void checkForUpdates::networkReply( QNetworkReply * q )
+void checkForUpdates::networkReply( QNetworkReply * p )
 {
-	utility::qObject_unique_ptr< QNetworkReply > p( q ) ;
-
 	QString l = p->readAll() ;
 
 	DialogMsg msg( m_widget ) ;
@@ -40,28 +38,28 @@ void checkForUpdates::networkReply( QNetworkReply * q )
 	if( l.isEmpty() ){
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
-
-		return ;
-	}
-
-	l.replace( "\n","" ) ;
-
-	if( m_autocheck ){
-
-		if( l != "Not Found" && l != THIS_VERSION ){
-
-			l = tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
-			msg.ShowUIOK( tr( "Update Available" ),l ) ;
-		}
 	}else{
-		if( l != "Not Found" ){
+		l.replace( "\n","" ) ;
 
-			l = tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
-			msg.ShowUIOK( tr( "Version Info" ),l ) ;
+		if( m_autocheck ){
+
+			if( l != "Not Found" && l != THIS_VERSION ){
+
+				l = tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
+				msg.ShowUIOK( tr( "Update Available" ),l ) ;
+			}
 		}else{
-			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
+			if( l != "Not Found" ){
+
+				l = tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
+				msg.ShowUIOK( tr( "Version Info" ),l ) ;
+			}else{
+				msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
+			}
 		}
 	}
+
+	this->deleteLater() ;
 }
 
 checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) : m_widget( widget ),m_autocheck( autocheck )
