@@ -47,20 +47,39 @@
  * This library wraps a function into a future where the result of the function
  * can be retrieved through the future's 3 public methods:
  *
- * 1. .get() runs the wrapped function on the current thread.
+ * 1. .get()   This method runs the wrapped function on the current thread
+ *             and could block the thread and hang GUI.
  *
- * 2. .then() registers an event to be called when the wrapped function finishes
- *            and then runs the wrapped function in a different thread.
- *            The registered function will run in the current thread.
+ * 2. .then()  This method does three things:
  *
- * 3. .await() suspends the calling function and then runs the wrapped function
- *             in a separate thread and then unsuspends the calling function when
- *             the wrapped function finish running.The suspension will be done
- *             without blocking the current thread leaving free to perform other tasks.
+ *             1. Registers a method to be called when a wrapped function finish running.
+ *
+ *             2. Runs the wrapped function on a background thread.
+ *
+ *             3. Runs the registered method on the current thread when the wrapped function finish
+ *                running.
+ *
+ * 3. .await() This method does three things:
+ *
+ *             1. Suspends the current thread at a point where this method is called.
+ *
+ *             2. Creates a background thread and then runs the wrapped function in the background
+ *                thread.
+ *
+ *             3. Unsuspends the current thread when the wrapped function finish and let the
+ *                current thread continue normally.
+ *
+ *             The suspension at step 1 is done without blocking the thread and hence the suspension
+ *             can be done in the GUI thread and the GUI will remain responsive.
  *
  *             recommending reading up on C#'s await keyword to get a sense of how this feature works.
+ *
+ *
+ * The future is of type "Task::future<T>&" or "Task::future<void>&" and "std::reference_wrapper"[1]
+ * class can be used if they are to be managed in a container that can not handle references.
+ *
+ * [1] http://en.cppreference.com/w/cpp/utility/functional/reference_wrapper
  */
-
 namespace LxQt{
 
 namespace Wallet{
@@ -249,39 +268,57 @@ namespace Task
 	};
 
 	/*
-	 * Below API's wrappes a function around a future and then returns the future.
+	 * Below API wrappes a function around a future and then returns the future.
 	 */
+
 	template< typename T >
 	future<T>& run( std::function< T() > function )
 	{
-		auto t = new ThreadHelper<T>( std::move( function ) ) ;
-		return t->Future() ;
+		return ( new ThreadHelper<T>( std::move( function ) ) )->Future() ;
+	}
+
+	template< typename T,typename ... Args >
+	future<T>& run( std::function< T( Args ... ) > function,Args ... args )
+	{
+		return Task::run<T>( std::bind( std::move( function ),args ... ) ) ;
 	}
 
 	static inline future< void >& run( std::function< void() > function )
 	{
-		auto t = new ThreadHelper< void >( std::move( function ) ) ;
-		return t->Future() ;
+		return Task::run< void >( std::move( function ) ) ;
+	}
+
+	template< typename ... Args >
+	future< void >& run( std::function< void( Args ... ) > function,Args ... args )
+	{
+		return Task::run< void >( std::bind( std::move( function ),args ... ) ) ;
 	}
 
 	/*
 	 * A few useful helper functions
 	 */
 
-	static inline void await( Task::future<void>& e )
-	{
-		e.await() ;
-	}
-
-	static inline void await( std::function< void() > function )
-	{
-		Task::run( std::move( function ) ).await() ;
-	}
-
 	template< typename T >
 	T await( std::function< T() > function )
 	{
 		return Task::run<T>( std::move( function ) ).await() ;
+	}
+
+	template< typename T,typename ... Args >
+	T await( std::function< T( Args ... ) > function,Args ... args )
+	{
+		return Task::await<T>( std::bind( std::move( function ),args ... ) ) ;
+	}
+
+	template< typename ... Args >
+	void await( std::function< void() > function,Args ...args )
+	{
+		Task::await< void >( std::bind( std::move( function ),args ... ) ) ;
+	}
+
+	static inline void await( std::function< void() > function )
+	{
+		Task::await< void >( std::move( function ) ) ;
 	}
 
 	template< typename T >
@@ -291,19 +328,25 @@ namespace Task
 	}
 
 	template< typename T >
-	T await( std::future<T>&& t )
+	T await( std::future<T> t )
 	{
 		return Task::await<T>( [ & ](){ return t.get() ; } ) ;
 	}
 
 	/*
-	 * This method runs its argument in a separate thread and does not offer
+	 * These methods runs their argument in a separate thread and does not offer
 	 * continuation feature.Useful when wanting to just run a function in a
 	 * different thread.
 	 */
 	static inline void exec( std::function< void() > function )
 	{
 		Task::run( std::move( function ) ).start() ;
+	}
+
+	template< typename T,typename ... Args >
+	void exec( std::function< T( Args ... ) > function,Args ... args )
+	{
+		Task::exec( std::bind( std::move( function ),args ... ) ) ;
 	}
 }
 
@@ -322,7 +365,8 @@ Examples on how to use the library
 templated version that passes a return value of one function to another function
 ---------------------------------------------------------------------------------
 
-auto _a = [](){
+int _a()
+{
 	/*
 	 * This task will run on a different thread
 	 * This tasks returns a result
@@ -330,7 +374,8 @@ auto _a = [](){
 	return 0 ;
 }
 
-auto _b = []( int r ){
+void _b( int r )
+{
 	/*
 	 * This task will run on the original thread.
 	 * This tasks takes an argument returned by task _a
@@ -341,21 +386,23 @@ Task::run<int>( _a ).then( _b ) ;
 
 alternatively,
 
-Task::future<int>& e = Task::run( _a ) ;
+Task::future<int>& e = Task::run<int>( _a ) ;
 
 e.then( _b ) ;
 
 
 Non templated version that does not pass around return value
 ----------------------------------------------------------------
-auto _c = [](){
+void _c()
+{
 	/*
 	 * This task will run on a different thread
 	 * This tasks returns with no result
 	 */
 }
 
-auto _d = [](){
+void _d()
+{
 	/*
 	 * This task will run on the original thread.
 	 * This tasks takes no argument
