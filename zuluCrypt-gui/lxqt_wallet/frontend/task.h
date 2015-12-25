@@ -183,7 +183,7 @@ namespace Task
 		}
 		void run()
 		{
-			m_result =  m_function() ;
+			m_result = m_function() ;
 		}
 		std::function< T() > m_function ;
 		future<T> m_future ;
@@ -316,7 +316,7 @@ namespace Task
 	}
 
 	template< typename ... Args >
-	void await( std::function< void() > function,Args ...args )
+	void await( std::function< void( Args ... ) > function,Args ... args )
 	{
 		Task::await< void >( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
