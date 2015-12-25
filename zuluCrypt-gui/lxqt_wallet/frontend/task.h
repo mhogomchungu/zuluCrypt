@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright: 2014-2015
  * name : Francis Banyikwa
  * email: mhogomchungu@gmail.com
@@ -80,6 +80,7 @@
  *
  * [1] http://en.cppreference.com/w/cpp/utility/functional/reference_wrapper
  */
+
 namespace LxQt{
 
 namespace Wallet{
@@ -268,7 +269,9 @@ namespace Task
 	};
 
 	/*
-	 * Below API wrappes a function around a future and then returns the future.
+	 *
+	 * Below APIs wrappes a function around a future and then returns the future.
+	 *
 	 */
 
 	template< typename T >
@@ -280,7 +283,7 @@ namespace Task
 	template< typename T,typename ... Args >
 	future<T>& run( std::function< T( Args ... ) > function,Args ... args )
 	{
-		return Task::run<T>( std::bind( std::move( function ),args ... ) ) ;
+		return Task::run<T>( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 
 	static inline future< void >& run( std::function< void() > function )
@@ -291,11 +294,13 @@ namespace Task
 	template< typename ... Args >
 	future< void >& run( std::function< void( Args ... ) > function,Args ... args )
 	{
-		return Task::run< void >( std::bind( std::move( function ),args ... ) ) ;
+		return Task::run< void >( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 
 	/*
+	 *
 	 * A few useful helper functions
+	 *
 	 */
 
 	template< typename T >
@@ -307,13 +312,13 @@ namespace Task
 	template< typename T,typename ... Args >
 	T await( std::function< T( Args ... ) > function,Args ... args )
 	{
-		return Task::await<T>( std::bind( std::move( function ),args ... ) ) ;
+		return Task::await<T>( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 
 	template< typename ... Args >
 	void await( std::function< void() > function,Args ...args )
 	{
-		Task::await< void >( std::bind( std::move( function ),args ... ) ) ;
+		Task::await< void >( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 
 	static inline void await( std::function< void() > function )
@@ -334,7 +339,7 @@ namespace Task
 	}
 
 	/*
-	 * These methods runs their argument in a separate thread and does not offer
+	 * These methods run their arguments in a separate thread and does not offer
 	 * continuation feature.Useful when wanting to just run a function in a
 	 * different thread.
 	 */
@@ -346,7 +351,7 @@ namespace Task
 	template< typename T,typename ... Args >
 	void exec( std::function< T( Args ... ) > function,Args ... args )
 	{
-		Task::exec( std::bind( std::move( function ),args ... ) ) ;
+		Task::exec( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 }
 
