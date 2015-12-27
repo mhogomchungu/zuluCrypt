@@ -109,9 +109,9 @@ namespace Task
 	class future
 	{
 	public:
-		future( std::function< void() > start,
-			std::function< void() > cancel,
-			std::function< void( T& ) > get ) :
+		future( std::function< void() >&& start,
+			std::function< void() >&& cancel,
+			std::function< void( T& ) >&& get ) :
 			m_start ( std::move( start ) ),
 			m_cancel( std::move( cancel ) ),
 			m_get   ( std::move( get ) )
@@ -134,7 +134,7 @@ namespace Task
 
 			T q ;
 
-			m_function = [ & ]( T r ){ q = std::move( r ) ; p.exit() ; } ;
+			m_function = [ & ]( T&& r ){ q = std::move( r ) ; p.exit() ; } ;
 
 			this->start() ;
 
@@ -150,7 +150,7 @@ namespace Task
 		{
 			m_cancel() ;
 		}
-		void run( T r )
+		void run( T&& r )
 		{
 			m_function( std::move( r ) ) ;
 		}
@@ -194,9 +194,9 @@ namespace Task
 	class future< void >
 	{
 	public:
-		future( std::function< void() > start,
-			std::function< void() > cancel,
-			std::function< void() > get ) :
+		future( std::function< void() >&& start,
+			std::function< void() >&& cancel,
+			std::function< void() >&& get ) :
 			m_start ( std::move( start ) ),
 			m_cancel( std::move( cancel ) ),
 			m_get   ( std::move( get ) )
@@ -315,12 +315,6 @@ namespace Task
 		return Task::await<T>( std::bind( std::move( function ),std::move( args ) ... ) ) ;
 	}
 
-	template< typename ... Args >
-	void await( std::function< void( Args ... ) > function,Args ... args )
-	{
-		Task::await< void >( std::bind( std::move( function ),std::move( args ) ... ) ) ;
-	}
-
 	static inline void await( std::function< void() > function )
 	{
 		Task::await< void >( std::move( function ) ) ;
@@ -437,6 +431,36 @@ int r = e.await() ;
 alternatively,
 
 int r = Task::run<int>( _a ).await() ;
+
+*******************************************************************
+* Example use cases on how to use lambda that requires an argument
+*******************************************************************
+
+/*
+ * declaring "meaw" with an auto keyword will not be sufficient here
+ * and the full std::function<blablabla> is required.
+ *
+ * For the same reason,just plugging in a lambda that requires arguments
+ * into Task::run() will not be sufficent and the plugged in lambda must
+ * be casted to std::function<blablabla> for it to compile.
+ *
+ * Why the above restriction? No idea but i suspect it has to do with
+ * variadic template type deduction failing to see something.
+ */
+
+std::function< int( int ) > meaw = []( int x ){
+
+	return x + 1 ;
+} ;
+
+Task::run( meaw,6 ).then( []( int r ){
+
+	qDebug() << r ;
+} ) ;
+
+alternatively,
+
+r = Task::await( meaw,6 ) ;
 
 #endif //end example block
 
