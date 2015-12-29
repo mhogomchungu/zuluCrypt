@@ -155,7 +155,7 @@ namespace Task
 			m_function( std::move( r ) ) ;
 		}
 	private:
-		std::function< void( T ) > m_function = []( T t ){ Q_UNUSED( t ) ; } ;
+		std::function< void( T ) > m_function = []( T&& t ){ Q_UNUSED( t ) ; } ;
 		std::function< void() > m_start ;
 		std::function< void() > m_cancel ;
 		std::function< void( T& ) > m_get ;
@@ -165,7 +165,7 @@ namespace Task
 	class ThreadHelper : public Thread
 	{
 	public:
-		ThreadHelper( std::function< T() > function ) :
+		ThreadHelper( std::function< T() >&& function ) :
 			m_function( std::move( function ) ),
 			m_future( [ this ](){ this->start() ; },
 				  [ this ](){ this->deleteLater() ; },
@@ -244,7 +244,7 @@ namespace Task
 	class ThreadHelper< void > : public Thread
 	{
 	public:
-		ThreadHelper( std::function< void() > function ) :
+		ThreadHelper( std::function< void() >&& function ) :
 			m_function( std::move( function ) ),
 			m_future( [ this ](){ this->start() ; },
 				  [ this ](){ this->deleteLater() ; },

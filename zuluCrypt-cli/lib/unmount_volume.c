@@ -63,76 +63,135 @@ static int _unmount( int( *function )( const char * m_dir ),const char * m_dir )
 	return h ;
 }
 
+static int _zuluCryptUnmountVolume_0( string_t st,char ** m_point )
+{
+	int h ;
+
+	stringList_t stl = StringListStringSplit( st,' ' ) ;
+
+	StringListIterator it = StringListBegin( stl ) ;
+
+	/*
+	 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
+	 */
+	const char * mout_point = zuluCryptDecodeMountEntry( *( it + 1 ) ) ;
+
+	if( StringContains( *( it + 2 ),"fuse" ) ){
+
+		/*
+		 * Dont know whats going on but FUSE based file systems do not seem to work with umount()
+		 */
+		h = _unmount( _unmount_fuse,mout_point ) ;
+	}else{
+		h = _unmount( _unmount_rest,mout_point ) ;
+	}
+
+	if( h == 0 && m_point != NULL ){
+
+		*m_point = StringCopy_2( mout_point ) ;
+	}
+
+	StringListDelete( &stl ) ;
+
+	return h ;
+}
+
+static stringList_t _get_mount_entries( const char * device )
+{
+	/*
+	 * zuluCryptGetMountEntry() is defined in mountinfo.c
+	 */
+	stringList_t stl = zuluCryptGetMoutedList() ;
+	stringList_t stx = StringListVoid ;
+
+	StringListIterator it ;
+	StringListIterator end ;
+
+	string_t st = String_1( device," ",NULL ) ;
+
+	StringListGetIterators( stl,&it,&end ) ;
+
+	while( it != end ){
+
+		if( StringStartsWith_1( *it,st ) ){
+
+			stx = StringListAppendString( stx,*it ) ;
+		}
+
+		it++ ;
+	}
+
+	StringDelete( &st ) ;
+
+	StringListDelete( &stl ) ;
+
+	return stx ;
+}
+
 int zuluCryptUnmountVolume( const char * device,char ** m_point )
 {
 	int h = 3 ;
 
-	char * loop_path = NULL ;
+	char * e ;
 
-	string_t st ;
+	size_t s ;
 
 	stringList_t stl ;
 
-	StringListIterator it ;
-
-	const char * mout_point ;
-
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in ./create_loop_device.c
-		 */
-		loop_path = zuluCryptLoopDeviceAddress( device ) ;
 
-		if( loop_path == NULL ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
+		 */
+
+		e = zuluCryptLoopDeviceAddress( device ) ;
+
+		if( e == NULL ){
 
 			return h ;
 		}else{
-			/*
-			 * zuluCryptGetMountEntry() is defined in ./process_mountinfo.c
-			 */
-			st = zuluCryptGetMountEntry( loop_path ) ;
-			StringFree( loop_path ) ;
+			stl = _get_mount_entries( e ) ;
+			StringFree( e ) ;
 		}
 	}else{
-		/*
-		 * zuluCryptGetMountEntry() is defined in ./process_mountinfo.c
-		 */
-		st = zuluCryptGetMountEntry( device ) ;
+		stl = _get_mount_entries( device ) ;
 	}
 
-	if( st != StringVoid ){
+	s = StringListSize( stl ) ;
 
-		stl = StringListStringSplit( st,' ' ) ;
-
-		it = StringListBegin( stl ) ;
+	if( s == 0 ){
 
 		/*
-		 * zuluCryptDecodeMountEntry() is defined in mount_volume.c
+		 * volume appear to not be mounted.
 		 */
-		mout_point = zuluCryptDecodeMountEntry( *( it + 1 ) ) ;
 
-		if( StringContains( *( it + 2 ),"fuse" ) ){
+		h = 1 ;
 
-			/*
-			 * Dont know whats going on but FUSE based file systems do not seem to work with umount()
-			 */
-			h = _unmount( _unmount_fuse,mout_point ) ;
-		}else{
-			h = _unmount( _unmount_rest,mout_point ) ;
-		}
+	}else if( s == 1 ){
 
-		if( h == 0 && m_point != NULL ){
+		/*
+		 * there is only one mount point for the volume,unmount it normally
+		 */
 
-			*m_point = StringCopy_2( mout_point ) ;
-		}
+		h = _zuluCryptUnmountVolume_0( StringListStringAtFirstPlace( stl ),m_point ) ;
+	}else{
+		/*
+		 * there are multiple mount points for the same volume,refuse to proceed.
+		 */
 
-		StringListDelete( &stl ) ;
+		/*
+		 * TODO: look into trying to unmount them all and return what we think
+		 * is our mount point.
+		 */
+		h = 10 ;
 	}
 
-	if( h != 0 && h != 3 && h != 4 ){
+	if( h != 0 && h != 3 && h != 4 && h != 1 && h != 10 ){
 
 		h = 2 ;
 	}
+
+	StringListDelete( &stl ) ;
 
 	return h ;
 }
