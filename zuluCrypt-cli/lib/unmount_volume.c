@@ -165,7 +165,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 		 * volume appear to not be mounted.
 		 */
 
-		h = 1 ;
+		h = 0 ;
 
 	}else if( s == 1 ){
 
