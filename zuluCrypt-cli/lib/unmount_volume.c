@@ -102,7 +102,6 @@ static stringList_t _get_mount_entries( const char * device )
 	 * zuluCryptGetMountEntry() is defined in mountinfo.c
 	 */
 	stringList_t stl = zuluCryptGetMoutedList() ;
-	stringList_t stx = StringListVoid ;
 
 	StringListIterator it ;
 	StringListIterator end ;
@@ -115,17 +114,15 @@ static stringList_t _get_mount_entries( const char * device )
 
 		if( StringStartsWith_1( *it,st ) ){
 
-			stx = StringListAppendString( stx,*it ) ;
+			it++ ;
+		}else{
+			StringListRemoveAt_1( stl,it,&end ) ;
 		}
-
-		it++ ;
 	}
 
 	StringDelete( &st ) ;
 
-	StringListDelete( &stl ) ;
-
-	return stx ;
+	return stl ;
 }
 
 int zuluCryptUnmountVolume( const char * device,char ** m_point )
@@ -164,8 +161,6 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 		/*
 		 * volume appear to not be mounted.
 		 */
-
-		h = 0 ;
 
 	}else if( s == 1 ){
 
