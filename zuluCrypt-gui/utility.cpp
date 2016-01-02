@@ -1005,7 +1005,7 @@ static QString _absolute_exe_path( const QString& exe )
 		return e ;
 	}
 
-	return QString() ;
+	return exe ;
 }
 
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )
