@@ -398,34 +398,22 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 	auto exe     = e.toLatin1() ;
 	auto m_point = m.toLatin1() ;
 
-	if( exe.startsWith( "/" ) ){
+	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
 
-		if( !utility::pathExists( exe ) ){
+		auto p = Process( exe.constData(),m_point.constData(),nullptr ) ;
 
-			return false ;
-		}
+		utility::Array array( env ) ;
+
+		ProcessSetEnvironmentalVariable( p,array.value() ) ;
+
+		ProcessSetOptionUser( p,uid ) ;
+
+		ProcessStart( p ) ;
+
+		return ProcessWaitUntilFinished( &p ) == 0 ;
 	}else{
-		auto e = utility::Task( "which " + exe ) ;
-
-		if( e.failed() ){
-
-			return false ;
-		}
-
-		exe = e.splitOutput( '\n' ).first().toLatin1() ;
+		return false ;
 	}
-
-	auto p = Process( exe.constData(),m_point.constData(),nullptr ) ;
-
-	ProcessSetOptionUser( p,uid ) ;
-
-	utility::Array array( env ) ;
-
-	ProcessSetEnvironmentalVariable( p,array.value() ) ;
-
-	ProcessStart( p ) ;
-
-	return ProcessWaitUntilFinished( &p ) == 0 ;
 }
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener,const QString& env )
@@ -973,6 +961,53 @@ QString utility::resolvePath( const QString& path )
 	}
 }
 
+static QString _absolute_exe_path( const QString& exe )
+{
+	QString e = "/usr/local/bin/" + exe ;
+
+	if( utility::pathExists( e ) ){
+
+		return e ;
+	}
+
+	e = "/usr/local/sbin/" + exe ;
+
+	if( utility::pathExists( e ) ){
+
+		return e ;
+	}
+
+	e = "/usr/bin/" + exe ;
+
+	if( utility::pathExists( e ) ){
+
+		return e ;
+	}
+
+	e = "/usr/sbin/" + exe ;
+
+	if( utility::pathExists( e ) ){
+
+		return e ;
+	}
+
+	e = "/bin/" + exe ;
+
+	if( utility::pathExists( e ) ){
+
+		return e ;
+	}
+
+	e = "/sbin/" + exe ;
+
+	if( utility::pathExists( e ) ){
+
+		return e ;
+	}
+
+	return QString() ;
+}
+
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )
 {
 	int j = l.size() ;
@@ -981,16 +1016,31 @@ QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const
 
 		if( l.at( i ) == arg ){
 
-			if( i + 1 < j ){
+			auto e = [ & ](){
 
-				return l.at( i + 1 ) ;
+				if( i + 1 < j ){
+
+					return l.at( i + 1 ) ;
+				}else{
+					return defaulT ;
+				}
+			} ;
+
+			if( arg == "-m" ){
+
+				return _absolute_exe_path( e() ) ;
 			}else{
-				return defaulT ;
+				return e() ;
 			}
 		}
 	}
 
-	return defaulT ;
+	if( defaulT == "xdg-open" ){
+
+		return _absolute_exe_path( defaulT ) ;
+	}else{
+		return defaulT ;
+	}
 }
 
 static QString _device_id_to_partition_id( const QString& id )

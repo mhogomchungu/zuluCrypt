@@ -48,14 +48,48 @@ static int _valid_entry( const vInfo * e )
 	return 0 ;
 }
 
-static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
+static stringList_t _add_entry( stringList_t stx,stringList_t tmp,string_t ( *function )( const vInfo * ),
+				char * const ** entry,size_t * entry_len )
 {
+	string_t st ;
+
+	u_int64_t e ;
+
 	vInfo volumeInfo ;
 
+	StringListStringArray_1( entry,entry_len,tmp ) ;
+
+	volumeInfo.device       = *( *entry + *entry_len - 2 ) ;
+	volumeInfo.mountPoint   = *( *entry + 4 ) ;
+	volumeInfo.fileSystem   = *( *entry + *entry_len - 3 ) ;
+	volumeInfo.mountOptions = *( *entry + 5 ) ;
+	volumeInfo.rootPath     = *( *entry + 3 ) ;
+
+	if( StringsAreEqual( volumeInfo.fileSystem,"fuse.encfs" ) ){
+
+		st = StringListStringAt( tmp,*entry_len - 2 ) ;
+
+		StringReset( st ) ;
+
+		e = StringJenkinsOneAtATimeHash( volumeInfo.mountPoint ) ;
+
+		volumeInfo.device = StringAppendInt( st,e ) ;
+	}
+
+	if( _valid_entry( &volumeInfo ) ){
+
+		st = function( &volumeInfo ) ;
+		stx = StringListAppendString_1( stx,&st ) ;
+	}
+
+	return stx ;
+}
+
+static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
+{
 	char * const * entry = NULL ;
 
 	size_t entry_len = 0 ;
-	u_int64_t e ;
 
 	stringList_t tmp ;
 	stringList_t stx = StringListVoid ;
@@ -78,33 +112,15 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 
 		it++ ;
 
-		StringListStringArray_1( &entry,&entry_len,tmp ) ;
-
-		volumeInfo.device       = *( entry + entry_len - 2 ) ;
-		volumeInfo.mountPoint   = *( entry + 4 ) ;
-		volumeInfo.fileSystem   = *( entry + entry_len - 3 ) ;
-		volumeInfo.mountOptions = *( entry + 5 ) ;
-		volumeInfo.rootPath     = *( entry + 3 ) ;
-
-		if( StringsAreEqual( volumeInfo.fileSystem,"fuse.encfs" ) ){
-
-			st = StringListStringAt( tmp,entry_len - 2 ) ;
-			StringReset( st ) ;
-			e = StringJenkinsOneAtATimeHash( volumeInfo.mountPoint ) ;
-			volumeInfo.device = StringAppendInt( st,e ) ;
-		}
-
-		if( _valid_entry( &volumeInfo ) ){
-
-			st = function( &volumeInfo ) ;
-			stx = StringListAppendString_1( stx,&st ) ;
-		}
+		stx = _add_entry( stx,tmp,function,&entry,&entry_len ) ;
 
 		StringListDelete( &tmp ) ;
 	}
 
 	StringFree( entry ) ;
+
 	StringListDelete( &stl ) ;
+
 	return stx ;
 }
 
