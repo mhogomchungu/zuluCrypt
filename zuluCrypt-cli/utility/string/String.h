@@ -69,6 +69,11 @@ string_t String_1( const char * cstring,... ) __attribute__ ( ( sentinel ) ) ;
 string_t StringEmpty( void ) ;
 
 /*
+ * initialize a handle with a buffer of size s
+ */
+string_t StringBuffer( size_t s ) ;
+
+/*
  * ininitialize a string handle by memcpy() length characters from a string
  * a NULL character will be appended to the string.
  */

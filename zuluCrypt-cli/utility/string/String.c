@@ -291,11 +291,17 @@ string_t StringCopy( string_t st )
 
 string_t StringEmpty()
 {
+	return StringBuffer( 8 ) ;
+}
+
+string_t StringBuffer( size_t s )
+{
 	string_t st = ( string_t ) malloc( sizeof( struct StringType ) ) ;
+
 	if( st == NULL ){
 		return _StringError() ;
 	}else{
-		st->string = malloc( 8 * sizeof( char ) ) ;
+		st->string = malloc( s * sizeof( char ) ) ;
 		if( st->string == NULL ){
 			free( st ) ;
 			return _StringError() ;
@@ -303,7 +309,7 @@ string_t StringEmpty()
 			st->string[ 0 ] = '\0' ;
 			st->size = 0 ;
 			st->owned = 0 ;
-			st->length = 8 ;
+			st->length = s ;
 			return st ;
 		}
 	}

@@ -244,7 +244,7 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 
 				const QString& size = z.at( 1 ) ;
 
-				if( size == "1.0 KB" || size == "Nil" ){
+				if( size == "1.0 KB" || size == "1,0 KB" || size == "Nil" ){
 
 					continue ;
 				}

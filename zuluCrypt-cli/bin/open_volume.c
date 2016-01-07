@@ -512,6 +512,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	volume.luks_detached_header = StringHasComponent( plugin_path,"luks" ) ;
 
+	volume.general_detached_header = StringHasComponent( plugin_path,"generic_header" ) ;
+
 	if( tcrypt_keyfile ){
 
 		volume.key_source = TCRYPT_KEYFILE ;

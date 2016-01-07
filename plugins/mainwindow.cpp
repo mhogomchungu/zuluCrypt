@@ -144,6 +144,11 @@ void MainWindow::setkeyLabel( const QString& keyLabel )
 	m_ui->label_2->setText( keyLabel ) ;
 }
 
+void MainWindow::setheaderPath(const QString& s )
+{
+	m_ui->lineEditKeyFile->setText( s ) ;
+}
+
 void MainWindow::setkeyFileLabel( const QString& keyFileLabel )
 {
 	m_ui->label->setText( keyFileLabel ) ;

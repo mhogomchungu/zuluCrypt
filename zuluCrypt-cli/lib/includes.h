@@ -75,6 +75,7 @@ typedef struct{
 	int          key_source ;
 	int iteration_count ;
 	int luks_detached_header ;
+	int general_detached_header ;
 	int tcrypt_keyfiles_count ;
 	int veraCrypt_volume ;
 	int tcrypt_system ;
@@ -175,7 +176,7 @@ int zuluCryptOpenPlain_1( const open_struct_t * ) ;
 int zuluCryptOpenLuks_1( const open_struct_t * ) ;
 
 /*
- * zuluCryptOpenLuks_1() is defined in open_luks.c
+ * zuluCryptOpenLuks_2() is defined in open_luks.c
  */
 int zuluCryptOpenLuks_2( const open_struct_t * ) ;
 

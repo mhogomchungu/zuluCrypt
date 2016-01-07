@@ -50,6 +50,7 @@ public:
 	void setToken( char * const * ) ;
 	void setApplicationName( const QString& ) ;
 	void setkeyLabel( const QString& ) ;
+	void setheaderPath( const QString& ) ;
 	void setkeyFileLabel( const QString& ) ;
 	void setButtonIcon( const QString& ) ;
 	void setRequireKey( bool = true ) ;
