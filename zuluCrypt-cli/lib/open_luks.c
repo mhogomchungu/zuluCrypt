@@ -33,25 +33,18 @@ static int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-static int zuluExit_1( int r,struct crypt_device * cd,string_t st )
+static int zuluExit_1( int r,struct crypt_device * cd,stringList_t stl )
 {
 	crypt_free( cd ) ;
-	/*
-	 * zuluCryptDeleteFile_1() is defined in open_path_security.c
-	 */
-	zuluCryptDeleteFile_1( st ) ;
-	StringDelete( &st ) ;
-	return r ;
-}
 
-static int zuluExit_2( int r,struct crypt_device * cd,string_t st,string_t xt )
-{
-	crypt_free( cd ) ;
 	/*
 	 * zuluCryptDeleteFile_1() is defined in open_path_security.c
 	 */
-	zuluCryptDeleteFile_1( st ) ;
-	StringMultipleDelete( &st,&xt,NULL ) ;
+
+	zuluCryptDeleteFile_1( StringListStringAtFirstPlace( stl ) ) ;
+
+	StringListDelete( &stl ) ;
+
 	return r ;
 }
 
@@ -112,8 +105,15 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 	u_int32_t luks_header_file_size ;
 	u_int32_t buffer_size ;
 
-	string_t st ;
-	string_t xt ;
+	stringList_t stl ;
+
+	string_t * xt_0 = StringListArray( &stl,4 ) ;
+	string_t * xt_1 = xt_0 + 1 ;
+	string_t * xt_2 = xt_0 + 2 ;
+	string_t * xt_3 = xt_0 + 3 ;
+
+	const char * cipher ;
+	const char * mode ;
 
 	struct crypt_device * cd = NULL ;
 
@@ -175,16 +175,16 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 	/*
 	 * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
 	 */
-	st = zuluCryptCreateKeyFile( luks_header_file_contents,luks_header_file_size,"luks_header_file-" ) ;
-	luks_header_file = StringContent( st ) ;
+	*xt_0 = zuluCryptCreateKeyFile( luks_header_file_contents,luks_header_file_size,"luks_header_file-" ) ;
+	luks_header_file = StringContent( *xt_0 ) ;
 
 	if( crypt_init( &cd,luks_header_file ) != 0 ){
 
-		return zuluExit_1( 1,cd,st ) ;
+		return zuluExit_1( 1,cd,stl ) ;
 	}
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
 
-		return zuluExit_1( 1,cd,st ) ;
+		return zuluExit_1( 1,cd,stl ) ;
 	}
 
 	if( opt->open_mode == O_RDONLY ){
@@ -198,50 +198,56 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 
 		if( crypt_set_data_device( cd,device ) != 0 ){
 
-			return zuluExit_1( 1,cd,st ) ;
+			return zuluExit_1( 1,cd,stl ) ;
 		}
 
 		if( crypt_activate_by_passphrase( cd,opts->mapper_name,
 						  CRYPT_ANY_SLOT,key,key_len,flags ) < 0 ){
 
-			return zuluExit_1( 1,cd,st ) ;
+			return zuluExit_1( 1,cd,stl ) ;
 		}else{
-			return zuluExit_1( 0,cd,st ) ;
+			return zuluExit_1( 0,cd,stl ) ;
 		}
 
 	}else if( opts->general_detached_header ){
 
 		size = crypt_get_volume_key_size( cd ) ;
 
-		xt = StringBuffer( size ) ;
+		*xt_1 = StringBuffer( size ) ;
 
-		key_0 = ( char * ) StringContent( xt ) ;
+		key_0 = ( char * ) StringContent( *xt_1 ) ;
 
 		if( crypt_volume_key_get( cd,CRYPT_ANY_SLOT,key_0,&size,key,key_len ) < 0 ){
 
-			return zuluExit_2( 1,cd,st,xt ) ;
+			return zuluExit_1( 1,cd,stl ) ;
 		}
+
+		*xt_2 = String( crypt_get_cipher( cd ) ) ;
+		*xt_3 = String( crypt_get_cipher_mode( cd ) ) ;
 
 		crypt_free( cd ) ;
 
 		if( crypt_init( &cd,device ) != 0 ){
 
-			return zuluExit_2( 1,cd,st,xt ) ;
+			return zuluExit_1( 1,cd,stl ) ;
 		}
 
-		if( crypt_format( cd,CRYPT_PLAIN,"aes","xts-plain64",NULL,NULL,size,&plain ) != 0 ){
+		cipher = StringContent( *xt_2 ) ;
+		mode   = StringContent( *xt_3 ) ;
 
-			return zuluExit_2( 1,cd,st,xt ) ;
+		if( crypt_format( cd,CRYPT_PLAIN,cipher,mode,NULL,NULL,size,&plain ) != 0 ){
+
+			return zuluExit_1( 1,cd,stl ) ;
 		}
 
 		if( crypt_activate_by_volume_key( cd,opts->mapper_name,key_0,size,flags ) != 0 ){
 
-			return zuluExit_2( 1,cd,st,xt ) ;
+			return zuluExit_1( 1,cd,stl ) ;
 		}else{
-			return zuluExit_2( 0,cd,st,xt ) ;
+			return zuluExit_1( 0,cd,stl ) ;
 		}
 	}else{
-		return zuluExit_1( 1,cd,st ) ;
+		return zuluExit_1( 1,cd,stl ) ;
 	}
 }
 
