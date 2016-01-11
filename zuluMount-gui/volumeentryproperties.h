@@ -75,7 +75,7 @@ public:
 		if( m_fileSystem == "encfs" ){
 			return true ;
 		}
-		if( m_volumeSize == "1.0 KB" || m_volumeSize == "Nil" ){
+		if( m_volumeSize == "1.0 KB" || m_volumeSize == "1,0 KB" || m_volumeSize == "Nil" ){
 			return false ;
 		}
 		if( m_mountPoint == "/run/media/public/" ){
