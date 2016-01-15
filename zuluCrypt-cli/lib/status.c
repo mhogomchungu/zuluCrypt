@@ -535,12 +535,12 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 				zuluCryptFormatSize( 512 * StringConvertToInt( info.offset ),offset,sizeof( offset ) ) ;
 
 				cipher = zuluCryptConvertCipher( info.cipher ) ;
-				
+
 				StringMultipleAppend( p,
 						      "\n type:   \t",info.type,
-						      "\n cipher:\t" ,cipher,"-xts-plain64",
+						      "\n cipher: \t" ,cipher,"-xts-plain64",
 						      "\n keysize:\t",info.keysize," bits",
-						      "\n offset:\t" ,info.offset," sectors / ",offset,NULL ) ;
+						      "\n offset: \t" ,info.offset," sectors / ",offset,NULL ) ;
 
 				_device_info( p,info.device ) ;
 
