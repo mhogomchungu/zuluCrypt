@@ -56,11 +56,8 @@ extern "C" {
 
 typedef struct{
 
-	const char * dm_key ;
-
-	const char * cipher ;
-
-	size_t keysize ;
+	const char *dm_key;
+	const char *cipher;
 
 }tcplay_master_key_info;
 
