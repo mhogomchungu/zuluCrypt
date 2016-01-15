@@ -502,22 +502,15 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 
 static string_t _get_crypto_info_from_tcplay( const char * mapper )
 {
-	int key_size ;
-
-	int ro ;
-
-	int64_t offset ;
-
 	tc_api_task task ;
-
-	char buff[ SIZE ] ;
-	char * buffer = buff ;
-
-	const char * z ;
 
 	string_t p = StringVoid ;
 
-	string_t q ;
+	tcplay_volume_info info ;
+
+	char buffer[ 128 ] ;
+
+	memset( &info,'\0',sizeof( info ) ) ;
 
 	if( tc_api_initialize() ){
 
@@ -531,55 +524,25 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 
 			tc_api_task_do( task ) ;
 
-			tc_api_task_info_get( task,"status",sizeof( buff ),buff ) ;
+			tc_api_task_info_get( task,"volume_info",sizeof( info ),&info ) ;
 
-			StringMultipleAppend( p," is ",buff,".",NULL ) ;
+			StringMultipleAppend( p," is ",info.status,".",NULL ) ;
 
-			if( StringAtLeastOneMatch_1( buff,"active","active and is in use",NULL ) ){
+			if( StringAtLeastOneMatch_1( info.status,"active","active and is in use",NULL ) ){
 
-				tc_api_task_info_get( task,"type",sizeof( buff ),buff ) ;
+				StringMultipleAppend( p," \n type:   \t",info.type,NULL ) ;
 
-				q = String( buff ) ;
+				StringMultipleAppend( p,"\n cipher:\t",zuluCryptConvertCipher( info.cipher ),"-xts-plain64",NULL ) ;
 
-				StringMultipleAppend( p," \n type:   \t",StringToLowerCase( q ),NULL ) ;
+				StringMultipleAppend( p,"\n keysize:\t",info.keysize," bits",NULL ) ;
 
-				StringDelete( &q ) ;
+				zuluCryptFormatSize( 512 * StringConvertToInt( info.offset ),buffer,sizeof( buffer ) ) ;
 
-				tc_api_task_info_get( task,"cipher",sizeof( buff ),buff ) ;
+				StringMultipleAppend( p,"\n offset:\t",info.offset," sectors / ",buffer,NULL ) ;
 
-				/*
-				 * zuluCryptConvertCipher() is defined in create_tcrypt.c
-				 */
-				StringMultipleAppend( p,"\n cipher:\t",zuluCryptConvertCipher( buff ),"-xts-plain64",NULL ) ;
+				_device_info( p,info.device ) ;
 
-				tc_api_task_info_get( task,"key_bits",sizeof( key_size ),&key_size ) ;
-
-				z = StringIntToString_1( buffer,SIZE,key_size ) ;
-
-				StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
-
-				tc_api_task_info_get( task,"iv_offset",sizeof( offset ),&offset ) ;
-
-				z = StringIntToString_1( buffer,SIZE,offset / 512 ) ;
-
-				StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
-
-				zuluCryptFormatSize( offset,buffer,SIZE ) ;
-
-				StringMultipleAppend( p," / ",buffer,NULL ) ;
-
-				tc_api_task_info_get( task,"device",sizeof( buff ),buff ) ;
-
-				_device_info( p,buff ) ;
-
-				tc_api_task_info_get( task,"mode",sizeof( ro ),&ro ) ;
-
-				if( ro ){
-
-					StringAppend( p,"\n mode:   \tread only" ) ;
-				}else{
-					StringAppend( p,"\n mode:   \tread and write" ) ;
-				}
+				StringMultipleAppend( p,"\n mode:   \t",info.mode,NULL ) ;
 
 				StringAppend( p,"\n active slots:\tNil" ) ;
 			}

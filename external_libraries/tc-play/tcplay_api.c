@@ -732,6 +732,52 @@ tc_api_task_do(tc_api_task task)
 	return r;
 }
 
+static void _get_volume_info( tcplay_volume_info *volume_info,struct tcplay_info *info )
+{
+	int64_t e;
+
+	int i;
+	int k;
+
+	struct tc_cipher_chain *chain;
+
+	snprintf(volume_info->status, sizeof(volume_info->status), "%s", info->status);
+
+	snprintf(volume_info->device, sizeof(volume_info->device), "%s", info->dev);
+
+	if (strcmp(info->type, "TCRYPT") == 0)
+		strcpy(volume_info->type, "tcrypt");
+	else if (strcmp(info->type, "VCRYPT") == 0)
+		strcpy(volume_info->type, "vcrypt");
+	else
+		strcpy(volume_info->type, "Nil");
+
+	tc_cipher_chain_sprint(volume_info->cipher, sizeof(volume_info->cipher), info->cipher_chain);
+
+	snprintf(volume_info->keysize, sizeof(volume_info->keysize), "%d",
+		 8*tc_cipher_chain_klen(info->cipher_chain));
+
+	if (info->hdr)
+		e = (int64_t)info->offset * (int64_t)info->hdr->sec_sz;
+	else
+		e = (int64_t)info->offset * (int64_t)info->blk_sz;
+
+	snprintf(volume_info->offset, sizeof(volume_info->offset), "%" PRIu64, e/512);
+
+	if (info->read_only)
+		strcpy(volume_info->mode, "read only");
+	else
+		strcpy(volume_info->mode, "read and write");
+
+	k = sizeof( volume_info->key_info ) / sizeof( volume_info->key_info[0] ) ;
+
+	for( i = 0,chain = info->cipher_chain ; chain != NULL && i < k ; chain = chain->next,i++ ){
+		volume_info->key_info[i].dm_key  = chain->dm_key ;
+		volume_info->key_info[i].cipher  = chain->cipher->name ;
+
+		volume_info->key_count++;
+	}
+}
 
 int
 tc_api_task_info_get(tc_api_task task, const char *key, ...)
@@ -829,7 +875,9 @@ tc_api_task_info_get(tc_api_task task, const char *key, ...)
 		}
 		ip = va_arg(ap, int *);
 		*ip = info->read_only;
-	}else {
+	} else if (_match(key, "volume_info")) {
+		_get_volume_info( va_arg(ap, tcplay_volume_info *),info ) ;
+	} else {
 		r = TC_ERR_UNIMPL;
 	}
 

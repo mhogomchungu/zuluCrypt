@@ -152,6 +152,7 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 			z = opts->tcrypt_keyfiles ;
 
 			for( i = 0 ; i < k ; i++ ){
+
 				tc_api_task_set( task,"keyfiles",*( z + i ) ) ;
 			}
 
