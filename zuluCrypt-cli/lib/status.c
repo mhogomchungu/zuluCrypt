@@ -46,7 +46,7 @@ char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
 static char * _volume_device_name( const char *,char * (*)( const char * ) ) ;
 
-static void convert( char * buffer,int buffer_size,const char * s,u_int64_t y,u_int64_t z )
+static void _convert( char * buffer,int buffer_size,const char * s,u_int64_t y,u_int64_t z )
 {
 	snprintf( buffer,buffer_size,"%.1f %s",( double )y/z,s ) ;
 }
@@ -61,19 +61,19 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 		 snprintf( buffer,buffer_size,"%d B",( int )number ) ;
 		 break ;
 	case 4 : case 5 : case 6 :
-		 convert( buffer,buffer_size,"KB",number,1024 ) ;
+		 _convert( buffer,buffer_size,"KB",number,1024 ) ;
 		 break ;
 	case 7 : case 8 : case 9 :
-		 convert( buffer,buffer_size,"MB",number,1024 * 1024 ) ;
+		 _convert( buffer,buffer_size,"MB",number,1024 * 1024 ) ;
 		 break ;
 	case 10: case 11 : case 12 :
-		 convert( buffer,buffer_size,"GB",number,1024 * 1024 * 1024 ) ;
+		 _convert( buffer,buffer_size,"GB",number,1024 * 1024 * 1024 ) ;
 		 break ;
 	case 13: case 14 : case 15 :
-		 convert( buffer,buffer_size,"TB",number,1024.0 * 1024 * 1024 * 1024 ) ;
+		 _convert( buffer,buffer_size,"TB",number,1024.0 * 1024 * 1024 * 1024 ) ;
 		 break ;
 	default:
-		 convert( buffer,buffer_size,"TB",number,1024.0 * 1024 * 1024 * 1024 ) ;
+		 _convert( buffer,buffer_size,"TB",number,1024.0 * 1024 * 1024 * 1024 ) ;
 		 break ;
 	}
 }
@@ -287,8 +287,6 @@ int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
 {
 	char buffer[ 1024 ] ;
 
-	mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
-
 	tc_api_get_volume_type( buffer,sizeof( buffer ),mapper ) ;
 
 	return StringsAreEqual( buffer,"TCRYPT" ) || StringsAreEqual( buffer,"VCRYPT" ) ;
@@ -500,6 +498,20 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 	return p ;
 }
 
+static void _format_offset( u_int64_t offset,char * buffer,size_t s )
+{
+	char tmp[ 128 ] ;
+	char tmp_0[ 128 ] ;
+
+	const char * e ;
+
+	zuluCryptFormatSize( 512 * offset,tmp,sizeof( tmp ) ) ;
+
+	e = StringIntToString_1( tmp_0,sizeof( tmp_0 ),offset ) ;
+
+	snprintf( buffer,s,"%s sectors / %s",e,tmp ) ;
+}
+
 static string_t _get_crypto_info_from_tcplay( const char * mapper )
 {
 	tc_api_task task ;
@@ -507,10 +519,6 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 	string_t p = StringVoid ;
 
 	tcplay_volume_info info ;
-
-	char offset[ 128 ] ;
-
-	const char * cipher ;
 
 	memset( &info,'\0',sizeof( info ) ) ;
 
@@ -520,11 +528,11 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 
 			p = String( mapper ) ;
 
-			mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
-
 			tc_api_task_set( task,"map_name",mapper ) ;
 
 			tc_api_task_do( task ) ;
+
+			info.format_offset = _format_offset ;
 
 			tc_api_task_info_get( task,"volume_info",sizeof( info ),&info ) ;
 
@@ -532,15 +540,11 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 
 			if( StringAtLeastOneMatch_1( info.status,"active","active and is in use",NULL ) ){
 
-				zuluCryptFormatSize( 512 * StringConvertToInt( info.offset ),offset,sizeof( offset ) ) ;
-
-				cipher = zuluCryptConvertCipher( info.cipher ) ;
-
 				StringMultipleAppend( p,
 						      "\n type:   \t",info.type,
-						      "\n cipher: \t" ,cipher,"-xts-plain64",
-						      "\n keysize:\t",info.keysize," bits",
-						      "\n offset: \t" ,info.offset," sectors / ",offset,NULL ) ;
+						      "\n cipher: \t",info.cipher,
+						      "\n keysize:\t",info.keysize,
+						      "\n offset: \t",info.offset,NULL ) ;
 
 				_device_info( p,info.device ) ;
 

@@ -31,7 +31,7 @@
 #define _TCPLAY_API_H
 
 #include <stddef.h>
-#include <linux/limits.h>
+#include <sys/types.h>
 
 #define TC_OK		0
 #define TC_ERR		-1
@@ -52,28 +52,27 @@ typedef int (*tc_api_state_change_fn)(void *, const char *, int);
 extern "C" {
 #endif
 
-#define TCPLAY_SIZE 64
+#define TCPLAY_VOLUME_INFO_FIELD_SIZE 64
 
 typedef struct{
 
-	const char *dm_key;
-	const char *cipher;
+	const char *device;
+	const char *status;
 
-}tcplay_master_key_info;
+	char type[TCPLAY_VOLUME_INFO_FIELD_SIZE];
+	char cipher[TCPLAY_VOLUME_INFO_FIELD_SIZE];
+	char keysize[TCPLAY_VOLUME_INFO_FIELD_SIZE];
+	char offset[TCPLAY_VOLUME_INFO_FIELD_SIZE];
+	char mode[TCPLAY_VOLUME_INFO_FIELD_SIZE];
 
-typedef struct{
+	void (*format_offset)(u_int64_t, char *, size_t);
 
-	char status[ TCPLAY_SIZE ];
-	char type[ TCPLAY_SIZE ];
-	char cipher[ TCPLAY_SIZE ];
-	char keysize[ TCPLAY_SIZE ];
-	char offset[ TCPLAY_SIZE ];
-	char device[ PATH_MAX ];
-	char mode[ TCPLAY_SIZE ];
+	int crypto_count;
 
-	int key_count ;
-
-	tcplay_master_key_info key_info[3];
+	struct{
+		const char *dm_key;
+		const char *cipher;
+	}crypto[3];
 
 }tcplay_volume_info ;
 

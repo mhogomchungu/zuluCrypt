@@ -1701,6 +1701,11 @@ void tc_api_get_volume_type(char *buffer, size_t size, const char *map_name)
 	DIR *dir = opendir("/dev/disk/by-id/");
 	struct dirent *e;
 
+	const char *m = strrchr(map_name,'/');
+
+	if (m != NULL)
+		map_name = m + 1;
+
 	snprintf(buffer, size, "Nil");
 
 	if (dir != NULL){

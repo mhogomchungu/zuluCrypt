@@ -210,6 +210,56 @@ tc_api_task_uninit(tc_api_task task)
 		opts->k = NULL;					\
 	} while (0)
 
+
+static const struct{
+
+	const char *first;
+	const char *second;
+
+}pair[] = {
+	{ "aes"                ,"AES-256-XTS" },
+	{ "twofish"            ,"TWOFISH-256-XTS" },
+	{ "serpent"            ,"SERPENT-256-XTS" },
+	{ "twofish:aes"        ,"TWOFISH-256-XTS,AES-256-XTS" },
+	{ "aes:serpent"        ,"AES-256-XTS,SERPENT-256-XTS" },
+	{ "serpent:twofish"    ,"SERPENT-256-XTS,TWOFISH-256-XTS" },
+	{ "aes:twofish:serpent","AES-256-XTS,TWOFISH-256-XTS,SERPENT-256-XTS" },
+	{ "serpent:twofish:aes","SERPENT-256-XTS,TWOFISH-256-XTS,AES-256-XTS" },
+	{ NULL                 ,NULL }
+} ;
+
+static const char *
+_convert_cipher(const char *p)
+{
+	int i;
+	const char *q;
+	for (i = 0;;i++) {
+		q = pair[i].second;
+		if (q == NULL)
+			break;
+		else if (strcmp(p, q) == 0)
+			return pair[i].first;
+
+	}
+	return "Nil";
+}
+
+static const char *
+_set_cipher_chain(const char *p)
+{
+	int i;
+	const char *q;
+	for (i = 0;;i++) {
+		q = pair[i].first;
+		if( q == NULL )
+			break;
+		else if(strcmp(p, q) == 0)
+			return pair[i].second;
+
+	}
+	return NULL;
+}
+
 int
 tc_api_task_set(tc_api_task task, const char *key, ...)
 {
@@ -218,6 +268,7 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 	const char *s;
 	int64_t i64;
 	int i;
+	const char *e;
 	tc_api_state_change_fn sc_fn;
 	void *vp;
 	int r = TC_OK, veracrypt_mode = 0;
@@ -342,6 +393,9 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 	} else if (_match(key, "map_name")) {
 		s = va_arg(ap, const char *);
 		if (s != NULL) {
+			e = strrchr(s,'/');
+			if (e != NULL)
+				s = e + 1;
 			_set_str(map_name);
 		} else {
 			_clr_str(map_name);
@@ -417,8 +471,30 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 		} else {
 			opts->cipher_chain = NULL;
 		}
+	} else if (_match(key, "cipher_chain_1")) {
+		s = _set_cipher_chain(va_arg(ap, const char *));
+		if (s != NULL) {
+			if ((opts->cipher_chain = check_cipher_chain(s, 1)) == NULL) {
+				errno = ENOENT;
+				r = TC_ERR;
+				goto out;
+			}
+		} else {
+			opts->cipher_chain = NULL;
+		}
 	} else if (_match(key, "h_cipher_chain")) {
 		s = va_arg(ap, const char *);
+		if (s != NULL) {
+			if ((opts->h_cipher_chain = check_cipher_chain(s, 1)) == NULL) {
+				errno = ENOENT;
+				r = TC_ERR;
+				goto out;
+			}
+		} else {
+			opts->h_cipher_chain = NULL;
+		}
+	}else if (_match(key, "h_cipher_chain_1")) {
+		s = _set_cipher_chain(va_arg(ap, const char *));
 		if (s != NULL) {
 			if ((opts->h_cipher_chain = check_cipher_chain(s, 1)) == NULL) {
 				errno = ENOENT;
@@ -732,18 +808,18 @@ tc_api_task_do(tc_api_task task)
 	return r;
 }
 
-static void _get_volume_info( tcplay_volume_info *volume_info,struct tcplay_info *info )
+static void
+_get_volume_info(tcplay_volume_info *volume_info,struct tcplay_info *info)
 {
 	int64_t e;
 
-	int i;
-	int k;
+	size_t i;
+	size_t k;
 
 	struct tc_cipher_chain *chain;
 
-	snprintf(volume_info->status, sizeof(volume_info->status), "%s", info->status);
-
-	snprintf(volume_info->device, sizeof(volume_info->device), "%s", info->dev);
+	volume_info->status = info->status;
+	volume_info->device = info->dev;
 
 	if (strcmp(info->type, "TCRYPT") == 0)
 		strcpy(volume_info->type, "tcrypt");
@@ -754,7 +830,10 @@ static void _get_volume_info( tcplay_volume_info *volume_info,struct tcplay_info
 
 	tc_cipher_chain_sprint(volume_info->cipher, sizeof(volume_info->cipher), info->cipher_chain);
 
-	snprintf(volume_info->keysize, sizeof(volume_info->keysize), "%d",
+	snprintf(volume_info->cipher, sizeof(volume_info->cipher) ,"%s-xts-plain64",
+		 _convert_cipher(volume_info->cipher));
+
+	snprintf(volume_info->keysize, sizeof(volume_info->keysize), "%d bits",
 		 8*tc_cipher_chain_klen(info->cipher_chain));
 
 	if (info->hdr)
@@ -762,20 +841,26 @@ static void _get_volume_info( tcplay_volume_info *volume_info,struct tcplay_info
 	else
 		e = (int64_t)info->offset * (int64_t)info->blk_sz;
 
-	snprintf(volume_info->offset, sizeof(volume_info->offset), "%" PRIu64, e/512);
+	e = e/512;
+
+	if (volume_info->format_offset != NULL)
+		volume_info->format_offset(e, volume_info->offset,sizeof(volume_info->offset));
+	else
+		snprintf(volume_info->offset, sizeof(volume_info->offset), "%" PRIu64 " sectors", e);
 
 	if (info->read_only)
 		strcpy(volume_info->mode, "read only");
 	else
 		strcpy(volume_info->mode, "read and write");
 
-	k = sizeof( volume_info->key_info ) / sizeof( volume_info->key_info[0] ) ;
+	k = sizeof(volume_info->crypto) / sizeof(volume_info->crypto[0]);
 
-	for( i = 0,chain = info->cipher_chain ; chain != NULL && i < k ; chain = chain->next,i++ ){
-		volume_info->key_info[i].dm_key  = chain->dm_key ;
-		volume_info->key_info[i].cipher  = chain->cipher->name ;
+	for (i = 0,chain = info->cipher_chain ; chain != NULL && i < k ; chain = chain->next,i++) {
 
-		volume_info->key_count++;
+		volume_info->crypto[i].dm_key = chain->dm_key;
+		volume_info->crypto[i].cipher = _convert_cipher(chain->cipher->name);
+
+		volume_info->crypto_count++;
 	}
 }
 

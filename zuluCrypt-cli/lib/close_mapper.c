@@ -55,8 +55,6 @@ int zuluCryptCloseMapper( const char * mapper )
 	 */
 	int e = zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ;
 
-	mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
-
 	for( i = 0 ; i < 3 ; i++ ){
 
 		if( _close_mapper( mapper,e ) == 0 ){

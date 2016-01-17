@@ -140,6 +140,8 @@ file( WRITE  ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYP
 
 ADD_SUBDIRECTORY( external_libraries/tc-play )
 add_definitions( -I${PROJECT_SOURCE_DIR}/external_libraries/tc-play )
+include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/tc-play )
+
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "internal version of tcplay will be used to create and open TrueCrypt and VeraCrypt volumes." )
 message ( STATUS "internal version of tcplay will be used to create and restore TrueCrypt volume headers." )

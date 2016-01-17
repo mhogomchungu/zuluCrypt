@@ -239,71 +239,6 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 	return zuluCryptResolveDevicePath( _modify_tcrypt_header,&opts ) ;
 }
 
-static const struct{
-
-	const char * first ;
-	const char * second;
-
-} pair[] = {
-	{ "aes"                ,"AES-256-XTS" },
-	{ "twofish"            ,"TWOFISH-256-XTS" },
-	{ "serpent"            ,"SERPENT-256-XTS" },
-	{ "twofish:aes"        ,"TWOFISH-256-XTS,AES-256-XTS" },
-	{ "aes:serpent"        ,"AES-256-XTS,SERPENT-256-XTS" },
-	{ "serpent:twofish"    ,"SERPENT-256-XTS,TWOFISH-256-XTS" },
-	{ "aes:twofish:serpent","AES-256-XTS,TWOFISH-256-XTS,SERPENT-256-XTS" },
-	{ "serpent:twofish:aes","SERPENT-256-XTS,TWOFISH-256-XTS,AES-256-XTS" },
-	{ NULL                 ,NULL }
-} ;
-
-const char * zuluCryptConvertCipher( const char * p )
-{
-	int i ;
-
-	const char * q ;
-
-	for( i = 0 ; ; i++ ){
-
-		q = pair[ i ].second ;
-
-		if( q == NULL ){
-
-			break ;
-
-		}else if( StringsAreEqual( p,q ) ){
-
-			return pair[ i ].first ;
-		}
-	}
-
-	return "Nil" ;
-}
-
-static const char * _set_cipher_chain( char * const * z )
-{
-	int i ;
-
-	const char * q ;
-
-	const char * p = *z ;
-
-	for( i = 0 ; ; i++ ){
-
-		q = pair[ i ].first ;
-
-		if( q == NULL ){
-
-			break ;
-
-		}else if( StringsAreEqual( p,q ) ){
-
-			return pair[ i ].second ;
-		}
-	}
-
-	return NULL ;
-}
-
 static const char * _set_hash( char * const * q )
 {
 	const char * e = *q ;
@@ -398,7 +333,7 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 
 	if( options_count == 1 ){
 
-		cipher_chain = "AES-256-XTS" ;
+		cipher_chain = "aes" ;
 		rng          = *( options + 0 ) ;
 
 		if( e->veraCrypt_volume ){
@@ -410,11 +345,11 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 
 	}else if( options_count >= 5 ){
 
-		cipher_chain = _set_cipher_chain( options + 1 ) ;
-		hash         = _set_hash( options + 4 ) ;
 		rng          = *( options + 0 ) ;
+		cipher_chain = *( options + 1 ) ;
+		hash         = _set_hash( options + 4 ) ;
 
-		if( cipher_chain == NULL || hash == NULL ){
+		if( hash == NULL ){
 
 			return _zuluExit( !TC_OK,options,stl ) ;
 		}
@@ -436,7 +371,7 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 			tc_api_task_set( task,"dev",device ) ;
 			tc_api_task_set( task,"secure_erase",FALSE ) ;
 			tc_api_task_set( task,"prf_algo",hash ) ;
-			tc_api_task_set( task,"cipher_chain",cipher_chain ) ;
+			tc_api_task_set( task,"cipher_chain_1",cipher_chain ) ;
 			tc_api_task_set( task,"passphrase",e->passphrase ) ;
 			tc_api_task_set( task,"weak_keys_and_salt",StringsAreEqual( rng,"/dev/urandom" ) ) ;
 
@@ -444,6 +379,7 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 			k = e->keyfiles_number ;
 
 			for( i = 0 ; i < k ; i++ ){
+
 				tc_api_task_set( task,"keyfiles",*( z + i ) ) ;
 			}
 
@@ -451,13 +387,14 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 
 				tc_api_task_set( task,"hidden_size_bytes",e->hidden_volume_size ) ;
 				tc_api_task_set( task,"h_prf_algo",hash ) ;
-				tc_api_task_set( task,"h_cipher_chain",cipher_chain ) ;
+				tc_api_task_set( task,"h_cipher_chain_1",cipher_chain ) ;
 				tc_api_task_set( task,"h_passphrase",e->passphrase_h ) ;
 
 				z = e->keyfiles_h ;
 				k = e->keyfiles_h_number ;
 
 				for( i = 0 ; i < k ; i++ ){
+
 					tc_api_task_set( task,"h_keyfiles",*( z + i ) ) ;
 				}
 			}
@@ -467,6 +404,7 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 			tc_api_task_uninit( task ) ;
 
 			if( r == TC_OK ){
+
 				r = _create_file_system( e,iteration_count ) ;
 			}
 		}
