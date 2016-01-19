@@ -526,8 +526,6 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 
 		if( tc_api_task_initialize( &task,"info_mapped" ) ){
 
-			p = String( mapper ) ;
-
 			tc_api_task_set( task,"map_name",mapper ) ;
 
 			tc_api_task_do( task ) ;
@@ -536,15 +534,13 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 
 			tc_api_task_info_get( task,"volume_info",sizeof( info ),&info ) ;
 
-			StringMultipleAppend( p," is ",info.status,".",NULL ) ;
-
 			if( StringAtLeastOneMatch_1( info.status,"active","active and is in use",NULL ) ){
 
-				StringMultipleAppend( p,
-						      "\n type:   \t",info.type,
-						      "\n cipher: \t",info.cipher,
-						      "\n keysize:\t",info.keysize,
-						      "\n offset: \t",info.offset,NULL ) ;
+				p = String_1( mapper," is ",info.status,".",
+					      "\n type:   \t",info.type,
+					      "\n cipher: \t",info.cipher,
+					      "\n keysize:\t",info.keysize,
+					      "\n offset: \t",info.offset,NULL ) ;
 
 				_device_info( p,info.device ) ;
 

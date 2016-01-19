@@ -54,4 +54,3 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 
 	return xt ;
 }
-
