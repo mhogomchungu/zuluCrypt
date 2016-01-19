@@ -434,6 +434,7 @@ void MainWindow::volumeRemoved( QString volume )
 		auto row = tablewidget::columnHasEntry( table,volume ) ;
 
 		if( row != -1 ){
+
 			tablewidget::deleteRowFromTable( table,row ) ;
 			/*
 			* see if a user just removed the device without properly closing it/unmounting it
@@ -827,7 +828,7 @@ void MainWindow::slotMount()
 	auto table = m_ui->tableWidget ;
 	auto row = table->currentRow() ;
 
-	this->mount( volumeEntryProperties( tablewidget::tableRowEntries( table,row ) ) ) ;
+	this->mount( tablewidget::tableRowEntries( table,row ) ) ;
 }
 
 void MainWindow::showMoungDialog( const volumeEntryProperties& v )
@@ -849,7 +850,7 @@ void MainWindow::showMoungDialog( const QString& volume,const QString& m_point )
 
 		if( utility::pathPointsToAFolder( volume ) ){
 
-			this->mount( volumeEntryProperties( { volume,m_point,"encfs","Nil","Nil","Nil" } ) ) ;
+			this->mount( { volume,m_point,"encfs","Nil","Nil","Nil" } ) ;
 		}else{
 			this->disableAll() ;
 

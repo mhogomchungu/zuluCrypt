@@ -31,6 +31,10 @@ public:
 	{
 		this->setValues( l,isSystem ) ;
 	}
+	volumeEntryProperties( const std::initializer_list<QString>& l,bool isSystem = false )
+	{
+		this->setValues( l,isSystem ) ;
+	}
 	const QString& volumeName() const
 	{
 		return m_volume ;
