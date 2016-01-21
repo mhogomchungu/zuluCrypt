@@ -287,8 +287,6 @@ static int _save_luks_header( const struct_opts * opts,const char * temp_path,co
 	return st ;
 }
 
-#if TCPLAY_NEW_API
-
 static int zuluExit_1( int r,string_t st,string_t xt )
 {
 	StringMultipleDelete( &xt,&st,NULL ) ;
@@ -469,22 +467,6 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 		return 20 ;
 	}
 }
-
-#else
-
-static int _save_truecrypt_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid )
-{
-	if( 0 && opts && temp_path && path && uid ){;}
-	return 7 ;
-}
-
-static int _restore_truecrypt_header( const struct_opts * opts,const char * temp_path,uid_t uid )
-{
-	if( 0 && opts && temp_path && uid ){;}
-	return 7 ;
-}
-
-#endif
 
 static int _save_header( const struct_opts * opts,const char * path,uid_t uid )
 {
