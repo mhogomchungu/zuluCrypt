@@ -623,14 +623,14 @@ u_int64_t StringConvertToInt( const char * ) ;
  * return 1 if they are equal
  * return 0 if they are not equal
  */
-int StringEqualString( string_t x,string_t y ) ;
+int StringsAreEqual_1( string_t x,string_t y ) ;
 
 /*
  * Compare a string handled by handle x to a string pointer to by y.
  * return 1 if they are equal
  * return 0 if they are not equal
  */
-int StringEqual( string_t x,const char * y ) ;
+int StringsAreEqual_2( string_t x,const char * y ) ;
 
 /*
  * return 1 if x holds an empty string
@@ -644,9 +644,9 @@ int StringIsEmpty( string_t x ) ;
  * return 0 if they are equal
  * return 1 if they are not equal
  */
-static __inline__ int StringNotEqual( string_t x,const char * y )
+static __inline__ int StringsAreNotEqual_2( string_t x,const char * y )
 {
-	return !StringEqual( x,y ) ;
+	return !StringsAreEqual_2( x,y ) ;
 }
 
 /*

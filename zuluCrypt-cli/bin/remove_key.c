@@ -153,7 +153,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 
 				return zuluExit( 6,stl ) ;
 			}
-			if( !StringEqual( *confirm,gettext( "YES" ) ) ){
+			if( !StringsAreEqual_2( *confirm,gettext( "YES" ) ) ){
 
 				return zuluExit( 7,stl ) ;
 			}

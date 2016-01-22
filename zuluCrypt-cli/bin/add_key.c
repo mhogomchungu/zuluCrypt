@@ -313,7 +313,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			case 2 : return zuluExit( 8,stl ) ;
 		}
 
-		if( StringEqualString( *newKey_1,*newKey_2 ) ){
+		if( StringsAreEqual_1( *newKey_1,*newKey_2 ) ){
 
 			key1 = StringContent( *presentKey ) ;
 			len1 = StringLength ( *presentKey ) ;

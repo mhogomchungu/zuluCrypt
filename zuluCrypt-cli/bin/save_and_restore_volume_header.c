@@ -534,7 +534,7 @@ Type \"YES\" and press Enter to continue: " ) ;
 
 		if( confirm != StringVoid ){
 
-			k = StringEqual( confirm,gettext( "YES" ) );
+			k = StringsAreEqual_2( confirm,gettext( "YES" ) );
 			StringDelete( &confirm ) ;
 
 			if( k == 0 ){

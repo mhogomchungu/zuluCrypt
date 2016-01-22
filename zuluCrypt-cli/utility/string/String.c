@@ -1427,7 +1427,7 @@ char * StringIntToString_1( char * x,size_t y,u_int64_t z )
 	}
 }
 
-int StringEqualString( string_t x,string_t y )
+int StringsAreEqual_1( string_t x,string_t y )
 {
 	if( x == StringVoid || y == StringVoid || x->size != y->size ){
 		return 0 ;
@@ -1436,7 +1436,7 @@ int StringEqualString( string_t x,string_t y )
 	}
 }
 
-int StringEqual( string_t x,const char * y )
+int StringsAreEqual_2( string_t x,const char * y )
 {
 	if( x == StringVoid ){
 		return 0 ;

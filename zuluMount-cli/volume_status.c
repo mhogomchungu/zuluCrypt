@@ -342,7 +342,7 @@ static int _normal_mounted_volume( string_t st )
 
 		return 0 ;
 	}
-	if( StringEqual( st,"/dev" ) ){
+	if( StringsAreEqual_2( st,"/dev" ) ){
 
 		return 0 ;
 	}

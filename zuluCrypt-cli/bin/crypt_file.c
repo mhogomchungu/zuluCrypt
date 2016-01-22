@@ -139,7 +139,7 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 
 		printf( "\n" ) ;
 
-		if( !StringEqualString( p,q ) ){
+		if( !StringsAreEqual_1( p,q ) ){
 
 			StringClearDelete( &p ) ;
 			StringClearDelete( &q ) ;

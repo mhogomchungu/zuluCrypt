@@ -299,7 +299,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 		if( *confirm == StringVoid ){
 			return zuluExit( stl,17 ) ;
 		}else{
-			k = StringEqual( *confirm,gettext( "YES" ) ) ;
+			k = StringsAreEqual_2( *confirm,gettext( "YES" ) ) ;
 
 			if( k == 0 ){
 				if( zuluCryptSecurityGainElevatedPrivileges() ){

@@ -231,7 +231,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 
 			return zuluExit( 9,stl ) ;
 		}else{
-			if( StringNotEqual( *confirm,gettext( "YES" ) ) ){
+			if( StringsAreNotEqual_2( *confirm,gettext( "YES" ) ) ){
 
 				return zuluExit( 10,stl ) ;
 			}
@@ -265,7 +265,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 
 		printf( "\n" ) ;
 
-		if( !StringEqualString( *pass_1,*pass_2 ) ){
+		if( !StringsAreEqual_1( *pass_1,*pass_2 ) ){
 
 			return zuluExit( 13,stl ) ;
 		}
@@ -351,7 +351,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 
 				printf( "\n" ) ;
 
-				if( !StringEqualString( *pass_3,*pass_4 ) ){
+				if( !StringsAreEqual_1( *pass_3,*pass_4 ) ){
 
 					return zuluExit( 21,stl ) ;
 				}

@@ -281,6 +281,7 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 	StringDelete( &st ) ;
 
 	if( stl == StringListVoid ){
+
 		return StringListVoid ;
 	}
 
@@ -308,23 +309,30 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 			if( _supported_device( device ) ){
 
 				if( StringPrefixEqual( device,"/dev/loop" ) ){
+
 					/*
 					 * zuluCryptLoopDeviceAddress_1() id defined in ../lib/create_loop_device.c
 					 */
+
 					e = zuluCryptLoopDeviceAddress_1( device ) ;
 
 					if( StringListHasNoEntry( stz,e ) ){
+
 						/*
 						 * Here we only keep one loop device if the volume file has
 						 * more than one loop device
 						 */
+
 						if( resolve_loop_devices ){
+
 							stl_1 = StringListAppend( stl_1,e ) ;
 						}else{
 							stl_1 = StringListAppend( stl_1,device ) ;
 						}
+
 						stz = StringListAppend( stz,e ) ;
 					}
+
 					StringFree( e ) ;
 				}else{
 					stl_1 = StringListAppendIfAbsent( stl_1,device ) ;
@@ -332,9 +340,13 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 			}
 		}
 	}
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
+
 	StringListMultipleDelete( &stl,&stz,NULL ) ;
+
 	StringDelete( &st_1 ) ;
+
 	return _zuluCryptAddLVMVolumes( _zuluCryptAddMDRAIDVolumes( _remove_root_devices( stl_1 ) ) ) ;
 }
 
@@ -354,12 +366,17 @@ int zuluCryptDeviceIsSupported( const char * device,uid_t uid )
 	int r ;
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
+
 		return 1 ;
 	}else{
 		stl = zuluCryptPartitions( ZULUCRYPTallPartitions,uid ) ;
+
 		r = StringListHasEntry( stl,device ) ;
+
 		StringListDelete( &stl ) ;
+
 		if( r == 1 ){
+
 			return 1 ;
 		}else{
 			/*
@@ -406,6 +423,7 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	path = realpath( device,dev ) ;
 
 	if( path != NULL ){
+
 		st = String( path ) ;
 	}else{
 		st = String( device ) ;
@@ -416,13 +434,18 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 		 * this path will convert something like: "/dev/sdc12" to "/dev/sdc"
 		 */
 		StringRemoveDigits( st ) ;
+
 	}else if( StringStartsWith( st,"/dev/mmc" ) ){
+
 		/*
 		 * device path will be something like "/dev/mmcblk0p2" and what we want to do
 		 * is cut off the string from p to end iwth "/dev/mmcblk0"
 		 */
+
 		k = StringIndexOfChar( st,0,'p' ) ;
+
 		if( k != -1 ){
+
 			e = StringLength( st ) - ( size_t )k ;
 			StringRemoveRight( st,e ) ;
 		}
@@ -435,12 +458,16 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 	 * path will be something like "/sys/block/sda/removable"
 	 */
 	xt = StringGetFromVirtualFile( path ) ;
+
 	StringDelete( &st ) ;
+
 	if( xt == StringVoid ){
+
 		return 0 ;
 	}else{
-		r = StringEqual( xt,"0\n" ) ;
+		r = StringsAreEqual_2( xt,"0\n" ) ;
 		StringDelete( &xt ) ;
+
 		return r ;
 	}
 #else
@@ -469,9 +496,12 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	StringListIterator end ;
 
 	if( stl == StringListVoid ){
+
 		return StringListVoid ;
 	}
+
 	if( option == ZULUCRYPTallPartitions ){
+
 		return _remove_btfs_multiple_devices( stl ) ;
 	}
 
@@ -491,11 +521,17 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 * the difference btw list in "/proc/partitions" and "/etc/fstab" makes an initial list of non system partitions.
 	 */
 	while( it != end ){
+
 		st = *it ;
+
 		it++ ;
+
 		if( StringStartsWith( st,"/" ) ){
+
 			device = StringReplaceChar_1( st,0,' ','\0' ) ;
+
 			system = StringListAppend( system,device ) ;
+
 			StringListRemoveString( non_system,device ) ;
 		}
 	}
@@ -503,18 +539,26 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	StringListDelete( &stl ) ;
 
 	/*
-	 * read entried from "crypttab" and then add them to "system" if absent in that list and remove them from "non system" if present
-	 * in that list
+	 * read entried from "crypttab" and then add them to "system" if absent in that
+	 * list and remove them from "non system" if present in that list
 	 */
 	p = zuluCryptGetPartitionFromCrypttab() ;
+
 	if( p != StringListVoid ){
+
 		StringListGetIterators( p,&it,&end ) ;
+
 		while( it != end ){
+
 			device = StringContent( *it ) ;
+
 			it++ ;
+
 			StringListAppendIfAbsent( system,device ) ;
+
 			StringListRemoveIfPresent( non_system,device ) ;
 		}
+
 		StringListDelete( &p ) ;
 	}
 
@@ -523,20 +567,31 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 * in that list
 	 */
 	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-system" ) ;
+
 	if( p == StringListVoid ){
+
 		/*
 		 * This is the new path since zuluCrypt 4.6.9
 		 */
+
 		p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt/system_volumes.list" ) ;
 	}
+
 	if( p != StringListVoid ){
+
 		StringListGetIterators( p,&it,&end ) ;
+
 		while( it != end ){
+
 			device = StringContent( *it ) ;
+
 			it++ ;
+
 			StringListAppendIfAbsent( system,device ) ;
+
 			StringListRemoveIfPresent( non_system,device ) ;
 		}
+
 		StringListDelete( &p ) ;
 	}
 
@@ -552,9 +607,13 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 * now we consult udev if enabled and we move partition in the "non system" list to "system" list if udev think they are system
 	 */
 	while( it != end ){
+
 		e = StringContent( *it ) ;
+
 		if( _zuluCryptCheckSYSifDeviceIsSystem( e ) ){
+
 			StringListAppendIfAbsent( system,e ) ;
+
 			StringListRemoveAt_1( non_system,it,&end ) ;
 		}else{
 			it++ ;
@@ -566,28 +625,41 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 	 * the system list if present in that list and add them to non system list if absent in that list
 	 */
 	p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt-nonsystem" ) ;
+
 	if( p == StringListVoid ){
+
 		/*
 		 * This is the new path since zuluCrypt 4.6.9
 		 */
 		p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt/nonsystem_volumes.list" ) ;
 	}
+
 	if( p != StringListVoid ){
+
 		StringListGetIterators( p,&it,&end ) ;
+
 		while( it != end ){
+
 			device = StringContent( *it ) ;
+
 			it++ ;
+
 			StringListRemoveString( system,device ) ;
+
 			StringListAppendIfAbsent( non_system,device ) ;
 		}
+
 		StringListDelete( &p ) ;
 	}
 
 	if( option == ZULUCRYPTsystemPartitions ){
+
 		StringListDelete( &non_system ) ;
+
 		return _remove_btfs_multiple_devices( system ) ;
 	}else{
 		StringListDelete( &system ) ;
+
 		return _remove_btfs_multiple_devices( non_system ) ;
 	}
 }
@@ -595,8 +667,11 @@ stringList_t zuluCryptPartitions( int option,uid_t uid )
 int zuluCryptVolumeIsInSystemVolumeList( const char * device )
 {
 	stringList_t p = zuluCryptGetPartitionFromConfigFile( "/etc/zuluCrypt/system_volumes.list" ) ;
+
 	int r = StringListHasEntry( p,device ) ;
+
 	StringListDelete( &p ) ;
+
 	return r ;
 }
 
@@ -616,6 +691,7 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
 
 	if( blkid == NULL ){
+
 		return 0 ;
 	}
 
@@ -624,8 +700,11 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 	blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) ;
 
 	if( StringsAreNotEqual( e,"btrfs" ) ){
+
 		r = blkid_probe_get_size( blkid ) ;
+
 		blkid_free_probe( blkid ) ;
+
 		return r ;
 	}else{
 		/*
@@ -636,6 +715,7 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 		e = NULL ;
 
 		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
+
 			xt = String( e ) ;
 		}else{
 			xt = StringVoid ;
@@ -644,32 +724,45 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 		blkid_free_probe( blkid ) ;
 
 		if( xt == StringVoid ){
+
 			return 0 ;
 		}else{
 			/*
 			 * zuluCryptVolumeList() is defined in this source file
 			 */
 			stl = zuluCryptVolumeList() ;
+
 			zuluCryptSecurityGainElevatedPrivileges() ;
 
 			StringListGetIterators( stl,&it,&end ) ;
 
 			while( it != end ){
+
 				blkid = blkid_new_probe_from_filename( StringContent( *it ) ) ;
+
 				it++ ;
+
 				if( blkid != NULL ){
+
 					blkid_do_probe( blkid ) ;
+
 					e = NULL ;
+
 					if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
-						if( StringEqual( xt,e ) ){
+
+						if( StringsAreEqual_2( xt,e ) ){
+
 							r += blkid_probe_get_size( blkid ) ;
 						}
 					}
+
 					blkid_free_probe( blkid ) ;
 				}
 			}
+			
 			StringDelete( &xt ) ;
 			StringListDelete( &stl ) ;
+
 			return r ;
 		}
 	}
@@ -687,12 +780,17 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
+
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 		 */
+
 		e = zuluCryptLoopDeviceAddress_1( device ) ;
+
 		if( e != NULL ){
+
 			printf( "%s\t",e ) ;
+
 			StringFree( e ) ;
 		}else{
 			printf( "%s\t",device ) ;
@@ -706,6 +804,7 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	blkid = blkid_new_probe_from_filename( device ) ;
 
 	if( blkid == NULL ){
+
 		printf( "Nil\tNil\tNil\tNil\n" ) ;
 	}else{
 		/*
@@ -718,16 +817,19 @@ void zuluCryptPrintPartitionProperties( const char * device )
 		blkid_do_probe( blkid ) ;
 
 		if( blkid_probe_lookup_value( blkid,"LABEL",&e,NULL ) == 0 ){
+
 			printf( "%s\t",e ) ;
 		}else{
 			printf( "Nil\t" ) ;
 		}
 		if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
+
 			printf( "%s\t",e ) ;
 		}else{
 			printf( "Nil\t" ) ;
 		}
 		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
+
 			printf( "%s\n",e ) ;
 		}else{
 			printf( "Nil\n" ) ;
@@ -753,9 +855,13 @@ static void _zuluCryptPrintUnMountedPartitionProperties( stringList_t stl )
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
+
 		st = *it ;
+
 		it++ ;
+
 		if( StringListHasStartSequence( stx,StringAppend( st," " ) ) == -1 ){
+
 			zuluCryptPrintPartitionProperties( StringRemoveRight( st,1 ) ) ;
 		}
 	}
@@ -774,14 +880,21 @@ static void _print_list( stringList_t stl )
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
+
 		e = StringContent( *it ) ;
+
 		it++ ;
+
 		if( StringPrefixEqual( e,"/dev/loop" ) ){
+
 			/*
 			 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 			 */
+
 			z = zuluCryptLoopDeviceAddress_1( e ) ;
+
 			if( z != NULL ){
+
 				puts( z ) ;
 				StringFree( z ) ;
 			}else{
@@ -798,13 +911,16 @@ int zuluCryptPrintPartitions( int option,int info,uid_t uid )
 	stringList_t stl = StringListVoid ;
 
 	switch( option ){
+
 		case 1 : stl = zuluCryptPartitions( ZULUCRYPTallPartitions,uid )       ;break ;
 		case 2 : stl = zuluCryptPartitions( ZULUCRYPTsystemPartitions,uid )    ;break ;
 		case 3 : stl = zuluCryptPartitions( ZULUCRYPTnonSystemPartitions,uid ) ;break ;
 	}
 
 	if( stl != StringListVoid ){
+
 		switch( info ){
+
 			case 1 : StringListForEachString( stl,zuluCryptPrintPartitionProperties )   ; break ;
 			case 2 : _zuluCryptPrintUnMountedPartitionProperties( stl ) 	   	    ; break ;
 			default: _print_list( stl ) ;
@@ -820,26 +936,38 @@ static stringList_t _eval_path( string_t path,stringList_t stl_1 )
 	string_t st ;
 	const char * e ;
 	char * ac ;
+
 	if( StringStartsWith( path,"/" ) ){
+
 		/*
 		 * zuluCryptResolvePath_1() is defined in resolve_paths.c
 		 */
+
 		st = zuluCryptResolvePath_1( StringContent( path ) ) ;
 
 		if( st != StringVoid ){
+
 			stl_1 = StringListAppendString_1( stl_1,&st ) ;
 		}
+
 	}else if( StringStartsWith( path,"UUID=" ) ){
+
 		/*
 		 * check above did not find '/' character and we are in this block assuming the line uses UUID
 		 */
+
 		e = StringRemoveString( path,"\"" ) ;
+
 		/*
 		 * zuluCryptEvaluateDeviceTags() is defined in path_access.c
 		 */
+
 		ac = zuluCryptEvaluateDeviceTags( "UUID",e + 5 ) ;
+
 		if( ac != NULL ){
+
 			stl_1 = StringListAppend( stl_1,ac ) ;
+
 			StringFree( ac ) ;
 		}
 	}
@@ -862,7 +990,7 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	stringList_t stl_1 = StringListVoid ;
 	stringList_t stz ;
 
-	string_t st  ;
+	string_t st ;
 
 	StringListIterator it  ;
 	StringListIterator end ;
@@ -876,17 +1004,25 @@ stringList_t zuluCryptGetPartitionFromCrypttab( void )
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
+
 		st = *it ;
+
 		it++ ;
+
 		if( !StringStartsWith( st,"#" ) ){
+
 			stz = StringListStringSplit( st,' ' ) ;
+
 			st = StringListStringAtSecondPlace( stz ) ;
+
 			stl_1 = _eval_path( st,stl_1 ) ;
+
 			StringListDelete( &stz ) ;
 		}
 	}
 
 	StringListDelete( &stl ) ;
+
 	return stl_1 ;
 }
 
@@ -901,7 +1037,9 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	string_t st = StringVoid ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
+
 	st = StringGetFromFile( path ) ;
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	stl = StringListStringSplit( st,'\n' ) ;
@@ -911,7 +1049,9 @@ stringList_t zuluCryptGetPartitionFromConfigFile( const char * path )
 	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
+
 		stl_1 = _eval_path( *it,stl_1 ) ;
+
 		it++ ;
 	}
 
@@ -924,11 +1064,16 @@ int _zuluCryptPartitionIsSystemPartition( const char * dev,uid_t uid )
 {
 	stringList_t stl ;
 	int r = 0 ;
+
 	stl = zuluCryptPartitions( ZULUCRYPTsystemPartitions,uid ) ;
+
 	if( stl != StringListVoid ){
+
 		r = StringListHasEntry( stl,dev ) ;
+
 		StringListDelete( &stl ) ;
 	}
+
 	return r ;
 }
 
@@ -936,16 +1081,23 @@ int zuluCryptPartitionIsSystemPartition( const char * device,uid_t uid )
 {
 	char * dev ;
 	int r ;
+
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
+
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
 		 */
+
 		dev = zuluCryptLoopDeviceAddress_1( device ) ;
+
 		if( dev == NULL ){
+
 			return 0 ;
 		}else{
 			r = _zuluCryptPartitionIsSystemPartition( dev,uid ) ;
+
 			StringFree( dev ) ;
+
 			return r ;
 		}
 	}else{
