@@ -844,7 +844,7 @@ _get_volume_info(tcplay_volume_info *volume_info,struct tcplay_info *info)
 	e = e/512;
 
 	if (volume_info->format_offset != NULL)
-		volume_info->format_offset(e, volume_info->offset,sizeof(volume_info->offset));
+		volume_info->format_offset(e, volume_info->offset, sizeof(volume_info->offset));
 	else
 		snprintf(volume_info->offset, sizeof(volume_info->offset), "%" PRIu64 " sectors", e);
 

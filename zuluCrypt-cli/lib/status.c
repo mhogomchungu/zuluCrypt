@@ -576,7 +576,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 		return NULL ;
 	}else{
 		/*
-		 * zuluCryptGetMountPointFromPath() is defined in ./process_mountinfo.c
+		 * zuluCryptGetMountPointFromPath() is defined in mountinfo.c
 		 */
 		path = zuluCryptGetMountPointFromPath( mapper ) ;
 
@@ -596,9 +596,9 @@ static char * _device_name( const char * mapper,char * ( *function )( const char
 
 	char * e = NULL ;
 
-	char device[ PATH_MAX + 1 ] = { '\0' } ;
+	tcplay_volume_info info ;
 
-	mapper = mapper + StringLastIndexOfChar_1( mapper,'/' ) + 1 ;
+	memset( &info,'\0',sizeof( info ) ) ;
 
 	if( tc_api_initialize() ){
 
@@ -608,11 +608,11 @@ static char * _device_name( const char * mapper,char * ( *function )( const char
 
 			tc_api_task_do( task ) ;
 
-			tc_api_task_info_get( task,"device",sizeof( device ),device ) ;
+			tc_api_task_info_get( task,"volume_info",sizeof( info ),&info ) ;
+
+			e = function( info.device ) ;
 
 			tc_api_task_uninit( task ) ;
-
-			e = function( device ) ;
 		}
 
 		tc_api_uninit() ;
@@ -624,7 +624,9 @@ static char * _device_name( const char * mapper,char * ( *function )( const char
 static char * _volume_device_name( const char * mapper,char * ( *function )( const char * ) )
 {
 	struct crypt_device * cd ;
+
 	const char * e = crypt_get_dir() ;
+
 	char * f = NULL ;
 
 	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){

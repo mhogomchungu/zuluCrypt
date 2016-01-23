@@ -48,8 +48,8 @@ static int _valid_entry( const vInfo * e )
 	return 0 ;
 }
 
-static stringList_t _add_entry( stringList_t stx,stringList_t tmp,string_t ( *function )( const vInfo * ),
-				char * const ** entry,size_t * entry_len )
+static void _add_entry( string_t ( *function )( const vInfo * ),stringList_t tmp,
+			stringList_t * stx,char * const ** entry,size_t * entry_len )
 {
 	string_t st ;
 
@@ -79,10 +79,9 @@ static stringList_t _add_entry( stringList_t stx,stringList_t tmp,string_t ( *fu
 	if( _valid_entry( &volumeInfo ) ){
 
 		st = function( &volumeInfo ) ;
-		stx = StringListAppendString_1( stx,&st ) ;
-	}
 
-	return stx ;
+		*stx = StringListAppendString_1( *stx,&st ) ;
+	}
 }
 
 static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
@@ -112,7 +111,7 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 
 		it++ ;
 
-		stx = _add_entry( stx,tmp,function,&entry,&entry_len ) ;
+		_add_entry( function,tmp,&stx,&entry,&entry_len ) ;
 
 		StringListDelete( &tmp ) ;
 	}
