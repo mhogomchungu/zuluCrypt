@@ -80,7 +80,7 @@ static void _add_entry( string_t ( *function )( const vInfo * ),stringList_t tmp
 
 		st = function( &volumeInfo ) ;
 
-		*stx = StringListAppendString_1( *stx,&st ) ;
+		StringListAppendString_1( stx,&st ) ;
 	}
 }
 
@@ -265,9 +265,13 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 			 */
 			f = zuluCryptGetVolumeTypeFromMapperPath( StringContent( q ) ) ;
+
 			e = StringSubChar( q,StringLastIndexOfChar( q,'-' ),'\0' ) + k + 6 ;
+
 			z = String_1( "UUID=\"",e,"\"\t",d,"\t",f,NULL ) ;
-			list = StringListAppendString_1( list,&z ) ;
+
+			StringListAppendString_1( &list,&z ) ;
+
 			StringFree( f ) ;
 		}else{
 			/*
@@ -278,29 +282,41 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			if( g != NULL ){
 
 				d = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
+
 				/*
 				 * zuluCryptGetVolumeTypeFromMapperPath() is defined in status.c
 				 */
+
 				f = zuluCryptGetVolumeTypeFromMapperPath( StringListContentAtFirstPlace( stx ) ) ;
+
 				z = String_1( g,"\t",d,"\t",f,NULL ) ;
-				list = StringListAppendString_1( list,&z ) ;
+
+				StringListAppendString_1( &list,&z ) ;
+
 				StringFree( f ) ;
+
 				StringFree( g ) ;
 			}
 		}
 
 		StringListDelete( &stx ) ;
 	}
+
 	StringListDelete( &stl ) ;
+
 	StringDelete( &j ) ;
+
 	return list ;
 }
 
 string_t zuluCryptGetMountEntry( const char * path )
 {
 	stringList_t stl = zuluCryptGetMoutedList() ;
+
 	string_t st = zuluCryptGetMountEntry_1( stl,path ) ;
+
 	StringListDelete( &stl ) ;
+
 	return st ;
 }
 
@@ -310,6 +326,7 @@ string_t zuluCryptGetMountEntry_1( stringList_t stl,const char * path )
 	string_t xt ;
 
 	if( stl == StringListVoid ){
+
 		return StringVoid ;
 	}else{
 		/*
@@ -331,16 +348,23 @@ char * zuluCryptGetMountPointFromPath( const char * path )
 	stringList_t stl ;
 
 	if( st == StringVoid ){
+
 		return NULL ;
 	}else{
 		stl = StringListStringSplit( st,' ' ) ;
+
 		StringDelete( &st ) ;
+
 		if( stl == StringListVoid ){
+
 			return NULL ;
 		}else{
 			st = StringListCopyStringAtSecondPlace( stl ) ;
+
 			StringListDelete( &stl ) ;
+
 			zuluCryptDecodeMountEntry( st ) ;
+
 			return StringDeleteHandle( &st ) ;
 		}
 	}

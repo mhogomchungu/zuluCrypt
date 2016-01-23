@@ -401,7 +401,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			p = zuluCryptCreateKeyFile( volkey,volkeysize,"create-key-" ) ;
 
 			zuluCryptSecurityDropElevatedPrivileges() ;
-			stz = StringListAppendString_1( stz,&p ) ;
+			StringListAppendString_1( &stz,&p ) ;
 
 			tcrypt.passphrase       = "" ;
 			tcrypt.passphrase_size  = 0 ;
@@ -430,7 +430,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 
 				zuluCryptSecurityDropElevatedPrivileges() ;
 
-				stk = StringListAppendString_1( stk,&p ) ;
+				StringListAppendString_1( &stk,&p ) ;
 
 				tcrypt.passphrase_h      = "" ;
 				tcrypt.passphrase_h_size = 0 ;

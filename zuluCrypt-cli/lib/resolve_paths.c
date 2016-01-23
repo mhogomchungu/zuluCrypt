@@ -26,33 +26,45 @@
 
 static char * _zuluCryptResolveDevRoot( void )
 {
-	const char * e ;
-	char * dev ;
-	string_t st      = StringGetFromVirtualFile( "/proc/cmdline" ) ;
+	char * device = NULL ;
+
+	string_t st = StringGetFromVirtualFile( "/proc/cmdline" ) ;
+
 	stringList_t stl = StringListStringSplit( st,' ' ) ;
+
+	StringListIterator it ;
+	StringListIterator end ;
+
 	StringDelete( &st ) ;
 
-	st = StringListHasSequence_1( stl,"root=/dev/" ) ;
+	StringListGetIterators( stl,&it,&end ) ;
 
-	if( st != StringVoid ){
+	while( it != end ){
 
-		e = StringContent( st ) + 5 ;
-		dev = zuluCryptResolvePath( e ) ;
-	}else{
-		st = StringListHasSequence_1( stl,"root=UUID=" ) ;
+		st = *it ;
 
-		if( st != StringVoid ){
+		it++ ;
+
+		if( StringStartsWith( st,"root=/dev/" ) ){
+
+			device = zuluCryptResolvePath( StringContent( st ) + 5 ) ;
+
+			break ;
+
+		}else if( StringStartsWith( st,"root=UUID=" ) ){
+
 			/*
-			 * zuluCryptDeviceFromUUID() is defined in ./blkid_evaluate_tag.c
+			 * zuluCryptDeviceFromUUID() is defined in blkid_evaluate_tag.c
 			 */
-			e = StringContent( st ) + 10 ;
-			dev = zuluCryptDeviceFromUUID( e ) ;
-		}else{
-			dev = NULL ;
+			device = zuluCryptDeviceFromUUID( StringContent( st ) + 10 ) ;
+
+			break ;
 		}
 	}
+
 	StringListDelete( &stl ) ;
-	return dev ;
+
+	return device ;
 }
 
 static string_t zuluExit( DIR * dir,string_t st )

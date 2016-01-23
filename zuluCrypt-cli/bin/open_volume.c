@@ -60,7 +60,7 @@ stringList_t zuluCryptCreateKeyFiles( const char * const * list,int s )
 
 			StringDelete( &xt ) ;
 
-			stz = StringListAppendString_1( stz,&zt ) ;
+			StringListAppendString_1( &stz,&zt ) ;
 		}
 	}
 

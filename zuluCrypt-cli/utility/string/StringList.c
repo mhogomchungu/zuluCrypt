@@ -618,9 +618,7 @@ static int _StringListStringInsertAt( stringList_t stl,string_t * st,size_t inde
 
 static int _StringListString( string_t * st,stringList_t * r )
 {
-	stringList_t stl ;
-
-	stl = malloc( sizeof( struct StringListType ) ) ;
+	stringList_t stl = malloc( sizeof( struct StringListType ) ) ;
 
 	if( stl == NULL ){
 		_StringListError() ;
@@ -658,21 +656,19 @@ stringList_t StringListString( string_t * st )
 	return stl ;
 }
 
-stringList_t StringListAppendString_1( stringList_t stl,string_t * st )
+void StringListAppendString_1( stringList_t * stl,string_t * st )
 {
-	if( st && *st ){
-		if( stl == StringListVoid ){
-			if( _StringListString( st,&stl ) ){
+	if( st && *st && stl ){
+		if( *stl == StringListVoid ){
+			if( _StringListString( st,stl ) ){
 				*st = StringVoid ;
 			}
 		}else{
-			if( _StringListStringInsertAt( stl,st,stl->size ) ){
+			if( _StringListStringInsertAt( *stl,st,( *stl )->size ) ){
 				*st = StringVoid ;
 			}
 		}
 	}
-
-	return stl ;
 }
 
 stringList_t StringListStringInsertAt( stringList_t stl,string_t * st,size_t index )

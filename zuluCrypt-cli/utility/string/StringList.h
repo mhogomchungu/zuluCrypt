@@ -284,7 +284,7 @@ stringList_t StringListAppendIfAbsent( stringList_t stl,const char * cstring ) ;
  * append an entry into the list and take ownership of it.
  * if stl == NULL, then the function call is the same as "StringList( cstring )"
  */
-stringList_t StringListAppendString_1( stringList_t stl,string_t * ) ;
+void StringListAppendString_1( stringList_t * stl,string_t * ) ;
 
 /*
  * append an entry into the list.

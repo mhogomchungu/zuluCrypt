@@ -25,12 +25,19 @@
 
 static int _fileSystemIsSupported( const char * fs )
 {
-	string_t           st  = StringGetFromVirtualFile( "/proc/filesystems" ) ;
-	stringList_t       stl = StringListStringSplit( st,'\n' ) ;
-	StringListIterator it  = StringListBegin( stl ) ;
-	StringListIterator end = StringListEnd( stl ) ;
-	string_t xt ;
+	string_t xt = StringGetFromVirtualFile( "/proc/filesystems" ) ;
+
+	stringList_t stl = StringListStringSplit( xt,'\n' ) ;
+
+	StringListIterator it ;
+
+	StringListIterator end ;
+
 	int r = 0 ;
+
+	StringDelete( &xt ) ;
+
+	StringListGetIterators( stl,&it,&end ) ;
 
 	while( it != end ){
 
@@ -43,13 +50,14 @@ static int _fileSystemIsSupported( const char * fs )
 			if( StringContains( xt,fs ) ){
 
 				r = 1 ;
+
 				break ;
 			}
 		}
 	}
 
-	StringDelete( &st ) ;
 	StringListDelete( &stl ) ;
+
 	return r ;
 }
 
@@ -132,14 +140,23 @@ static inline int _option_contain_not_allowed( const char * fs,const char * fs_o
 
 	if( stl != StringListVoid ){
 		if( StringHasAtLeastOneComponent_1( fs,"fat","dos",NULL ) ){
+
 			r = allowed_vfat( stl ) ;
+
 		}else if( StringsAreEqual( fs,"ntfs" ) ){
+
 			r = allowed_ntfs( stl ) ;
+
 		}else if( StringsAreEqual( fs,"udf" ) ){
+
 			r = allowed_udf( stl ) ;
+
 		}else if( StringsAreEqual( fs,"iso9660" ) ){
+
 			r = allowed_iso9660( stl ) ;
+
 		}else if( StringsAreEqual( fs,"btrfs" ) ){
+
 			r = allowed_btrfs( stl ) ;
 		}else{
 			r = 1 ;

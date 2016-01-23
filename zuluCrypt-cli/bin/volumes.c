@@ -65,7 +65,7 @@ static stringList_t _zuluCryptAddLVMVolumes( stringList_t stl )
 
 					StringDelete( &xt ) ;
 				}else{
-					stl = StringListAppendString_1( stl,&xt ) ;
+					StringListAppendString_1( &stl,&xt ) ;
 				}
 			}
 		}
@@ -101,7 +101,7 @@ static stringList_t _zuluCryptAddMDRAIDVolumes( stringList_t stl )
 					StringFree( e ) ;
 				}
 
-				stl = StringListAppendString_1( stl,&st ) ;
+				StringListAppendString_1( &stl,&st ) ;
 			}
 		}
 		closedir( dir ) ;
@@ -947,7 +947,7 @@ static stringList_t _eval_path( string_t path,stringList_t stl_1 )
 
 		if( st != StringVoid ){
 
-			stl_1 = StringListAppendString_1( stl_1,&st ) ;
+			StringListAppendString_1( &stl_1,&st ) ;
 		}
 
 	}else if( StringStartsWith( path,"UUID=" ) ){
