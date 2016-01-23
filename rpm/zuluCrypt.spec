@@ -124,6 +124,7 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 %{_libdir}/zuluCrypt/keykeyfile
 %{_libdir}/zuluCrypt/keydialog-qt
 %{_libdir}/zuluCrypt/luks
+%{_libdir}/zuluCrypt/generic_header
 %{_libdir}/zuluCrypt/steghide
 %{_libdir}/zuluCrypt/tomb
 %{_libdir}/zuluCrypt/gpg
