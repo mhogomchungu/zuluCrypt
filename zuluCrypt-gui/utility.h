@@ -245,6 +245,8 @@ namespace utility
 	::Task::future< QString >& getUUIDFromPath( const QString& ) ;
 	::Task::future<QString>& getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& volumeID ) ;
 	::Task::future< bool >& openPath( const QString& path,const QString& opener,const QString& env = QString() ) ;
+
+	void openPath( const QString& path,const QString& opener,const QString& env,QWidget *,const QString&,const QString& ) ;
 }
 
 namespace utility

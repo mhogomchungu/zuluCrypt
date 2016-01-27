@@ -455,7 +455,7 @@ void zuluMountTask::checkUnMount( const QString& volume )
 	utility::Task( utility::appendUserUID( "%1 -c -d \"%2\"" ).arg( zuluMountPath,_device( volume ) ) ) ;
 }
 
-volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QString& volume )
+volumeStatus zuluMountTask::volumeMiniProperties( const QString& volume )
 {
 	auto _loopDeviceIsGone = []( const QString& device ){
 
@@ -490,7 +490,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 		return true ;
 	} ;
 
-	volumeMiniPropertiesTaskResult s{ volume,false,nullptr } ;
+	volumeStatus s{ volume,false,nullptr } ;
 
 	if( !volume.startsWith( "UUID" ) && !volume.startsWith( "/dev/" ) ){
 
@@ -523,13 +523,13 @@ volumeMiniPropertiesTaskResult zuluMountTask::volumeMiniProperties( const QStrin
 	return s ;
 }
 
-volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountTask::event& deviceProperty )
+volumeStatus zuluMountTask::deviceProperties( const zuluMountTask::event& deviceProperty )
 {
 	auto _mdRaidDevice = [ & ]( const QString& device ){
 
 		auto d = _convert_md_raid_path( device,true ) ;
 
-		volumeMiniPropertiesTaskResult s{ d,false,nullptr } ;
+		volumeStatus s{ d,false,nullptr } ;
 
 		if( deviceProperty.added ){
 
@@ -545,7 +545,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 
 		auto d = _convert_lvm_path( device ) ;
 
-		volumeMiniPropertiesTaskResult s{ d,false,nullptr } ;
+		volumeStatus s{ d,false,nullptr } ;
 
 		if( deviceProperty.added ){
 
@@ -566,7 +566,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 				device.startsWith( "/dev/mmc" ) ;
 		} ;
 
-		volumeMiniPropertiesTaskResult s{ QString(),false,nullptr } ;
+		volumeStatus s{ QString(),false,nullptr } ;
 
 		if( _allowed_device( device ) ){
 
@@ -585,7 +585,7 @@ volumeMiniPropertiesTaskResult zuluMountTask::deviceProperties( const zuluMountT
 
 	auto _shouldNotGetHere = [](){
 
-		return volumeMiniPropertiesTaskResult{ QString(),false,nullptr } ;
+		return volumeStatus{ QString(),false,nullptr } ;
 	} ;
 
 	auto device = QString( "/dev/%1" ).arg( deviceProperty.volumeName ) ;

@@ -424,6 +424,18 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 	} ) ;
 }
 
+void utility::openPath( const QString& path,const QString& opener,const QString& env,QWidget * obj,const QString& title,const QString& msg )
+{
+	openPath( path,opener,env ).then( [ title,msg,obj ]( bool failed ){
+
+		if( failed && obj ){
+
+			DialogMsg m( obj ) ;
+			m.ShowUIOK( title,msg ) ;
+		}
+	} ) ;
+}
+
 utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,const QString& keyID,const QString& pwd )
 {
 	utility::wallet w{ false,false,"","" } ;
@@ -1679,10 +1691,7 @@ QStringList utility::directoryList( const QString& e )
 
 QIcon utility::getIcon( const QString& application )
 {
-	auto defaultIcon = [ & ]{
+	QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + application + ".png" ) ;
 
-		return QIcon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + application + ".png" ) ;
-	} ;
-
-	return QIcon::fromTheme( application,defaultIcon() ) ;
+	return QIcon::fromTheme( application,icon ) ;
 }

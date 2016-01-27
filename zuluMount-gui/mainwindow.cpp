@@ -103,15 +103,26 @@ void MainWindow::setUpApp( const QString& volume )
 
 	m_ui->tableWidget->setMouseTracking( true ) ;
 
-	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
+	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),
+		 this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
+
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT( slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
-	connect( m_ui->pbmount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
-	connect( m_ui->pbupdate,SIGNAL( clicked()),this,SLOT( pbUpdate() ) ) ;
-	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
-	connect( m_ui->pbunlockencfs,SIGNAL( clicked() ),this,SLOT( unlockencfs() ) ) ;
 
-	connect( this,SIGNAL( unlistVolume( QString ) ),this,SLOT( removeVolume( QString ) ) ) ;
+	connect( m_ui->pbmount,SIGNAL( clicked() ),
+		 this,SLOT( pbMount() ) ) ;
+
+	connect( m_ui->pbupdate,SIGNAL( clicked()),
+		 this,SLOT( pbUpdate() ) ) ;
+
+	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
+		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
+
+	connect( m_ui->pbunlockencfs,SIGNAL( clicked() ),
+		 this,SLOT( unlockencfs() ) ) ;
+
+	connect( this,SIGNAL( unlistVolume( QString ) ),
+		 this,SLOT( removeVolume( QString ) ) ) ;
 
 	this->setUpShortCuts() ;
 
@@ -159,22 +170,31 @@ void MainWindow::setUpApp( const QString& volume )
 
 	m_favorite_menu->setFont( this->font() ) ;
 
-	connect( m_favorite_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( favoriteClicked( QAction * ) ) ) ;
-	connect( m_favorite_menu,SIGNAL( aboutToShow() ),this,SLOT( showFavorites() ) ) ;
+	connect( m_favorite_menu,SIGNAL( triggered( QAction * ) ),
+		 this,SLOT( favoriteClicked( QAction * ) ) ) ;
+
+	connect( m_favorite_menu,SIGNAL( aboutToShow() ),
+		 this,SLOT( showFavorites() ) ) ;
 
 	m_not_hidden_volume_menu = trayMenu->addMenu( tr( "Hide Volume From View" ) ) ;
 
 	m_not_hidden_volume_menu->setFont( this->font() ) ;
 
-	connect( m_not_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( removeVolumeFromVisibleVolumeList( QAction * ) ) ) ;
-	connect( m_not_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showVisibleVolumeList() ) ) ;
+	connect( m_not_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),
+		 this,SLOT( removeVolumeFromVisibleVolumeList( QAction * ) ) ) ;
+
+	connect( m_not_hidden_volume_menu,SIGNAL( aboutToShow() ),
+		 this,SLOT( showVisibleVolumeList() ) ) ;
 
 	m_hidden_volume_menu = trayMenu->addMenu( tr( "Unhide Volume From View" ) ) ;
 
 	m_hidden_volume_menu->setFont( this->font() ) ;
 
-	connect( m_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( removeVolumeFromHiddenVolumeList( QAction * ) ) ) ;
-	connect( m_hidden_volume_menu,SIGNAL( aboutToShow() ),this,SLOT( showHiddenVolumeList() ) ) ;
+	connect( m_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),
+		 this,SLOT( removeVolumeFromHiddenVolumeList( QAction * ) ) ) ;
+
+	connect( m_hidden_volume_menu,SIGNAL( aboutToShow() ),
+		 this,SLOT( showHiddenVolumeList() ) ) ;
 
 	m_languageAction = new QAction( this ) ;
 	m_languageAction->setText( tr( "Select Language" ) ) ;
@@ -668,15 +688,10 @@ void MainWindow::slotOpenFolder()
 
 void MainWindow::openMountPoint( const QString& m_point )
 {
-	utility::openPath( m_point,m_folderOpener,m_env ).then( [ this ]( bool failed ){
+	auto x = tr( "Warning" ) ;
+	auto y = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
 
-		if( failed ){
-
-			auto x = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "Warning" ),x ) ;
-		}
-	} ) ;
+	utility::openPath( m_point,m_folderOpener,m_env,this,x,y ) ;
 }
 
 void MainWindow::openMountPointPath( QString m )
@@ -699,10 +714,12 @@ void MainWindow::volumeProperties()
 	DialogMsg msg( this ) ;
 
 	if( r.isEmpty() ){
+
 		msg.ShowUIOK( tr( "ERROR" ),
 			      tr( "Could not get volume properties.\nvolume is not open or was opened by a different user" ) ) ;
 	}else{
-		int i = r.indexOf( "\n" ) ;
+		auto i = r.indexOf( "\n" ) ;
+
 		if( i != -1 ){
 			msg.ShowUIVolumeProperties( tr( "Volume Properties" ),r.mid( i + 1 ) ) ;
 		}else{

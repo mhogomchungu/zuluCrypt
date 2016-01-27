@@ -796,28 +796,18 @@ void zuluCrypt::openFolder()
 
 void zuluCrypt::openFolder( const QString& path )
 {
-	utility::openPath( path,m_openPath,m_env ).then( [ this ]( bool failed ){
+	auto x = tr( "WARNING!" ) ;
+	auto y = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ;
 
-		if( failed ){
-
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIOK( tr( "WARNING!" ),tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ) ;
-		}
-	} ) ;
+	utility::openPath( path,m_openPath,m_env,this,x,y ) ;
 }
 
 void zuluCrypt::openpdf()
 {
-	utility::openPath( PDF_PATH,m_openPath ).then( [ this ]( bool failed ){
+	auto x = tr( "WARNING!" ) ;
+	auto y = tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ;
 
-		if( failed ){
-
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIOK( tr( "WARNING!" ),tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ) ;
-		}
-	} ) ;
+	utility::openPath( PDF_PATH,m_openPath,m_env,this,x,y ) ;
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )

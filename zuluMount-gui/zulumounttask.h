@@ -28,7 +28,7 @@
 #include <QString>
 #include <QStringList>
 
-struct volumeMiniPropertiesTaskResult
+struct volumeStatus
 {
 	QString volumeName ;
 	bool volumeRemoved ;
@@ -60,11 +60,13 @@ namespace zuluMountTask
 	utility::Task volumeUnmount( const QString& volumePath,const QString& volumeType ) ;
 
 	void checkUnMount( const QString& ) ;
-	volumeMiniPropertiesTaskResult volumeMiniProperties( const QString& volume ) ;
-	volumeMiniPropertiesTaskResult deviceProperties( const zuluMountTask::event& ) ;
-	QStringList mountedVolumeList( void ) ;
 
+	volumeStatus volumeMiniProperties( const QString& volume ) ;
+	volumeStatus deviceProperties( const zuluMountTask::event& ) ;
+
+	QStringList mountedVolumeList( void ) ;
 	QStringList hiddenVolumeList( void ) ;
+
 	void addVolumeToHiddenVolumeList( const QString& ) ;
 	void removeVolumeFromHiddenVolumeList( const QString& ) ;
 }
