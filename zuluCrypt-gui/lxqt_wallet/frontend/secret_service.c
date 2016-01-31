@@ -223,6 +223,15 @@ gboolean lxqt_secret_service_password_store_sync( const char * key,
 	return FALSE ;
 }
 
+static gboolean _exceeded_limit( int k )
+{
+	/*
+	 * We dont expect to manage 10000 entries and getting this far most likely means we are
+	 * stuck in an endless loop
+	 */
+	return k == 10000 ;
+}
+
 gboolean lxqt_secret_service_clear_sync( const char * key,const void * p,const void * q )
 {
 	const SecretSchema * keyValues = p ;
@@ -270,6 +279,11 @@ gboolean lxqt_secret_service_clear_sync( const char * key,const void * p,const v
 			}
 		}else{
 			k++ ;
+
+			if( _exceeded_limit( k ) ){
+
+			    break ;
+			}
 		}
 	}
 
@@ -309,6 +323,11 @@ char ** lxqt_secret_get_all_keys( const void * p,const void * q,int * count )
 					k++ ;
 				}else{
 					k++ ;
+
+					if( _exceeded_limit( k ) ){
+
+					    break ;
+					}
 				}
 			}
 		}
