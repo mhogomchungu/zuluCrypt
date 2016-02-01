@@ -41,6 +41,8 @@
 #include "../backend/lxqtwallet.h"
 #include "task.h"
 
+#include <functional>
+
 namespace Ui {
 class changePassWordDialog;
 }
@@ -53,13 +55,18 @@ class changePassWordDialog : public QDialog
 {
 	Q_OBJECT
 public:
+	static changePassWordDialog& instance( QWidget * parent = 0,const QString& walletName = QString(),const QString& applicationName = QString() )
+	{
+		return *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
+	}
+
 	explicit changePassWordDialog( QWidget * parent = 0,const QString& walletName = QString(),const QString& applicationName = QString() ) ;
-	void ShowUI( void ) ;
 	void HideUI( void ) ;
-	void ShowUI_1( void ) ;
+	void ShowUI( std::function< void( const QString&,bool ) >&& ) ;
+	void ShowUI( std::function< void( bool ) >&& ) ;
+
 	~changePassWordDialog() ;
 signals:
-	void password( QString,bool ) ;
 	void walletpassWordChanged( bool ) ;
 private slots:
 	void create( void ) ;
@@ -76,6 +83,14 @@ private:
 	QString m_applicationName ;
 	QString m_banner ;
 	bool m_walletPassWordChanged ;
+
+	std::function< void( const QString&,bool ) > m_create = []( const QString& e,bool f ){
+
+		Q_UNUSED( e ) ;
+		Q_UNUSED( f ) ;
+	} ;
+
+	std::function< void( bool ) > m_change = []( bool e ){ Q_UNUSED( e ) ; } ;
 };
 
 }

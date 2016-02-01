@@ -38,6 +38,9 @@
 #include <QEvent>
 #include <QKeyEvent>
 
+#include <functional>
+#include <utility>
+
 namespace Ui{
 class password_dialog;
 }
@@ -50,20 +53,25 @@ class password_dialog : public QDialog
 {
 	Q_OBJECT
 public:
-	explicit password_dialog( QWidget * parent = 0 ) ;
-	void ShowUI( const QString& walletName,const QString& applicationName ) ;
-	void ShowUI( const QString& walletName ) ;
-	void ShowUI( void ) ;
-	void closeUIOnKeySend( void ) ;
+	static password_dialog& instance( QWidget * w,
+					  const QString& walletName,
+					  const QString& appName,
+					  std::function< void( const QString& ) > && p,
+					  std::function< void() > q,
+					  std::function< void( bool ) > * z )
+	{
+		return *( new password_dialog( w,walletName,appName,std::move( p ),std::move( q ),z ) ) ;
+	}
+	explicit password_dialog( QWidget * parent,
+				  const QString& walletName,
+				  const QString& appName,
+				  std::function< void( const QString& ) >&&,
+				  std::function< void() >&&,
+				  std::function< void( bool ) > * ) ;
 	~password_dialog();
-signals:
-	void cancelled( void ) ;
-	void password( QString ) ;
-	void createWallet( bool ) ;
 private slots:
 	void pbSend( void ) ;
 	void pbCancel( void ) ;
-	void passwordIsCorrect( bool ) ;
 	void pbOK( void ) ;
 	void pbOK_2( void ) ;
 private:
@@ -71,9 +79,10 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter ( QObject * watched,QEvent * event ) ;
 	Ui::password_dialog * m_ui ;
-	bool m_createWallet ;
-	bool m_closeUIOnKeySend ;
 	QString m_banner ;
+
+	std::function< void( const QString& ) > m_password ;
+	std::function< void() > m_cancel ;
 };
 
 }
