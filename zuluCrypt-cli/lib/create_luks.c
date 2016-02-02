@@ -40,7 +40,7 @@ typedef struct arguments{
 
 	void * params ;
 
-	u_int64_t    iterations ;
+	u_int64_t iterations ;
 
 	void *( *function )( const struct arguments * ) ;
 

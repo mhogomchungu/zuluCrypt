@@ -35,6 +35,8 @@ class QCloseEvent ;
 
 #include "keystrength.h"
 
+#include <libcryptsetup.h>
+
 namespace Ui {
     class createvolume;
 }
@@ -44,12 +46,15 @@ class createvolume : public QDialog
 	Q_OBJECT
 public:
 	typedef enum{
-		plain = 0,
-		luks = 1,
-		normal_truecrypt = 2,
-		normal_and_hidden_truecrypt = 3,
-		normal_veracrypt = 4,
-		normal_and_hidden_veracrypt = 5
+		plain,
+		luks,
+#ifdef CRYPT_LUKS2
+		luks2,
+#endif
+		normal_truecrypt,
+		normal_and_hidden_truecrypt,
+		normal_veracrypt,
+		normal_and_hidden_veracrypt
 	}createVolumeType ;
 
 	static createvolume& instance( QWidget * parent )

@@ -68,8 +68,6 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 
 	m_ui->groupBox->setEnabled( false ) ;
 
-	this->setOptions( 1 ) ;
-
 	this->installEventFilter( this ) ;
 
 	m_ui->labelvolumeOptions->setVisible( false ) ;
@@ -95,8 +93,17 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	 * for simplicity's sake,lets only show most popular file systems.
 	 */
 
-	m_ui->comboBoxFS->addItems( { "ext4","vfat","ntfs","ext2","ext3" } ) ;
+	m_ui->comboBoxFS->addItems( { "ext4","vfat","ntfs","ext2","ext3","exfat" } ) ;
 
+	m_ui->comboBoxVolumeType->clear() ;
+
+	m_ui->comboBoxVolumeType->addItem( "plain dm-crypt" ) ;
+#ifdef CRYPT_LUKS2
+	m_ui->comboBoxVolumeType->addItem( "luks1" ) ;
+	m_ui->comboBoxVolumeType->addItem( "luks2" ) ;
+#else
+	m_ui->comboBoxVolumeType->addItem( "luks" ) ;
+#endif
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal TrueCrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden TrueCrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal VeraCrypt" ) ) ;
@@ -105,6 +112,8 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	m_ui->comboBoxVolumeType->setCurrentIndex( int( createvolume::luks ) ) ;
 
 	m_ui->comboBoxHiddenSize->setCurrentIndex( 2 ) ;
+
+	this->setOptions( 1 ) ;
 }
 
 void createvolume::keyChanged_0( QString key )
@@ -195,7 +204,9 @@ void createvolume::volumeType( int s )
 	switch( createvolume::createVolumeType( s ) ){
 
 	case createvolume::luks :
-
+#ifdef CRYPT_LUKS2
+	case createvolume::luks2 :
+#endif
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( false ) ;
 
@@ -323,14 +334,18 @@ void createvolume::setOptions( int e )
 	 */
 	bool supportWhirlpool = utility::userHasGoodVersionOfWhirlpool() ;
 
-	if( e == 0 ){
+	Q_UNUSED( e ) ;
+
+	auto type = m_ui->comboBoxVolumeType->currentText() ;
+
+	if( type == "plain dm-crypt" ){
 
 		/*
 		 * crypto options for plain dm-crypt volumes
 		 */
 		options->addItem( "aes.cbc-essiv:256.256.ripemd160" ) ;
 
-	}else if( e == 1 ){
+	}else if( type.contains( "luks" ) ){
 
 		/*
 		 * cryto options for LUKS volumes.
@@ -848,6 +863,13 @@ void createvolume::pbCreateClicked()
 		m_volumeType = "luks" ;
 
 		break ;
+#ifdef CRYPT_LUKS2
+	case createvolume::luks2 :
+
+		m_volumeType = "luks2" ;
+
+		break ;
+#endif
 	case createvolume::plain :
 
 		m_volumeType = "plain" ;
