@@ -66,7 +66,7 @@ static int zuluExit_1( const char * type,stringList_t stl )
 {
 	printf( gettext( "SUCCESS: Volume created successfully\n" ) ) ;
 
-	if( StringAtLeastOneMatch_1( type,"luks","tcrypt","truecrypt","veracrypt","vera","vcrypt",NULL ) ){
+	if( StringAtLeastOneMatch_1( type,"luks","luks1","luks2","tcrypt","truecrypt","veracrypt","vera","vcrypt",NULL ) ){
 
 		printf( gettext( "\nCreating a backup of the \"%s\" volume header is strongly adviced.\n" ),type ) ;
 		printf( gettext( "Please read documentation on why this is important\n\n" ) ) ;
