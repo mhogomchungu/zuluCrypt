@@ -123,30 +123,32 @@ static int _create_volume( const char * device,const resolve_path_t * opts )
 	string_t m = String( "/zuluCrypt-create-volume-" ) ;
 	mapper = StringAppendInt( m,syscall( SYS_gettid ) ) + 1 ;
 
-	if( StringsAreEqual( args->type,"luks" ) ){
-
-		if( StringAtLeastOnePrefixMatch( args->rng,"/dev/random","/dev/urandom",NULL ) ){
-
-			if( zuluCryptCreateLuks( device,args->pass,args->pass_size,args->rng ) != 0 ){
-
-				return zuluExit( 3,m ) ;
-			}
-			if( zuluCryptOpenLuks( device,mapper,"rw",args->pass,args->pass_size ) != 0 ){
-
-				return zuluExit( 3,m ) ;
-			}
-		}else{
-			return zuluExit( 2,m ) ;
-		}
-
-	}else if( StringsAreEqual( args->type,"plain" ) ){
+	if( StringsAreEqual( args->type,"plain" ) ){
 
 		if( zuluCryptOpenPlain( device,mapper,"rw",args->pass,args->pass_size ) != 0 ){
 
 			return zuluExit( 3,m ) ;
 		}
 	}else{
-		return zuluExit( 2,m ) ;
+		if( StringAtLeastOneMatch_1( args->type,"luks","luks1",NULL ) ){
+
+			if( zuluCryptCreateLuks( device,args->pass,args->pass_size,args->rng ) != 0 ){
+
+				return zuluExit( 3,m ) ;
+			}
+
+		}else if( StringsAreEqual( args->type,"luks2" ) ){
+
+			if( zuluCryptCreateLuks2( device,args->pass,args->pass_size,args->rng ) != 0 ){
+
+				return zuluExit( 3,m ) ;
+			}
+		}
+
+		if( zuluCryptOpenLuks( device,mapper,"rw",args->pass,args->pass_size ) != 0 ){
+
+			return zuluExit( 3,m ) ;
+		}
 	}
 
 	mapper = StringPrepend( m,crypt_get_dir() ) ;

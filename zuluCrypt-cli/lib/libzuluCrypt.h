@@ -269,6 +269,11 @@ int zuluCryptCreateLuks( const char * device,    /* path to a file or partition 
 			 size_t passphrase_size, /* size of the passphrase					*/
 			 const char * rng ) ;    /*random number generator( /dev/random or /dev/urandom)	*/
 
+int zuluCryptCreateLuks2( const char * device,    /* path to a file or partition to create a volume in		*/
+			 const char * passphrase,/* passphrase to use to create a volume			*/
+			 size_t passphrase_size, /* size of the passphrase					*/
+			 const char * rng ) ;    /*random number generator( /dev/random or /dev/urandom)*/
+
 /**
  * This function just opens a plain volume, it doesnt create a mount point and it doesnt mount it.
  * return values:

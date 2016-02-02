@@ -25,22 +25,32 @@
 
 typedef struct{
 
-	const char * key ;
+	size_t       data_alignment ;
 	size_t       key_len ;
-	const char * options ;
+	size_t       key_size ;
+	const char * key ;
+	const char * type ;
+	const char * hash ;
+	const char * algo ;
+	const char * cipher ;
+	const char * rng ;
+	void * params ;
+	u_int64_t    iterations ;
 
 }arguments ;
 
-static int zuluExit( int st,struct crypt_device * cd,stringList_t stl,char * const * options )
+static int zuluExit( int st,stringList_t stl,char * const * options )
 {
 	StringFree( options ) ;
 
 	StringListDelete( &stl ) ;
 
-	if( cd != NULL ){
+	return st ;
+}
 
-		crypt_free( cd ) ;
-	}
+static int zuluExit_1( int st,struct crypt_device * cd )
+{
+	crypt_free( cd ) ;
 
 	return st ;
 }
@@ -102,94 +112,47 @@ static int _not_supported_argument_encountered( char * const * options )
 static int _create_luks( const char * device,const resolve_path_t * opts )
 {
 	struct crypt_device * cd = NULL ;
-	struct crypt_params_luks1 params ;
-
-	const char * rng    ;
-	const char * hash   ;
-	const char * cipher ;
-	const char * algo   ;
-	size_t keySize      ;
-
-	char * const * options = NULL ;
-	size_t options_count = 0 ;
 
 	const arguments * args = opts->args ;
 
-	u_int64_t iterations = 0 ;
-
-	stringList_t stl ;
-
 	if( crypt_init( &cd,device ) != 0 ){
+
 		return 1 ;
 	}
-	if( StringHasNothing( args->options ) ){
 
-		stl = StringList( "/dev/urandom" ) ;
-	}else{
-		stl = StringListSplit( args->options,'.' ) ;
-	}
-
-	StringListStringArray_1( &options,&options_count,stl ) ;
-
-	if( options_count == 1 ){
-
-		hash    = "sha1" ;
-		cipher  = "xts-plain64" ;
-		algo    = "aes" ;
-		keySize = 32 ;
-		rng     = *( options + 0 ) ;
-
-	}else if( options_count >= 5 ){
-
-		if( _not_supported_argument_encountered( options ) ){
-
-			return zuluExit( 1,cd,stl,options ) ;
-		}else{
-			rng     = *( options + 0 ) ;
-			algo    = *( options + 1 ) ;
-			cipher  = *( options + 2 ) ;
-			keySize = ( size_t ) StringConvertToInt( *( options + 3 ) ) / 8 ;
-			hash    = *( options + 4 ) ;
-
-			if( options_count > 5 ){
-				iterations = StringConvertToInt( *( options + 5 ) )  ;
-			}
-		}
-	}else{
-		return zuluExit( 1,cd,stl,options ) ;
-	}
-
-	memset( &params,'\0',sizeof( struct crypt_params_luks1 ) ) ;
-
-	params.hash           = hash ;
-	params.data_alignment = 4096 ;
-
-	if( StringsAreEqual( rng,"/dev/random" ) ){
+	if( StringsAreEqual( args->rng,"/dev/random" ) ){
 
 		crypt_set_rng_type( cd,CRYPT_RNG_RANDOM ) ;
 	}else{
 		crypt_set_rng_type( cd,CRYPT_RNG_URANDOM ) ;
 	}
 
-	if( iterations != 0 ){
+	if( args->iterations != 0 ){
 
-		crypt_set_iteration_time( cd,iterations ) ;
+		crypt_set_iteration_time( cd,args->iterations ) ;
 	}
 
-	if( crypt_format( cd,CRYPT_LUKS1,algo,cipher,NULL,NULL,keySize,&params ) != 0 ){
+	if( crypt_format( cd,args->type,args->algo,args->cipher,NULL,NULL,
+			  args->key_size,args->params ) != 0 ){
 
-		return zuluExit( 2,cd,stl,options ) ;
+		return zuluExit_1( 2,cd ) ;
 	}
 
-	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,keySize,
+	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,args->key_size,
 		args->key,args->key_len ) < 0 ){
-		return zuluExit( 3,cd,stl,options ) ;
+		return zuluExit_1( 3,cd ) ;
 	}else{
-		return zuluExit( 0,cd,stl,options ) ;
+		return zuluExit_1( 0,cd ) ;
 	}
 }
 
-int zuluCryptCreateLuks( const char * device,const char * pass,size_t pass_size,const char * options )
+static int _create_luks_0( void *( *function )( void *,const arguments * args ),
+			   void * params,
+			   const char * device,
+			   const char * pass,
+			   size_t pass_size,
+			   const char * options,
+			   const char * type )
 {
 	/*
 	 * resolve_path_t is defined in includes.h
@@ -197,12 +160,58 @@ int zuluCryptCreateLuks( const char * device,const char * pass,size_t pass_size,
 	resolve_path_t opts ;
 	arguments args ;
 
+	size_t list_count = 0 ;
+
+	char * const * list = NULL ;
+
+	stringList_t stl ;
+
 	memset( &opts,'\0',sizeof( opts ) ) ;
 	memset( &args,'\0',sizeof( args ) ) ;
 
+	if( StringHasNothing( options ) ){
+
+		stl = StringList( "/dev/urandom" ) ;
+	}else{
+		stl = StringListSplit( options,'.' ) ;
+	}
+
+	StringListStringArray_1( &list,&list_count,stl ) ;
+
+	if( list_count == 1 ){
+
+		args.hash     = "sha256" ;
+		args.cipher   = "xts-plain64" ;
+		args.algo     = "aes" ;
+		args.key_size = 32 ;
+		args.rng      = *( list + 0 ) ;
+
+	}else if( list_count >= 5 ){
+
+		if( _not_supported_argument_encountered( list ) ){
+
+			return zuluExit( 1,stl,list ) ;
+		}else{
+			args.rng      = *( list + 0 ) ;
+			args.algo     = *( list + 1 ) ;
+			args.cipher   = *( list + 2 ) ;
+			args.key_size = ( size_t ) StringConvertToInt( *( list + 3 ) ) / 8 ;
+			args.hash     = *( list + 4 ) ;
+
+			if( list_count > 5 ){
+
+				args.iterations = StringConvertToInt( *( list + 5 ) )  ;
+			}
+		}
+	}else{
+		return zuluExit( 1,stl,list ) ;
+	}
+
 	args.key          = pass ;
 	args.key_len      = pass_size ;
-	args.options      = options ;
+	args.type         = type ;
+	args.data_alignment = 4096 ;
+	args.params       = function( params,&args ) ;
 
 	opts.device       = device ;
 	opts.args         = &args ;
@@ -212,5 +221,65 @@ int zuluCryptCreateLuks( const char * device,const char * pass,size_t pass_size,
 	/*
 	 * zuluCryptResolveDevicePath() is defined in resolve_path.c
 	 */
-	return zuluCryptResolveDevicePath( _create_luks,&opts ) ;
+	return zuluExit( zuluCryptResolveDevicePath( _create_luks,&opts ),stl,list ) ;
 }
+
+static void * _set_luks_1_options( void * p,const arguments * args )
+{
+	struct crypt_params_luks1 * params = p ;
+
+	params->hash           = args->hash ;
+	params->data_alignment = args->data_alignment ;
+
+	return params ;
+}
+
+int zuluCryptCreateLuks( const char * device,const char * pass,size_t pass_size,const char * options )
+{
+	struct crypt_params_luks1 params ;
+
+	memset( &params,'\0',sizeof( struct crypt_params_luks1 ) ) ;
+
+	return _create_luks_0( _set_luks_1_options,&params,device,pass,pass_size,options,CRYPT_LUKS1 ) ;
+}
+
+#ifdef CRYPT_LUKS2
+
+static void * _set_luks_2_options( void * p,const arguments * args )
+{
+	struct crypt_params_luks2 * params = p ;
+
+	struct crypt_pbkdf_type * pbkdf = ( struct crypt_pbkdf_type * ) &params->pbkdf ;
+
+	params->data_alignment = args->data_alignment ;
+
+	/*
+	 * It seems to be necessary to set these and we are going with current cryptsetup default
+	 */
+	pbkdf->type             = "argon2" ;
+	pbkdf->hash             = args->hash ;
+	pbkdf->time_ms          = 800 ;
+	pbkdf->memory_kb        = 1024 ;
+	pbkdf->parallel_threads = 4 ;
+
+	return params ;
+}
+
+int zuluCryptCreateLuks2( const char * device,const char * pass,size_t pass_size,const char * options )
+{
+	struct crypt_params_luks2 params ;
+
+	memset( &params,'\0',sizeof( struct crypt_params_luks2 ) ) ;
+
+	return _create_luks_0( _set_luks_2_options,&params,device,pass,pass_size,options,CRYPT_LUKS2 ) ;
+}
+
+#else
+
+int zuluCryptCreateLuks2( const char * device,const char * pass,size_t pass_size,const char * options )
+{
+	if( 0 && device && pass && pass_size && options ){;}
+	return 2 ;
+}
+
+#endif

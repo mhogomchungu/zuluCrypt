@@ -56,7 +56,7 @@ LxQt::Wallet::password_dialog::password_dialog( QWidget * parent,
 	m_ui->textEdit->setVisible( false ) ;
 	m_ui->pushButtonOK->setVisible( false ) ;
 
-	m_banner = m_ui->textEdit->toHtml().arg( appName ).arg( walletName ) ;
+	m_banner = m_ui->textEdit->toHtml().arg( appName,walletName ) ;
 	m_ui->labelWalletDoesNotExist->setVisible( false ) ;
 	m_ui->labelHeader->setText( m_banner ) ;
 
@@ -107,7 +107,7 @@ bool LxQt::Wallet::password_dialog::eventFilter( QObject * watched,QEvent * even
 
 LxQt::Wallet::password_dialog::~password_dialog()
 {
-	delete m_ui;
+	delete m_ui ;
 }
 
 void LxQt::Wallet::password_dialog::pbSend()

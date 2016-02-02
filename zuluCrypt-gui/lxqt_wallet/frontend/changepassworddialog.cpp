@@ -92,7 +92,7 @@ void LxQt::Wallet::changePassWordDialog::ShowUI( std::function< void( bool ) >&&
 {
 	m_change = std::move( change ) ;
 
-	m_banner = m_ui->textEdit->toHtml().arg( m_applicationName ).arg( m_walletName ) ;
+	m_banner = m_ui->textEdit->toHtml().arg( m_applicationName,m_walletName ) ;
 	m_ui->label->setText( m_banner ) ;
 
 	connect( m_ui->pushButtonChange,SIGNAL( clicked() ),this,SLOT( change() ) ) ;
@@ -112,7 +112,7 @@ void LxQt::Wallet::changePassWordDialog::ShowUI( std::function< void( const QStr
 	connect( m_ui->pushButtonChange,SIGNAL( clicked() ),this,SLOT( create() ) ) ;
 	connect( m_ui->pushButtonOK,SIGNAL( clicked() ),this,SLOT( ok_1() ) ) ;
 
-	m_banner = m_ui->textEdit_2->toHtml().arg( m_applicationName ).arg( m_walletName ) ;
+	m_banner = m_ui->textEdit_2->toHtml().arg( m_applicationName,m_walletName ) ;
 	m_ui->label->setText( m_banner ) ;
 
 	m_ui->label_2->setEnabled( false ) ;
