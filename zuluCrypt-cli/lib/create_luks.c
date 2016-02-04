@@ -25,24 +25,21 @@
 
 typedef struct arguments{
 
-	size_t data_alignment ;
 	size_t key_len ;
 	size_t key_size ;
 
-	const char * device ;
 	const char * key ;
 	const char * type ;
 	const char * hash ;
 	const char * algo ;
 	const char * cipher ;
 	const char * rng ;
-	const char * options ;
 
 	void * params ;
 
 	u_int64_t iterations ;
 
-	void *( *function )( const struct arguments * ) ;
+	void *( *function )( const struct arguments *,size_t ) ;
 
 }arguments ;
 
@@ -112,10 +109,6 @@ static int _not_supported_argument_encountered( char * const * options )
 	return 1 ;
 }
 
-/*
- * opts is structure expected to be in a format of:
- * rng.mode.cipher.keysize.hash
- */
 static int _create_luks( const char * device,const resolve_path_t * opts )
 {
 	struct crypt_device * cd = NULL ;
@@ -153,7 +146,8 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 	}
 }
 
-static int _create_luks_0( arguments * args )
+static int _create_luks_0( arguments * args,const char * device,const char * key,
+			   size_t key_len,const char * options )
 {
 	/*
 	 * resolve_path_t is defined in includes.h
@@ -166,11 +160,16 @@ static int _create_luks_0( arguments * args )
 
 	stringList_t stl ;
 
-	if( StringHasNothing( args->options ) ){
+	/*
+	 * options is structure expected to be in a format of:
+	 * rng.algo.cipher.keysize.hash.iteration_count
+	 */
+
+	if( StringHasNothing( options ) ){
 
 		stl = StringList( "/dev/urandom" ) ;
 	}else{
-		stl = StringListSplit( args->options,'.' ) ;
+		stl = StringListSplit( options,'.' ) ;
 	}
 
 	StringListStringArray_1( &list,&list_count,stl ) ;
@@ -204,11 +203,13 @@ static int _create_luks_0( arguments * args )
 		return zuluExit( 1,stl,list ) ;
 	}
 
-	args->data_alignment = 4096 ;
-	args->params         = args->function( args ) ;
+	args->key      = key ;
+	args->key_len  = key_len ;
 
-	opts.device       = args->device ;
+	args->params   = args->function( args,4096 ) ;
+
 	opts.args         = args ;
+	opts.device       = device ;
 	opts.open_mode    = O_RDWR ;
 	opts.error_value  = 2 ;
 
@@ -218,12 +219,12 @@ static int _create_luks_0( arguments * args )
 	return zuluExit( zuluCryptResolveDevicePath( _create_luks,&opts ),stl,list ) ;
 }
 
-static void * _luks1( const arguments * args )
+static void * _luks1( const arguments * args,size_t data_alignment )
 {
 	struct crypt_params_luks1 * params = args->params ;
 
 	params->hash           = args->hash ;
-	params->data_alignment = args->data_alignment ;
+	params->data_alignment = data_alignment ;
 
 	return params ;
 }
@@ -235,29 +236,22 @@ int zuluCryptCreateLuks( const char * device,const char * key,size_t key_len,con
 	arguments args ;
 
 	memset( &args,'\0',sizeof( args ) ) ;
-	memset( &params,'\0',sizeof( struct crypt_params_luks1 ) ) ;
-
-	args.device   = device ;
-	args.key      = key ;
-	args.key_len  = key_len ;
-	args.options  = options ;
+	memset( &params,'\0',sizeof( params ) ) ;
 
 	args.params   = &params ;
 	args.function = _luks1 ;
 	args.type     = CRYPT_LUKS1 ;
 
-	return _create_luks_0( &args ) ;
+	return _create_luks_0( &args,device,key,key_len,options ) ;
 }
 
 #ifdef CRYPT_LUKS2
 
-static void * _luks2( const arguments * args )
+static void * _luks2( const arguments * args,size_t data_alignment )
 {
 	struct crypt_params_luks2 * params = args->params ;
 
 	struct crypt_pbkdf_type * pbkdf = ( struct crypt_pbkdf_type * ) &params->pbkdf ;
-
-	params->data_alignment = args->data_alignment ;
 
 	/*
 	 * It seems to be necessary to set these and we are going with current cryptsetup default
@@ -267,6 +261,8 @@ static void * _luks2( const arguments * args )
 	pbkdf->time_ms          = 800 ;
 	pbkdf->memory_kb        = 1024 ;
 	pbkdf->parallel_threads = 4 ;
+
+	params->data_alignment = data_alignment ;
 
 	return params ;
 }
@@ -278,18 +274,13 @@ int zuluCryptCreateLuks2( const char * device,const char * key,size_t key_len,co
 	arguments args ;
 
 	memset( &args,'\0',sizeof( args ) ) ;
-	memset( &params,'\0',sizeof( struct crypt_params_luks2 ) ) ;
-
-	args.device   = device ;
-	args.key      = key ;
-	args.key_len  = key_len ;
-	args.options  = options ;
+	memset( &params,'\0',sizeof( params ) ) ;
 
 	args.params   = &params ;
 	args.function = _luks2 ;
 	args.type     = CRYPT_LUKS2 ;
 
-	return _create_luks_0( &args ) ;
+	return _create_luks_0( &args,device,key,key_len,options ) ;
 }
 
 #else

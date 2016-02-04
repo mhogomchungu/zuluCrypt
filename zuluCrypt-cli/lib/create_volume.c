@@ -143,6 +143,8 @@ static int _create_volume( const char * device,const resolve_path_t * opts )
 
 				return zuluExit( 3,m ) ;
 			}
+		}else{
+			return zuluExit( 3,m ) ;
 		}
 
 		if( zuluCryptOpenLuks( device,mapper,"rw",args->pass,args->pass_size ) != 0 ){
@@ -160,6 +162,7 @@ static int _create_volume( const char * device,const resolve_path_t * opts )
 	zuluCryptCloseMapper( mapper ) ;
 
 	if( r == 0 ){
+		
 		return zuluExit( 0,m ) ;
 	}else{
 		return zuluExit( 3,m ) ;
