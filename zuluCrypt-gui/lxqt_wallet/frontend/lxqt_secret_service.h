@@ -38,6 +38,8 @@
 #include <QDebug>
 #include <QEventLoop>
 
+#include <memory>
+
 class QWidget ;
 
 namespace LxQt{
@@ -86,8 +88,8 @@ private:
 	QString m_password ;
 	QWidget * m_interfaceObject ;
 
-	void * m_schema   ;
-	void * m_schema_1 ;
+	std::unique_ptr<void,void(*)( void * )> m_schema ;
+	std::unique_ptr<void,void(*)( void * )> m_schema_1 ;
 
 	QEventLoop m_loop ;
 
