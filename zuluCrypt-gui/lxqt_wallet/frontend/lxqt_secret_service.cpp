@@ -201,12 +201,9 @@ QStringList LxQt::Wallet::secretService::readAllKeys( void )
 
 void LxQt::Wallet::secretService::deleteKey( const QString& key )
 {
-	if( m_schema && m_schema_1 ){
+	if( m_schema && m_schema_1 && !key.isEmpty() ){
 
-		if( !key.isEmpty() ){
-
-			lxqt_secret_service_clear_sync( key.toLatin1().constData(),m_schema.get(),m_schema_1.get() ) ;
-		}
+		lxqt_secret_service_clear_sync( key.toLatin1().constData(),m_schema.get(),m_schema_1.get() ) ;
 	}
 }
 
