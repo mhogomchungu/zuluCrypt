@@ -18,7 +18,7 @@
  */
 
 #include <QApplication>
-#include "mainwindow.h"
+#include "zulumount.h"
 #include "../zuluCrypt-gui/utility.h"
 
 int main( int argc,char * argv[] )

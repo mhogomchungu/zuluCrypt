@@ -31,7 +31,7 @@ class QAction ;
 class QTableWidgetItem ;
 class QTableWidget ;
 
-#include "mainwindow.h"
+#include "zulumount.h"
 #include "volumeentryproperties.h"
 #include "../zuluCrypt-gui/utility.h"
 

@@ -17,8 +17,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "zulumount.h"
+#include "ui_zulumount.h"
 #include <QDebug>
 
 #include <QMainWindow>
@@ -1203,6 +1203,7 @@ void MainWindow::disableAll()
 void MainWindow::enableAll()
 {
 	if( m_removeAllVolumes ){
+
 		return ;
 	}
 	m_ui->pbmenu->setEnabled( true ) ;
@@ -1257,17 +1258,15 @@ MainWindow::~MainWindow()
 
 	const auto& r = this->window()->geometry() ;
 
-	using list = std::initializer_list<int> ;
-
-	utility::setWindowDimensions( "zuluMount",list{ r.x(),
-							r.y(),
-							r.width(),
-							r.height(),
-							q->columnWidth( 0 ),
-							q->columnWidth( 1 ),
-							q->columnWidth( 2 ),
-							q->columnWidth( 4 ),
-							q->columnWidth( 5 ) } ) ;
+	utility::setWindowDimensions( "zuluMount",{ r.x(),
+						    r.y(),
+						    r.width(),
+						    r.height(),
+						    q->columnWidth( 0 ),
+						    q->columnWidth( 1 ),
+						    q->columnWidth( 2 ),
+						    q->columnWidth( 4 ),
+						    q->columnWidth( 5 ) } ) ;
 
 	delete m_ui ;
 }

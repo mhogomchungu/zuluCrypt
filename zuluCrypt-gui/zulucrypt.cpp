@@ -273,13 +273,13 @@ void zuluCrypt::setupUIElements()
 
 	m_trayIcon.setContextMenu( trayMenu ) ;
 
-	auto f = utility::getWindowDimensions( "zuluCrypt" ) ;
+	const auto f = utility::getWindowDimensions( "zuluCrypt" ) ;
 
-	auto e = f.data() ;
+	const auto e = f.data() ;
 
 	this->window()->setGeometry( *( e + 0 ),*( e + 1 ),*( e + 2 ),*( e + 3 ) ) ;
 
-	auto table = m_ui->tableWidget ;
+	const auto table = m_ui->tableWidget ;
 
 	table->setColumnWidth( 0,*( e + 4 ) ) ;
 	table->setColumnWidth( 1,*( e + 5 ) ) ;
@@ -586,7 +586,7 @@ void zuluCrypt::dropEvent( QDropEvent * e )
 {
 	for( const auto& it : e->mimeData()->urls() ){
 
-		const QString& e = it.path() ;
+		const auto& e = it.path() ;
 
 		if( utility::pathPointsToAFile( e ) ){
 
@@ -1086,15 +1086,13 @@ zuluCrypt::~zuluCrypt()
 
 	const auto& r = this->window()->geometry() ;
 
-	using list = std::initializer_list<int> ;
-
-	utility::setWindowDimensions( "zuluCrypt",list{ r.x(),
-							r.y(),
-							r.width(),
-							r.height(),
-							q->columnWidth( 0 ),
-							q->columnWidth( 1 ),
-							q->columnWidth( 2 ) } ) ;
+	utility::setWindowDimensions( "zuluCrypt",{ r.x(),
+						    r.y(),
+						    r.width(),
+						    r.height(),
+						    q->columnWidth( 0 ),
+						    q->columnWidth( 1 ),
+						    q->columnWidth( 2 ) } ) ;
 
 	delete m_ui ;
 }

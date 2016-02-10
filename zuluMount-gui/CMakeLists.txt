@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/zuluMount-gui/ -I${PROJECT_BINARY_DIR})
 include_directories( ${PROJECT_BINARY_DIR}/zuluMount-gui/ )
 
-set (UI_FILES 	mainwindow.ui
+set (UI_FILES 	zulumount.ui
 		keydialog.ui
 		mountpartition.ui
 		deviceoffset.ui
@@ -14,7 +14,7 @@ set (UI_FILES 	mainwindow.ui
 		../zuluCrypt-gui/openvolume.ui
 )
 
-set(MOC_FILES 	mainwindow.h
+set(MOC_FILES 	zulumount.h
 		keydialog.h
 		mountpartition.h
 		oneinstance.h
@@ -31,7 +31,7 @@ set(MOC_FILES 	mainwindow.h
 
 set(SRC 	main.cpp
 		events.cpp
-		mainwindow.cpp
+		zulumount.cpp
 		keydialog.cpp
 		zulumounttask.cpp
 		mountpartition.cpp
