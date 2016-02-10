@@ -37,6 +37,11 @@ class QCloseEvent ;
 
 #include <libcryptsetup.h>
 
+/*
+ * disable luks2 support for now
+ */
+#undef CRYPT_LUKS2
+
 namespace Ui {
     class createvolume;
 }

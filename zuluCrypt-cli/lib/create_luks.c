@@ -23,6 +23,11 @@
 
 #include <libcryptsetup.h>
 
+/*
+ * disable luks2 support for now
+ */
+#undef CRYPT_LUKS2
+
 typedef struct arguments{
 
 	size_t key_len ;
