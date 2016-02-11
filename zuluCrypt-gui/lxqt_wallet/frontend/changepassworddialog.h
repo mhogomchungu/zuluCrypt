@@ -55,15 +55,31 @@ class changePassWordDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	static changePassWordDialog& instance( QWidget * parent = 0,const QString& walletName = QString(),const QString& applicationName = QString() )
+	static changePassWordDialog& instance( QWidget * parent,
+					       const QString& walletName,
+					       const QString& applicationName,
+					       std::function< void( const QString&,bool ) >&& function )
 	{
-		return *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
-	}
+		auto& e = *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
 
+		e.ShowUI( std::move( function ) ) ;
+
+		return e ;
+	}
+	static changePassWordDialog& instance_1( QWidget * parent,
+					       const QString& walletName,
+					       const QString& applicationName,
+					       std::function< void( bool ) >&& function )
+	{
+		auto& e = *( new changePassWordDialog( parent,walletName,applicationName ) ) ;
+
+		e.ShowUI_1( std::move( function ) ) ;
+
+		return e ;
+	}
 	explicit changePassWordDialog( QWidget * parent = 0,const QString& walletName = QString(),const QString& applicationName = QString() ) ;
-	void HideUI( void ) ;
 	void ShowUI( std::function< void( const QString&,bool ) >&& ) ;
-	void ShowUI( std::function< void( bool ) >&& ) ;
+	void ShowUI_1( std::function< void( bool ) >&& ) ;
 
 	~changePassWordDialog() ;
 signals:
@@ -75,6 +91,7 @@ private slots:
 	void ok( void ) ;
 	void ok_1( void ) ;
 private:
+	void HideUI( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter ( QObject * watched,QEvent * event ) ;
 	Ui::changePassWordDialog * m_ui ;

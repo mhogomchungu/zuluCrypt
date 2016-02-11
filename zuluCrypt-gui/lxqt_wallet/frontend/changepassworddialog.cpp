@@ -88,7 +88,7 @@ void LxQt::Wallet::changePassWordDialog::HideUI()
 	this->deleteLater() ;
 }
 
-void LxQt::Wallet::changePassWordDialog::ShowUI( std::function< void( bool ) >&& change )
+void LxQt::Wallet::changePassWordDialog::ShowUI_1( std::function< void( bool ) >&& change )
 {
 	m_change = std::move( change ) ;
 

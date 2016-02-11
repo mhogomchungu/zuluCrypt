@@ -174,7 +174,7 @@ void LxQt::Wallet::internalWallet::createWallet()
 	const auto& w = m_walletName ;
 	const auto& d = m_displayApplicationName ;
 
-	cbd::instance( this,w,d ).ShowUI( [ this ]( const QString& password,bool create ){
+	cbd::instance( this,w,d,[ this ]( const QString& password,bool create ){
 
 		if( create ){
 
@@ -204,7 +204,7 @@ void LxQt::Wallet::internalWallet::createWallet()
 
 void LxQt::Wallet::internalWallet::changeWalletPassWord( const QString& walletName,const QString& applicationName )
 {
-	LxQt::Wallet::changePassWordDialog::instance( this,walletName,applicationName ).ShowUI( [ this ]( bool c ){
+	LxQt::Wallet::changePassWordDialog::instance_1( this,walletName,applicationName,[ this ]( bool c ){
 
 		QMetaObject::invokeMethod( m_interfaceObject,"walletpassWordChanged",Q_ARG( bool,c ) ) ;
 	} ) ;
