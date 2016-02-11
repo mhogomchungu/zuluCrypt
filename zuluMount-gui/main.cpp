@@ -27,7 +27,7 @@ int main( int argc,char * argv[] )
 
 	return utility::startApplication( "zuluMount",[ & ](){
 
-		MainWindow e ;
+		zuluMount e ;
 		e.Show() ;
 
 		return a.exec() ;

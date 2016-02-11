@@ -59,18 +59,18 @@
 
 #include <memory>
 
-MainWindow::MainWindow( QWidget * parent ) :
+zuluMount::zuluMount( QWidget * parent ) :
 	QWidget( parent ),
 	m_mountInfo( monitor_mountinfo::instance( this,true,[ this ](){ this->quitApplication() ; } ) ),
 	m_events( events::instance( this,m_mountInfo.stop() ) )
 {
 }
 
-void MainWindow::setUpApp( const QString& volume )
+void zuluMount::setUpApp( const QString& volume )
 {
 	this->setLocalizationLanguage( true ) ;
 
-	m_ui = new Ui::MainWindow ;
+	m_ui = new Ui::zuluMount ;
 	m_ui->setupUi( this ) ;
 
 	m_ui->pbunlockencfs->setMinimumHeight( 31 ) ;
@@ -246,22 +246,22 @@ void MainWindow::setUpApp( const QString& volume )
 	this->autoUpdateCheck() ;
 }
 
-void MainWindow::licenseInfo()
+void zuluMount::licenseInfo()
 {
 	utility::licenseInfo( this ) ;
 }
 
-void MainWindow::updateCheck()
+void zuluMount::updateCheck()
 {
 	checkForUpdates::instance( this ) ;
 }
 
-void MainWindow::autoUpdateCheck()
+void zuluMount::autoUpdateCheck()
 {
 	checkForUpdates::instance( this,"zuluMount" ) ;
 }
 
-void MainWindow::removeVolumeFromHiddenVolumeList( QAction * ac )
+void zuluMount::removeVolumeFromHiddenVolumeList( QAction * ac )
 {
 	this->disableAll() ;
 
@@ -294,18 +294,18 @@ static void _manage_volume_list( QMenu * menu,const QStringList& l )
 	}
 }
 
-void MainWindow::showHiddenVolumeList()
+void zuluMount::showHiddenVolumeList()
 {
 	_manage_volume_list( m_hidden_volume_menu,zuluMountTask::hiddenVolumeList() ) ;
 }
 
-void MainWindow::showVisibleVolumeList()
+void zuluMount::showVisibleVolumeList()
 {
 	_manage_volume_list( m_not_hidden_volume_menu,
 			     tablewidget::tableColumnEntries( m_ui->tableWidget ) ) ;
 }
 
-void MainWindow::removeVolumeFromVisibleVolumeList( QAction * ac )
+void zuluMount::removeVolumeFromVisibleVolumeList( QAction * ac )
 {
 	auto e = ac->text() ;
 	e.remove( "&" ) ;
@@ -325,7 +325,7 @@ void MainWindow::removeVolumeFromVisibleVolumeList( QAction * ac )
 	this->enableAll() ;
 }
 
-QString MainWindow::resolveFavoriteMountPoint( const QString& e )
+QString zuluMount::resolveFavoriteMountPoint( const QString& e )
 {
 	for( const auto& it : utility::readFavorites() ){
 
@@ -345,7 +345,7 @@ QString MainWindow::resolveFavoriteMountPoint( const QString& e )
 	return QString() ;
 }
 
-void MainWindow::favoriteClicked( QAction * ac )
+void zuluMount::favoriteClicked( QAction * ac )
 {
 	auto e = ac->text() ;
 	e.remove( "&" ) ;
@@ -358,24 +358,24 @@ void MainWindow::favoriteClicked( QAction * ac )
 	}
 }
 
-void MainWindow::showFavorites()
+void zuluMount::showFavorites()
 {
 	utility::readFavorites( m_favorite_menu,true ) ;
 }
 
-void MainWindow::setLocalizationLanguage( bool translate )
+void zuluMount::setLocalizationLanguage( bool translate )
 {
 	utility::setLocalizationLanguage( translate,this,m_languageAction,"zuluMount-gui" ) ;
 }
 
-void MainWindow::languageMenu( QAction * ac )
+void zuluMount::languageMenu( QAction * ac )
 {
 	utility::languageMenu( this,m_languageAction->menu(),ac,"zuluMount-gui" ) ;
 }
 
 #define zuluMOUNT_AUTO_OPEN_FOLDER "/.zuluCrypt/zuluMount-gui.NoAutoOpenFolder"
 
-void MainWindow::autoOpenFolderOnMount( bool b )
+void zuluMount::autoOpenFolderOnMount( bool b )
 {
 	auto x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
 
@@ -391,13 +391,13 @@ void MainWindow::autoOpenFolderOnMount( bool b )
 	}
 }
 
-bool MainWindow::autoOpenFolderOnMount( void )
+bool zuluMount::autoOpenFolderOnMount( void )
 {
 	auto x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
 	return !QFile::exists( x ) ;
 }
 
-void MainWindow::startAutoMonitor()
+void zuluMount::startAutoMonitor()
 {
 	m_mountInfo.start() ;
 	m_events.start() ;
@@ -406,17 +406,17 @@ void MainWindow::startAutoMonitor()
 /*
  * This should be the only function that closes the application
  */
-void MainWindow::closeApplication()
+void zuluMount::closeApplication()
 {
 	m_events.stop() ;
 }
 
-void MainWindow::quitApplication()
+void zuluMount::quitApplication()
 {
 	QCoreApplication::quit() ;
 }
 
-void MainWindow::autoMountVolume( volumeEntryProperties * q )
+void zuluMount::autoMountVolume( volumeEntryProperties * q )
 {
 	std::unique_ptr< volumeEntryProperties > r( q ) ;
 
@@ -445,7 +445,7 @@ void MainWindow::autoMountVolume( volumeEntryProperties * q )
 	}
 }
 
-void MainWindow::volumeRemoved( QString volume )
+void zuluMount::volumeRemoved( QString volume )
 {
 	if( !volume.isEmpty() ){
 
@@ -468,7 +468,7 @@ void MainWindow::volumeRemoved( QString volume )
 	}
 }
 
-void MainWindow::removeVolume( QString volume )
+void zuluMount::removeVolume( QString volume )
 {
 	if( volume.isEmpty() ){
 
@@ -479,7 +479,7 @@ void MainWindow::removeVolume( QString volume )
 	}
 }
 
-void MainWindow::itemEntered( QTableWidgetItem * item )
+void zuluMount::itemEntered( QTableWidgetItem * item )
 {
 	auto row = item->row() ;
 	auto table = item->tableWidget() ;
@@ -527,14 +527,14 @@ void MainWindow::itemEntered( QTableWidgetItem * item )
 	item->setToolTip( z ) ;
 }
 
-void MainWindow::startGUI()
+void zuluMount::startGUI()
 {
 	if( !m_startHidden ){
 		this->raiseWindow() ;
 	}
 }
 
-void MainWindow::raiseWindow()
+void zuluMount::raiseWindow()
 {
 	this->setVisible( true ) ;
 	this->raise() ;
@@ -542,7 +542,7 @@ void MainWindow::raiseWindow()
 	this->setWindowState( Qt::WindowActive ) ;
 }
 
-void MainWindow::raiseWindow( QString volume )
+void zuluMount::raiseWindow( QString volume )
 {
 	this->setVisible( true ) ;
 	this->raise() ;
@@ -551,7 +551,7 @@ void MainWindow::raiseWindow( QString volume )
 	this->showMoungDialog( volume ) ;
 }
 
-void MainWindow::Show()
+void zuluMount::Show()
 {
 	auto l = QCoreApplication::arguments() ;
 
@@ -572,7 +572,7 @@ void MainWindow::Show()
 	} ) ;
 }
 
-void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
+void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	QMenu m ;
 
@@ -655,12 +655,12 @@ void MainWindow::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 	}
 }
 
-void MainWindow::itemClicked( QTableWidgetItem * item )
+void zuluMount::itemClicked( QTableWidgetItem * item )
 {
 	this->showContextMenu( item,true ) ;
 }
 
-void MainWindow::defaultButton()
+void zuluMount::defaultButton()
 {
 	auto row = m_ui->tableWidget->currentRow() ;
 	auto mt = m_ui->tableWidget->item( row,1 )->text() ;
@@ -673,12 +673,12 @@ void MainWindow::defaultButton()
 	}
 }
 
-void MainWindow::slotOpenSharedFolder()
+void zuluMount::slotOpenSharedFolder()
 {
 	this->openMountPoint( m_sharedFolderPath ) ;
 }
 
-void MainWindow::slotOpenFolder()
+void zuluMount::slotOpenFolder()
 {
 	auto item = m_ui->tableWidget->currentItem() ;
 	auto path = m_ui->tableWidget->item( item->row(),1 )->text() ;
@@ -686,7 +686,7 @@ void MainWindow::slotOpenFolder()
 	this->openMountPoint( path ) ;
 }
 
-void MainWindow::openMountPoint( const QString& m_point )
+void zuluMount::openMountPoint( const QString& m_point )
 {
 	auto x = tr( "Warning" ) ;
 	auto y = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
@@ -694,7 +694,7 @@ void MainWindow::openMountPoint( const QString& m_point )
 	utility::openPath( m_point,m_folderOpener,m_env,this,x,y ) ;
 }
 
-void MainWindow::openMountPointPath( QString m )
+void zuluMount::openMountPointPath( QString m )
 {
 	if( m_autoOpenFolderOnMount ){
 
@@ -702,7 +702,7 @@ void MainWindow::openMountPointPath( QString m )
 	}
 }
 
-void MainWindow::volumeProperties()
+void zuluMount::volumeProperties()
 {
 	this->disableAll() ;
 
@@ -731,7 +731,7 @@ void MainWindow::volumeProperties()
 	this->enableAll() ;
 }
 
-void MainWindow::setUpShortCuts()
+void zuluMount::setUpShortCuts()
 {
 	auto ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -770,18 +770,18 @@ void MainWindow::setUpShortCuts()
 	this->addAction( qa ) ;
 }
 
-void MainWindow::setUpFont()
+void zuluMount::setUpFont()
 {
 	this->setFont( utility::getFont( this ) ) ;
 }
 
-void MainWindow::closeEvent( QCloseEvent * e )
+void zuluMount::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->hide() ;
 }
 
-void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
+void zuluMount::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 {
 	if( e == QSystemTrayIcon::Trigger ){
 
@@ -794,17 +794,17 @@ void MainWindow::slotTrayClicked( QSystemTrayIcon::ActivationReason e )
 	}
 }
 
-void MainWindow::autoMountToggled( bool opt )
+void zuluMount::autoMountToggled( bool opt )
 {
 	m_autoMount = opt ;
 }
 
-void MainWindow::dragEnterEvent( QDragEnterEvent * e )
+void zuluMount::dragEnterEvent( QDragEnterEvent * e )
 {
 	e->accept() ;
 }
 
-void MainWindow::dropEvent( QDropEvent * e )
+void zuluMount::dropEvent( QDropEvent * e )
 {
 	for( const auto& it : e->mimeData()->urls() ){
 
@@ -812,7 +812,7 @@ void MainWindow::dropEvent( QDropEvent * e )
 	}
 }
 
-void MainWindow::mount( const volumeEntryProperties& entry )
+void zuluMount::mount( const volumeEntryProperties& entry )
 {
 	this->disableAll() ;
 
@@ -840,7 +840,7 @@ void MainWindow::mount( const volumeEntryProperties& entry )
 	}
 }
 
-void MainWindow::slotMount()
+void zuluMount::slotMount()
 {
 	auto table = m_ui->tableWidget ;
 	auto row = table->currentRow() ;
@@ -848,7 +848,7 @@ void MainWindow::slotMount()
 	this->mount( tablewidget::tableRowEntries( table,row ) ) ;
 }
 
-void MainWindow::showMoungDialog( const volumeEntryProperties& v )
+void zuluMount::showMoungDialog( const volumeEntryProperties& v )
 {
 	if( v.isEmpty() ){
 
@@ -861,7 +861,7 @@ void MainWindow::showMoungDialog( const volumeEntryProperties& v )
 	}
 }
 
-void MainWindow::showMoungDialog( const QString& volume,const QString& m_point )
+void zuluMount::showMoungDialog( const QString& volume,const QString& m_point )
 {
 	if( !volume.isEmpty() ){
 
@@ -876,7 +876,7 @@ void MainWindow::showMoungDialog( const QString& volume,const QString& m_point )
 	}
 }
 
-void MainWindow::pbMount()
+void zuluMount::pbMount()
 {
 	this->disableAll() ;
 
@@ -890,7 +890,7 @@ void MainWindow::pbMount()
 	}
 }
 
-void MainWindow::unlockencfs()
+void zuluMount::unlockencfs()
 {
 	this->disableAll() ;
 
@@ -904,7 +904,7 @@ void MainWindow::unlockencfs()
 	}
 }
 
-QFont MainWindow::getSystemVolumeFont()
+QFont zuluMount::getSystemVolumeFont()
 {
 	auto f = this->font() ;
 	f.setItalic( !f.italic() ) ;
@@ -912,7 +912,7 @@ QFont MainWindow::getSystemVolumeFont()
 	return f ;
 }
 
-void MainWindow::addEntryToTable( bool systemVolume,const QStringList& l )
+void zuluMount::addEntryToTable( bool systemVolume,const QStringList& l )
 {
 	if( systemVolume ){
 
@@ -922,12 +922,12 @@ void MainWindow::addEntryToTable( bool systemVolume,const QStringList& l )
 	}
 }
 
-void MainWindow::addEntryToTable( bool systemVolume,const volumeEntryProperties& e )
+void zuluMount::addEntryToTable( bool systemVolume,const volumeEntryProperties& e )
 {
 	this->addEntryToTable( systemVolume,e.entryList() ) ;
 }
 
-void MainWindow::removeEntryFromTable( QString volume )
+void zuluMount::removeEntryFromTable( QString volume )
 {
 	auto table = m_ui->tableWidget ;
 
@@ -942,7 +942,7 @@ void MainWindow::removeEntryFromTable( QString volume )
 	}
 }
 
-void MainWindow::volumeMiniProperties( bool valid,volumeEntryProperties * e )
+void zuluMount::volumeMiniProperties( bool valid,volumeEntryProperties * e )
 {
 	std::unique_ptr< volumeEntryProperties > volumeInfo( e ) ;
 
@@ -957,17 +957,17 @@ void MainWindow::volumeMiniProperties( bool valid,volumeEntryProperties * e )
 	}
 }
 
-void MainWindow::volumeMiniProperties( volumeEntryProperties * volumeInfo )
+void zuluMount::volumeMiniProperties( volumeEntryProperties * volumeInfo )
 {
 	this->volumeMiniProperties( volumeInfo,volumeInfo ) ;
 }
 
-void MainWindow::volumeMiniProperties_0( volumeEntryProperties * volumeInfo )
+void zuluMount::volumeMiniProperties_0( volumeEntryProperties * volumeInfo )
 {
 	this->volumeMiniProperties( volumeInfo && volumeInfo->mounted(),volumeInfo ) ;
 }
 
-void MainWindow::updateList( const volumeEntryProperties& entry )
+void zuluMount::updateList( const volumeEntryProperties& entry )
 {
 	if( entry.isNotEmpty() ){
 
@@ -990,7 +990,7 @@ void MainWindow::updateList( const volumeEntryProperties& entry )
 	}
 }
 
-void MainWindow::pbUmount()
+void zuluMount::pbUmount()
 {
 	this->disableAll() ;
 
@@ -1021,7 +1021,7 @@ void MainWindow::pbUmount()
 	}
 }
 
-void MainWindow::unMountAll()
+void zuluMount::unMountAll()
 {
 	this->disableAll() ;
 
@@ -1084,7 +1084,7 @@ void MainWindow::unMountAll()
 	this->enableAll_1() ;
 }
 
-void MainWindow::pbUpdate()
+void zuluMount::pbUpdate()
 {
 	this->disableAll() ;
 
@@ -1095,7 +1095,7 @@ void MainWindow::pbUpdate()
 	this->removeDisappearedEntries( r ) ;
 }
 
-void MainWindow::updateVolumeList( const QVector< volumeEntryProperties >& r )
+void zuluMount::updateVolumeList( const QVector< volumeEntryProperties >& r )
 {
 	if( r.isEmpty() ){
 
@@ -1115,7 +1115,7 @@ void MainWindow::updateVolumeList( const QVector< volumeEntryProperties >& r )
 	}
 }
 
-void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties >& entries )
+void zuluMount::removeDisappearedEntries( const QVector< volumeEntryProperties >& entries )
 {
 	/*
 	 * Below routine removes an entries from the table if they are found not to be
@@ -1186,12 +1186,12 @@ void MainWindow::removeDisappearedEntries( const QVector< volumeEntryProperties 
 	}
 }
 
-void MainWindow::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
+void zuluMount::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
 	tablewidget::selectTableRow( current,previous ) ;
 }
 
-void MainWindow::disableAll()
+void zuluMount::disableAll()
 {
 	m_ui->pbmenu->setEnabled( false ) ;
 	m_ui->pbmount->setEnabled( false ) ;
@@ -1200,7 +1200,7 @@ void MainWindow::disableAll()
 	m_ui->pbunlockencfs->setEnabled( false ) ;
 }
 
-void MainWindow::enableAll()
+void zuluMount::enableAll()
 {
 	if( m_removeAllVolumes ){
 
@@ -1223,7 +1223,7 @@ void MainWindow::enableAll()
 	}
 }
 
-void MainWindow::enableAll_1()
+void zuluMount::enableAll_1()
 {
 	m_removeAllVolumes = false ;
 	this->enableAll() ;
@@ -1231,13 +1231,13 @@ void MainWindow::enableAll_1()
 
 #define zuluMOUNT_AUTOPATH "/.zuluCrypt/zuluMount-gui.autoMountPartitions"
 
-bool MainWindow::autoMount()
+bool zuluMount::autoMount()
 {
 	QFile f( utility::homePath() + zuluMOUNT_AUTOPATH ) ;
 	return f.exists() ;
 }
 
-MainWindow::~MainWindow()
+zuluMount::~zuluMount()
 {
 	QFile f( utility::homePath() + zuluMOUNT_AUTOPATH ) ;
 

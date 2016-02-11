@@ -35,15 +35,15 @@ class events ;
 class monitor_mountinfo ;
 
 namespace Ui {
-class MainWindow ;
+class zuluMount ;
 }
 
-class MainWindow : public QWidget
+class zuluMount : public QWidget
 {
 	Q_OBJECT
 public:
-	explicit MainWindow( QWidget * parent = 0 ) ;
-	~MainWindow() ;
+	explicit zuluMount( QWidget * parent = 0 ) ;
+	~zuluMount() ;
 	void Show( void ) ;
 signals:
 	void result( int,QString ) ;
@@ -111,7 +111,7 @@ private:
 	bool autoMount( void ) ;
 	void updateList( const volumeEntryProperties& ) ;
 
-	Ui::MainWindow * m_ui ;
+	Ui::zuluMount * m_ui ;
 	QString m_folderOpener ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e ) ;
