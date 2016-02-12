@@ -647,38 +647,31 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 {
 	return Task::run< bool >( [ p,m,k,ro ](){
 
-		auto _encfsMount = [ & ](){
+		auto _cmd = [ & ]( const QString& exe ){
 
-			auto _mount = [ & ](){
+			QProcess e ;
 
-				QString exe ;
+			e.start( exe ) ;
 
-				if( ro ){
+			e.waitForStarted() ;
 
-					exe = QString( "/usr/bin/encfs -S %1 %2 -o ro" ).arg( p,m ) ;
-				}else{
-					exe = QString( "/usr/bin/encfs -S %1 %2" ).arg( p,m ) ;
-				}
+			e.write( k.toLatin1() + '\n' ) ;
 
-				QProcess e ;
+			e.closeWriteChannel() ;
 
-				e.start( exe ) ;
-				e.waitForStarted() ;
-				e.write( k.toLatin1() + '\n' ) ;
+			if( e.waitForFinished( 10000 ) ){
 
-				e.closeWriteChannel() ;
+				return e.exitCode() == 0 ;
+			}else{
+				return false ;
+			}
+		} ;
 
-				if( e.waitForFinished( 10000 ) ){
-
-					return e.exitCode() == 0 ;
-				}else{
-					return false ;
-				}
-			} ;
+		auto _mount = [ & ]( std::function< bool() > unlocked ){
 
 			if( _create_encfs_mount_point( m ) ){
 
-				if( _mount() ) {
+				if( unlocked() ) {
 
 					return true ;
 				}else{
@@ -687,7 +680,21 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 			}else{
 				return false ;
 			}
+
 		} ;
+
+		if( utility::pathExists( p + "/cryfs.config" ) ){
+
+			return _mount( [ & ](){
+
+				if( ro ){
+
+					return _cmd( QString( "/usr/bin/cryfs %1 %2 -- -o ro" ).arg( p,m ) ) ;
+				}else{
+					return _cmd( QString( "/usr/bin/cryfs %1 %2 -- -o rw" ).arg( p,m ) ) ;
+				}
+			} ) ;
+		}
 
 		QDir d( p ) ;
 
@@ -701,7 +708,15 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 				 * is present.
 				 */
 
-				return _encfsMount() ;
+				return _mount( [ & ](){
+
+					if( ro ){
+
+						return _cmd( QString( "/usr/bin/encfs -S %1 %2 -o ro" ).arg( p,m ) ) ;
+					}else{
+						return _cmd( QString( "/usr/bin/encfs -S %1 %2" ).arg( p,m ) ) ;
+					}
+				} ) ;
 			}
 		}
 

@@ -65,7 +65,7 @@ static void _add_entry( string_t ( *function )( const vInfo * ),stringList_t tmp
 	volumeInfo.mountOptions = *( *entry + 5 ) ;
 	volumeInfo.rootPath     = *( *entry + 3 ) ;
 
-	if( StringsAreEqual( volumeInfo.fileSystem,"fuse.encfs" ) ){
+	if( StringAtLeastOneMatch_1( volumeInfo.fileSystem,"fuse.encfs","fuse.cryfs",NULL ) ){
 
 		st = StringListStringAt( tmp,*entry_len - 2 ) ;
 

@@ -55,7 +55,7 @@
           <string>Volume Path</string>
          </property>
          <property name="textAlignment">
-          <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+          <set>AlignCenter</set>
          </property>
         </column>
         <column>
@@ -63,7 +63,7 @@
           <string>Mount Point Path</string>
          </property>
          <property name="textAlignment">
-          <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+          <set>AlignCenter</set>
          </property>
         </column>
         <column>
@@ -71,7 +71,7 @@
           <string>File System</string>
          </property>
          <property name="textAlignment">
-          <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+          <set>AlignCenter</set>
          </property>
         </column>
         <column>
@@ -79,7 +79,7 @@
           <string>Label</string>
          </property>
          <property name="textAlignment">
-          <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+          <set>AlignCenter</set>
          </property>
         </column>
         <column>
@@ -87,7 +87,7 @@
           <string>Size</string>
          </property>
          <property name="textAlignment">
-          <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+          <set>AlignCenter</set>
          </property>
         </column>
         <column>
@@ -95,7 +95,7 @@
           <string>%Used</string>
          </property>
          <property name="textAlignment">
-          <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+          <set>AlignCenter</set>
          </property>
         </column>
        </widget>
@@ -108,7 +108,7 @@
         <item>
          <widget class="QPushButton" name="pbunlockencfs">
           <property name="text">
-           <string>Mount Encf&amp;s</string>
+           <string>Mount Encf&amp;s/Cryfs</string>
           </property>
          </widget>
         </item>

@@ -53,13 +53,13 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 	const char * device = NULL ;
 	char * device_1 = NULL ;
 
-	if( StringsAreEqual( fs,"fuse.encfs" ) ){
+	if( StringAtLeastOneMatch_1( fs,"fuse.encfs","fuse.cryfs",NULL ) ){
 
 		if( m_point != NULL ){
 
-			printf( "%s\t%s\tencfs\tNil\tNil\tNil\n",dev,m_point ) ;
+			printf( "%s\t%s\t%s\tNil\tNil\tNil\n",dev,m_point,fs + 5 ) ;
 		}else{
-			printf( "%s\tNil\tencfs\tNil\tNil\tNil\n",dev ) ;
+			printf( "%s\tNil\t%s\tNil\tNil\tNil\n",dev,fs + 5 ) ;
 		}
 		return ;
 	}

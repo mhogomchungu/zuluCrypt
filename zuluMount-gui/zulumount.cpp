@@ -597,7 +597,7 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			auto fs = m_ui->tableWidget->item( row,2 )->text() ;
 
-			if( fs != "encfs" ){
+			if( fs != "encfs" && fs != "cryfs" ){
 
 				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),this,SLOT( volumeProperties() ) ) ;
 				m.addSeparator() ;
@@ -999,7 +999,7 @@ void zuluMount::pbUmount()
 	auto path = m_ui->tableWidget->item( row,0 )->text() ;
 	auto type = m_ui->tableWidget->item( row,2 )->text() ;
 
-	if( type == "encfs" ){
+	if( type == "encfs" || type == "cryfs" ){
 
 		auto m = m_ui->tableWidget->item( row,1 )->text() ;
 
@@ -1067,7 +1067,7 @@ void zuluMount::unMountAll()
 
 				const auto& e = q.at( i ) ;
 
-				if( e == "encfs" ){
+				if( e == "encfs" || e == "cryfs" ){
 
 					zuluMountTask::encfsUnmount( n.at( i ) ).get() ;
 				}else{
@@ -1138,7 +1138,7 @@ void zuluMount::removeDisappearedEntries( const QVector< volumeEntryProperties >
 
 			if( it.volumeName() == volume ){
 
-				if( it.fileSystem() == "encfs" ){
+				if( it.fileSystem() == "encfs" || it.fileSystem() == "cryfs" ){
 
 					return false ;
 				}

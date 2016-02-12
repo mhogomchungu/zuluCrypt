@@ -76,7 +76,7 @@ public:
 		if( m_volume.isEmpty() ){
 			return false ;
 		}
-		if( m_fileSystem == "encfs" ){
+		if( m_fileSystem == "encfs" || m_fileSystem == "cryfs" ){
 			return true ;
 		}
 		if( m_volumeSize == "1.0 KB" || m_volumeSize == "1,0 KB" || m_volumeSize == "Nil" ){
@@ -89,7 +89,10 @@ public:
 	}
 	bool encryptedVolume() const
 	{
-		return m_fileSystem.startsWith( "crypto" ) || m_fileSystem == "Nil" || m_fileSystem == "encfs" ;
+		return  m_fileSystem.startsWith( "crypto" ) ||
+			m_fileSystem == "Nil"   ||
+			m_fileSystem == "encfs" ||
+			m_fileSystem == "cryfs" ;
 	}
 	bool mounted() const
 	{
