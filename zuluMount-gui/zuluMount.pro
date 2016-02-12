@@ -11,7 +11,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-	mainwindow.cpp\
+	zulumount.cpp\
     keydialog.cpp \
     ../zuluCrypt-gui/dialogmsg.cpp \
     ../zuluCrypt-gui/userfont.cpp \
@@ -29,7 +29,7 @@ SOURCES += main.cpp\
     zulumounttask.cpp \
     veracryptpimdialog.cpp
 
-HEADERS  += mainwindow.h\
+HEADERS  += zulumount.h\
     keydialog.h \
     ../zuluCrypt-gui/dialogmsg.h\
     ../zuluCrypt-gui/userfont.h \
@@ -49,7 +49,7 @@ HEADERS  += mainwindow.h\
 
 TRANSLATIONS = ../translations/zuluMount/messages.ts
 
-FORMS    += mainwindow.ui\
+FORMS    += zulumount.ui\
 	    ../zuluCrypt-gui/dialogmsg.ui \
 	    keydialog.ui \
     mountpartition.ui \
