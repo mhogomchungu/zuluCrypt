@@ -647,24 +647,34 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 {
 	return Task::run< bool >( [ p,m,k,ro ](){
 
-		auto _cmd = [ & ]( const QString& exe ){
+		auto _cmd = [ & ]( const QString& e,const QString& arguments ){
 
-			QProcess e ;
+			for( const auto& it : { "/usr/local/bin/","/usr/local/sbin/","/usr/bin/","/usr/sbin/" } ){
 
-			e.start( exe ) ;
+				auto exe = it + e ;
 
-			e.waitForStarted() ;
+				if( utility::pathExists( exe ) ){
 
-			e.write( k.toLatin1() + '\n' ) ;
+					QProcess e ;
 
-			e.closeWriteChannel() ;
+					e.start( exe + " " + arguments ) ;
 
-			if( e.waitForFinished( 10000 ) ){
+					e.waitForStarted() ;
 
-				return e.exitCode() == 0 ;
-			}else{
-				return false ;
+					e.write( k.toLatin1() + '\n' ) ;
+
+					e.closeWriteChannel() ;
+
+					if( e.waitForFinished( 10000 ) ){
+
+						return e.exitCode() == 0 ;
+					}else{
+						return false ;
+					}
+				}
 			}
+
+			return false ;
 		} ;
 
 		auto _mount = [ & ]( std::function< bool() > unlocked ){
@@ -689,9 +699,9 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 
 				if( ro ){
 
-					return _cmd( QString( "/usr/bin/cryfs %1 %2 -- -o ro" ).arg( p,m ) ) ;
+					return _cmd( "cryfs",QString( "%1 %2 -- -o ro" ).arg( p,m ) ) ;
 				}else{
-					return _cmd( QString( "/usr/bin/cryfs %1 %2 -- -o rw" ).arg( p,m ) ) ;
+					return _cmd( "cryfs",QString( "%1 %2 -- -o rw" ).arg( p,m ) ) ;
 				}
 			} ) ;
 		}
@@ -712,9 +722,9 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 
 					if( ro ){
 
-						return _cmd( QString( "/usr/bin/encfs -S %1 %2 -o ro" ).arg( p,m ) ) ;
+						return _cmd( "encfs",QString( "-S %1 %2 -o ro" ).arg( p,m ) ) ;
 					}else{
-						return _cmd( QString( "/usr/bin/encfs -S %1 %2" ).arg( p,m ) ) ;
+						return _cmd( "encfs",QString( "-S %1 %2 -o rw" ).arg( p,m ) ) ;
 					}
 				} ) ;
 			}
