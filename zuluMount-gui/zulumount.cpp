@@ -1006,7 +1006,7 @@ void zuluMount::pbUmount()
 		if( !zuluMountTask::encfsUnmount( m ).await() ){
 
 			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount encfs volume" ) ) ;
+			m.ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount encfs/cryfs volume" ) ) ;
 			this->enableAll() ;
 		}
 	}else{
