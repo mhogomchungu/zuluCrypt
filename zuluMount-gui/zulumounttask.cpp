@@ -615,7 +615,7 @@ static bool _create_encfs_mount_point( const QString& m )
 	return utility::Task( utility::appendUserUID( "%1 -B %2" ).arg( zuluMountPath,m ) ).success() ;
 }
 
-Task::future<bool>& zuluMountTask::encfsUnmount( const QString& m )
+Task::future<bool>& zuluMountTask::encryptedFolderUnMount( const QString& m )
 {
 	return Task::run< bool >( [ m ](){
 
@@ -643,7 +643,7 @@ Task::future<bool>& zuluMountTask::encfsUnmount( const QString& m )
 	} ) ;
 }
 
-Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m,const QString& k,bool ro )
+Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const QString& m,const QString& k,bool ro )
 {
 	return Task::run< bool >( [ p,m,k,ro ](){
 
@@ -690,7 +690,6 @@ Task::future<bool>& zuluMountTask::encfsMount( const QString& p,const QString& m
 			}else{
 				return false ;
 			}
-
 		} ;
 
 		if( utility::pathExists( p + "/cryfs.config" ) ){

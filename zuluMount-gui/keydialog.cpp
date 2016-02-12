@@ -428,7 +428,7 @@ void keyDialog::encfsMount()
 
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-	if( zuluMountTask::encfsMount( m_path,m,m_key,ro ).await() ){
+	if( zuluMountTask::encryptedFolderMount( m_path,m,m_key,ro ).await() ){
 
 		/*
 		 * TODO: Not suspending for a while causes a process that open the mount point

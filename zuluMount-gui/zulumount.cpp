@@ -1003,7 +1003,7 @@ void zuluMount::pbUmount()
 
 		auto m = m_ui->tableWidget->item( row,1 )->text() ;
 
-		if( !zuluMountTask::encfsUnmount( m ).await() ){
+		if( !zuluMountTask::encryptedFolderUnMount( m ).await() ){
 
 			DialogMsg m( this ) ;
 			m.ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount encfs/cryfs volume" ) ) ;
@@ -1069,7 +1069,7 @@ void zuluMount::unMountAll()
 
 				if( e == "encfs" || e == "cryfs" ){
 
-					zuluMountTask::encfsUnmount( n.at( i ) ).get() ;
+					zuluMountTask::encryptedFolderUnMount( n.at( i ) ).get() ;
 				}else{
 					zuluMountTask::volumeUnmount( p.at( i ),e ) ;
 				}
