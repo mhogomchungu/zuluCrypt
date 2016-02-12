@@ -446,7 +446,7 @@ void keyDialog::encfsMount()
 	}else{
 		DialogMsg msg( this ) ;
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nWrong password or not an encfs volume" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs/cryfs volume.\nWrong password or not an encfs/cryfs volume" ) ) ;
 
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
 
