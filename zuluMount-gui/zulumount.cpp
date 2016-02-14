@@ -582,7 +582,7 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	auto mt = m_ui->tableWidget->item( row,1 )->text() ;
 
-	auto _properties_menu = [ & ]( bool addSeparator = true ){
+	auto _properties_menu = [ & ]( bool addSeparator ){
 
 		auto fs = m_ui->tableWidget->item( row,2 )->text() ;
 
@@ -611,7 +611,7 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			m.addSeparator() ;
 
-			_properties_menu() ;
+			_properties_menu( true ) ;
 
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
 
@@ -632,7 +632,7 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 				if( utility::pathIsReadable( mt ) ){
 
-					_properties_menu() ;
+					_properties_menu( true ) ;
 
 					connect( m.addAction( tr( "Open Folder" ) ),SIGNAL( triggered() ),
 						 this,SLOT( slotOpenFolder() ) ) ;
@@ -640,7 +640,7 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 					_properties_menu( false ) ;
 				}
 			}else{
-				_properties_menu() ;
+				_properties_menu( true ) ;
 
 				connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenSharedFolder() ) ) ;
