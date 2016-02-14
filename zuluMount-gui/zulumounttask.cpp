@@ -705,28 +705,17 @@ Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const 
 			} ) ;
 		}
 
-		QDir d( p ) ;
+		if( utility::pathExists( p + "/.encfs6.xml" ) ){
 
-		for( const auto& it : d.entryList( QDir::Hidden | QDir::Files ) ){
+			return _mount( [ & ](){
 
-			if( it.startsWith( ".encfs" ) && it.endsWith( ".xml" ) ){
+				if( ro ){
 
-				/*
-				 * encfs folders usually have a config hidden file name named ".encfs6.xml"
-				 * and we assume the folder contains encfs files only if this file
-				 * is present.
-				 */
-
-				return _mount( [ & ](){
-
-					if( ro ){
-
-						return _cmd( "encfs",QString( "-S %1 %2 -o ro" ).arg( p,m ) ) ;
-					}else{
-						return _cmd( "encfs",QString( "-S %1 %2 -o rw" ).arg( p,m ) ) ;
-					}
-				} ) ;
-			}
+					return _cmd( "encfs",QString( "-S %1 %2 -o ro" ).arg( p,m ) ) ;
+				}else{
+					return _cmd( "encfs",QString( "-S %1 %2 -o rw" ).arg( p,m ) ) ;
+				}
+			} ) ;
 		}
 
 		return false ;
