@@ -225,8 +225,6 @@ namespace utility
 	void setLocalizationLanguage( bool translate,QWidget * obj,QAction * ac,const char * ) ;
 	void languageMenu( QWidget *,QMenu *,QAction *,const char * ) ;
 
-	bool ProcessExecute( const QString& m_point,const QString& exe,const QString& env,int uid ) ;
-
 	using array_t = std::array< int,10 > ;
 
 	utility::array_t getWindowDimensions( const QString& application ) ;
@@ -429,9 +427,24 @@ namespace utility
 		Task()
 		{
 		}
-		Task( const QString& exe,int waitTime = -1 )
+		Task( const QString& exe,int waitTime = -1,const QStringList& env = QStringList(),
+		      std::function< void() > f = [](){} )
 		{
-			QProcess p ;
+			class Process : public QProcess{
+			public:
+				Process( std::function< void() >&& f ) : m_function( std::move( f ) )
+				{
+				}
+			protected:
+				void setupChildProcess()
+				{
+					m_function() ;
+				}
+			private:
+				std::function< void() > m_function ;
+			} p( std::move( f ) ) ;
+
+			p.setEnvironment( env ) ;
 			p.start( exe ) ;
 			m_finished   = p.waitForFinished( waitTime ) ;
 			m_exitCode   = p.exitCode() ;

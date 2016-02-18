@@ -393,24 +393,25 @@ char * const * utility::Array::value()
 	return const_cast< char * const * >( m_vector.data() ) ;
 }
 
-bool utility::ProcessExecute( const QString& m,const QString& e,const QString& env,int uid )
+static bool _execute_process( const QString& m,const QString& exe,const QString& env,int uid )
 {
-	auto exe     = e.toLatin1() ;
-	auto m_point = m.toLatin1() ;
-
 	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
 
-		auto p = Process( exe.constData(),m_point.constData(),nullptr ) ;
+		auto e = m ;
 
-		utility::Array array( env ) ;
+		e.replace( "\"","\"\"\"" ) ;
 
-		ProcessSetEnvironmentalVariable( p,array.value() ) ;
+		return utility::Task( exe + " \"" + m + "\"",-1,env.split( "\n" ),[ uid ](){
 
-		ProcessSetOptionUser( p,uid ) ;
+			if( uid != -1 ){
 
-		ProcessStart( p ) ;
+				Q_UNUSED( setgid( uid ) ) ;
+				Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
+				Q_UNUSED( setegid( uid ) ) ;
+				Q_UNUSED( setuid( uid ) ) ;
+			}
 
-		return ProcessWaitUntilFinished( &p ) == 0 ;
+		} ).success() ;
 	}else{
 		return false ;
 	}
@@ -420,7 +421,7 @@ bool utility::ProcessExecute( const QString& m,const QString& e,const QString& e
 {
 	return ::Task::run<bool>( [ env,path,opener ](){
 
-		return utility::ProcessExecute( path,opener,env,utility::getUID() ) == false ;
+		return _execute_process( path,opener,env,utility::getUID() ) == false ;
 	} ) ;
 }
 

@@ -430,16 +430,6 @@ void keyDialog::encfsMount()
 
 	if( zuluMountTask::encryptedFolderMount( m_path,m,m_key,ro ).await() ){
 
-		/*
-		 * TODO: Not suspending for a while causes a process that open the mount point
-		 * to exit prematurely with "QProcess: Destroyed while process is still running." warning.
-		 * look into why this happens.
-		 *
-		 */
-		this->hide() ;
-
-		utility::Task::suspend( 2 ) ;
-
 		m_success( m ) ;
 
 		this->HideUI() ;

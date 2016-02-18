@@ -1,3 +1,12 @@
+zulucrypt (4.9.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- add support for unlocking cryfs[1][2] encrypted folders in zuluMount.
+        [1] https://github.com/cryfs
+        [2] https://www.cryfs.org/
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Tue, 1 Mar 2015 16:38:48 +0000
+
 zulucrypt (4.8.0-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features
