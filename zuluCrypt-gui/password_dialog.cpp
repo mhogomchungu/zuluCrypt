@@ -106,6 +106,11 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent,std::funct
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
+	if( utility::runningInMixedMode() ){
+
+		m_ui->cbKeyType->removeItem( 3 ) ;
+	}
+
 	this->installEventFilter( this ) ;
 }
 
