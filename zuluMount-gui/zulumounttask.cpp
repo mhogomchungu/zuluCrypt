@@ -696,12 +696,16 @@ Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const 
 
 			return _mount( [ & ](){
 
+				QString opts ;
+
 				if( ro ){
 
-					return _cmd( "cryfs",QString( "%1 %2 -- -o ro" ).arg( p,m ) ) ;
+					opts = QString( "%1 %2 -- -o ro -o fsname=cryfs@%3 -o subtype=cryfs" ).arg( p,m,p ) ;
 				}else{
-					return _cmd( "cryfs",QString( "%1 %2 -- -o rw" ).arg( p,m ) ) ;
+					opts = QString( "%1 %2 -- -o rw -o fsname=cryfs@%3 -o subtype=cryfs" ).arg( p,m,p ) ;
 				}
+
+				return _cmd( "cryfs",opts ) ;
 			} ) ;
 		}
 
@@ -709,12 +713,16 @@ Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const 
 
 			return _mount( [ & ](){
 
+				QString opts ;
+
 				if( ro ){
 
-					return _cmd( "encfs",QString( "-S %1 %2 -o ro" ).arg( p,m ) ) ;
+					opts = QString( "%1 %2 -S -o ro -o fsname=encfs@%3 -o subtype=encfs" ).arg( p,m,p ) ;
 				}else{
-					return _cmd( "encfs",QString( "-S %1 %2 -o rw" ).arg( p,m ) ) ;
+					opts = QString( "%1 %2 -S -o rw -o fsname=encfs@%3 -o subtype=encfs" ).arg( p,m,p ) ;
 				}
+
+				return _cmd( "encfs",opts ) ;
 			} ) ;
 		}
 

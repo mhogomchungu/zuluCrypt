@@ -67,13 +67,18 @@ static void _add_entry( string_t ( *function )( const vInfo * ),stringList_t tmp
 
 	if( StringAtLeastOneMatch_1( volumeInfo.fileSystem,"fuse.encfs","fuse.cryfs",NULL ) ){
 
-		st = StringListStringAt( tmp,*entry_len - 2 ) ;
+		if( StringAtLeastOnePrefixMatch( volumeInfo.device,"encfs@","cryfs@",NULL ) ){
 
-		StringReset( st ) ;
+			volumeInfo.device = volumeInfo.device + 6 ;
+		}else{
+			st = StringListStringAt( tmp,*entry_len - 2 ) ;
 
-		e = StringJenkinsOneAtATimeHash( volumeInfo.mountPoint ) ;
+			StringReset( st ) ;
 
-		volumeInfo.device = StringAppendInt( st,e ) ;
+			e = StringJenkinsOneAtATimeHash( volumeInfo.mountPoint ) ;
+
+			volumeInfo.device = StringAppendInt( st,e ) ;
+		}
 	}
 
 	if( _valid_entry( &volumeInfo ) ){
