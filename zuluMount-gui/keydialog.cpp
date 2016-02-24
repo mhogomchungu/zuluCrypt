@@ -139,11 +139,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
-
-	if( utility::notRunningInMixedMode() ){
-
-		m_ui->cbKeyType->addItem( tr( "Plugin" ) ) ;
-	}
+	m_ui->cbKeyType->addItem( tr( "Plugin" ) ) ;
 
 	if( m_volumeIsEncFs ){
 
