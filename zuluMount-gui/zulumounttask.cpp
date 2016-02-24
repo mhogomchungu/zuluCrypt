@@ -25,6 +25,8 @@
 #include <QDebug>
 #include <QFile>
 
+#include <stdlib.h>
+
 static QString _convert_lvm_path( const QString& dev )
 {
 	auto volume = dev ;
@@ -695,6 +697,9 @@ Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const 
 		if( utility::pathExists( p + "/cryfs.config" ) ){
 
 			return _mount( [ & ](){
+
+				setenv( "CRYFS_NO_UPDATE_CHECK","TRUE",1 ) ;
+				setenv( "CRYFS_FRONTEND","noninteractive",1 ) ;
 
 				QString opts ;
 
