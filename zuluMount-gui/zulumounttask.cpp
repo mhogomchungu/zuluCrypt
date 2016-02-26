@@ -623,7 +623,7 @@ Task::future<bool>& zuluMountTask::encryptedFolderUnMount( const QString& m )
 
 		auto _umount = [ & ](){
 
-			if( utility::Task( "fusermount -u " + m,10000 ).success() ){
+			if( utility::Task( "fusermount -u \"" + m + "\"",10000 ).success() ){
 
 				return _delete_encfs_mount_point( m ) ;
 			}else{

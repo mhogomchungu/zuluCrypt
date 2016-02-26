@@ -1,6 +1,6 @@
 
 ps: copy and paste all given commands to make sure you dont mistype them.
-ps: at step 5,replace "4.8.0" to zuluCrypt version you are building.
+ps: at step 5,replace "4.9.0" to zuluCrypt version you are building.
 ps: these instructions assumes rpm build directory is at "~/rpmbuild".
     Modify the paths in step 5 if they are different in your distribution.
 
@@ -15,7 +15,7 @@ ps: these instructions assumes rpm build directory is at "~/rpmbuild".
    e. gcc-c++
    f. cryptsetup-devel
    g. cmake
-   h. libtcplay-devel( optional dependency used to create truecrypt volumes )
+   h.
    i. libgcrypt-devel
    j. libsecret-devel( optional dependency to store keys in gnome's libsecret )
    k. kde-devel( optional dependency to store keys in kde's kwallet )
@@ -39,8 +39,8 @@ ps: these instructions assumes rpm build directory is at "~/rpmbuild".
    ****************************************************************************************************************
 
    rpmdev-setuptree
-   tar   -cf  ~/rpmbuild/SOURCES/zuluCrypt-4.8.0.tar ../zuluCrypt-4.8.0
-   xz    -z  ~/rpmbuild/SOURCES/zuluCrypt-4.8.0.tar
+   tar   -cf  ~/rpmbuild/SOURCES/zuluCrypt-4.9.0.tar ../zuluCrypt-4.9.0
+   xz    -z  ~/rpmbuild/SOURCES/zuluCrypt-4.9.0.tar
 
    ****************************************************************************************************************
 
