@@ -645,11 +645,13 @@ Task::future<bool>& zuluMountTask::encryptedFolderUnMount( const QString& m )
 	} ) ;
 }
 
-Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const QString& m,const QString& k,bool ro )
-{
-	return Task::run< bool >( [ p,m,k,ro ](){
+using ev = zuluMountTask::encryptedVolume ;
 
-		auto _cmd = [ & ]( const QString& e,const QString& arguments ){
+Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const QString& m,const QString& k,bool ro )
+{
+	return Task::run< ev >( [ p,m,k,ro ]()->ev{
+
+		auto _cmd = [ & ]( const QString& e,ev::status status,const QString& arguments )->ev{
 
 			for( const auto& it : { "/usr/local/bin/","/usr/local/sbin/","/usr/bin/","/usr/sbin/" } ){
 
@@ -657,7 +659,7 @@ Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const 
 
 				if( utility::pathExists( exe ) ){
 
-					QProcess e ;
+					QProcess e ;					
 
 					e.start( exe + " " + arguments ) ;
 
@@ -666,31 +668,38 @@ Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const 
 					e.write( k.toLatin1() + '\n' ) ;
 
 					e.closeWriteChannel() ;
-
+					
 					if( e.waitForFinished( 10000 ) ){
 
-						return e.exitCode() == 0 ;
+						return { status,e.exitCode() == 0 } ;
 					}else{
-						return false ;
+						return { status,false } ;
 					}
 				}
 			}
 
-			return false ;
+			if( status == ev::status::cryfs ){
+
+				return { ev::status::cryfsNotFound,false } ;
+			}else{
+				return { ev::status::encfsNotFound,false } ;
+			}
 		} ;
 
-		auto _mount = [ & ]( std::function< bool() > unlocked ){
+		auto _mount = [ & ]( std::function< ev() > unlocked )->ev{
 
 			if( _create_encfs_mount_point( m ) ){
 
-				if( unlocked() ) {
+				auto e = unlocked() ;
 
-					return true ;
-				}else{
-					return _delete_encfs_m_point( m ) ;
+				if( !e.unlocked ) {
+
+					_delete_encfs_m_point( m ) ;
 				}
+
+				return e ;
 			}else{
-				return false ;
+				return { ev::status::failedToCreateMountPoint,false } ;
 			}
 		} ;
 
@@ -701,16 +710,16 @@ Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const 
 				setenv( "CRYFS_NO_UPDATE_CHECK","TRUE",1 ) ;
 				setenv( "CRYFS_FRONTEND","noninteractive",1 ) ;
 
-				QString opts ;
+				const char * opts ;
 
 				if( ro ){
 
-					opts = QString( "%1 %2 -- -o ro -o fsname=cryfs@%3 -o subtype=cryfs" ).arg( p,m,p ) ;
+					opts = "%1 %2 -- -o ro -o fsname=cryfs@%3 -o subtype=cryfs" ;
 				}else{
-					opts = QString( "%1 %2 -- -o rw -o fsname=cryfs@%3 -o subtype=cryfs" ).arg( p,m,p ) ;
+					opts = "%1 %2 -- -o rw -o fsname=cryfs@%3 -o subtype=cryfs" ;
 				}
 
-				return _cmd( "cryfs",opts ) ;
+				return _cmd( "cryfs",ev::status::cryfs,QString( opts ).arg( p,m,p ) ) ;
 			} ) ;
 		}
 
@@ -718,19 +727,19 @@ Task::future<bool>& zuluMountTask::encryptedFolderMount( const QString& p,const 
 
 			return _mount( [ & ](){
 
-				QString opts ;
+				const char * opts ;
 
 				if( ro ){
 
-					opts = QString( "%1 %2 -S -o ro -o fsname=encfs@%3 -o subtype=encfs" ).arg( p,m,p ) ;
+					opts = "%1 %2 -S -o ro -o fsname=encfs@%3 -o subtype=encfs" ;
 				}else{
-					opts = QString( "%1 %2 -S -o rw -o fsname=encfs@%3 -o subtype=encfs" ).arg( p,m,p ) ;
+					opts = "%1 %2 -S -o rw -o fsname=encfs@%3 -o subtype=encfs" ;
 				}
 
-				return _cmd( "encfs",opts ) ;
+				return _cmd( "encfs",ev::status::encfs,QString( opts ).arg( p,m,p ) ) ;
 			} ) ;
 		}
 
-		return false ;
+		return { ev::status::unknown,false } ;
 	} ) ;
 }

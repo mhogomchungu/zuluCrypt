@@ -251,7 +251,7 @@ _set_cipher_chain(const char *p)
 	const char *q;
 	for (i = 0;;i++) {
 		q = pair[i].first;
-		if( q == NULL )
+		if (q == NULL)
 			break;
 		else if(strcmp(p, q) == 0)
 			return pair[i].second;

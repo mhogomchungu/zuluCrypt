@@ -428,7 +428,9 @@ void keyDialog::encfsMount()
 
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-	if( zuluMountTask::encryptedFolderMount( m_path,m,m_key,ro ).await() ){
+	auto e = zuluMountTask::encryptedFolderMount( m_path,m,m_key,ro ).await() ;
+
+	if( e.unlocked ){
 
 		m_success( m ) ;
 
@@ -436,7 +438,43 @@ void keyDialog::encfsMount()
 	}else{
 		DialogMsg msg( this ) ;
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs/cryfs volume.\nWrong password or not an encfs/cryfs volume" ) ) ;
+		using ev = zuluMountTask::encryptedVolume ;
+
+		switch( e.state ){
+		case ev::status::cryfs :
+
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\nWrong password entered" ) ) ;
+			break;
+
+		case ev::status::encfs :
+
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nWrong password entered" ) ) ;
+			break;
+
+		case ev::status::cryfsNotFound :
+
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\ncryfs executable could not be found" ) ) ;
+			break;
+
+		case ev::status::encfsNotFound :
+
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nencfs executable could not be found" ) ) ;
+			break;
+
+		case ev::status::failedToCreateMountPoint :
+
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to create mount point" ) ) ;
+			break;
+
+		case ev::status::unknown :
+
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nNot supported volume encountered" ) ) ;
+			break;
+
+		default:
+			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nNot supported volume encountered" ) ) ;
+			break;
+		}
 
 		if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
 
@@ -445,7 +483,7 @@ void keyDialog::encfsMount()
 
 		m_ui->lineEditKey->setFocus() ;
 
-		return this->enableAll() ;
+		this->enableAll() ;
 	}
 }
 

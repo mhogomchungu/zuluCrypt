@@ -128,14 +128,21 @@ static stringList_t _volumeList( string_t ( *function )( const vInfo * ) )
 	return stx ;
 }
 
+static string_t _mount_properties( string_t ( *function )( const char * ),const vInfo * e )
+{
+	string_t st = function( e->device ) ;
+
+	StringMultipleAppend( st," ",e->mountPoint," ",e->fileSystem," ",e->mountOptions,NULL ) ;
+
+	return st ;
+}
+
 static string_t _resolve_path_1( const vInfo * e )
 {
 	/*
 	 * zuluCryptResolvePath_1() is defined in resolve_paths.c
 	 */
-	string_t st = zuluCryptResolvePath_1( e->device ) ;
-	StringMultipleAppend( st," ",e->mountPoint," ",e->fileSystem," ",e->mountOptions,NULL ) ;
-	return st ;
+	return _mount_properties( zuluCryptResolvePath_1,e ) ;
 }
 
 stringList_t zuluCryptGetMoutedList( void )
@@ -148,9 +155,7 @@ static string_t _resolve_path_2( const vInfo * e )
 	/*
 	 * zuluCryptResolvePath_2() is defined in resolve_paths.c
 	 */
-	string_t st = zuluCryptResolvePath_2( e->device ) ;
-	StringMultipleAppend( st," ",e->mountPoint," ",e->fileSystem," ",e->mountOptions,NULL ) ;
-	return st ;
+	return _mount_properties( zuluCryptResolvePath_2,e ) ;
 }
 
 stringList_t zuluCryptGetMoutedList_1( void )

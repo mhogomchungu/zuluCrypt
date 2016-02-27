@@ -49,13 +49,25 @@ namespace zuluMountTask
 		QString volumeName ;
 	};
 
+	struct encryptedVolume
+	{
+		enum class status
+		{
+			cryfs,cryfsNotFound,encfs,encfsNotFound,unknown,failedToCreateMountPoint
+		};
+
+		status state ;
+
+		bool unlocked ;
+	};
+
 	Task::future< QString >& volumeProperties( const QString& volume,const QString& volumeType ) ;
 	Task::future< QVector< volumeEntryProperties > >& updateVolumeList( void ) ;
 	Task::future< volumeEntryProperties >& getVolumeProperties( const QString& e ) ;
 	Task::future< utility::Task >& unmountVolume( const QString& volumePath,const QString& volumeType ) ;
 
 	Task::future< bool >& encryptedFolderUnMount( const QString& mountPoint ) ;
-	Task::future< bool >& encryptedFolderMount( const QString& volumePath,const QString& mountPoint,const QString& key,bool ro ) ;
+	Task::future< encryptedVolume >& encryptedFolderMount( const QString& volumePath,const QString& mountPoint,const QString& key,bool ro ) ;
 
 	utility::Task volumeUnmount( const QString& volumePath,const QString& volumeType ) ;
 

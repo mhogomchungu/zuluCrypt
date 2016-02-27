@@ -111,7 +111,7 @@ private:
 	bool autoMount( void ) ;
 	void updateList( const volumeEntryProperties& ) ;
 
-	Ui::zuluMount * m_ui ;
+	Ui::zuluMount * m_ui = nullptr ;
 	QString m_folderOpener ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e ) ;

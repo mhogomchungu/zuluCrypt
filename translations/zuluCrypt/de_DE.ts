@@ -305,24 +305,24 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="629"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="639"/>
         <source>if the option is checked,a primary private mount point will be created in &quot;/run/media/private/$USER/&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;/run/media/public/&quot;</source>
         <translation>Wenn diese Option gewählt ist, wird ein privater Einhängepunkt unter /run/media/private/$USER/&quot; erstellt
 und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unter /run/media/public/&quot;</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1211"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1221"/>
         <source>Manage Favorites</source>
         <translation>Favoriten verwalten</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1247"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1257"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1481"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1491"/>
         <source>hmac plugin.
 
 This plugin generates a key using below formular:
@@ -331,7 +331,7 @@ key = hmac(sha256,passphrase,keyfile contents)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1486"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1496"/>
         <source>keykeyfile plugin.
 
 This plugin generates a key using below formular:
@@ -340,29 +340,29 @@ key = passphrase + keyfile contents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1491"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1501"/>
         <source>gpg plugin.
 
 This plugin retrives a key locked in a gpg file with a symmetric key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1509"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1519"/>
         <source>ERROR</source>
         <translation>FEHLER</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1509"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1519"/>
         <source>Could not find &quot;gpg&quot; executable in &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; and &quot;/usr/sbin&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1677"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1687"/>
         <source>INFO</source>
         <translation>INFORMATION</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1677"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1687"/>
         <source>Translation will be done the next time you restart.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3183,22 +3183,22 @@ A volume created with a key generated here should be opened with &quot;hmac&quot
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="522"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="535"/>
         <source>Elapsed time: 0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="530"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="543"/>
         <source>Elapsed time: %0 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="532"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="545"/>
         <source>Elapsed time: %0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="543"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="556"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>
