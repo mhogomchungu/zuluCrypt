@@ -82,7 +82,7 @@ private slots:
 	void doAction( QAction * ) ;
 	void showOffSetWindowOption( void ) ;
 	void showFileSystemOptionWindow( void ) ;
-	void encfsMount( void ) ;
+	void encryptedFolderMount( void ) ;
 private :
 	void keyAndKeyFile( void ) ;
 	void tcryptGui( void ) ;

@@ -671,18 +671,23 @@ Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const 
 					
 					if( e.waitForFinished( 10000 ) ){
 
-						return { status,e.exitCode() == 0 } ;
+						if( e.exitCode() == 0 ){
+
+							return { ev::status::success } ;
+						}else{
+							return { status } ;
+						}
 					}else{
-						return { status,false } ;
+						return { ev::status::backendFail } ;
 					}
 				}
 			}
 
 			if( status == ev::status::cryfs ){
 
-				return { ev::status::cryfsNotFound,false } ;
+				return { ev::status::cryfsNotFound } ;
 			}else{
-				return { ev::status::encfsNotFound,false } ;
+				return { ev::status::encfsNotFound } ;
 			}
 		} ;
 
@@ -692,14 +697,14 @@ Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const 
 
 				auto e = unlocked() ;
 
-				if( !e.unlocked ) {
+				if( e.state != ev::status::success ) {
 
 					_delete_encfs_m_point( m ) ;
 				}
 
 				return e ;
 			}else{
-				return { ev::status::failedToCreateMountPoint,false } ;
+				return { ev::status::failedToCreateMountPoint } ;
 			}
 		} ;
 
@@ -740,6 +745,6 @@ Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const 
 			} ) ;
 		}
 
-		return { ev::status::unknown,false } ;
+		return { ev::status::unknown } ;
 	} ) ;
 }

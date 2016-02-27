@@ -53,12 +53,8 @@ namespace zuluMountTask
 	{
 		enum class status
 		{
-			cryfs,cryfsNotFound,encfs,encfsNotFound,unknown,failedToCreateMountPoint
-		};
-
-		status state ;
-
-		bool unlocked ;
+			success,cryfs,cryfsNotFound,encfs,encfsNotFound,unknown,failedToCreateMountPoint,backendFail
+		}state;
 	};
 
 	Task::future< QString >& volumeProperties( const QString& volume,const QString& volumeType ) ;
