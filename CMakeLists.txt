@@ -14,6 +14,11 @@ set( LIB_PLUGIN_VERSION "1.0.0" )
 add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all -D_FORTIFY_SOURCE=2 --param ssp-buffer-size=4 )
 include_directories( ${PROJECT_BINARY_DIR} )
 
+if( LIB_SUFFIX )
+	set( CMAKE_INSTALL_LIBDIR "${LIB_SUFFIX}" )
+	set( CMAKE_INSTALL_FULL_LIBDIR "${CMAKE_INSTALL_PREFIX}/${LIB_SUFFIX}" )
+endif()
+
 # uninstall target
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
