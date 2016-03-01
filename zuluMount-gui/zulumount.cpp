@@ -73,7 +73,7 @@ void zuluMount::setUpApp( const QString& volume )
 	m_ui = new Ui::zuluMount ;
 	m_ui->setupUi( this ) ;
 
-	m_ui->pbunlockencfs->setMinimumHeight( 31 ) ;
+	m_ui->pbunlockcryptfs->setMinimumHeight( 31 ) ;
 	m_ui->pbmenu->setMinimumHeight( 31 ) ;
 	m_ui->pbmount->setMinimumHeight( 31 ) ;
 	m_ui->pbupdate->setMinimumHeight( 31 ) ;
@@ -118,8 +118,8 @@ void zuluMount::setUpApp( const QString& volume )
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
 		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
-	connect( m_ui->pbunlockencfs,SIGNAL( clicked() ),
-		 this,SLOT( unlockencfs() ) ) ;
+	connect( m_ui->pbunlockcryptfs,SIGNAL( clicked() ),
+		 this,SLOT( unlockCryptFs() ) ) ;
 
 	connect( this,SIGNAL( unlistVolume( QString ) ),
 		 this,SLOT( removeVolume( QString ) ) ) ;
@@ -875,7 +875,7 @@ void zuluMount::showMoungDialog( const QString& volume,const QString& m_point )
 
 		if( utility::pathPointsToAFolder( volume ) ){
 
-			this->mount( { volume,m_point,"encfs","Nil","Nil","Nil" } ) ;
+			this->mount( { volume,m_point,"cryptfs","Nil","Nil","Nil" } ) ;
 		}else{
 			this->disableAll() ;
 
@@ -898,7 +898,7 @@ void zuluMount::pbMount()
 	}
 }
 
-void zuluMount::unlockencfs()
+void zuluMount::unlockCryptFs()
 {
 	this->disableAll() ;
 
@@ -1205,7 +1205,7 @@ void zuluMount::disableAll()
 	m_ui->pbmount->setEnabled( false ) ;
 	m_ui->pbupdate->setEnabled( false ) ;
 	m_ui->tableWidget->setEnabled( false ) ;
-	m_ui->pbunlockencfs->setEnabled( false ) ;
+	m_ui->pbunlockcryptfs->setEnabled( false ) ;
 }
 
 void zuluMount::enableAll()
@@ -1219,7 +1219,7 @@ void zuluMount::enableAll()
 	m_ui->tableWidget->setEnabled( true ) ;
 	m_ui->pbmount->setEnabled( true ) ;
 	m_ui->tableWidget->setFocus() ;
-	m_ui->pbunlockencfs->setEnabled( true ) ;
+	m_ui->pbunlockcryptfs->setEnabled( true ) ;
 
 	if( utility::runningInMixedMode() ){
 
@@ -1227,7 +1227,7 @@ void zuluMount::enableAll()
 		 * FUSE related permission issues prevents us from currently supporting
 		 * unlocking encfs volumes when running in mixed mode.
 		 */
-		m_ui->pbunlockencfs->setEnabled( false ) ;
+		m_ui->pbunlockcryptfs->setEnabled( false ) ;
 	}
 }
 

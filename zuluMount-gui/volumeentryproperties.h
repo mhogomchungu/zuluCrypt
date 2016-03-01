@@ -91,8 +91,9 @@ public:
 	{
 		return  m_fileSystem.startsWith( "crypto" ) ||
 			m_fileSystem == "Nil"   ||
-			m_fileSystem == "encfs" ||
-			m_fileSystem == "cryfs" ;
+			m_fileSystem == "cryptfs" ||
+			m_fileSystem == "cryfs" ||
+			m_fileSystem == "encfs" ;
 	}
 	bool mounted() const
 	{
@@ -100,7 +101,7 @@ public:
 	}
 	QStringList entryList() const
 	{
-		return QStringList{ m_volume,m_mountPoint,m_fileSystem,m_label,m_volumeSize,m_usedSpacePercentage } ;
+		return { m_volume,m_mountPoint,m_fileSystem,m_label,m_volumeSize,m_usedSpacePercentage } ;
 	}
 	volumeEntryProperties& setMountPoint( const QString& m )
 	{

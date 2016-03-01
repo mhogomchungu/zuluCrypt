@@ -53,7 +53,7 @@ public slots:
 	void raiseWindow( QString ) ;
 private slots:
 	void closeApplication( void ) ;
-	void unlockencfs( void ) ;
+	void unlockCryptFs( void ) ;
 	void showVisibleVolumeList( void ) ;
 	void showHiddenVolumeList( void ) ;
 	void removeVolumeFromHiddenVolumeList( QAction * ) ;

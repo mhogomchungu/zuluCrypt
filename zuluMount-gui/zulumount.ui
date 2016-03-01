@@ -106,7 +106,7 @@
          <enum>QLayout::SetFixedSize</enum>
         </property>
         <item>
-         <widget class="QPushButton" name="pbunlockencfs">
+         <widget class="QPushButton" name="pbunlockcryptfs">
           <property name="text">
            <string>Mount Encf&amp;s/Cryfs</string>
           </property>

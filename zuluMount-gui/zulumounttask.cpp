@@ -601,18 +601,12 @@ volumeStatus zuluMountTask::deviceProperties( const zuluMountTask::event& device
 	}
 }
 
-static bool _delete_encfs_mount_point( const QString& m )
+static bool _delete_mount_point( const QString& m )
 {
 	return utility::Task( utility::appendUserUID( "%1 -b %2" ).arg( zuluMountPath,m ) ).success() ;
 }
 
-static bool _delete_encfs_m_point( const QString& m )
-{
-	_delete_encfs_mount_point( m ) ;
-	return false ;
-}
-
-static bool _create_encfs_mount_point( const QString& m )
+static bool _create_mount_point( const QString& m )
 {
 	return utility::Task( utility::appendUserUID( "%1 -B %2" ).arg( zuluMountPath,m ) ).success() ;
 }
@@ -625,7 +619,7 @@ Task::future<bool>& zuluMountTask::encryptedFolderUnMount( const QString& m )
 
 			if( utility::Task( "fusermount -u \"" + m + "\"",10000 ).success() ){
 
-				return _delete_encfs_mount_point( m ) ;
+				return _delete_mount_point( m ) ;
 			}else{
 				return false ;
 			}
@@ -693,13 +687,13 @@ Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const 
 
 		auto _mount = [ & ]( std::function< ev() > unlocked )->ev{
 
-			if( _create_encfs_mount_point( m ) ){
+			if( _create_mount_point( m ) ){
 
 				auto e = unlocked() ;
 
 				if( e.state != ev::status::success ) {
 
-					_delete_encfs_m_point( m ) ;
+					_delete_mount_point( m ) ;
 				}
 
 				return e ;

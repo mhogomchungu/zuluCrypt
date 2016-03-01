@@ -62,7 +62,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_table = table ;
 	m_path = e.volumeName() ;
 	m_working = false ;
-	m_volumeIsEncFs = e.fileSystem() == "encfs" ;
+	m_encryptedFolder = e.fileSystem() == "cryptfs" ;
 
 	decltype( tr( "" ) ) msg ;
 
@@ -128,7 +128,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	auto _add_action = [ & ]( const QString& e ){
 
 		ac = m_menu_1->addAction( e ) ;
-		ac ->setEnabled( !m_volumeIsEncFs ) ;
+		ac ->setEnabled( !m_encryptedFolder ) ;
 	} ;
 
 	_add_action( tr( "Set File System Options" ) ) ;
@@ -141,7 +141,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 	m_ui->cbKeyType->addItem( tr( "Key+KeyFile" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "Plugin" ) ) ;
 
-	if( m_volumeIsEncFs ){
+	if( m_encryptedFolder ){
 
 		m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
 	}else{
@@ -279,7 +279,7 @@ void keyDialog::enableAll()
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
-	if( !m_volumeIsEncFs ){
+	if( !m_encryptedFolder ){
 
 		m_ui->checkBoxShareMountPoint->setEnabled( true ) ;
 	}
@@ -332,7 +332,7 @@ void keyDialog::pbkeyOption()
 void keyDialog::Plugin()
 {
 	utility::createPlugInMenu( m_menu,tr( INTERNAL_WALLET ),
-				   tr( GNOME_WALLET ),tr( KWALLET ),!m_volumeIsEncFs ) ;
+				   tr( GNOME_WALLET ),tr( KWALLET ),!m_encryptedFolder ) ;
 
 	m_menu->setFont( this->font() ) ;
 
@@ -493,7 +493,7 @@ void keyDialog::openVolume()
 {
 	auto keyType = m_ui->cbKeyType->currentIndex() ;
 
-	if( m_volumeIsEncFs ){
+	if( m_encryptedFolder ){
 
 		if( keyType == keyDialog::Key || keyType == keyDialog::keyKeyFile ){
 
