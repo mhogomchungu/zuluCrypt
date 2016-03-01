@@ -64,7 +64,7 @@ if( QT5 )
 
 	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqtwallet  ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} zuluCryptPluginManager )
 
-	set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+	set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 else()
 	find_package( Qt4 REQUIRED )
 
@@ -85,21 +85,21 @@ else()
 
 	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqtwallet ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager )
 
-	set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+	set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 endif()
 
 set_target_properties( zuluMount-gui PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic " )
 
-install( TARGETS zuluMount-gui RUNTIME DESTINATION bin )
+install( TARGETS zuluMount-gui RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 
 install ( FILES ${PROJECT_BINARY_DIR}/zuluMount.desktop
-DESTINATION share/applications
+DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
 
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-install( FILES zuluMount.png DESTINATION /usr/share/icons/hicolor/48x48/apps/ )
-install( FILES zuluMount.png DESTINATION /usr/share/pixmaps )
+install( FILES zuluMount.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluMount.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 
 #install ( FILES zuluMount.png DESTINATION share/icons/hicolor/32x32/apps )
 
@@ -109,7 +109,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/zuluMount.desktop
 "[Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluMount-gui -d %U
+Exec=${CMAKE_INSTALL_FULL_BINDIR}/zuluMount-gui -d %U
 GenericName[en_US]=Encrypted volume and Partition mounter
 GenericName=Encrypted volumes and partition mounter
 Icon=zuluMount.png

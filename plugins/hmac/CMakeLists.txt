@@ -10,7 +10,7 @@ else()
 	add_executable( hmac ${ICON} main.cpp )
 endif()
 
-set_target_properties( hmac PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+set_target_properties( hmac PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 set_target_properties( hmac PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 TARGET_LINK_LIBRARIES( hmac plugin -lgcrypt )

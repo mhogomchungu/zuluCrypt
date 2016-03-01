@@ -32,7 +32,7 @@ else()
 							add_executable( kwallet ${MOC} main.cpp wallet.cpp )
 
 							TARGET_LINK_LIBRARIES( kwallet ${LIBQTCORE_} ${LIBQTGUI_} ${LIBKDECORE_} ${LIBKDEUI_} sharedObject ${LIBKWALLETBACKEND_} zuluCryptPluginManager )
-							set_target_properties( kwallet PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+							set_target_properties( kwallet PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 							set_target_properties( kwallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 							install( TARGETS kwallet RUNTIME DESTINATION "${PLUGINPATH}" )

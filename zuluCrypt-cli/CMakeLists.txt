@@ -1,8 +1,8 @@
  cmake_minimum_required(VERSION 2.6)
 
- file(WRITE  ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-cli\"\n")
- file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define zuluMountPath	         \"${CMAKE_INSTALL_PREFIX}/bin/zuluMount-cli\"\n")
- file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTplugInPath     \"${CMAKE_INSTALL_PREFIX}/zuluCrypt/zuluCrypt-testKey\"\n")
+ file(WRITE  ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_FULL_BINDIR}/zuluCrypt-cli\"\n")
+ file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define zuluMountPath	         \"${CMAKE_INSTALL_FULL_BINDIR}/zuluMount-cli\"\n")
+ file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTplugInPath     \"${PLUGINPATH}/zuluCrypt-testKey\"\n")
 
  add_definitions( -I${PROJECT_BINARY_DIR} )
 
@@ -149,8 +149,8 @@
 
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe zuluCrypt )
 
- set_target_properties( zuluCrypt-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
- set_target_properties( zuluMount-cli PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+ set_target_properties( zuluCrypt-cli PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+ set_target_properties( zuluMount-cli PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 
 
   #zuluCryptKeyServer not used
@@ -168,16 +168,16 @@
 		set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread  -pedantic" )
 		set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
 		TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} ${blkid} ${LIBSECRET_LIBRARIES} )
-		set_target_properties( keyring PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+		set_target_properties( keyring PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 		install( TARGETS keyring RUNTIME DESTINATION "${PLUGINPATH}" )
 	endif()
  endif()
 
- install(TARGETS zuluCrypt-cli RUNTIME DESTINATION bin
+ install(TARGETS zuluCrypt-cli RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
  )
 
- install(TARGETS zuluMount-cli RUNTIME DESTINATION bin
+ install(TARGETS zuluMount-cli RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE SETUID
  )
 
@@ -187,20 +187,20 @@
  set_target_properties( zuluCrypt-testKey PROPERTIES LINK_FLAGS "-pie" )
 
  TARGET_LINK_LIBRARIES( zuluCrypt-testKey zuluCryptPluginManager ${blkid} )
- set_target_properties( zuluCrypt-testKey PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
- #set_target_properties( zuluCrypt-test PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+ set_target_properties( zuluCrypt-testKey PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+ #set_target_properties( zuluCrypt-test PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 
  file( WRITE ${PROJECT_BINARY_DIR}/libzuluCrypt.pc
  "prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=${CMAKE_INSTALL_PREFIX}
-libdir=${LIB_PATH}
-includedir=${CMAKE_INSTALL_PREFIX}/include
+libdir=${CMAKE_INSTALL_FULL_LIBDIR}
+includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}
 
 Name: libzuluCrypt
 Description: a zuluCrypt library,a front end to cryptsetup
 Version: ${LIB_VERSION}
-Libs: -L${LIB_PATH} -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount ${TCPLAY_LIB} -L${TCPLAY_LIBDIR} -L${BLKID_LIBDIR} -L${CRYPTSETUP_LIBDIR}
-Cflags: -I${CMAKE_INSTALL_PREFIX}/include
+Libs: -L${CMAKE_INSTALL_FULL_LIBDIR} -lcryptsetup -lzuluCrypt -lzuluCrypt-exe -lzuluCryptPluginManager -lblkid -lmount ${TCPLAY_LIB} -L${TCPLAY_LIBDIR} -L${BLKID_LIBDIR} -L${CRYPTSETUP_LIBDIR}
+Cflags: -I${CMAKE_INSTALL_FULL_INCLUDEDIR}
 \n")
 
  #install(TARGETS zuluCrypt-test RUNTIME DESTINATION bin
@@ -209,22 +209,21 @@ Cflags: -I${CMAKE_INSTALL_PREFIX}/include
 
  install( TARGETS zuluCrypt-testKey RUNTIME DESTINATION "${PLUGINPATH}" )
 
- # ${LIB_PATH} is set in ../CMakeLists.txt
- install(TARGETS zuluCryptPluginManager LIBRARY DESTINATION ${LIB_PATH} )
+ install(TARGETS zuluCryptPluginManager LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 
- #install(TARGETS zuluCryptPluginManager-static ARCHIVE DESTINATION ${LIB_PATH} )
+ #install(TARGETS zuluCryptPluginManager-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 
- install(TARGETS zuluCrypt LIBRARY DESTINATION ${LIB_PATH} )
+ install(TARGETS zuluCrypt LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 
- install(TARGETS zuluCrypt-exe LIBRARY DESTINATION ${LIB_PATH} )
+ install(TARGETS zuluCrypt-exe LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 
- #install(TARGETS zuluCrypt-exe-static ARCHIVE DESTINATION ${LIB_PATH} )
+ #install(TARGETS zuluCrypt-exe-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 
- #install(TARGETS zuluCrypt-static ARCHIVE DESTINATION ${LIB_PATH} )
+ #install(TARGETS zuluCrypt-static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} )
 
- install(FILES lib/libzuluCrypt.h              		 DESTINATION include/zuluCrypt )
- install(FILES bin/libzuluCrypt-exe.h		         DESTINATION include/zuluCrypt )
- install(FILES pluginManager/libzuluCryptPluginManager.h DESTINATION include/zuluCrypt )
- install(FILES ${PROJECT_BINARY_DIR}/libzuluCrypt.pc     DESTINATION ${LIB_PATH}/pkgconfig/ PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
+ install(FILES lib/libzuluCrypt.h              		 DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zuluCrypt )
+ install(FILES bin/libzuluCrypt-exe.h		         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zuluCrypt )
+ install(FILES pluginManager/libzuluCryptPluginManager.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zuluCrypt )
+ install(FILES ${PROJECT_BINARY_DIR}/libzuluCrypt.pc     DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/ PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
 
 
