@@ -10,7 +10,7 @@ else()
 	add_executable( tomb ${ICON} main.cpp )
 endif()
 
-set_target_properties( tomb PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+set_target_properties( tomb PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 set_target_properties( tomb PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 TARGET_LINK_LIBRARIES( tomb plugin )

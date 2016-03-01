@@ -281,33 +281,23 @@ set_target_properties(lxqtwallet PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=6
 set_target_properties(lxqtwallet PROPERTIES SOVERSION "${LIBRARY_VERSION}")
 TARGET_LINK_LIBRARIES(lxqtwallet "${link_libraries}" lxqtwallet-backend)
 
-if(LIB_SUFFIX)
-	set(LIB_PATH "${CMAKE_INSTALL_PREFIX}/${LIB_SUFFIX}")
-else()
-	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-		set(LIB_PATH "${CMAKE_INSTALL_PREFIX}/lib64")
-	else()
-		set(LIB_PATH "${CMAKE_INSTALL_PREFIX}/lib")
-	endif()
-endif()
-
 if(BUILD_SHARED)
-	install(TARGETS lxqtwallet RUNTIME LIBRARY DESTINATION "${LIB_PATH}")
+	install(TARGETS lxqtwallet RUNTIME LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 
-	install(FILES lxqt_wallet.h DESTINATION "${CMAKE_INSTALL_PREFIX}/include/lxqt")
+	install(FILES lxqt_wallet.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/lxqt")
 
 	file( WRITE ${PROJECT_BINARY_DIR}/lxqtwallet.pc
 "prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=${CMAKE_INSTALL_PREFIX}
-libdir=${LIB_PATH}
-includedir=${CMAKE_INSTALL_PREFIX}/include/lxqt
+libdir=${CMAKE_INSTALL_FULL_LIBDIR}
+includedir=${CMAKE_INSTALL_FULL_INCLUDEDIR}/lxqt
 
 Name: lxqt_wallet
 Description: lxqt secure storage system
 Version: ${LIBRARY_VERSION}
-Libs: -L${LIB_PATH} -lQtGui -lQtCore -lgcrypt
-Cflags: -I${CMAKE_INSTALL_PREFIX}/include/lxqt
+Libs: -L${CMAKE_INSTALL_FULL_LIBDIR} -lQtGui -lQtCore -lgcrypt
+Cflags: -I${CMAKE_INSTALL_FULL_INCLUDEDIR}/lxqt
 \n")
 
-	install(FILES ${PROJECT_BINARY_DIR}/lxqtwallet.pc DESTINATION ${LIB_PATH}/pkgconfig/ PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
+	install(FILES ${PROJECT_BINARY_DIR}/lxqtwallet.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig/ PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ )
 endif()

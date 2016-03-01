@@ -10,7 +10,7 @@ else()
 	add_executable( luks ${ICON} main.cpp )
 endif()
 
-set_target_properties( luks PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+set_target_properties( luks PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 set_target_properties( luks PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 TARGET_LINK_LIBRARIES( luks plugin )
@@ -27,7 +27,7 @@ else()
 	add_executable( generic_header ${ICON} main.cpp )
 endif()
 
-set_target_properties( generic_header PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+set_target_properties( generic_header PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 set_target_properties( generic_header PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 TARGET_LINK_LIBRARIES( generic_header plugin )

@@ -9,7 +9,7 @@ if( QT5 )
 
 	add_executable( keydialog-qt ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp )
 	TARGET_LINK_LIBRARIES( keydialog-qt sharedObject ${Qt5Widgets_LIBRARIES} ${QtCore_LIBRARIES} zuluCryptPluginManager ${blkid} )
-	set_target_properties( keydialog-qt PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+	set_target_properties( keydialog-qt PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 	set_target_properties( keydialog-qt PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 else()
 	INCLUDE( ${QT_USE_FILE} )
@@ -19,7 +19,7 @@ else()
 
 	add_executable( keydialog-qt ${ICON} ${MOC} ${UI} main.cpp mainwindow.cpp )
 	TARGET_LINK_LIBRARIES( keydialog-qt sharedObject ${QT_LIBRARIES} zuluCryptPluginManager ${blkid} )
-	set_target_properties( keydialog-qt PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+	set_target_properties( keydialog-qt PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 	set_target_properties( keydialog-qt PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 endif()
 

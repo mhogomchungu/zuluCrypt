@@ -5,6 +5,8 @@ set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON)
 
 project(zuluCrypt)
 
+INCLUDE(GNUInstallDirs)
+
 set( PGR_VERSION "4.9.0" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
@@ -102,16 +104,6 @@ else()
 	MESSAGE( STATUS "found gcrypt library: ${GCRYPT_LIBRARY}" )
 endif()
 
-if( LIB_SUFFIX )
-	set ( LIB_PATH "${CMAKE_INSTALL_PREFIX}/${LIB_SUFFIX}" )
-else( LIB_SUFFIX )
-	if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-		set ( LIB_PATH "${CMAKE_INSTALL_PREFIX}/lib64" )
-	else( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-		set ( LIB_PATH "${CMAKE_INSTALL_PREFIX}/lib" )
-	endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-endif( LIB_SUFFIX )
-
 file( WRITE  ${PROJECT_BINARY_DIR}/install_prefix.h "\n#define INSTALL_PREFIX \"${CMAKE_INSTALL_PREFIX}/\"\n" )
 
 if( REUSEMOUNTPOINT )
@@ -121,7 +113,7 @@ else()
 endif()
 
 
-set( PLUGINPATH "${LIB_PATH}/zuluCrypt" )
+set( PLUGINPATH "${CMAKE_INSTALL_FULL_LIBDIR}/zuluCrypt" )
 
 file( WRITE ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTpluginPath      \"${PLUGINPATH}/\"\n" )
 file( APPEND ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTTestPlugin      \"${PLUGINPATH}/zuluCrypt-testKey\"\n" )
@@ -213,7 +205,7 @@ else( NOT NOGUI )
 	endif()
 endif( NOT NOGUI )
 
-file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${CMAKE_INSTALL_PREFIX}/share/zuluCrypt/translations/\"\n")
+file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${CMAKE_INSTALL_FULL_DATADIR}/zuluCrypt/translations/\"\n")
 
 message ( STATUS "---------------------------------------------------------------------------" )
 message ( STATUS "optional functionality that will be build" )
@@ -289,15 +281,15 @@ else( UDEVSUPPORT )
 
 endif( UDEVSUPPORT )
 
-install ( FILES zuluCrypt-cli.1 DESTINATION share/man/man1 )
-install ( FILES zuluCrypt-gui.1 DESTINATION share/man/man1 )
-install ( FILES zuluMount-cli.1 DESTINATION share/man/man1 )
-install ( FILES zuluMount-gui.1 DESTINATION share/man/man1 )
-install ( FILES zuluSafe-cli.1  DESTINATION share/man/man1 )
-install ( FILES docs/zuluCrypt.pdf  DESTINATION share/zuluCrypt )
+install ( FILES zuluCrypt-cli.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
+install ( FILES zuluCrypt-gui.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
+install ( FILES zuluMount-cli.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
+install ( FILES zuluMount-gui.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
+install ( FILES zuluSafe-cli.1  DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
+install ( FILES docs/zuluCrypt.pdf  DESTINATION ${CMAKE_INSTALL_DOCDIR} )
 
-file( WRITE ${PROJECT_BINARY_DIR}/pdf_path.h "\n#define PDF_PATH \"${CMAKE_INSTALL_PREFIX}/share/zuluCrypt/zuluCrypt.pdf\"\n" )
+file( WRITE ${PROJECT_BINARY_DIR}/pdf_path.h "\n#define PDF_PATH \"${CMAKE_INSTALL_DOCDIR}/zuluCrypt.pdf\"\n" )
 
 #install ( FILES translations/zuluMount/de_DE.qm DESTINATION share/zuluCrypt/translations/zuluMount-gui )
-install ( FILES translations/zuluCrypt/de_DE.qm DESTINATION share/zuluCrypt/translations/zuluCrypt-gui )
+install ( FILES translations/zuluCrypt/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluCrypt-gui )
 

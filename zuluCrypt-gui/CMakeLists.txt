@@ -94,7 +94,7 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )
 
-set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${LIB_PATH}" )
+set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 
 set_target_properties( zuluCrypt-gui PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
 
@@ -117,16 +117,16 @@ else()
 
 endif()
 
-install( TARGETS zuluCrypt-gui RUNTIME DESTINATION bin )
+install( TARGETS zuluCrypt-gui RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 
 install( FILES ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
-DESTINATION share/applications
+DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
 
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-install( FILES zuluCrypt.png DESTINATION /usr/share/icons/hicolor/48x48/apps/ )
-install( FILES zuluCrypt.png DESTINATION /usr/share/pixmaps )
+install( FILES zuluCrypt.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluCrypt.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 #install (FILES zuluCrypt.png DESTINATION share/icons/hicolor/32x32/apps)
 
 # desktop file section
@@ -135,7 +135,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
 "[Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-gui -d %U
+Exec=${CMAKE_INSTALL_FULL_BINDIR}/zuluCrypt-gui -d %U
 GenericName[en_US]=Encrypted volumes manager
 GenericName=Encrypted volumes manager
 Icon=zuluCrypt.png
