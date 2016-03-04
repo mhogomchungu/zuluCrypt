@@ -408,7 +408,7 @@ static bool _execute_process( const QString& m,const QString& exe,const QString&
 				Q_UNUSED( setgid( uid ) ) ;
 				Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
 				Q_UNUSED( setegid( uid ) ) ;
-				Q_UNUSED( setuid( uid ) ) ;				
+				Q_UNUSED( setuid( uid ) ) ;
 
 				auto id = getpwuid( uid ) ;
 
@@ -620,7 +620,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 							j = i ;
 						}
 
-						if( size_written == size ){
+						if( size_written >= size ){
 
 							break ;
 						}

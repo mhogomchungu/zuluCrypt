@@ -146,17 +146,17 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1221"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1231"/>
         <source>Manage Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1257"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1267"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1491"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1501"/>
         <source>hmac plugin.
 
 This plugin generates a key using below formular:
@@ -165,7 +165,7 @@ key = hmac(sha256,passphrase,keyfile contents)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1496"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1506"/>
         <source>keykeyfile plugin.
 
 This plugin generates a key using below formular:
@@ -174,34 +174,34 @@ key = passphrase + keyfile contents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1501"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1511"/>
         <source>gpg plugin.
 
 This plugin retrives a key locked in a gpg file with a symmetric key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1519"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1529"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1519"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1529"/>
         <source>Could not find &quot;gpg&quot; executable in &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; and &quot;/usr/sbin&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1687"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1697"/>
         <source>INFO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1687"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1697"/>
         <source>Translation will be done the next time you restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="639"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="649"/>
         <source>if the option is checked,a primary private mount point will be created in &quot;/run/media/private/$USER/&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;/run/media/public/&quot;</source>
         <translation type="unfinished"></translation>
