@@ -370,8 +370,10 @@ typedef struct{
 
 }mapper_info;
 
-static void _tcplay_info( mapper_info * e )
+static int _tcplay_info( mapper_info * e )
 {
+	int r = 0 ;
+
 	tc_api_task task ;
 
 	tcplay_volume_info info ;
@@ -393,10 +395,14 @@ static void _tcplay_info( mapper_info * e )
 			e->function( e,&info ) ;
 
 			tc_api_task_uninit( task ) ;
+
+			r = 1 ;
 		}
 
 		tc_api_uninit() ;
 	}
+
+	return r ;
 }
 
 static void _get_volume_properties( void * e,tcplay_volume_info * info )
@@ -447,7 +453,10 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 	e.format_offset = _format_offset ;
 	e.function      = _get_volume_properties ;
 
-	_tcplay_info( &e ) ;
+	if( _tcplay_info( &e ) == 0 ){
+
+		StringMultipleAppend( p,mapper," is invalid.\n",NULL ) ;
+	}
 
 	return p ;
 }
@@ -672,35 +681,37 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	}
 }
 
-static char * _device_name( const char * mapper,char * ( *function )( const char * ) )
+typedef struct{
+
+	char * device ;
+	char * ( *function )( const char * ) ;
+}info_device ;
+
+static void _info_device( void * e,tcplay_volume_info * info )
 {
-	tc_api_task task ;
+	mapper_info * m = e ;
+	info_device * d = m->argument ;
 
-	char * e = NULL ;
+	d->device = d->function( info->device ) ;
+}
 
-	tcplay_volume_info info ;
+static char * _device_name( const char * mapper,char * ( *function )( const char * ) )
+{	
+	mapper_info e ;
+	info_device d ;
 
-	memset( &info,'\0',sizeof( info ) ) ;
+	memset( &e,'\0',sizeof( e ) ) ;
+	memset( &d,'\0',sizeof( d ) ) ;
 
-	if( tc_api_initialize() ){
+	d.function = function ;
 
-		if( tc_api_task_initialize( &task,"info_mapped" ) ){
+	e.argument      = &d ;
+	e.mapper        = mapper ;
+	e.function      = _info_device ;
 
-			tc_api_task_set( task,"map_name",mapper ) ;
+	_tcplay_info( &e ) ;
 
-			tc_api_task_do( task ) ;
-
-			tc_api_task_info_get( task,"volume_info",sizeof( info ),&info ) ;
-
-			e = function( info.device ) ;
-
-			tc_api_task_uninit( task ) ;
-		}
-
-		tc_api_uninit() ;
-	}
-
-	return e ;
+	return d.device ;
 }
 
 static char * _volume_device_name( const char * mapper,char * ( *function )( const char * ) )
