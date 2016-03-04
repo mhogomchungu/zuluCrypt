@@ -230,3 +230,8 @@ version 4.8.0
 version 4.9.0
 -- add support for unlocking cryfs(https://www.cryfs.org/) encrypted volumes in zuluMount.
 -- various fixes and improvements
+
+version 5.0.0
+-- add support for creating LUKS volumes that only uses a detached header.The detached header will be created in the
+   user home directory and the volume can not be unlocked without this detached header.The detached header can be
+   reattached later on through zuluCrypt-gui->menu->Volumes->Restore Volume Header.

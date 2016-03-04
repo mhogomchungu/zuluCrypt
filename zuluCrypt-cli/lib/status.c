@@ -372,7 +372,7 @@ typedef struct{
 
 static int _tcplay_info( mapper_info * e )
 {
-	int r = 0 ;
+	int r = 1 ;
 
 	tc_api_task task ;
 
@@ -396,7 +396,7 @@ static int _tcplay_info( mapper_info * e )
 
 			tc_api_task_uninit( task ) ;
 
-			r = 1 ;
+			r = 0 ;
 		}
 
 		tc_api_uninit() ;
@@ -453,7 +453,7 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 	e.format_offset = _format_offset ;
 	e.function      = _get_volume_properties ;
 
-	if( _tcplay_info( &e ) == 0 ){
+	if( _tcplay_info( &e ) != 0 ){
 
 		StringMultipleAppend( p,mapper," is invalid.\n",NULL ) ;
 	}
@@ -696,7 +696,7 @@ static void _info_device( void * e,tcplay_volume_info * info )
 }
 
 static char * _device_name( const char * mapper,char * ( *function )( const char * ) )
-{	
+{
 	mapper_info e ;
 	info_device d ;
 
