@@ -653,7 +653,7 @@ Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const 
 
 				if( utility::pathExists( exe ) ){
 
-					QProcess e ;					
+					QProcess e ;
 
 					e.start( exe + " " + arguments ) ;
 
@@ -662,7 +662,7 @@ Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const 
 					e.write( k.toLatin1() + '\n' ) ;
 
 					e.closeWriteChannel() ;
-					
+
 					if( e.waitForFinished( 10000 ) ){
 
 						if( e.exitCode() == 0 ){

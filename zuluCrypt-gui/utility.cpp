@@ -516,15 +516,20 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 	}
 }
 
-static quint64 _volumeSize( const QString& e )
+static quint64 _volumeSize( const QString& e,size_t size )
 {
 	utility::fileHandle h ;
 
-	if( h.open( e ) ){
+	if( size == 0 ){
 
-		return h.size() ;
+		if( h.open( e ) ){
+
+			return h.size() ;
+		}else{
+			return 0 ;
+		}
 	}else{
-		return 0 ;
+		return size ;
 	}
 }
 
@@ -557,9 +562,9 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 	return write( fd,buffer,bufferSize ) != -1 ;
 }
 
-::Task::future< int >& utility::clearVolume( const QString& volume,bool * exit,std::function< void( int ) > function )
+::Task::future< int >& utility::clearVolume( const QString& volume,bool * exit,size_t volumeSize,std::function< void( int ) > function )
 {
-	return ::Task::run<int>( [ volume,exit,function ](){
+	return ::Task::run<int>( [ volume,exit,volumeSize,function ](){
 
 		auto volumePath = volume ;
 
@@ -588,7 +593,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 
 				char buffer[ bufferSize ] ;
 
-				quint64 size         = _volumeSize( volumeMapperPath ) ;
+				quint64 size         = _volumeSize( volumeMapperPath,volumeSize ) ;
 				quint64 size_written = 0 ;
 
 				if( size == 0 ){
@@ -613,6 +618,11 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 							function( i ) ;
 
 							j = i ;
+						}
+
+						if( size_written == size ){
+
+							break ;
 						}
 					}
 				}

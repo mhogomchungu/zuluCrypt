@@ -23,6 +23,7 @@
 #include <pwd.h>
 #include <blkid/blkid.h>
 #include <sys/syscall.h>
+#include <stdio.h>
 
 #include "libzuluCryptPluginManager.h"
 #include "../utility/process/process.h"
@@ -38,7 +39,6 @@
  * below header file is created at config time.
  */
 #include "plugin_path.h"
-#include <stdio.h>
 
 #if 0
 static void _debug_0( process_t p,ProcessIO std_io )

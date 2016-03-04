@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2011-2015
  *  name : Francis Banyikwa
@@ -361,6 +361,148 @@ static void _device_info( string_t p,const char * device )
 	}
 }
 
+typedef struct{
+
+	const char * mapper ;
+	void * argument ;
+	void ( *function )( void *,tcplay_volume_info * info ) ;
+	void ( *format_offset )( u_int64_t offset,char * buffer,size_t s ) ;
+
+}mapper_info;
+
+static void _tcplay_info( mapper_info * e )
+{
+	tc_api_task task ;
+
+	tcplay_volume_info info ;
+
+	memset( &info,'\0',sizeof( info ) ) ;
+
+	if( tc_api_initialize() ){
+
+		if( tc_api_task_initialize( &task,"info_mapped" ) ){
+
+			tc_api_task_set( task,"map_name",e->mapper ) ;
+
+			tc_api_task_do( task ) ;
+
+			info.format_offset = e->format_offset ;
+
+			tc_api_task_info_get( task,"volume_info",sizeof( info ),&info ) ;
+
+			e->function( e,&info ) ;
+
+			tc_api_task_uninit( task ) ;
+		}
+
+		tc_api_uninit() ;
+	}
+}
+
+static void _get_volume_properties( void * e,tcplay_volume_info * info )
+{
+	mapper_info * p = e ;
+	string_t st = p->argument ;
+
+	StringMultipleAppend( st,p->mapper," ",info->status,".",NULL ) ;
+
+	if( StringAtLeastOneMatch_1( info->status,"active","active and is in use",NULL ) ){
+
+		StringMultipleAppend( st,
+				      "\n type:   \t",info->type,
+				      "\n cipher: \t",info->cipher,
+				      "\n keysize:\t",info->keysize,
+				      "\n offset: \t",info->offset,NULL ) ;
+
+		_device_info( st,info->device ) ;
+
+		StringMultipleAppend( st,"\n mode:   \t",info->mode,"\n active slots:\tNil",NULL ) ;
+	}
+}
+
+static void _format_offset( u_int64_t offset,char * buffer,size_t s )
+{
+	char tmp[ 128 ] ;
+	char tmp_0[ 128 ] ;
+
+	const char * e ;
+
+	zuluCryptFormatSize( 512 * offset,tmp,sizeof( tmp ) ) ;
+
+	e = StringIntToString_1( tmp_0,sizeof( tmp_0 ),offset ) ;
+
+	snprintf( buffer,s,"%s sectors / %s",e,tmp ) ;
+}
+
+static string_t _get_crypto_info_from_tcplay( const char * mapper )
+{
+	string_t p = StringEmpty() ;
+
+	mapper_info e ;
+
+	memset( &e,'\0',sizeof( e ) ) ;
+
+	e.argument      = p ;
+	e.mapper        = mapper ;
+	e.format_offset = _format_offset ;
+	e.function      = _get_volume_properties ;
+
+	_tcplay_info( &e ) ;
+
+	return p ;
+}
+
+static void _get_volume_offset( void * e,tcplay_volume_info * info )
+{
+	mapper_info * p = e ;
+
+	u_int64_t * q = p->argument ;
+
+	*q = StringConvertToInt( info->offset ) ;
+}
+
+static void _format_offset_1( u_int64_t offset,char * buffer,size_t s )
+{
+	char tmp[ 128 ] ;
+	char tmp_0[ 128 ] ;
+
+	const char * e ;
+
+	zuluCryptFormatSize( 512 * offset,tmp,sizeof( tmp ) ) ;
+
+	e = StringIntToString_1( tmp_0,sizeof( tmp_0 ),offset ) ;
+
+	snprintf( buffer,s,"%s",e ) ;
+}
+
+u_int64_t _crypt_get_data_offset( struct crypt_device * cd,const char * mapper,const char * type )
+{
+	u_int64_t p = crypt_get_data_offset( cd ) ;
+
+	mapper_info e ;
+
+	if( p == 0 && ( type == NULL || StringPrefixEqual( type,"LUKS" ) ) ){
+
+		/*
+		 * cryptsetup returns offset 0 with LUKS volumes that uses a detached header.
+		 *
+		 * We take this path here to ask tcplay to get the offset for us since cryptsetup
+		 * returns wrong info
+		 */
+
+		memset( &e,'\0',sizeof( e ) ) ;
+
+		e.argument      = &p ;
+		e.mapper        = mapper ;
+		e.format_offset = _format_offset_1 ;
+		e.function      = _get_volume_offset ;
+
+		_tcplay_info( &e ) ;
+	}
+
+	return p ;
+}
+
 static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 {
 	char buff[ SIZE ] ;
@@ -450,7 +592,7 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 		z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
 		StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
 
-		e = crypt_get_data_offset( cd ) ;
+		e = _crypt_get_data_offset( cd,mapper,type ) ;
 
 		z = StringIntToString_1( buffer,SIZE,e ) ;
 		StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
@@ -494,66 +636,6 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 	}
 
 	crypt_free( cd ) ;
-
-	return p ;
-}
-
-static void _format_offset( u_int64_t offset,char * buffer,size_t s )
-{
-	char tmp[ 128 ] ;
-	char tmp_0[ 128 ] ;
-
-	const char * e ;
-
-	zuluCryptFormatSize( 512 * offset,tmp,sizeof( tmp ) ) ;
-
-	e = StringIntToString_1( tmp_0,sizeof( tmp_0 ),offset ) ;
-
-	snprintf( buffer,s,"%s sectors / %s",e,tmp ) ;
-}
-
-static string_t _get_crypto_info_from_tcplay( const char * mapper )
-{
-	tc_api_task task ;
-
-	string_t p = StringVoid ;
-
-	tcplay_volume_info info ;
-
-	memset( &info,'\0',sizeof( info ) ) ;
-
-	if( tc_api_initialize() ){
-
-		if( tc_api_task_initialize( &task,"info_mapped" ) ){
-
-			tc_api_task_set( task,"map_name",mapper ) ;
-
-			tc_api_task_do( task ) ;
-
-			info.format_offset = _format_offset ;
-
-			tc_api_task_info_get( task,"volume_info",sizeof( info ),&info ) ;
-
-			p = String_1( mapper," ",info.status,".",NULL ) ;
-
-			if( StringAtLeastOneMatch_1( info.status,"active","active and is in use",NULL ) ){
-
-				StringMultipleAppend( p,
-						      "\n type:   \t",info.type,
-						      "\n cipher: \t",info.cipher,
-						      "\n keysize:\t",info.keysize,
-						      "\n offset: \t",info.offset,NULL ) ;
-
-				_device_info( p,info.device ) ;
-
-				StringMultipleAppend( p,"\n mode:   \t",info.mode,"\n active slots:\tNil",NULL ) ;
-			}
-
-			tc_api_task_uninit( task ) ;
-		}
-
-		tc_api_uninit() ;
-	}
 
 	return p ;
 }

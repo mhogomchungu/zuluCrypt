@@ -53,8 +53,10 @@ public:
 	typedef enum{
 		plain,
 		luks,
+		luks_external_header,
 #ifdef CRYPT_LUKS2
 		luks2,
+		luks2_external_header,
 #endif
 		normal_truecrypt,
 		normal_and_hidden_truecrypt,
@@ -84,11 +86,12 @@ private slots:
 	void cbHiddenVolume( int ) ;
 	void pbOpenKeyFile( void ) ;
 	void pbOpenHiddenKeyFile( void ) ;
-	void taskFinished( int ) ;
 	void volumeType( int ) ;
 	void setOptions( int ) ;
 	void tcryptGui( bool ) ;
 private:
+	void taskFinished( int ) ;
+	void taskFinished_1( int ) ;
 	void keyChanged( bool,const QString& ) ;
 	void eraseDataPartition( void ) ;
 	void enableAll( void ) ;

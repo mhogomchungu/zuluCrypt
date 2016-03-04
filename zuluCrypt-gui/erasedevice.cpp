@@ -195,7 +195,7 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 	auto _update = [ & ]( int i ){ emit sendProgress( i ) ;	} ;
 #endif
 
-	auto r = utility::clearVolume( path,&m_exit,_update ).await() ;
+	auto r = utility::clearVolume( path,&m_exit,0,_update ).await() ;
 
 	m_running = false ;
 

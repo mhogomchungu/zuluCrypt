@@ -207,7 +207,7 @@ void createfile::pbCreate()
 	m_exit = false ;
 	m_running = true ;
 
-	int r = utility::clearVolume( filePath,&m_exit,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
+	int r = utility::clearVolume( filePath,&m_exit,0,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
 
 	if( r == 5 ){
 

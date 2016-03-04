@@ -97,12 +97,15 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 
 	m_ui->comboBoxVolumeType->clear() ;
 
-	m_ui->comboBoxVolumeType->addItem( "plain dm-crypt" ) ;
+	m_ui->comboBoxVolumeType->addItem( "PLAIN dm-crypt" ) ;
 #ifdef CRYPT_LUKS2
-	m_ui->comboBoxVolumeType->addItem( "luks1" ) ;
-	m_ui->comboBoxVolumeType->addItem( "luks2" ) ;
+	m_ui->comboBoxVolumeType->addItem( "LUKS1" ) ;
+	m_ui->comboBoxVolumeType->addItem( "LUKS1+External Header" ) ;
+	m_ui->comboBoxVolumeType->addItem( "LUKS2" ) ;
+	m_ui->comboBoxVolumeType->addItem( "LUKS2+External Header" ) ;
 #else
-	m_ui->comboBoxVolumeType->addItem( "luks" ) ;
+	m_ui->comboBoxVolumeType->addItem( "LUKS" ) ;
+	m_ui->comboBoxVolumeType->addItem( "LUKS+External Header" ) ;
 #endif
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal TrueCrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden TrueCrypt" ) ) ;
@@ -204,8 +207,10 @@ void createvolume::volumeType( int s )
 	switch( createvolume::createVolumeType( s ) ){
 
 	case createvolume::luks :
+	case createvolume::luks_external_header :
 #ifdef CRYPT_LUKS2
 	case createvolume::luks2 :
+	case createvolume::luks2_external_header :
 #endif
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->groupBox->setEnabled( false ) ;
@@ -338,14 +343,14 @@ void createvolume::setOptions( int e )
 
 	auto type = m_ui->comboBoxVolumeType->currentText() ;
 
-	if( type == "plain dm-crypt" ){
+	if( type.contains( "PLAIN" ) ){
 
 		/*
 		 * crypto options for plain dm-crypt volumes
 		 */
 		options->addItem( "aes.cbc-essiv:256.256.ripemd160" ) ;
 
-	}else if( type.contains( "luks" ) ){
+	}else if( type.contains( "LUKS" ) ){
 
 		/*
 		 * cryto options for LUKS volumes.
@@ -859,12 +864,14 @@ void createvolume::pbCreateClicked()
 	switch( type ){
 
 	case createvolume::luks :
+	case createvolume::luks_external_header :
 
 		m_volumeType = "luks" ;
 
-		break ;
+		break ;		
 #ifdef CRYPT_LUKS2
 	case createvolume::luks2 :
+	case createvolume::luks2_external_header :
 
 		m_volumeType = "luks2" ;
 
@@ -977,7 +984,50 @@ void createvolume::pbCreateClicked()
 
 	this->disableAll() ;
 
-	this->taskFinished( utility::exec( exe ).await() ) ;
+#ifdef CRYPT_LUKS2
+	if( type == createvolume::luks_external_header || type == createvolume::luks2_external_header ){
+#else
+	if( type == createvolume::luks_external_header ){
+#endif
+		this->taskFinished_1( utility::exec( exe ).await() ) ;
+	}else{
+		this->taskFinished( utility::exec( exe ).await() ) ;
+	}
+}
+
+void createvolume::taskFinished_1( int st )
+{
+	if( st != 0 ){
+
+		this->taskFinished( st ) ;
+	}else{
+		auto volumePath   = m_ui->lineEditVolumePath->text() ;
+		volumePath.replace( "\"","\"\"\"" ) ;
+
+		auto backUp = utility::homePath() + "/" + volumePath.split( '/' ).last() + ".volumeHeaderBackUp" ;
+
+		auto e = "%1 -B -d \"%2\" -z \"%3\"" ;
+
+		auto exe = QString( e ).arg( ZULUCRYPTzuluCrypt,volumePath,backUp ) ;
+
+		DialogMsg msg( this ) ;
+
+		if( utility::exec( exe ).await() != 0 ){
+
+			msg.ShowUIOK( tr( "WARNING!" ),tr( "Volume created successfully but failed to create an external header" ) ) ;
+		}else{
+			bool exit = false ;
+
+			if( utility::clearVolume( volumePath,&exit,2 * 1024 * 1024,[]( int r ){ Q_UNUSED( r ) ; } ).await() == 0 ){
+
+				msg.ShowUIOK( tr( "SUCCESS!" ),tr( "Luks volume created successfully." ) ) ;
+			}else{
+				msg.ShowUIOK( tr( "WARNING!" ),tr( "Luks volume created successfully,external header created successfully but failed to erase header on the device" ) ) ;
+			}
+		}
+
+		this->HideUI() ;
+	}
 }
 
 void createvolume::taskFinished( int st )
