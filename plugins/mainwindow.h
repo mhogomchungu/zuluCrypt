@@ -58,7 +58,7 @@ public:
 	void setKeyFileAsKey( void ) ;
 	void Show( void ) ;
 	void setExe( const QVector<QString>& exe ) ;
-	void setfindExeFunction( std::function<const QString&( QVector<QString>& )> ) ;
+	void setfindExeFunction( std::function<QString( QVector<QString>&,const QVector<QString>& )> ) ;
 	~MainWindow() ;
 private slots:
 	void defaultButton( void ) ;
@@ -79,10 +79,9 @@ private:
 	bool m_requireKeyFile ;
 	bool m_keyfileAsKey = false ;
 	QVector<QString> m_exe ;
-	QVector<QString> m_exe_1 ;
 	void * m_handle ;
 	MainWindow::function_t m_function ;
-	std::function<const QString&( QVector<QString>& )> m_findExecutable ;
+	std::function<QString( QVector<QString>&,const QVector<QString>& )> m_findExecutable ;
 };
 
 #endif // MAINWINDOW_H

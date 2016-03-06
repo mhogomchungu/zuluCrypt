@@ -36,6 +36,8 @@ add_subdirectory( steghide )
 add_subdirectory( luks )
 add_subdirectory( tomb )
 add_subdirectory( hmac )
+add_subdirectory( generic_header )
+
 #add_subdirectory( network_key )
 
 #keyring module is handled by CMakeLists.txt in ../zuluCrypt-cli

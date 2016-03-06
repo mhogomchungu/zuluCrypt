@@ -54,40 +54,58 @@ MainWindow::MainWindow( MainWindow::function_t f,QWidget * parent ) :
 	m_requireKey = false ;
 	m_requireKeyFile = true ;
 
-	QAction * ac = new QAction( this ) ;
+	auto ac = new QAction( this ) ;
+
 	QList<QKeySequence> keys ;
+
 	keys.append( Qt::Key_Enter ) ;
 	keys.append( Qt::Key_Return ) ;
+
 	ac->setShortcuts( keys ) ;
+
 	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
+
 	this->addAction( ac ) ;
 
-	m_findExecutable = []( QVector<QString>& exe ){
+	m_findExecutable = []( QVector<QString>& updated,const QVector<QString>& original ){
 
-		if( exe.isEmpty() ){
+		if( original.isEmpty() ){
+
 			return QString() ;
 		}
 
 		QString e ;
 
-		for( auto& it : exe ){
+		for( auto& it : original ){
+
 			auto _not_found = [&]( const char * path ){
+
 				e = path + it ;
+
 				bool r = QFile::exists( e ) ;
+
 				if( r ){
-					it = e ;
+
+					updated.append( e ) ;
+				}else{
+					updated.append( it ) ;
 				}
+
 				return r == false ;
 			} ;
 
 			if( _not_found( "/usr/local/bin/" ) ){
+
 				if( _not_found( "/usr/bin/" ) ){
+
 					if( _not_found( "/usr/sbin/" ) ){
+
 						return it ;
 					}
 				}
 			}
 		}
+
 		return QString() ;
 	} ;
 }
@@ -95,6 +113,7 @@ MainWindow::MainWindow( MainWindow::function_t f,QWidget * parent ) :
 void MainWindow::Show()
 {
 	if( m_appName.endsWith( " Key" ) ){
+
 		this->setWindowTitle( tr( "%1 Module" ).arg( m_appName ) ) ;
 	}else{
 		this->setWindowTitle( tr( "%1 Key Module" ).arg( m_appName ) ) ;
@@ -123,6 +142,7 @@ void MainWindow::setRequireKeyFile( bool k )
 void MainWindow::defaultButton()
 {
 	if( m_ui->pbCancel->hasFocus() ){
+
 		this->pbCancel() ;
 	}else{
 		this->pbOpen() ;
@@ -157,8 +177,11 @@ void MainWindow::setkeyFileLabel( const QString& keyFileLabel )
 void MainWindow::SetFocus()
 {
 	if( m_ui->lineEditKey->text().isEmpty() ){
+
 		m_ui->lineEditKey->setFocus() ;
+
 	}else if( m_ui->lineEditKeyFile->text().isEmpty() ){
+
 		m_ui->lineEditKeyFile->setFocus() ;
 	}else{
 		m_ui->pbOpen->setFocus() ;
@@ -168,13 +191,18 @@ void MainWindow::SetFocus()
 void MainWindow::pbCancel()
 {
 	if( m_working ){
+
 		DialogMsg msg( this ) ;
+
 		int st = msg.ShowUIYesNoDefaultNo( tr( "WARNING"),
 						   tr( "Are you sure you want to terminate this operation prematurely?" ) ) ;
 
 		if( st == QMessageBox::Yes ){
+
 			this->enableAlll() ;
+
 			m_working = false ;
+
 			this->cancelled() ;
 		}
 	}else{
@@ -192,7 +220,7 @@ void MainWindow::Exit( int st )
 	QCoreApplication::exit( st ) ;
 }
 
-void MainWindow::setfindExeFunction( std::function<const QString&( QVector<QString>& )> f )
+void MainWindow::setfindExeFunction( std::function<QString( QVector<QString>&,const QVector<QString>& )> f )
 {
 	m_findExecutable = f ;
 }
@@ -214,8 +242,11 @@ void MainWindow::pbOpen()
 	DialogMsg msg( this ) ;
 
 	QString key = m_ui->lineEditKey->text().toLatin1() ;
+
 	if( m_requireKey ){
+
 		if( key.isEmpty() ){
+
 			return msg.ShowUIOK( tr( "ERROR" ),tr( "Key field is empty" ) ) ;
 		}
 	}
@@ -225,6 +256,7 @@ void MainWindow::pbOpen()
 	keyFile.replace( "file://","" ) ;
 
 	if( m_requireKeyFile ){
+
 		if( m_keyfileAsKey ){
 			;
 		}else{
@@ -237,19 +269,23 @@ void MainWindow::pbOpen()
 		}
 	}
 
-	m_exe_1 = m_exe ;
-	QString e = m_findExecutable( m_exe_1 ) ;
+	QVector<QString> exe ;
+
+	auto e = m_findExecutable( exe,m_exe ) ;
+
 	if( !e.isEmpty() ){
+
 		return msg.ShowUIOK( tr( "ERROR" ),
 				     tr( "Could not find \"%1\" executable in \"/usr/local/bin\",\"/usr/bin\" and \"/usr/sbin\"" ).arg( e ) ) ;
 	}
 
 	this->disableAll() ;
+
 	m_working = true ;
 
-	Task::run< bool >( [ &,keyFile,key ](){
+	Task::run< bool >( [ &,exe,keyFile,key ](){
 
-		QByteArray s = m_function( m_exe_1,keyFile,key ) ;
+		auto s = m_function( exe,keyFile,key ) ;
 
 		if( s.isEmpty() ){
 
@@ -268,12 +304,14 @@ void MainWindow::pbOpen()
 	} ).then( [ this ]( bool passed ){
 
 		if( passed ){
+
 			this->Exit( 0 ) ;
 		}else{
 			DialogMsg msg( this ) ;
 			m_working = false ;
 
 			if( m_appName.endsWith( " key" ) ){
+
 				msg.ShowUIOK( tr( "ERROR" ),tr("Could not decrypt the %1,wrong key?" ).arg( m_appName ) ) ;
 			}else{
 				msg.ShowUIOK( tr( "ERROR" ),tr("Could not decrypt the %1 key,wrong key?" ).arg( m_appName ) ) ;
@@ -287,11 +325,13 @@ void MainWindow::pbOpen()
 
 void MainWindow::pbKeyFile()
 {
-	QString Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath() ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath() ) ;
 
 	if( !Z.isEmpty() ){
+
 		m_ui->lineEditKeyFile->setText( Z ) ;
 	}
+
 	this->SetFocus() ;
 }
 
