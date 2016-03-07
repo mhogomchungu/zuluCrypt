@@ -76,7 +76,7 @@ MainWindow::MainWindow( MainWindow::function_t f,QWidget * parent ) :
 
 		QString e ;
 
-		for( auto& it : original ){
+		for( const auto& it : original ){
 
 			auto _not_found = [&]( const char * path ){
 

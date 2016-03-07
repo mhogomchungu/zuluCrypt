@@ -365,12 +365,12 @@ typedef struct{
 
 	const char * mapper ;
 	void * argument ;
-	void ( *function )( void *,tcplay_volume_info * info ) ;
+	void ( *function )( const void *,const tcplay_volume_info * info ) ;
 	void ( *format_offset )( u_int64_t offset,char * buffer,size_t s ) ;
 
 }mapper_info;
 
-static int _tcplay_info( mapper_info * e )
+static int _tcplay_info( const mapper_info * e )
 {
 	int r = 1 ;
 
@@ -405,9 +405,9 @@ static int _tcplay_info( mapper_info * e )
 	return r ;
 }
 
-static void _get_volume_properties( void * e,tcplay_volume_info * info )
+static void _get_volume_properties( const void * e,const tcplay_volume_info * info )
 {
-	mapper_info * p = e ;
+	const mapper_info * p = e ;
 	string_t st = p->argument ;
 
 	StringMultipleAppend( st,p->mapper," ",info->status,".",NULL ) ;
@@ -461,9 +461,9 @@ static string_t _get_crypto_info_from_tcplay( const char * mapper )
 	return p ;
 }
 
-static void _get_volume_offset( void * e,tcplay_volume_info * info )
+static void _get_volume_offset( const void * e,const tcplay_volume_info * info )
 {
-	mapper_info * p = e ;
+	const mapper_info * p = e ;
 
 	u_int64_t * q = p->argument ;
 
@@ -484,7 +484,7 @@ static void _format_offset_1( u_int64_t offset,char * buffer,size_t s )
 	snprintf( buffer,s,"%s",e ) ;
 }
 
-u_int64_t _crypt_get_data_offset( struct crypt_device * cd,const char * mapper,const char * type )
+static u_int64_t _crypt_get_data_offset( struct crypt_device * cd,const char * mapper,const char * type )
 {
 	u_int64_t p = crypt_get_data_offset( cd ) ;
 
@@ -685,11 +685,12 @@ typedef struct{
 
 	char * device ;
 	char * ( *function )( const char * ) ;
+
 }info_device ;
 
-static void _info_device( void * e,tcplay_volume_info * info )
+static void _info_device( const void * e,const tcplay_volume_info * info )
 {
-	mapper_info * m = e ;
+	const mapper_info * m = e ;
 	info_device * d = m->argument ;
 
 	d->device = d->function( info->device ) ;
