@@ -44,8 +44,6 @@
 
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
 
-static char * _volume_device_name( const char *,char * (*)( const char * ) ) ;
-
 static void _convert( char * buffer,int buffer_size,const char * s,u_int64_t y,u_int64_t z )
 {
 	snprintf( buffer,buffer_size,"%.1f %s",( double )y/z,s ) ;
@@ -365,7 +363,7 @@ typedef struct{
 
 	const char * mapper ;
 	void * argument ;
-	void ( *function )( const void *,const tcplay_volume_info * info ) ;
+	void ( *function )( void *,const tcplay_volume_info * info ) ;
 	void ( *format_offset )( u_int64_t offset,char * buffer,size_t s ) ;
 
 }mapper_info;
@@ -392,7 +390,7 @@ static int _tcplay_info( const mapper_info * e )
 
 			tc_api_task_info_get( task,"volume_info",sizeof( info ),&info ) ;
 
-			e->function( e,&info ) ;
+			e->function( e->argument,&info ) ;
 
 			tc_api_task_uninit( task ) ;
 
@@ -405,10 +403,17 @@ static int _tcplay_info( const mapper_info * e )
 	return r ;
 }
 
-static void _get_volume_properties( const void * e,const tcplay_volume_info * info )
+typedef struct{
+
+	const char * mapper ;
+	string_t st ;
+
+} volume_properties ;
+
+static void _get_volume_properties( void * e,const tcplay_volume_info * info )
 {
-	const mapper_info * p = e ;
-	string_t st = p->argument ;
+	volume_properties * p = e ;
+	string_t st = p->st ;
 
 	StringMultipleAppend( st,p->mapper," ",info->status,".",NULL ) ;
 
@@ -442,32 +447,33 @@ static void _format_offset( u_int64_t offset,char * buffer,size_t s )
 
 static string_t _get_crypto_info_from_tcplay( const char * mapper )
 {
-	string_t p = StringEmpty() ;
-
+	volume_properties p ;
 	mapper_info e ;
 
 	memset( &e,'\0',sizeof( e ) ) ;
+	memset( &p,'\0',sizeof( p ) ) ;
 
-	e.argument      = p ;
+	p.st = StringEmpty() ;
+	p.mapper = mapper ;
+
+	e.argument      = &p ;
 	e.mapper        = mapper ;
 	e.format_offset = _format_offset ;
 	e.function      = _get_volume_properties ;
 
 	if( _tcplay_info( &e ) != 0 ){
 
-		StringMultipleAppend( p,mapper," is invalid.\n",NULL ) ;
+		StringMultipleAppend( p.st,mapper," is invalid.\n",NULL ) ;
 	}
 
-	return p ;
+	return p.st ;
 }
 
-static void _get_volume_offset( const void * e,const tcplay_volume_info * info )
+static void _get_volume_offset( void * e,const tcplay_volume_info * info )
 {
-	const mapper_info * p = e ;
+	u_int64_t * offset = e ;
 
-	u_int64_t * q = p->argument ;
-
-	*q = StringConvertToInt( info->offset ) ;
+	*offset = StringConvertToInt( info->offset ) ;
 }
 
 static void _format_offset_1( u_int64_t offset,char * buffer,size_t s )
@@ -688,44 +694,42 @@ typedef struct{
 
 }info_device ;
 
-static void _info_device( const void * e,const tcplay_volume_info * info )
+static void _info_device( void * e,const tcplay_volume_info * info )
 {
-	const mapper_info * m = e ;
-	info_device * d = m->argument ;
+	info_device * d = e ;
 
 	d->device = d->function( info->device ) ;
 }
 
-static char * _device_name( const char * mapper,char * ( *function )( const char * ) )
-{
-	mapper_info e ;
-	info_device d ;
-
-	memset( &e,'\0',sizeof( e ) ) ;
-	memset( &d,'\0',sizeof( d ) ) ;
-
-	d.function = function ;
-
-	e.argument      = &d ;
-	e.mapper        = mapper ;
-	e.function      = _info_device ;
-
-	_tcplay_info( &e ) ;
-
-	return d.device ;
-}
-
-static char * _volume_device_name( const char * mapper,char * ( *function )( const char * ) )
+char * zuluCryptVolumeDeviceName( const char * mapper )
 {
 	struct crypt_device * cd ;
 
-	const char * e = crypt_get_dir() ;
+	mapper_info m ;
+	info_device d ;
 
 	char * f = NULL ;
 
+	const char * e ;
+
 	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
 
-		return _device_name( mapper,function ) ;
+		memset( &m,'\0',sizeof( m ) ) ;
+		memset( &d,'\0',sizeof( d ) ) ;
+
+		/*
+		 * zuluCryptResolvePath_3() is defined in resolve_path.c
+		 */
+
+		d.function = zuluCryptResolvePath_3 ;
+
+		m.argument      = &d ;
+		m.mapper        = mapper ;
+		m.function      = _info_device ;
+
+		_tcplay_info( &m ) ;
+
+		return d.device ;
 	}else{
 		if( crypt_init_by_name( &cd,mapper ) == 0 ){
 
@@ -733,7 +737,7 @@ static char * _volume_device_name( const char * mapper,char * ( *function )( con
 
 			if( e != NULL ){
 
-				f = function( e ) ;
+				f = zuluCryptResolvePath_3( e ) ;
 			}
 
 			crypt_free( cd ) ;
@@ -741,12 +745,4 @@ static char * _volume_device_name( const char * mapper,char * ( *function )( con
 
 		return f ;
 	}
-}
-
-char * zuluCryptVolumeDeviceName( const char * mapper )
-{
-	/*
-	 * zuluCryptResolvePath_3() is defined in resolve_path.c
-	 */
-	return _volume_device_name( mapper,zuluCryptResolvePath_3 ) ;
 }
