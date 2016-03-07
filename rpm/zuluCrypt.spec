@@ -119,6 +119,7 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 
 %dir %{_libdir}/zuluCrypt
 %dir %{_datadir}/zuluCrypt
+%dir %{_datadir}/doc/zuluCrypt
 %{_libdir}/zuluCrypt/keyring
 %{_libdir}/zuluCrypt/zuluCrypt-testKey
 %{_libdir}/zuluCrypt/keykeyfile
