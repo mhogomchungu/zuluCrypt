@@ -19,6 +19,8 @@
 #include "createvolumedialog.h"
 #include "ui_createvolumedialog.h"
 
+#include "utility.h"
+
 createVolumeDialog::createVolumeDialog( const QString& path,QWidget * parent,std::function< void( int ) > f ) :
 	QDialog( parent ),m_ui( new Ui::createVolumeDialog ),m_path( path ),m_function( std::move( f ) )
 {
@@ -62,6 +64,8 @@ void createVolumeDialog::pbNo()
 
 void createVolumeDialog::pbYes()
 {
+	m_ui->pbYes->setEnabled( false ) ;
+
 	m_ui->pbNo->setFocus() ;
 
 	if( m_opt_count == 1 ){
@@ -76,7 +80,11 @@ void createVolumeDialog::pbYes()
 Do you want to write random data to \"%1\" first before creating an encrypted container in it?\n\n\
 You can stop the random data writing process anytime you want if \
 it takes too long and you can no longer wait.\n\n" ).arg( m_path ) ;
-		 m_ui->label_1->setText( msg ) ;
+		m_ui->label_1->setText( msg ) ;
+
+		utility::Task::suspend( 2 ) ;
+
+		m_ui->pbYes->setEnabled( true ) ;
 	}
 }
 
