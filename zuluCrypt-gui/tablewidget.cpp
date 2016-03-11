@@ -213,7 +213,12 @@ void tablewidget::selectRow( QTableWidget * table,const QString& e )
 
 void tablewidget::selectLastRow( QTableWidget * table )
 {
-	tablewidget::selectRow( table,table->rowCount() - 1 ) ;
+	auto e = table->rowCount() ;
+
+	if( e > 0 ){
+
+		tablewidget::selectRow( table,e - 1 ) ;
+	}
 }
 
 void tablewidget::setText( QTableWidget * table,int row,int col,const QString& text )

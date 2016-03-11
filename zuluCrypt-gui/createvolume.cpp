@@ -679,7 +679,7 @@ void createvolume::cbHiddenVolume( int r )
 			if( key.isEmpty() ){
 
 				m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
-				
+
 				this->cbHiddenVolume( 0 ) ;
 			}else{
 				if( m_keyStrength.canCheckQuality() ){
@@ -868,7 +868,7 @@ void createvolume::pbCreateClicked()
 
 		m_volumeType = "luks" ;
 
-		break ;		
+		break ;
 #ifdef CRYPT_LUKS2
 	case createvolume::luks2 :
 	case createvolume::luks2_external_header :
