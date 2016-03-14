@@ -175,6 +175,9 @@ namespace utility
 
 	QIcon getIcon( const QString& ) ;
 
+	bool autoSetVolumeAsVeraCrypt( void ) ;
+	void autoSetVolumeAsVeraCrypt( bool ) ;
+
 	bool userBelongsToGroup( const char * groupname ) ;
 	bool runningInMixedMode( void ) ;
 	bool notRunningInMixedMode( void ) ;

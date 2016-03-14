@@ -1715,3 +1715,24 @@ QIcon utility::getIcon( const QString& application )
 
 	return QIcon::fromTheme( application,icon ) ;
 }
+
+static QString _veraCryptOptionPath()
+{
+	return utility::homePath() + "/.zuluCrypt/autoSetVolumeAsVeraCrypt" ;
+}
+
+bool utility::autoSetVolumeAsVeraCrypt()
+{
+	return utility::pathExists( _veraCryptOptionPath() ) ;
+}
+
+void utility::autoSetVolumeAsVeraCrypt( bool set )
+{
+	if( set ){
+
+		QFile f( _veraCryptOptionPath() ) ;
+		f.open( QIODevice::WriteOnly ) ;
+	}else{
+		QFile::remove( _veraCryptOptionPath() ) ;
+	}
+}

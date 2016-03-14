@@ -94,6 +94,10 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
+	m_ui->checkBoxVeraCryptVolume->setChecked( utility::autoSetVolumeAsVeraCrypt() ) ;
+
+	m_ui->checkBoxVeraCryptVolume->setEnabled( !m_encryptedFolder ) ;
+
 	connect( m_ui->checkBoxVeraCryptVolume,SIGNAL( stateChanged( int ) ),this,SLOT( cbVeraCryptVolume( int ) ) ) ;
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
@@ -126,16 +130,19 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_menu_1->setFont( this->font() ) ;
 
-	auto _add_action = [ & ]( const QString& e ){
+	m_ui->pbOptions->setEnabled( !m_encryptedFolder ) ;
 
-		ac = m_menu_1->addAction( e ) ;
-		ac ->setEnabled( !m_encryptedFolder ) ;
-	} ;
+	if( !m_encryptedFolder ){
 
-	_add_action( tr( "Set File System Options" ) ) ;
-	_add_action( tr( "Set Volume Offset" ) ) ;
-	//_add_action( tr( "Set Volume As VeraCrypt Volume" ) ) ;
-	_add_action( tr( "Set VeraCrypt PIM value" ) ) ;
+		auto _add_action = [ & ]( const QString& e ){
+
+			ac = m_menu_1->addAction( e ) ;
+		} ;
+
+		_add_action( tr( "Set File System Options" ) ) ;
+		_add_action( tr( "Set Volume Offset" ) ) ;
+		_add_action( tr( "Set VeraCrypt PIM value" ) ) ;
+	}
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
@@ -239,6 +246,8 @@ void keyDialog::doAction( QAction * ac )
 void keyDialog::cbVeraCryptVolume( int state )
 {
 	m_veraCryptVolume = state != Qt::Unchecked ;
+
+	utility::autoSetVolumeAsVeraCrypt( m_veraCryptVolume ) ;
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )
@@ -274,7 +283,7 @@ void keyDialog::pbMountPointPath()
 void keyDialog::enableAll()
 {
 	m_ui->checkBoxVeraCryptVolume->setEnabled( true ) ;
-	m_ui->pbOptions->setEnabled( true ) ;
+	m_ui->pbOptions->setEnabled( !m_encryptedFolder ) ;
 	m_ui->label_2->setEnabled( true ) ;
 	m_ui->lineEditMountPoint->setEnabled( true ) ;
 	m_ui->pbOpenMountPoint->setEnabled( true ) ;
@@ -288,10 +297,7 @@ void keyDialog::enableAll()
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
-	if( !m_encryptedFolder ){
-
-		m_ui->checkBoxShareMountPoint->setEnabled( true ) ;
-	}
+	m_ui->checkBoxShareMountPoint->setEnabled( !m_encryptedFolder ) ;
 }
 
 void keyDialog::disableAll()
