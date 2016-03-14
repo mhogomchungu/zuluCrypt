@@ -94,7 +94,9 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
-	m_ui->checkBoxVeraCryptVolume->setChecked( utility::autoSetVolumeAsVeraCrypt() ) ;
+	m_veraCryptVolume = utility::autoSetVolumeAsVeraCrypt() ;
+
+	m_ui->checkBoxVeraCryptVolume->setChecked( m_veraCryptVolume ) ;
 
 	m_ui->checkBoxVeraCryptVolume->setEnabled( !m_encryptedFolder ) ;
 
