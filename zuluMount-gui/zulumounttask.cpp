@@ -603,12 +603,18 @@ volumeStatus zuluMountTask::deviceProperties( const zuluMountTask::event& device
 
 static bool _delete_mount_point( const QString& m )
 {
-	return utility::Task( utility::appendUserUID( "%1 -b %2" ).arg( zuluMountPath,m ) ).success() ;
+	auto mm = m ;
+	mm.replace( "\"","\"\"\"" ) ;
+
+	return utility::Task( utility::appendUserUID( "%1 -b \"%2\"" ).arg( zuluMountPath,mm ) ).success() ;
 }
 
 static bool _create_mount_point( const QString& m )
 {
-	return utility::Task( utility::appendUserUID( "%1 -B %2" ).arg( zuluMountPath,m ) ).success() ;
+	auto mm = m ;
+	mm.replace( "\"","\"\"\"" ) ;
+
+	return utility::Task( utility::appendUserUID( "%1 -B \"%2\"" ).arg( zuluMountPath,mm ) ).success() ;
 }
 
 Task::future<bool>& zuluMountTask::encryptedFolderUnMount( const QString& m )
@@ -617,7 +623,10 @@ Task::future<bool>& zuluMountTask::encryptedFolderUnMount( const QString& m )
 
 		auto _umount = [ & ](){
 
-			if( utility::Task( "fusermount -u \"" + m + "\"",10000 ).success() ){
+			auto mm = m ;
+			mm.replace( "\"","\"\"\"" ) ;
+
+			if( utility::Task( "fusermount -u \"" + mm + "\"",10000 ).success() ){
 
 				return _delete_mount_point( m ) ;
 			}else{
@@ -702,6 +711,12 @@ Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const 
 			}
 		} ;
 
+		auto pp = p ;
+		pp.replace( "\"","\"\"\"" ) ;
+
+		auto mm = m ;
+		mm.replace( "\"","\"\"\"" ) ;
+
 		if( utility::pathExists( p + "/cryfs.config" ) ){
 
 			return _mount( [ & ](){
@@ -713,12 +728,12 @@ Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const 
 
 				if( ro ){
 
-					opts = "%1 %2 -- -o ro -o fsname=cryfs@%3 -o subtype=cryfs" ;
+					opts = "\"%1\" \"%2\" -- -o ro -o fsname=cryfs@\"%3\" -o subtype=cryfs" ;
 				}else{
-					opts = "%1 %2 -- -o rw -o fsname=cryfs@%3 -o subtype=cryfs" ;
+					opts = "\"%1\" \"%2\" -- -o rw -o fsname=cryfs@\"%3\" -o subtype=cryfs" ;
 				}
 
-				return _cmd( "cryfs",ev::status::cryfs,QString( opts ).arg( p,m,p ) ) ;
+				return _cmd( "cryfs",ev::status::cryfs,QString( opts ).arg( pp,mm,pp ) ) ;
 			} ) ;
 		}
 
@@ -730,12 +745,12 @@ Task::future< ev >& zuluMountTask::encryptedFolderMount( const QString& p,const 
 
 				if( ro ){
 
-					opts = "%1 %2 -S -o ro -o fsname=encfs@%3 -o subtype=encfs" ;
+					opts = "\"%1\" \"%2\" -S -o ro -o fsname=encfs@\"%3\" -o subtype=encfs" ;
 				}else{
-					opts = "%1 %2 -S -o rw -o fsname=encfs@%3 -o subtype=encfs" ;
+					opts = "\"%1\" \"%2\" -S -o rw -o fsname=encfs@\"%3\" -o subtype=encfs" ;
 				}
 
-				return _cmd( "encfs",ev::status::encfs,QString( opts ).arg( p,m,p ) ) ;
+				return _cmd( "encfs",ev::status::encfs,QString( opts ).arg( pp,mm,pp ) ) ;
 			} ) ;
 		}
 

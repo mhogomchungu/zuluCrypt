@@ -401,7 +401,7 @@ static bool _execute_process( const QString& m,const QString& exe,const QString&
 
 		e.replace( "\"","\"\"\"" ) ;
 
-		return utility::Task( exe + " \"" + m + "\"",-1,env.split( "\n" ),[ uid ](){
+		return utility::Task( exe + " \"" + e + "\"",-1,env.split( "\n" ),[ uid ](){
 
 			if( uid != -1 ){
 
