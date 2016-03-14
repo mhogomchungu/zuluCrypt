@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>521</width>
-    <height>193</height>
+    <height>216</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -20,7 +20,7 @@
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>160</y>
+     <y>180</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -36,7 +36,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>160</y>
+     <y>180</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -49,9 +49,9 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>120</y>
+     <y>150</y>
      <width>101</width>
-     <height>51</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -68,7 +68,7 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>130</y>
+     <y>150</y>
      <width>301</width>
      <height>31</height>
     </rect>
@@ -78,7 +78,7 @@
    <property name="geometry">
     <rect>
      <x>410</x>
-     <y>130</y>
+     <y>150</y>
      <width>31</width>
      <height>31</height>
     </rect>
@@ -159,7 +159,7 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>160</y>
+     <y>180</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -172,10 +172,23 @@
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>100</y>
+     <y>120</y>
      <width>301</width>
      <height>31</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxVeraCryptVolume">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>90</y>
+     <width>271</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>VeraCrypt Volume</string>
    </property>
   </widget>
   <widget class="QLabel" name="veraCryptWarning">
@@ -184,7 +197,7 @@
      <x>10</x>
      <y>10</y>
      <width>501</width>
-     <height>181</height>
+     <height>201</height>
     </rect>
    </property>
    <property name="autoFillBackground">

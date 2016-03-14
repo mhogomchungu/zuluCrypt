@@ -94,6 +94,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
+	connect( m_ui->checkBoxVeraCryptVolume,SIGNAL( stateChanged( int ) ),this,SLOT( cbVeraCryptVolume( int ) ) ) ;
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
@@ -133,7 +134,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	_add_action( tr( "Set File System Options" ) ) ;
 	_add_action( tr( "Set Volume Offset" ) ) ;
-	_add_action( tr( "Set Volume As VeraCrypt Volume" ) ) ;
+	//_add_action( tr( "Set Volume As VeraCrypt Volume" ) ) ;
 	_add_action( tr( "Set VeraCrypt PIM value" ) ) ;
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
@@ -228,9 +229,16 @@ void keyDialog::doAction( QAction * ac )
 		VeraCryptPIMDialog::instance( this,[ this ]( int e ){
 
 			m_veraCryptPIMValue = e ;
-			m_veraCryptVolume = e > 0 ;
+			m_veraCryptVolume = true ;
+
+			m_ui->checkBoxVeraCryptVolume->setChecked( true ) ;
 		} ) ;
 	}
+}
+
+void keyDialog::cbVeraCryptVolume( int state )
+{
+	m_veraCryptVolume = state != Qt::Unchecked ;
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )
@@ -265,6 +273,7 @@ void keyDialog::pbMountPointPath()
 
 void keyDialog::enableAll()
 {
+	m_ui->checkBoxVeraCryptVolume->setEnabled( true ) ;
 	m_ui->pbOptions->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
 	m_ui->lineEditMountPoint->setEnabled( true ) ;
@@ -287,6 +296,7 @@ void keyDialog::enableAll()
 
 void keyDialog::disableAll()
 {
+	m_ui->checkBoxVeraCryptVolume->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
 	m_ui->pbOptions->setEnabled( false ) ;
 	m_ui->pbkeyOption->setEnabled( false ) ;
