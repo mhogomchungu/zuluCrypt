@@ -147,6 +147,18 @@ message ( STATUS "internal version of tcplay will be used to create and restore 
 message ( STATUS "creation and restoration of VeraCrypt volume headers is currently disabled." )
 message ( STATUS "---------------------------------------------------------------------------" )
 
+if( SHARE_MOUNT_PREFIX )
+    if( "${SHARE_MOUNT_PREFIX}" STREQUAL "default" )
+	file( WRITE  ${PROJECT_BINARY_DIR}/share_mount_prefix_path.h "\n#define SHARE_MOUNT_PREFIX \"/run/media/public\"\n" )
+    elseif( "${SHARE_MOUNT_PREFIX}" STREQUAL "" )
+	file( WRITE  ${PROJECT_BINARY_DIR}/share_mount_prefix_path.h "\n#define SHARE_MOUNT_PREFIX \"/run/media/public\"\n" )
+    else()
+	file( WRITE  ${PROJECT_BINARY_DIR}/share_mount_prefix_path.h "\n#define SHARE_MOUNT_PREFIX \"${SHARE_MOUNT_PREFIX}\"\n" )
+    endif()
+else()
+	file( WRITE  ${PROJECT_BINARY_DIR}/share_mount_prefix_path.h "\n#define SHARE_MOUNT_PREFIX \"/run/media/public\"\n" )
+endif()
+
 if( HOMEMOUNTPREFIX )
 	file( WRITE  ${PROJECT_BINARY_DIR}/mount_prefix_path.h "\n#define USE_HOME_PATH_AS_MOUNT_PREFIX 1\n" )
 else()

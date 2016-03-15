@@ -83,6 +83,7 @@
 #include "../zuluCrypt-cli/utility/process/process.h"
 
 #include "reuse_mount_point.h"
+#include "share_mount_prefix_path.h"
 
 static int staticGlobalUserId = -1 ;
 
@@ -646,14 +647,20 @@ bool utility::userIsRoot()
 
 QString utility::shareMountPointToolTip()
 {
+	QString x ;
+#if USE_HOME_PATH_AS_MOUNT_PREFIX
+	x = QDir::homePath() + "/" ;
+#else
+	x = "/run/media/private/" ;
+#endif
 	return QObject::tr( "\
-if the option is checked,a primary private mount point will be created in \"/run/media/private/$USER/\"\n\
-and a secondary publicly accessible \"mirror\" mount point will be created in \"/run/media/public/\"" ) ;
+if the option is checked,a primary private mount point will be created in \"%1\"\n\
+and a secondary publicly accessible \"mirror\" mount point will be created in \"%2\"" ).arg( x,SHARE_MOUNT_PREFIX "/" ) ;
 }
 
 QString utility::shareMountPointToolTip( const QString& path )
 {
-	auto s = QString( "/run/media/public/" ) + path.split( "/" ).last() ;
+	auto s = QString( SHARE_MOUNT_PREFIX "/" ) + path.split( "/" ).last() ;
 
 	if( QFile::exists( s ) ){
 
@@ -669,7 +676,7 @@ QString utility::sharedMountPointPath( const QString& path )
 
 		return QString() ;
 	}else{
-		auto s = "/run/media/public/" + path.split( "/" ).last() ;
+		auto s = SHARE_MOUNT_PREFIX "/" + path.split( "/" ).last() ;
 
 		if( QFile::exists( s ) ){
 

@@ -21,6 +21,11 @@
 #include <sys/mount.h>
 #include "../lib/includes.h"
 
+/*
+ * default value of "SHARE_MOUNT_PREFIX" is "/run/media/public"
+ */
+#include "share_mount_prefix_path.h"
+
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -127,7 +132,7 @@ static int _zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid
 			index = StringLastIndexOfChar( xt,'/' ) + 1 ;
 			StringRemoveLeft( xt,index ) ;
 
-			StringPrepend( xt,"/run/media/public/" ) ;
+			StringPrepend( xt,SHARE_MOUNT_PREFIX "/" ) ;
 
 			/*
 			 * f will now contain something like "/run/media/public/sdc1"
@@ -221,7 +226,7 @@ int zuluCryptBindSharedMountPointPathTaken( string_t path )
 
 	ssize_t index = StringLastIndexOfChar( path,'/' ) ;
 
-	string_t st = String( "/run/media/public" ) ;
+	string_t st = String( SHARE_MOUNT_PREFIX ) ;
 
 	const char * e = StringAppend( st,StringContent( path ) + index ) ;
 
@@ -259,13 +264,13 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 
 	stl = zuluCryptGetMoutedList() ;
 
-	path = String( "/run/media/public/" ) ;
+	path = String( SHARE_MOUNT_PREFIX "/" ) ;
 	m_path = StringAppend( path,o_path + index + 1 ) ;
 
 	/*
 	 * zuluCryptCreateMountPath() is defined in create_mount_point.c
 	 */
-	zuluCryptCreateMountPath( "/run/media/public" ) ;
+	zuluCryptCreateMountPath( SHARE_MOUNT_PREFIX ) ;
 
 	if( stat( m_path,&st ) == 0 ){
 

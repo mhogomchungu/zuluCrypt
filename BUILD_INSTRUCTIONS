@@ -62,7 +62,7 @@ mkdir build
 
 cd build
 
-cmake -DCMAKE_INSTALL_PREFIX=/usr/ -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false -DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DNOKDE=false -DCMAKE_BUILD_TYPE=RELEASE . ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DSHARE_MOUNT_PREFIX=default -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false -DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DNOKDE=false -DCMAKE_BUILD_TYPE=RELEASE . ..
 
 make
 
@@ -108,6 +108,11 @@ you do not want libsecret's support.
 -DNOKDE=false
 This option tells the build process to add KDE's secure storage of passwords.Set this option to "true" if you do not
 want KDE wallet support.
+
+-DSHARE_MOUNT_PREFIX=default
+zuluMount has an ability to create a publicly accessible mount point in addition to the default private one and this
+option controls where the public share should be created.The "default" values sets a default value of "/run/media/public".
+Set this variable to another path if you want to change the default location of where share mount point should be created.
 
 -DREUSEMOUNTPOINT=false
 By default,the project demands exclusive control over the mount point path causing it to complain when it finds

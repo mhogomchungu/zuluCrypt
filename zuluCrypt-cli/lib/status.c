@@ -31,6 +31,7 @@
 #include <unistd.h>
 
 #include "tcplay_support.h"
+#include "share_mount_prefix_path.h"
 
 #define SIZE 1024
 
@@ -268,7 +269,7 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 		StringAppend( p,"\n mount point2:\tNil" ) ;
 	}else{
 		StringRemoveLeft( q,index ) ;
-		e = StringPrepend( q,"/run/media/public" ) ;
+		e = StringPrepend( q,SHARE_MOUNT_PREFIX ) ;
 
 		if( stat( e,&statstr ) == 0 ){
 
