@@ -26,6 +26,8 @@
 #include <QSystemTrayIcon>
 
 #include "../zuluMount-gui/monitor_mountinfo.h"
+#include "lxqt_wallet/frontend/lxqt_wallet.h"
+#include "utility.h"
 
 class QWidget ;
 class QTableWidgetItem ;
@@ -43,11 +45,37 @@ class cryptfiles ;
 class walletconfig ;
 class QNetworkReply ;
 
-namespace LxQt{
-namespace Wallet{
-class Wallet ;
-}
-}
+class changeWalletPassWord : public QWidget
+{
+	Q_OBJECT
+public:
+	static void instance( QWidget * parent )
+	{
+		new changeWalletPassWord( parent ) ;
+	}
+	changeWalletPassWord( QWidget * parent ) : m_wallet( LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) )
+	{
+		m_wallet->setInterfaceObject( this ) ;
+		m_wallet->setParent( parent ) ;
+		m_wallet->changeWalletPassWord( utility::walletName(),utility::applicationName() ) ;
+	}
+	~changeWalletPassWord()
+	{
+		m_wallet->deleteLater() ;
+	}
+private slots:
+	void walletpassWordChanged( bool e )
+	{
+		Q_UNUSED( e ) ;
+		this->deleteLater() ;
+	}
+	void walletIsOpen( bool e )
+	{
+		Q_UNUSED( e ) ;
+	}
+private:
+	LxQt::Wallet::Wallet * m_wallet ;
+};
 
 /*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
@@ -72,6 +100,7 @@ signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
 	void updateVolumeListSignal( QString,QString ) ;
 private slots :
+	void autoOpenMountPoint( bool ) ;
 	void languageMenu( QAction * ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void info( void ) ;
@@ -126,8 +155,6 @@ private slots :
 	void manageVolumesInKDEWallet( void ) ;
 	void manageVolumesInGNOMEWallet( void ) ;
 	void changePassWordOfInternalWallet( void ) ;
-	void walletpassWordChanged( bool ) ;
-	void walletIsOpen( bool ) ;
 	void optionMenuAboutToShow( void ) ;
 	void openpdf( void ) ;
 	void updateCheck( void ) ;
@@ -156,8 +183,7 @@ private:
 	void setUpApp( const QString& ) ;
 	void decryptFile( const QString& ) ;
 
-	Ui::zuluCrypt * m_ui            = nullptr ;
-	LxQt::Wallet::Wallet * m_wallet = nullptr ;
+	Ui::zuluCrypt * m_ui = nullptr ;
 
 	QSystemTrayIcon m_trayIcon ;
 
@@ -165,7 +191,7 @@ private:
 	bool m_startHidden ;
 	int m_userID ;
 	QString m_env ;
-
+	bool m_autoOpenMountPoint ;
 	monitor_mountinfo& m_mountInfo ;
 };
 

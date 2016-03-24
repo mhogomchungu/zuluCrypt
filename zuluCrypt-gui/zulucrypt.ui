@@ -94,7 +94,7 @@
      <x>0</x>
      <y>0</y>
      <width>782</width>
-     <height>22</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">
@@ -140,6 +140,7 @@
      <string>O&amp;ptions</string>
     </property>
     <addaction name="actionTray_icon"/>
+    <addaction name="actionAuto_Open_Mount_Point"/>
     <addaction name="actionSelect_Language"/>
     <addaction name="actionFonts"/>
     <addaction name="actionManage_names"/>
@@ -510,6 +511,11 @@
   <action name="actionSelect_Language">
    <property name="text">
     <string>Select Language</string>
+   </property>
+  </action>
+  <action name="actionAuto_Open_Mount_Point">
+   <property name="text">
+    <string>Auto Open Mount Point</string>
    </property>
   </action>
  </widget>

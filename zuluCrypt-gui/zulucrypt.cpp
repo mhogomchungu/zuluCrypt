@@ -343,6 +343,13 @@ void zuluCrypt::setupConnections()
 
 	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
 
+	m_autoOpenMountPoint = utility::autoOpenFolderOnMount( "zuluCrypt-gui" ) ;
+
+	m_ui->actionAuto_Open_Mount_Point->setCheckable( true ) ;
+	m_ui->actionAuto_Open_Mount_Point->setChecked( m_autoOpenMountPoint ) ;
+
+	connect( m_ui->actionAuto_Open_Mount_Point,SIGNAL( toggled( bool ) ),this,SLOT( autoOpenMountPoint( bool ) ) ) ;
+
 	m_ui->actionRestore_header->setText( tr( "Restore Volume Header" ) ) ;
 	m_ui->actionBackup_header->setText( tr( "Backup Volume Header" ) ) ;
 
@@ -369,6 +376,13 @@ void zuluCrypt::setupConnections()
 	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( true ) ;
 
 	this->setAcceptDrops( true ) ;
+}
+
+void zuluCrypt::autoOpenMountPoint( bool e )
+{
+	m_autoOpenMountPoint = e ;
+
+	utility::autoOpenFolderOnMount( "zuluCrypt-gui",e ) ;
 }
 
 void zuluCrypt::optionMenuAboutToShow()
@@ -420,21 +434,7 @@ void zuluCrypt::failedToOpenWallet()
 
 void zuluCrypt::changePassWordOfInternalWallet()
 {
-	m_wallet = LxQt::Wallet::getWalletBackend() ;
-	m_wallet->setInterfaceObject( this ) ;
-	m_wallet->changeWalletPassWord( utility::walletName(),utility::applicationName() ) ;
-}
-
-void zuluCrypt::walletIsOpen( bool b )
-{
-	Q_UNUSED( b ) ;
-}
-
-void zuluCrypt::walletpassWordChanged( bool b )
-{
-	Q_UNUSED( b ) ;
-	m_wallet->deleteLater() ;
-	m_wallet = nullptr ;
+	changeWalletPassWord::instance( this ) ;
 }
 
 void zuluCrypt::permissionExplanation()
@@ -1028,8 +1028,11 @@ passwordDialog& zuluCrypt::setUpPasswordDialog()
 {
 	return passwordDialog::instance( m_ui->tableWidget,this,[ this ]( const QString& path ){
 
-		this->openFolder( path ) ;
-	} ) ;
+		if( m_autoOpenMountPoint ){
+
+			this->openFolder( path ) ;
+		}
+	 } ) ;
 }
 
 void zuluCrypt::ShowVeraPasswordDialog()

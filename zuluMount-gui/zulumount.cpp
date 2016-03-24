@@ -373,28 +373,16 @@ void zuluMount::languageMenu( QAction * ac )
 	utility::languageMenu( this,m_languageAction->menu(),ac,"zuluMount-gui" ) ;
 }
 
-#define zuluMOUNT_AUTO_OPEN_FOLDER "/.zuluCrypt/zuluMount-gui.NoAutoOpenFolder"
-
-void zuluMount::autoOpenFolderOnMount( bool b )
+void zuluMount::autoOpenFolderOnMount( bool e )
 {
-	auto x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
+	m_autoOpenFolderOnMount = e ;
 
-	m_autoOpenFolderOnMount = b ;
-
-	if( m_autoOpenFolderOnMount ){
-
-		QFile::remove( x ) ;
-	}else{
-		QFile f( x ) ;
-		f.open( QIODevice::WriteOnly ) ;
-		f.close() ;
-	}
+	utility::autoOpenFolderOnMount( "zuluMount-gui",e ) ;
 }
 
 bool zuluMount::autoOpenFolderOnMount( void )
 {
-	auto x = utility::homePath() + zuluMOUNT_AUTO_OPEN_FOLDER ;
-	return !QFile::exists( x ) ;
+	return utility::autoOpenFolderOnMount( "zuluMount-gui" ) ;
 }
 
 void zuluMount::startAutoMonitor()

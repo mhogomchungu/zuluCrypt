@@ -1743,3 +1743,27 @@ void utility::autoSetVolumeAsVeraCrypt( bool set )
 		QFile::remove( _veraCryptOptionPath() ) ;
 	}
 }
+
+static QString _auto_open_config_path( const QString& app )
+{
+	return utility::homePath() + "/.zuluCrypt/" + app + "-gui.NoAutoOpenFolder" ;
+}
+
+void utility::autoOpenFolderOnMount( const QString& app,bool e )
+{
+	auto x = _auto_open_config_path( app ) ;
+
+	if( e ){
+
+		QFile::remove( x ) ;
+	}else{
+		QFile f( x ) ;
+		f.open( QIODevice::WriteOnly ) ;
+		f.close() ;
+	}
+}
+
+bool utility::autoOpenFolderOnMount( const QString& app )
+{
+	return !QFile::exists( _auto_open_config_path( app ) ) ;
+}

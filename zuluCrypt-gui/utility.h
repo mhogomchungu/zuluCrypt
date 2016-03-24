@@ -178,6 +178,9 @@ namespace utility
 	bool autoSetVolumeAsVeraCrypt( void ) ;
 	void autoSetVolumeAsVeraCrypt( bool ) ;
 
+	void autoOpenFolderOnMount( const QString&,bool ) ;
+	bool autoOpenFolderOnMount( const QString& ) ;
+
 	bool userBelongsToGroup( const char * groupname ) ;
 	bool runningInMixedMode( void ) ;
 	bool notRunningInMixedMode( void ) ;
