@@ -19,6 +19,8 @@
 
 #include "includes.h"
 
+#include "share_mount_prefix_path.h"
+
 typedef struct{
 	const char * device ;
 	const char * mountPoint ;
@@ -248,7 +250,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 			continue ;
 		}
-		if( StringHasComponent( c,"/run/media/public/" ) ){
+		if( StringHasComponent( c,SHARE_MOUNT_PREFIX "/" ) ){
 
 			/*
 			 * dont show mirror images due to bind mounts
