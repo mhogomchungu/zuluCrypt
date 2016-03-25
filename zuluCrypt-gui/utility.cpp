@@ -1237,6 +1237,8 @@ void utility::readFavorites( QMenu * m,bool truncate )
 
 	m->addAction( new QAction( QObject::tr( "Manage Favorites" ),m ) ) ;
 
+	m->addAction( new QAction( QObject::tr( "Unlock All" ),m ) ) ;
+
 	m->addSeparator() ;
 
 	for( const auto& it : utility::readFavorites() ){

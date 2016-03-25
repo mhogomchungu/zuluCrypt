@@ -353,6 +353,18 @@ void zuluMount::favoriteClicked( QAction * ac )
 	if( e == tr( "Manage Favorites" ) ){
 
 		favorites::instance( this ) ;
+
+	}else if( e == tr( "Unlock All" ) ){
+
+		for( const auto& it : utility::readFavorites() ){
+
+			auto e = utility::split( it,'\t' ) ;
+
+			if( e.size() > 1 ){
+
+				this->showMoungDialog( e.at( 0 ),e.at( 1 ) ) ;
+			}
+		}
 	}else{
 		this->showMoungDialog( e,this->resolveFavoriteMountPoint( e ) ) ;
 	}

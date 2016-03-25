@@ -687,6 +687,7 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionCheck_For_Update->setFont( Font ) ;
 	m_ui->actionContact_Info->setFont( Font ) ;
 	m_ui->actionSelect_Language->setFont( Font ) ;
+	m_ui->actionAuto_Open_Mount_Point->setFont( Font ) ;
 }
 
 void zuluCrypt::aboutMenuOption( void )
@@ -751,22 +752,32 @@ void zuluCrypt::favAboutToHide()
 {
 }
 
-void zuluCrypt::favClicked( QAction * e )
+void zuluCrypt::favClicked( QAction * ac )
 {
-	auto r = e->text() ;
+	auto r = ac->text() ;
 
 	r.remove( "&" ) ;
+
+	auto _show_dialog = [ this ]( const QStringList& e ){
+
+		if( e.size() > 1 ){
+
+			this->ShowPasswordDialog( e.at( 0 ),e.at( 1 ) ) ;
+		}
+	} ;
 
 	if( r == tr( "Manage Favorites" ) ){
 
 		favorites::instance( this ) ;
-	}else{
-		auto l = utility::split( r,'\t' ) ;
 
-		if( l.size() > 1 ){
+	}else if( r == tr( "Unlock All" ) ){
 
-			this->ShowPasswordDialog( l.at( 0 ),l.at( 1 ) ) ;
+		for( const auto& it : utility::readFavorites() ){
+
+			_show_dialog( utility::split( it,'\t' ) ) ;
 		}
+	}else{
+		_show_dialog( utility::split( r,'\t' ) ) ;
 	}
 }
 
