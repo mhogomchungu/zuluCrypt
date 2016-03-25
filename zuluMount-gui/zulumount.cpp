@@ -354,7 +354,7 @@ void zuluMount::favoriteClicked( QAction * ac )
 
 		favorites::instance( this ) ;
 
-	}else if( e == tr( "Unlock All" ) ){
+	}else if( e == tr( "Mount All" ) ){
 
 		for( const auto& it : utility::readFavorites() ){
 

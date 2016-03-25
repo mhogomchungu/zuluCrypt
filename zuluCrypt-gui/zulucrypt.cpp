@@ -306,8 +306,6 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionErase_data_on_device,SIGNAL( triggered() ),this,SLOT( ShowEraseDataDialog() ) ) ;
 	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( ShowOpenPartition() ) ) ;
 	connect( m_ui->actionFileOpen,SIGNAL( triggered() ),this,SLOT( ShowPasswordDialog() ) ) ;
-	connect( m_ui->actionVeracrypt_container_in_a_file,SIGNAL( triggered() ),this,SLOT( ShowVeraPasswordDialog() ) ) ;
-	connect( m_ui->actionVeracrypt_container_in_a_partition,SIGNAL( triggered() ),this,SLOT( ShowVeraOpenPartition() ) ) ;
 	connect( m_ui->actionFileCreate,SIGNAL( triggered() ),this,SLOT( ShowCreateFile() ) ) ;
 	connect( m_ui->actionManage_names,SIGNAL( triggered() ),this,SLOT( ShowFavoritesEntries() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
@@ -770,7 +768,7 @@ void zuluCrypt::favClicked( QAction * ac )
 
 		favorites::instance( this ) ;
 
-	}else if( r == tr( "Unlock All" ) ){
+	}else if( r == tr( "Mount All" ) ){
 
 		for( const auto& it : utility::readFavorites() ){
 
@@ -1044,19 +1042,6 @@ passwordDialog& zuluCrypt::setUpPasswordDialog()
 			this->openFolder( path ) ;
 		}
 	 } ) ;
-}
-
-void zuluCrypt::ShowVeraPasswordDialog()
-{
-	this->setUpPasswordDialog().ShowVeraUI() ;
-}
-
-void zuluCrypt::ShowVeraOpenPartition()
-{
-	openvolume::instance( this ).showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
-
-		this->setUpPasswordDialog().ShowVeraUI( e ) ;
-	} ) ;
 }
 
 void zuluCrypt::ShowPasswordDialog()

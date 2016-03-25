@@ -1237,7 +1237,7 @@ void utility::readFavorites( QMenu * m,bool truncate )
 
 	m->addAction( new QAction( QObject::tr( "Manage Favorites" ),m ) ) ;
 
-	m->addAction( new QAction( QObject::tr( "Unlock All" ),m ) ) ;
+	m->addAction( new QAction( QObject::tr( "Mount All" ),m ) ) ;
 
 	m->addSeparator() ;
 
@@ -1725,24 +1725,24 @@ QIcon utility::getIcon( const QString& application )
 	return QIcon::fromTheme( application,icon ) ;
 }
 
-static QString _veraCryptOptionPath()
+static QString _veraCryptOptionPath( const QString& app )
 {
-	return utility::homePath() + "/.zuluCrypt/autoSetVolumeAsVeraCrypt" ;
+	return utility::homePath() + "/.zuluCrypt/" + app + ".autoSetVolumeAsVeraCrypt" ;
 }
 
-bool utility::autoSetVolumeAsVeraCrypt()
+bool utility::autoSetVolumeAsVeraCrypt( const QString& app )
 {
-	return utility::pathExists( _veraCryptOptionPath() ) ;
+	return utility::pathExists( _veraCryptOptionPath( app ) ) ;
 }
 
-void utility::autoSetVolumeAsVeraCrypt( bool set )
+void utility::autoSetVolumeAsVeraCrypt( const QString& app,bool set )
 {
 	if( set ){
 
-		QFile f( _veraCryptOptionPath() ) ;
+		QFile f( _veraCryptOptionPath( app ) ) ;
 		f.open( QIODevice::WriteOnly ) ;
 	}else{
-		QFile::remove( _veraCryptOptionPath() ) ;
+		QFile::remove( _veraCryptOptionPath( app ) ) ;
 	}
 }
 

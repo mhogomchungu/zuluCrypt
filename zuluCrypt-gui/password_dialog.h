@@ -57,9 +57,8 @@ public slots:
 	void ShowUI( void ) ;
 	void ShowUI( const QString& volumePath,const QString& mount_point ) ;
 	void ShowUI( QString ) ;
-	void ShowVeraUI( void ) ;
-	void ShowVeraUI( QString ) ;
 private slots :
+	void cbVeraCryptVolume( int ) ;
 	void cbActicated( int ) ;
 	void pbKeyOption( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;

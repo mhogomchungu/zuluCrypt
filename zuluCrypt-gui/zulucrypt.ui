@@ -104,8 +104,7 @@
     <addaction name="actionFileOpen"/>
     <addaction name="actionPartitionOpen"/>
     <addaction name="separator"/>
-    <addaction name="actionVeracrypt_container_in_a_file"/>
-    <addaction name="actionVeracrypt_container_in_a_partition"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuCreate">
     <property name="title">
@@ -182,7 +181,7 @@
   </widget>
   <action name="actionFileOpen">
    <property name="text">
-    <string>PLAIN,LUKS,TrueCrypt Container In A File</string>
+    <string>Volume Hosted In A File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -190,7 +189,7 @@
   </action>
   <action name="actionPartitionOpen">
    <property name="text">
-    <string>PLAIN,LUKS,TrueCrypt Container In A Hard Drive</string>
+    <string>Volume Hosted In A Hard Drive</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -516,6 +515,9 @@
   <action name="actionAuto_Open_Mount_Point">
    <property name="text">
     <string>Auto Open Mount Point</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>

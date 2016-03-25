@@ -134,8 +134,6 @@ private slots :
 	void ShowNonSystemPartitions( void ) ;
 	void ShowPasswordDialog( void ) ;
 	void ShowOpenPartition( void ) ;
-	void ShowVeraPasswordDialog( void ) ;
-	void ShowVeraOpenPartition( void ) ;
 	void ShowManageSystemPartitions( void ) ;
 	void ShowManageNonSystemPartitions( void ) ;
 	void ShowPasswordDialog( QString,QString ) ;

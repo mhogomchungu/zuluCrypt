@@ -94,7 +94,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
-	m_veraCryptVolume = utility::autoSetVolumeAsVeraCrypt() ;
+	m_veraCryptVolume = utility::autoSetVolumeAsVeraCrypt( "zuluMount-gui" ) ;
 
 	m_ui->checkBoxVeraCryptVolume->setChecked( m_veraCryptVolume ) ;
 
@@ -249,7 +249,7 @@ void keyDialog::cbVeraCryptVolume( int state )
 {
 	m_veraCryptVolume = state != Qt::Unchecked ;
 
-	utility::autoSetVolumeAsVeraCrypt( m_veraCryptVolume ) ;
+	utility::autoSetVolumeAsVeraCrypt( "zuluMount-gui",m_veraCryptVolume ) ;
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )

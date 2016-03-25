@@ -175,8 +175,8 @@ namespace utility
 
 	QIcon getIcon( const QString& ) ;
 
-	bool autoSetVolumeAsVeraCrypt( void ) ;
-	void autoSetVolumeAsVeraCrypt( bool ) ;
+	bool autoSetVolumeAsVeraCrypt( const QString& ) ;
+	void autoSetVolumeAsVeraCrypt( const QString&,bool ) ;
 
 	void autoOpenFolderOnMount( const QString&,bool ) ;
 	bool autoOpenFolderOnMount( const QString& ) ;

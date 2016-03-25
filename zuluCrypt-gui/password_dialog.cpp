@@ -89,6 +89,10 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent,std::funct
 
 	m_ui->pushButtonPlugin->setIcon( QIcon( ":/module.png" ) ) ;
 
+	m_veraCryptVolume = utility::autoSetVolumeAsVeraCrypt( "zuluCrypt-gui" ) ;
+	m_ui->cbVeraCryptVolume->setChecked( m_veraCryptVolume ) ;
+
+	connect( m_ui->cbVeraCryptVolume,SIGNAL( stateChanged( int ) ),this,SLOT( cbVeraCryptVolume( int ) ) ) ;
 	connect( m_ui->PushButtonCancel,SIGNAL( clicked() ),this,SLOT( HideUI() ) ) ;
 	connect( m_ui->PushButtonOpen,SIGNAL( clicked() ),this,SLOT( buttonOpenClicked() ) ) ;
 	connect( m_ui->PushButtonMountPointPath,SIGNAL( clicked() ),this,SLOT( mount_point() ) ) ;
@@ -107,6 +111,13 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent,std::funct
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
 	this->installEventFilter( this ) ;
+}
+
+void passwordDialog::cbVeraCryptVolume( int state )
+{
+	m_veraCryptVolume = state != Qt::Unchecked ;
+
+	utility::autoSetVolumeAsVeraCrypt( "zuluCrypt-gui",m_veraCryptVolume ) ;
 }
 
 bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
@@ -199,9 +210,13 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 {
 	this->addTcryptVcryptKeyOption() ;
 
+	auto volume = volumePath.split( "/" ).last() ;
+
+	this->setWindowTitle( tr( "Mount \"%1\"" ).arg( volume ) ) ;
+
 	if( mount_point.isEmpty() ){
 
-		m_point = utility::mountPathPostFix( volumePath.split( "/" ).last() ) ;
+		m_point = utility::mountPathPostFix( volume ) ;
 	}else{
 		m_point = utility::mountPathPostFix( mount_point.split( "/" ).last() ) ;
 	}
@@ -238,8 +253,6 @@ void passwordDialog::setTitle()
 
 void passwordDialog::ShowUI( QString dev )
 {
-	this->setTitle() ;
-
 	auto m_point = utility::homePath() + "/" + dev.split( "/" ).last() ;
 
 	this->ShowUI( dev,m_point ) ;
@@ -249,26 +262,12 @@ void passwordDialog::ShowUI()
 {
 	this->addTcryptVcryptKeyOption() ;
 
-	this->setTitle() ;
-
 	this->passphraseOption() ;
 
 	m_ui->OpenVolumePath->setFocus() ;
 	m_ui->PushButtonVolumePath->setIcon( QIcon( ":/file.png" ) ) ;
 
 	this->show() ;
-}
-
-void passwordDialog::ShowVeraUI()
-{
-	m_veraCryptVolume = true ;
-	this->ShowUI() ;
-}
-
-void passwordDialog::ShowVeraUI( QString dev )
-{
-	m_veraCryptVolume = true ;
-	this->ShowUI( dev ) ;
 }
 
 void passwordDialog::mountPointPath( QString path )
@@ -490,6 +489,7 @@ void passwordDialog::sendKey( const QString& sockpath )
 
 void passwordDialog::disableAll()
 {
+	m_ui->cbVeraCryptVolume->setEnabled( false ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->checkBoxReadOnly->setEnabled( false ) ;
 	m_ui->labelMoutPointPath->setEnabled( false ) ;
@@ -509,6 +509,7 @@ void passwordDialog::disableAll()
 
 void passwordDialog::enableAll()
 {
+	m_ui->cbVeraCryptVolume->setEnabled( true ) ;
 	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->checkBoxReadOnly->setEnabled( true ) ;
 	m_ui->labelMoutPointPath->setEnabled( true ) ;
