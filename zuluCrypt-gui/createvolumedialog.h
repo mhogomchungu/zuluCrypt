@@ -23,6 +23,7 @@
 #include <QString>
 #include <functional>
 #include <memory>
+#include <QCloseEvent>
 
 namespace Ui {
 class createVolumeDialog ;
@@ -42,6 +43,7 @@ private slots:
 	void pbYes( void ) ;
 	void pbNo( void ) ;
 private:
+	void closeEvent( QCloseEvent * ) ;
 	void ShowUI( void ) ;
 	Ui::createVolumeDialog * m_ui ;
 	int m_opt ;

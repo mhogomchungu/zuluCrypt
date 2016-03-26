@@ -62,9 +62,16 @@ void createVolumeDialog::pbNo()
 	this->deleteLater() ;
 }
 
+void createVolumeDialog::closeEvent( QCloseEvent * e )
+{
+	e->ignore() ;
+}
+
 void createVolumeDialog::pbYes()
 {
 	m_ui->pbYes->setEnabled( false ) ;
+
+	m_ui->pbNo->setEnabled( false ) ;
 
 	m_ui->pbNo->setFocus() ;
 
@@ -85,6 +92,8 @@ it takes too long and you can no longer wait.\n\n" ).arg( m_path ) ;
 		utility::Task::suspend( 2 ) ;
 
 		m_ui->pbYes->setEnabled( true ) ;
+
+		m_ui->pbNo->setEnabled( true ) ;
 	}
 }
 
