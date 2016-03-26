@@ -52,6 +52,7 @@
 #include <uuid.h>
 #endif
 
+#include <sys/stat.h>
 #include <dirent.h>
 
 #include "crc32.h"
@@ -1834,6 +1835,12 @@ error:
 	return NULL;
 }
 
+#if 0
+
+/*
+ * Disabling this way of checking because it pollutes stdout
+ * with entries like "Device /dev/mapper/blablabla not found"
+ */
 static
 int
 dm_exists_device(const char *name)
@@ -1849,6 +1856,19 @@ dm_exists_device(const char *name)
 out:
 	return exists;
 }
+
+#else
+
+static
+int
+dm_exists_device(const char *name)
+{
+	struct stat st;
+	return stat(name, &st) == 0;
+}
+
+#endif
+
 
 static
 int
