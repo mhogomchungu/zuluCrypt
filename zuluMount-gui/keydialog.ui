@@ -188,16 +188,16 @@
     </rect>
    </property>
    <property name="text">
-    <string>VeraCrypt Volume</string>
+    <string>&amp;VeraCrypt Volume</string>
    </property>
   </widget>
   <widget class="QLabel" name="veraCryptWarning">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>0</y>
      <width>501</width>
-     <height>201</height>
+     <height>211</height>
     </rect>
    </property>
    <property name="autoFillBackground">

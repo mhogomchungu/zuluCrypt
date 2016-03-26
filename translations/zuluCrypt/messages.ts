@@ -217,7 +217,7 @@ only root user or members of group zulucrypt-write can do that</source>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="82"/>
-        <source>Open the volume in &amp;read only mode</source>
+        <source>Mount In &amp;Read Only Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -262,7 +262,17 @@ only root user or members of group zulucrypt-write can do that</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password.ui" line="313"/>
+        <location filename="../../zuluCrypt-gui/password.ui" line="307"/>
+        <source>&amp;VeraCrypt Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/password.ui" line="320"/>
+        <source>&amp;Share Mount Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/password.ui" line="339"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
@@ -275,7 +285,7 @@ only root user or members of group zulucrypt-write can do that</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="151"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="152"/>
         <source>
 options:
 	-d   path to where a volume to be auto unlocked/mounted is located
@@ -285,23 +295,28 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="649"/>
-        <source>if the option is checked,a primary private mount point will be created in &quot;/run/media/private/$USER/&quot;
-and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;/run/media/public/&quot;</source>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="656"/>
+        <source>If the option is checked,a primary private mount point will be created in &quot;%1&quot;
+and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1231"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1238"/>
         <source>Manage Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1267"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1240"/>
+        <source>Mount All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1276"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1501"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1510"/>
         <source>hmac plugin.
 
 This plugin generates a key using below formular:
@@ -310,7 +325,7 @@ key = hmac(sha256,passphrase,keyfile contents)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1506"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1515"/>
         <source>keykeyfile plugin.
 
 This plugin generates a key using below formular:
@@ -319,29 +334,29 @@ key = passphrase + keyfile contents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1511"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1520"/>
         <source>gpg plugin.
 
 This plugin retrives a key locked in a gpg file with a symmetric key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1529"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1538"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1529"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1538"/>
         <source>Could not find &quot;gpg&quot; executable in &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; and &quot;/usr/sbin&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1697"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1706"/>
         <source>INFO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1697"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1706"/>
         <source>Translation will be done the next time you restart.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -482,14 +497,14 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolumedialog.cpp" line="42"/>
+        <location filename="../../zuluCrypt-gui/createvolumedialog.cpp" line="44"/>
         <source>This operation will lead to permanent destrunction of all present data in &quot;%1&quot;.
 
 Are you sure you want to continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolumedialog.cpp" line="75"/>
+        <location filename="../../zuluCrypt-gui/createvolumedialog.cpp" line="79"/>
         <source>It is advised to create encrypted containers over random data to prevent information leakage.
 
 Do you want to write random data to &quot;%1&quot; first before creating an encrypted container in it?
@@ -2670,115 +2685,110 @@ Restart zuluCrypt from root&apos;s account to proceed</source>
 <context>
     <name>passwordDialog</name>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="568"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="573"/>
         <source>&quot;/&quot; character is not allowed in mount name field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="124"/>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="137"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="150"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="192"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="205"/>
         <source>VeraCrypt Keys</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="194"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="207"/>
         <source>TrueCrypt Keys</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="233"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="217"/>
+        <source>Mount &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="250"/>
         <source>Unlock VeraCrypt Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="235"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="252"/>
         <source>Unlock Encrypted Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="318"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="319"/>
         <source>Choose A Module From The File System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="319"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="320"/>
         <source>Enter A Module Name To Use To Get Passphrase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="322"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="323"/>
         <source>Plugin Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="326"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="372"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="327"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="373"/>
         <source>Select A Key Module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="334"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="335"/>
         <source>Enter A Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="338"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="339"/>
         <source>Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="349"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="350"/>
         <source>Choose A KeyFile From The File System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="350"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="351"/>
         <source>Enter A Path To A Keyfile Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="355"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="356"/>
         <source>KeyFile Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="370"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="371"/>
         <source>Select A KeyFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="385"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="386"/>
         <source>Select Path To Mount Point Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="407"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="408"/>
         <source>Select Encrypted volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="448"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="469"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="559"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="568"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="596"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="616"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="707"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="730"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="731"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="732"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="733"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="734"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="735"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="736"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="737"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="738"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="739"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="449"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="470"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="564"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="573"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="601"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="621"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="717"/>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="740"/>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="741"/>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="742"/>
@@ -2792,134 +2802,144 @@ Restart zuluCrypt from root&apos;s account to proceed</source>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="750"/>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="751"/>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="752"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="753"/>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="754"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="755"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="756"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="757"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="758"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="759"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="760"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="761"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="762"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="764"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="448"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="449"/>
         <source>Internal wallet is not configured</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="469"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="470"/>
         <source>The volume does not appear to have an entry in the wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="559"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="596"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="616"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="564"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="601"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="621"/>
         <source>Atleast one required field is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="707"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="717"/>
         <source>An error has occured and the volume could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="730"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="740"/>
         <source>Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="731"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="741"/>
         <source>There seem to be an open volume accociated with given address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="732"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="742"/>
         <source>No file or device exist on given path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="733"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="743"/>
         <source>Volume could not be opened with the presented key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="734"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="744"/>
         <source>Insufficient privilege to mount the device with given options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="735"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="745"/>
         <source>Insufficient privilege to open device in read write mode or device does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="736"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="746"/>
         <source>Only root user can perform this operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="738"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="748"/>
         <source>Could not create mount point, invalid path or path already taken</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="739"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="749"/>
         <source>Shared mount point path aleady taken</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="740"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="750"/>
         <source>There seem to be an opened mapper associated with the device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="741"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="751"/>
         <source>Could not get a passphrase from the module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="742"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="752"/>
         <source>Could not get passphrase in silent mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="743"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="753"/>
         <source>Insufficient memory to hold passphrase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="744"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="754"/>
         <source>One or more required argument(s) for this operation is missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="745"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="755"/>
         <source>Invalid path to key file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="746"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="756"/>
         <source>Could not get enought memory to hold the key file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="747"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="757"/>
         <source>Insufficient privilege to open key file for reading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="748"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="758"/>
         <source>Could not get a passphrase through a local socket</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="749"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="759"/>
         <source>Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="750"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="760"/>
         <source>Could not create a lock on /etc/mtab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="751"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="761"/>
         <source>Insufficient privilege to open a system volume.
 
 Consult menu-&gt;help-&gt;permission for more informaion
@@ -2927,7 +2947,7 @@ Consult menu-&gt;help-&gt;permission for more informaion
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="752"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="762"/>
         <source>A non supported device encountered,device is missing or permission denied
 Possible reasons for getting the error are:
 1.Device path is invalid.
@@ -2935,12 +2955,12 @@ Possible reasons for getting the error are:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="754"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="764"/>
         <source>Unrecognized ERROR with status number %1 encountered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="737"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="747"/>
         <source>-O and -m options can not be used together</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3143,22 +3163,22 @@ A volume created with a key generated here should be opened with &quot;hmac&quot
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="535"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="541"/>
         <source>Elapsed time: 0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="543"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="549"/>
         <source>Elapsed time: %0 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="545"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="551"/>
         <source>Elapsed time: %0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="556"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="562"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>
@@ -3295,8 +3315,18 @@ A volume created with a key generated here should be opened with &quot;hmac&quot
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="184"/>
+        <source>Volume Hosted In A File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="187"/>
         <source>Ctrl+Z</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="192"/>
+        <source>Volume Hosted In A Hard Drive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3338,6 +3368,7 @@ A volume created with a key generated here should be opened with &quot;hmac&quot
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="255"/>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="475"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="520"/>
         <source>Ctrl+E</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3367,33 +3398,28 @@ A volume created with a key generated here should be opened with &quot;hmac&quot
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="112"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="111"/>
         <source>&amp;Create</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="120"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="119"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="130"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="129"/>
         <source>&amp;Volumes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="140"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="139"/>
         <source>O&amp;ptions</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="155"/>
         <source>&amp;Favorites</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="184"/>
-        <source>PLAIN,LUKS,TrueCrypt Container In A File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3565,13 +3591,13 @@ A volume created with a key generated here should be opened with &quot;hmac&quot
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="321"/>
-        <source>Ctrl+Y</source>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="517"/>
+        <source>Auto Open Mount Point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="192"/>
-        <source>PLAIN,LUKS,TrueCrypt Container In A Hard Drive</source>
+        <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="321"/>
+        <source>Ctrl+Y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3596,7 +3622,7 @@ A volume created with a key generated here should be opened with &quot;hmac&quot
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="342"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="760"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="767"/>
         <source>Manage Favorites</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3708,38 +3734,38 @@ A volume created with a key generated here should be opened with &quot;hmac&quot
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="346"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="351"/>
         <source>Restore Volume Header</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="347"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="352"/>
         <source>Backup Volume Header</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="808"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="822"/>
         <source>Failed to open zuluCrypt.pdf,make sure your system can open pdf files using &quot;%1&quot; tool and try again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="799"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="807"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="813"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="821"/>
         <source>WARNING!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="637"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="635"/>
         <source>Resetting font size to %1 because larger font sizes do not fit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="637"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="635"/>
         <source>INFO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="699"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="698"/>
         <source>
 LUKS,TrueCrypt and VeraCrypt based encrypted volumes have what is called a &quot;volume header&quot;.
 
@@ -3753,142 +3779,157 @@ Having a backup of the volume header is strongly advised because it is the only 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="708"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="707"/>
         <source>Important Information On Volume Header Backup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="741"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="740"/>
         <source>Volume is not open or was opened by a different user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="743"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="742"/>
         <source>Volume Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="800"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="771"/>
+        <source>Mount All</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="814"/>
         <source>Could not open mount point because &quot;%1&quot; tool does not appear to be working correctly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="822"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="836"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="826"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="840"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="830"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="850"/>
         <source>Open Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="838"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="852"/>
+        <source>Open Private Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="854"/>
+        <source>Open Shared Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="864"/>
         <source>Add Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="839"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="865"/>
         <source>Remove Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="843"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="869"/>
         <source>Backup LUKS Header</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="859"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="885"/>
         <source>Add To Favorite</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="876"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="902"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="912"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="938"/>
         <source>Close failed, volume is not open or was opened by a different user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="913"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="939"/>
         <source>Close failed, one or more files in the volume are in use.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="914"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="940"/>
         <source>Close failed, volume does not have an entry in /etc/mtab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="915"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="941"/>
         <source>Close failed, could not get a lock on /etc/mtab~</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="916"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="942"/>
         <source>Close failed, volume is unmounted but could not close mapper,advice to close it manually</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="917"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="943"/>
         <source>Close failed, could not resolve full path of device
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="918"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="944"/>
         <source>Close failed, shared mount point appear to be busy
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="919"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="945"/>
         <source>Close failed, shared mount point appear to belong to a different user or multiple mount points detected
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="920"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="946"/>
         <source>Close failed, shared mount point appear to be in an ambiguous state,advice to unmount manually</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="921"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="947"/>
         <source>Close failed, multiple mount points for the volume detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="923"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="949"/>
         <source>Close failed, could not find any partition with the presented UUID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="924"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="950"/>
         <source>Unrecognized error with status number %1 encountered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="741"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="912"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="913"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="914"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="915"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="916"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="917"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="918"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="919"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="920"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="921"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="923"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="924"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="740"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="938"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="939"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="940"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="941"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="942"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="943"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="944"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="945"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="946"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="947"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="949"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="950"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
