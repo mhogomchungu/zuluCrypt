@@ -1210,7 +1210,7 @@ void utility::removeFavoriteEntry( const QString& entry )
 	utility::changeFilePermissions( f ) ;
 }
 
-void utility::readFavorites( QMenu * m,bool truncate )
+void utility::readFavorites( QMenu * m,bool truncate,bool showFolders )
 {
 	m->clear() ;
 
@@ -1243,7 +1243,15 @@ void utility::readFavorites( QMenu * m,bool truncate )
 
 	for( const auto& it : utility::readFavorites() ){
 
-		m->addAction( _add_action( it ) ) ;
+		if( showFolders ){
+
+			m->addAction( _add_action( it ) ) ;
+		}else{
+			if( !utility::pathPointsToAFolder( utility::split( it,'\t' ).first() ) ){
+
+				m->addAction( _add_action( it ) ) ;
+			}
+		}
 	}
 }
 

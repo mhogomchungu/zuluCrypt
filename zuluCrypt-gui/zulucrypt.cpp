@@ -781,7 +781,7 @@ void zuluCrypt::favClicked( QAction * ac )
 
 void zuluCrypt::readFavorites()
 {
-	utility::readFavorites( m_ui->menuFavorites ) ;
+	utility::readFavorites( m_ui->menuFavorites,false,false ) ;
 }
 
 void zuluCrypt::addToFavorite()
