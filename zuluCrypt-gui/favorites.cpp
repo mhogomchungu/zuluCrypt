@@ -33,7 +33,7 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favorites )
+favorites::favorites( QWidget * parent,bool e ) : QDialog( parent ),m_ui( new Ui::favorites )
 {
 	m_ui->setupUi( this ) ;
 
@@ -42,6 +42,7 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favor
 
 	this->setFixedSize( this->size() ) ;
 
+	connect( m_ui->pbFolderAddress,SIGNAL( clicked() ),this,SLOT( folderAddress() ) ) ;
 	connect( m_ui->pbDeviceAddress,SIGNAL( clicked() ),this,SLOT( deviceAddress() ) ) ;
 	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( add() ) ) ;
 	connect( m_ui->pbFileAddress,SIGNAL( clicked() ),this,SLOT( fileAddress() ) ) ;
@@ -54,6 +55,9 @@ favorites::favorites( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::favor
 
 	m_ui->pbFileAddress->setIcon( QIcon( ":/file.png" ) ) ;
 	m_ui->pbDeviceAddress->setIcon( QIcon( ":/partition.png" ) ) ;
+	m_ui->pbFolderAddress->setIcon( QIcon( ":/folder.png" ) ) ;
+
+	m_ui->pbFolderAddress->setEnabled( e ) ;
 
 	m_ac = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -218,6 +222,16 @@ void favorites::add()
 	m_ui->lineEditMountPath->clear() ;
 
 	m_ui->tableWidget->setEnabled( true ) ;
+}
+
+void favorites::folderAddress()
+{
+	auto e = QFileDialog::getExistingDirectory( this,tr( "Path To An Encrypted Volume" ),QDir::homePath(),0 ) ;
+
+	if( !e.isEmpty() ){
+
+		m_ui->lineEditDeviceAddress->setText( e ) ;
+	}
 }
 
 void favorites::fileAddress()

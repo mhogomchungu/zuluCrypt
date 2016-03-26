@@ -37,11 +37,11 @@ class favorites : public QDialog
 {
 	Q_OBJECT
 public:
-	static favorites& instance( QWidget * parent = 0 )
+	static favorites& instance( QWidget * parent,bool e )
 	{
-		return *( new favorites( parent ) ) ;
+		return *( new favorites( parent,e ) ) ;
 	}
-	explicit favorites( QWidget * parent = 0 ) ;
+	explicit favorites( QWidget * parent,bool e ) ;
 	~favorites() ;
 signals:
 	void ShowPartitionUI( void ) ;
@@ -54,6 +54,7 @@ private slots:
 	void cancel( void ) ;
 	void deviceAddress( void ) ;
 	void fileAddress( void ) ;
+	void folderAddress( void ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked( QTableWidgetItem * current,bool ) ;
 	void itemClicked( QTableWidgetItem * current ) ;

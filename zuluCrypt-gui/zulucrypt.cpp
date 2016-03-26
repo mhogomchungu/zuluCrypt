@@ -766,7 +766,7 @@ void zuluCrypt::favClicked( QAction * ac )
 
 	if( r == tr( "Manage Favorites" ) ){
 
-		favorites::instance( this ) ;
+		favorites::instance( this,false ) ;
 
 	}else if( r == tr( "Mount All" ) ){
 
@@ -1020,7 +1020,7 @@ void zuluCrypt::ShowCreateKeyFile()
 
 void zuluCrypt::ShowFavoritesEntries()
 {
-	favorites::instance( this ) ;
+	favorites::instance( this,false ) ;
 }
 
 void zuluCrypt::ShowCreateFile()

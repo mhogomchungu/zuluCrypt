@@ -64,7 +64,7 @@
      <string>Volume ID</string>
     </property>
     <property name="textAlignment">
-     <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+     <set>AlignCenter</set>
     </property>
    </column>
    <column>
@@ -72,7 +72,7 @@
      <string>Mount Point</string>
     </property>
     <property name="textAlignment">
-     <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+     <set>AlignCenter</set>
     </property>
    </column>
   </widget>
@@ -177,6 +177,19 @@
    </property>
    <property name="text">
     <string>&amp;Done</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pbFolderAddress">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>230</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

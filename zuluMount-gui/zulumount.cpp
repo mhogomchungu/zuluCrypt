@@ -352,7 +352,7 @@ void zuluMount::favoriteClicked( QAction * ac )
 
 	if( e == tr( "Manage Favorites" ) ){
 
-		favorites::instance( this ) ;
+		favorites::instance( this,true ) ;
 
 	}else if( e == tr( "Mount All" ) ){
 
