@@ -148,6 +148,7 @@ private slots :
 	void setDefaultWallet( void ) ;
 	void failedToOpenWallet( void ) ;
 	void openFolder( void ) ;
+	void openSharedFolder( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void manageVolumesInInternalWallet( void ) ;
 	void manageVolumesInKDEWallet( void ) ;
@@ -184,6 +185,8 @@ private:
 	Ui::zuluCrypt * m_ui = nullptr ;
 
 	QSystemTrayIcon m_trayIcon ;
+
+	QString m_sharedMountPoint ;
 
 	QString m_openPath ;
 	bool m_startHidden ;

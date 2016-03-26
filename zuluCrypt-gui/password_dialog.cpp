@@ -110,6 +110,8 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent,std::funct
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
+	m_ui->cbShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
+
 	this->installEventFilter( this ) ;
 }
 
@@ -489,6 +491,7 @@ void passwordDialog::sendKey( const QString& sockpath )
 
 void passwordDialog::disableAll()
 {
+	m_ui->cbShareMountPoint->setEnabled( false ) ;
 	m_ui->cbVeraCryptVolume->setEnabled( false ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->checkBoxReadOnly->setEnabled( false ) ;
@@ -509,6 +512,7 @@ void passwordDialog::disableAll()
 
 void passwordDialog::enableAll()
 {
+	m_ui->cbShareMountPoint->setEnabled( true ) ;
 	m_ui->cbVeraCryptVolume->setEnabled( true ) ;
 	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->checkBoxReadOnly->setEnabled( true ) ;
@@ -678,6 +682,11 @@ void passwordDialog::openVolume()
 	if( m_veraCryptVolume ){
 
 		exe += " -t vcrypt" ;
+	}
+
+	if( m_ui->cbShareMountPoint->isChecked() ){
+
+		exe += " -M" ;
 	}
 
 	this->disableAll() ;

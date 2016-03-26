@@ -654,7 +654,7 @@ QString utility::shareMountPointToolTip()
 	x = "/run/media/private/" ;
 #endif
 	return QObject::tr( "\
-if the option is checked,a primary private mount point will be created in \"%1\"\n\
+If the option is checked,a primary private mount point will be created in \"%1\"\n\
 and a secondary publicly accessible \"mirror\" mount point will be created in \"%2\"" ).arg( x,SHARE_MOUNT_PREFIX "/" ) ;
 }
 

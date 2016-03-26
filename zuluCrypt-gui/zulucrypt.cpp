@@ -803,6 +803,11 @@ void zuluCrypt::openFolder()
 	this->openFolder( m_ui->tableWidget->item( item->row(),1 )->text() ) ;
 }
 
+void zuluCrypt::openSharedFolder()
+{
+	this->openFolder( m_sharedMountPoint ) ;
+}
+
 void zuluCrypt::openFolder( const QString& path )
 {
 	auto x = tr( "WARNING!" ) ;
@@ -836,7 +841,19 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m.addSeparator() ;
 
-	connect( m.addAction( tr( "Open Folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
+	auto m_point = item->tableWidget()->item( item->row(),1 )->text() ;
+
+	m_sharedMountPoint = utility::sharedMountPointPath( m_point ) ;
+
+	if( m_sharedMountPoint.isEmpty() ){
+
+		connect( m.addAction( tr( "Open Folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
+	}else{
+		connect( m.addAction( tr( "Open Private Folder" ) ),SIGNAL( triggered() ),
+			 this,SLOT( openFolder() ) ) ;
+		connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
+			 this,SLOT( openSharedFolder() ) ) ;
+	}
 
 	m.addSeparator() ;
 
