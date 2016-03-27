@@ -513,12 +513,15 @@ void luksaddkey::enableAll()
 
 	auto index = m_ui->cbNewKey->currentIndex() ;
 
-	if( index == 1 ){
+	if( index == 0 ){
+
+		m_ui->lineEditReEnterPassphrase->setEnabled( true ) ;
+
+	}else if( index == 1 ){
 
 		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
-	}
 
-	if( index == 2 ){
+	}else if( index == 2 ){
 
 		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
 		m_ui->textEditPassphraseToAdd->setEnabled( false ) ;
