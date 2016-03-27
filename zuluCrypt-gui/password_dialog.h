@@ -74,8 +74,6 @@ private slots :
 	void cbStateChanged( int ) ;
 private :
 	void keyAndKeyFile( void ) ;
-	void setTitle( void ) ;
-	void addTcryptVcryptKeyOption( void ) ;
 	void tcryptGui( void ) ;
 	void openVolume( void ) ;
 	QString getUUIDFromPath( const QString& ) ;

@@ -112,6 +112,10 @@ passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent,std::funct
 
 	m_ui->cbShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
 
+	m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
+
+	this->setWindowTitle( tr( "Unlock Encrypted Volume" ) ) ;
+
 	this->installEventFilter( this ) ;
 }
 
@@ -198,20 +202,8 @@ void passwordDialog::closeEvent( QCloseEvent * e )
 	this->HideUI() ;
 }
 
-void passwordDialog::addTcryptVcryptKeyOption()
-{
-	if( m_veraCryptVolume ){
-
-		m_ui->cbKeyType->addItem( tr( "VeraCrypt Keys" ) ) ;
-	}else{
-		m_ui->cbKeyType->addItem( tr( "TrueCrypt Keys" ) ) ;
-	}
-}
-
 void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_point )
 {
-	this->addTcryptVcryptKeyOption() ;
-
 	auto volume = volumePath.split( "/" ).last() ;
 
 	this->setWindowTitle( tr( "Mount \"%1\"" ).arg( volume ) ) ;
@@ -243,16 +235,6 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 	this->show() ;
 }
 
-void passwordDialog::setTitle()
-{
-	if( m_veraCryptVolume ){
-
-		this->setWindowTitle( tr( "Unlock VeraCrypt Volume" ) ) ;
-	}else{
-		this->setWindowTitle( tr( "Unlock Encrypted Volume" ) ) ;
-	}
-}
-
 void passwordDialog::ShowUI( QString dev )
 {
 	auto m_point = utility::homePath() + "/" + dev.split( "/" ).last() ;
@@ -262,8 +244,6 @@ void passwordDialog::ShowUI( QString dev )
 
 void passwordDialog::ShowUI()
 {
-	this->addTcryptVcryptKeyOption() ;
-
 	this->passphraseOption() ;
 
 	m_ui->OpenVolumePath->setFocus() ;
@@ -404,7 +384,6 @@ void passwordDialog::mount_point( void )
 
 void passwordDialog::file_path( void )
 {
-
 	auto Z = QFileDialog::getOpenFileName( this,tr( "Select Encrypted volume" ),utility::homePath(),0 ) ;
 
 	m_ui->OpenVolumePath->setText( Z ) ;
