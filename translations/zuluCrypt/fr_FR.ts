@@ -1844,7 +1844,7 @@ Are you sure you want to continue? </source>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="296"/>
         <source>Reenter Key</source>
-        <translation>Réentrer une clé</translation>
+        <translation>Réentrer la clé</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="341"/>
@@ -2077,7 +2077,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.ui" line="20"/>
         <source>Remove A Key From A Volume</source>
-        <translation>Enlver une clé d&apos;un volume</translation>
+        <translation>Enlever une clé d&apos;un volume</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.ui" line="45"/>
@@ -2398,7 +2398,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="221"/>
         <source>Keyfile</source>
-        <translation></translation>
+        <translation>Fichier de clé</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="266"/>
