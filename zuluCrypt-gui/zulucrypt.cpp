@@ -121,6 +121,8 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 
 	emit updateVolumeListSignal( volume,Task::await< QString >( [](){
 
+		utility::Task::waitForOneSecond() ;
+
 		auto r = utility::Task( QString( "%1 -L" ).arg( ZULUCRYPTzuluCrypt ) ) ;
 
 		if( r.success() ){
@@ -963,7 +965,7 @@ void zuluCrypt::close()
 
 		auto exe = utility::appendUserUID( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ;
 
-		utility::Task::waitForOneSecond() ; //for UI effect
+		//utility::Task::waitForOneSecond() ; //for UI effect
 
 		return utility::Task( exe ).exitCode() ;
 
