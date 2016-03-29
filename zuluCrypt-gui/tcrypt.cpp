@@ -56,6 +56,7 @@ tcrypt::tcrypt( QWidget * parent,bool e,
 		m_ui->pbSend->setText( tr( "&Set" ) ) ;
 	}
 
+	this->setWindowTitle( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 	this->show() ;
 }
 
