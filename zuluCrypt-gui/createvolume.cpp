@@ -583,7 +583,7 @@ void createvolume::cbNormalVolume( int r )
 		m_ui->lineEditPassPhrase2->clear() ;
 		m_ui->lineEditPassphrase1->setEchoMode( QLineEdit::Normal ) ;
 		m_ui->lineEditPassPhrase2->setEnabled( false ) ;
-		m_ui->labelPassPhrase->setText( tr( "hmac" ) ) ;
+		m_ui->labelPassPhrase->setText( tr( "KeyFile" ) ) ;
 		m_ui->labelRepeatPassPhrase->setEnabled( false ) ;
 		m_ui->pbOpenKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 

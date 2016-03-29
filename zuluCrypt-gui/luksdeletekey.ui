@@ -35,9 +35,9 @@
   <widget class="QLabel" name="labelPassphrase">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>40</y>
-     <width>101</width>
+     <width>91</width>
      <height>31</height>
     </rect>
    </property>
@@ -121,9 +121,9 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>10</y>
-     <width>101</width>
+     <width>91</width>
      <height>31</height>
     </rect>
    </property>

@@ -19,9 +19,9 @@
   <widget class="QPushButton" name="pbSend">
    <property name="geometry">
     <rect>
-     <x>170</x>
+     <x>109</x>
      <y>320</y>
-     <width>80</width>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>
@@ -32,9 +32,9 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>370</x>
+     <x>410</x>
      <y>320</y>
-     <width>80</width>
+     <width>101</width>
      <height>31</height>
     </rect>
    </property>
@@ -58,9 +58,9 @@
   <widget class="QPushButton" name="pbAddKeyFile">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>210</x>
      <y>320</y>
-     <width>121</width>
+     <width>201</width>
      <height>31</height>
     </rect>
    </property>
@@ -115,7 +115,7 @@
      <string>drag and drop key files to add them to the list</string>
     </property>
     <property name="textAlignment">
-     <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+     <set>AlignCenter</set>
     </property>
    </column>
   </widget>
