@@ -313,3 +313,4 @@ file( WRITE ${PROJECT_BINARY_DIR}/pdf_path.h "\n#define PDF_PATH \"${CMAKE_INSTA
 install ( FILES translations/zuluCrypt/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluCrypt-gui )
 install ( FILES translations/zuluCrypt/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluCrypt-gui )
 
+install ( FILES translations/zuluMount/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluMount-gui )
