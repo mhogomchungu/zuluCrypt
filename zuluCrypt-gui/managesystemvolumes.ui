@@ -43,7 +43,7 @@
     <rect>
      <x>380</x>
      <y>280</y>
-     <width>111</width>
+     <width>151</width>
      <height>31</height>
     </rect>
    </property>
@@ -60,9 +60,9 @@
   <widget class="QPushButton" name="pbPartition">
    <property name="geometry">
     <rect>
-     <x>140</x>
+     <x>100</x>
      <y>280</y>
-     <width>111</width>
+     <width>151</width>
      <height>31</height>
     </rect>
    </property>
