@@ -228,7 +228,7 @@ namespace utility
 
 	bool reUseMountPointPath( void ) ;
 
-	void setLocalizationLanguage( bool translate,QWidget * obj,QAction * ac,const char * ) ;
+	void setLocalizationLanguage( bool translate,QWidget * obj,QAction * ac,const QString& ) ;
 	void languageMenu( QWidget *,QMenu *,QAction *,const char * ) ;
 
 	using array_t = std::array< int,10 > ;

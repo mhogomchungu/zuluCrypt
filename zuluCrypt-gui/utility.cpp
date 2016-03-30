@@ -1647,7 +1647,7 @@ static void _set_checked( QMenu * m,const QString& e )
 	}
 }
 
-void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,const char * app )
+void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,const QString& app )
 {
 	auto r = utility::localizationLanguage( app ).toLatin1() ;
 
@@ -1655,15 +1655,29 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 
 	if( translate ){
 
-		auto translator = new QTranslator( w ) ;
-
 		if( r == "en_US" ){
 			/*
 			 * english_US language,its the default and hence dont load anything
 			 */
 		}else{
+			auto translator = new QTranslator( w ) ;
+
 			translator->load( r.constData(),e ) ;
 			QCoreApplication::installTranslator( translator ) ;
+
+			if( app == "zuluMount-gui" ){
+
+				/*
+				 * We are loading zuluCrypt-gui translation file to get translations for
+				 * lxqtwallet strings.
+				 */
+				translator = new QTranslator( w ) ;
+
+				e = utility::localizationLanguagePath( "zuluCrypt-gui" ) ;
+
+				translator->load( r.constData(),e ) ;
+				QCoreApplication::installTranslator( translator ) ;
+			}
 		}
 
 	}else{
