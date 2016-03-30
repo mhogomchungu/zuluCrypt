@@ -143,7 +143,7 @@ ERROR: You can not umount volumes out of \"%s\" since you are not root and do no
 			case 1 : return _zuluExit( 103,st,m_point,gettext( "ERROR: Device does not exist" ) ) ;
 			case 2 : return _zuluExit( 104,st,m_point,gettext( "ERROR: Failed to unmount,the mount point and/or one or more files are in use" ) ) ;
 			case 4 : return _zuluExit( 105,st,m_point,gettext( "ERROR: Failed to unmount,could not get a lock on /etc/mtab~" ) ) ;
-			case 10: return _zuluExit( 107,st,m_point,gettext( "ERROR: Failed to unmount,multiple mount points for the volume detected" ) ) ; break ;
+			case 10: return _zuluExit( 111,st,m_point,gettext( "ERROR: Failed to unmount,multiple mount points for the volume detected" ) ) ; break ;
 
 			default: return _zuluExit( 106,st,m_point,gettext( "ERROR: Failed to unmount the partition" ) ) ;
 		}

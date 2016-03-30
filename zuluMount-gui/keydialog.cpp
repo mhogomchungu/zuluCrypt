@@ -507,6 +507,42 @@ void keyDialog::encryptedFolderMount()
 	this->enableAll() ;
 }
 
+bool keyDialog::errorNotFound( int r )
+{
+	DialogMsg msg( this ) ;
+
+	switch ( r ){
+		case 0 : break ;
+		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;
+		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There seem to be an open volume accociated with given address" ) ) ;				break ;
+		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "No file or device exist on given path" ) ) ; 						break ;
+		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume could not be opened with the presented key" ) ) ;					break ;
+		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to mount the device with given options" ) ) ;				break ;
+		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open device in read write mode or device does not exist" ) ) ;	break ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Only root user can perform this operation" ) ) ;						break ;
+		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) ) ;						break ;
+		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create mount point, invalid path or path already taken" ) ) ;			break ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point path aleady taken" ) ) ;							break ;
+		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "There seem to be an opened mapper associated with the device" ) ) ;				break ;
+		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a passphrase from the module" ) ) ;						break ;
+		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get passphrase in silent mode" ) ) ;						break ;
+		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold passphrase" ) ) ;						break ;
+		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "One or more required argument(s) for this operation is missing" ) ) ;			break ;
+		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to key file" ) ) ;								break ;
+		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get enought memory to hold the key file" ) ) ;					break ;
+		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) ) ;					break ;
+		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a passphrase through a local socket" ) ) ;					break ;
+		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;	break ;
+		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create a lock on /etc/mtab" ) ) ;							break ;
+		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open a system volume.\n\nConsult menu->help->permission for more informaion\n" ) ) ;					break ;
+		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "A non supported device encountered,device is missing or permission denied\n\
+Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;					break ;
+		default: return true ;
+	}
+
+	return false ;
+}
+
 void keyDialog::openVolume()
 {
 	auto keyType = m_ui->cbKeyType->currentIndex() ;
@@ -709,7 +745,9 @@ void keyDialog::openVolume()
 
 		auto keyType = m_ui->cbKeyType->currentIndex() ;
 
-		if( s.exitCode() == 12 && keyType == keyDialog::plugin ){
+		int r = s.exitCode() ;
+
+		if( r == 12 && keyType == keyDialog::plugin ){
 
 			/*
 			 * A user cancelled the plugin
@@ -717,13 +755,16 @@ void keyDialog::openVolume()
 
 			this->enableAll() ;
 		}else{
+			if( this->errorNotFound( r ) ){
 
-			QString z = s.output() ;
-			z.replace( tr( "ERROR: " ),"" ) ;
+				QString z = s.output() ;
 
-			DialogMsg msg( this ) ;
+				z.replace( tr( "ERROR: " ),"" ) ;
 
-			msg.ShowUIOK( tr( "ERROR" ),z ) ;
+				DialogMsg msg( this ) ;
+
+				msg.ShowUIOK( tr( "ERROR" ),z ) ;
+			}
 
 			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
 

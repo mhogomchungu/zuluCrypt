@@ -998,6 +998,40 @@ void zuluMount::updateList( const volumeEntryProperties& entry )
 	}
 }
 
+bool zuluMount::errorNotFound( int r )
+{
+	DialogMsg m( this ) ;
+
+	switch ( r ) {
+
+		case 0 :break ;
+		case 1 :m.ShowUIOK( tr( "ERROR!" ),tr( "Volume is not open or was opened by a different user" ) ) ;					break ;
+		case 2 :m.ShowUIOK( tr( "ERROR!" ),tr( "One or more files in the volume are in use." ) ) ;						break ;
+		case 3 :m.ShowUIOK( tr( "ERROR!" ),tr( "Volume does not have an entry in /etc/mtab" ) ) ;						break ;
+		case 4 :m.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a lock on /etc/mtab~" ) ) ;							break ;
+		case 5 :m.ShowUIOK( tr( "ERROR!" ),tr( "Volume is unmounted but could not close mapper,advice to close it manually" ) ) ;		break ;
+		case 6 :m.ShowUIOK( tr( "ERROR!" ),tr( "Could not resolve full path of device\n" ) ) ;							break ;
+		case 7 :m.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point appear to be busy\n" ) ) ;							break ;
+		case 8 :m.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point appear to belong to a different user or multiple mount points detected\n" ) ) ; break ;
+		case 9 :m.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ) ;		break ;
+		case 10:m.ShowUIOK( tr( "ERROR!" ),tr( "Multiple mount points for the volume detected" ) ) ;						break ;
+		case 100 :m.ShowUIOK( tr( "ERROR!" ),tr( "Device does not appear to be mounted" ) ) ;							break ;
+		case 101 :m.ShowUIOK( tr( "ERROR!" ),tr( "Only root user of members of group \"zulumount\" can unmount this volume" ) ) ;               break ;
+		case 107 :m.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point appear to be busy" ) ) ;							break ;
+		case 108 :m.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point appear to belong to a different user" ) ) ;				break ;
+		case 109 :m.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ) ;       break ;
+		case 103 :m.ShowUIOK( tr( "ERROR!" ),tr( "Device does not exist" ) ) ;									break ;
+		case 104 :m.ShowUIOK( tr( "ERROR!" ),tr( "Failed to unmount,the mount point and/or one or more files are in use" ) ) ;                  break ;
+		case 105 :m.ShowUIOK( tr( "ERROR!" ),tr( "Failed to unmount,could not get a lock on /etc/mtab~" ) ) ;					break ;
+		case 106 :m.ShowUIOK( tr( "ERROR!" ),tr( "Failed to unmount the partition" ) ) ;							break ;
+		case 111 :m.ShowUIOK( tr( "ERROR!" ),tr( "Failed to unmount,multiple mount points for the volume detected" ) ) ;			break ;
+		case 110 :m.ShowUIOK( tr( "ERROR!" ),tr( "Close failed, could not find any partition with the presented UUID" ) ) ;			break ;
+		default: return true ;
+	}
+
+	return false ;
+}
+
 void zuluMount::pbUmount()
 {
 	this->disableAll() ;
@@ -1022,8 +1056,18 @@ void zuluMount::pbUmount()
 
 		if( r.failed() ){
 
-			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),r.output() ) ;
+			if( this->errorNotFound( r.exitCode() ) ){
+
+				DialogMsg m( this ) ;
+
+				QString z = r.output() ;
+
+				z.replace( tr( "ERROR: " ),"" ) ;
+				z.replace( "ERROR: ","" ) ;
+
+				m.ShowUIOK( tr( "ERROR" ),z ) ;
+			}
+
 			this->enableAll() ;
 		}
 	}

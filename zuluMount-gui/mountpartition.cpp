@@ -142,6 +142,33 @@ void mountPartition::pbCancel()
 	this->HideUI() ;
 }
 
+bool mountPartition::errorNotFound( int r )
+{
+	DialogMsg msg( this ) ;
+
+	switch ( r ){
+		case 0 : break ;
+		case 112 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not resolve path to device or device could not be opened in read write mode" ) ) ; break ;
+		case 100 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insuffienct privileges to mount the volume with given mount options" ) ) ;				break ;
+		case 102 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Device already mounted" ) ) ; 						break ;
+		case 103 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insuffienct privilege to manage a system volume.\nnecessary privileges can be acquired by:\n\
+1. Adding an entry for the volume in fstab with \"user\" mount option\n\2. Add yourself to \"zulumount\" group" ) ) ;					break ;
+		case 104 : msg.ShowUIOK( tr( "ERROR!" ),tr( "\"/etc/fstab\" entry for this volume requires it to be mounted read only" ) ) ;		break ;
+		case 113 : msg.ShowUIOK( tr( "ERROR!" ),tr( "\"/etc/fstab\" entry for this volume is malformed" ) ) ;					break ;
+		case 105 : msg.ShowUIOK( tr( "ERROR!" ),tr( "\"/etc/fstab\" entry for this volume does not allow you to mount it" ) ) ;			break ;
+		case 106 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create mount point path,path already taken" ) ) ;				break ;
+		case 114 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point path aleady taken" ) ) ;						break ;
+		case 108: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;	break ;
+		case 109: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) )	      ;	break ;
+		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount failed,no or unrecognized file system" ) ) ;						break ;
+		case 111: msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount failed,could not get a lock on /etc/mtab~" ) ) ;						break ;
+		case 115: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount the partition" ) ) ;						break ;
+		default: return true ;
+	}
+
+	return false ;
+}
+
 void mountPartition::pbMount()
 {
 	auto test_mount = m_ui->lineEdit->text() ;
@@ -202,11 +229,15 @@ void mountPartition::pbMount()
 	}else{
 		if( this->isVisible() ){
 
-			QString z = s.output() ;
-			z.replace( tr( "ERROR: " ),"" ) ;
+			if( this->errorNotFound( s.exitCode() ) ){
 
-			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),z ) ;
+				QString z = s.output() ;
+				z.replace( tr( "ERROR: " ),"" ) ;
+
+				DialogMsg m( this ) ;
+				m.ShowUIOK( tr( "ERROR" ),z ) ;
+			}
+
 			this->enableAll() ;
 		}else{
 			this->deleteLater() ;

@@ -274,7 +274,7 @@ ERROR: Insuffienct privilege to manage a system volume.\nnecessary privileges ca
 
 			zuluCryptSecurityDropElevatedPrivileges() ;
 
-			return _zuluExit( 113,z,path,gettext( "ERROR: Shared mount point path aleady taken" ) ) ;
+			return _zuluExit( 114,z,path,gettext( "ERROR: Shared mount point path aleady taken" ) ) ;
 		}
 	}
 
@@ -313,7 +313,7 @@ ERROR: Insuffienct privilege to manage a system volume.\nnecessary privileges ca
 			case 1 : return _zuluExit( 109,z,path,gettext( "ERROR: Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ;
 			case 4 : return _zuluExit( 110,z,path,gettext( "ERROR: Mount failed,no or unrecognized file system" ) )	;
 			case 12: return _zuluExit( 111,z,path,gettext( "ERROR: Mount failed,could not get a lock on /etc/mtab~" ) ) ;
-			default: return _zuluExit( 112,z,path,gettext( "ERROR: Failed to mount the partition" ) ) ;
+			default: return _zuluExit( 115,z,path,gettext( "ERROR: Failed to mount the partition" ) ) ;
 		}
 	}
 }

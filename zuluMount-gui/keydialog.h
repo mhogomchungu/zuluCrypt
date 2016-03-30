@@ -85,6 +85,7 @@ private slots:
 	void showFileSystemOptionWindow( void ) ;
 	void encryptedFolderMount( void ) ;
 private :
+	bool errorNotFound( int ) ;
 	void keyAndKeyFile( void ) ;
 	void tcryptGui( void ) ;
 	void openVolume( void ) ;

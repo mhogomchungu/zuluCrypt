@@ -71,6 +71,7 @@ private slots:
 	void checkBoxReadOnlyStateChanged( int ) ;
 	void doAction( QAction * ) ;
 private:
+	bool errorNotFound( int ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
