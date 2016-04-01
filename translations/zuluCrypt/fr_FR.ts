@@ -374,12 +374,12 @@ Ce plugin récupère une clé de verrouillage dans un fichier gpg avec une clé 
         <translation>Ne trouve pas de &quot;gpg&quot; executable dans &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; ou &quot;/usr/sbin&quot;</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1714"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1728"/>
         <source>INFO</source>
         <translation>INFO</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1714"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1728"/>
         <source>Translation will be done the next time you restart.</source>
         <translation>Les traductions seront mises à jour au prochain démarrage.</translation>
     </message>
@@ -557,7 +557,7 @@ Vous pouvez arrêter l&apos;écriture de données aléatoires à n&apos;importe 
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createfile.ui" line="17"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="58"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="59"/>
         <source>Create A Container File</source>
         <translation>Créer un fichier conteneur</translation>
     </message>
@@ -607,83 +607,114 @@ Vous pouvez arrêter l&apos;écriture de données aléatoires à n&apos;importe 
         <translation>GB</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="147"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="150"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="153"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="161"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="165"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="168"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="185"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="193"/>
+        <location filename="../../zuluCrypt-gui/createfile.ui" line="230"/>
+        <source>Do Not Write Random Data To
+Container(STRONGLY discouraged)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="173"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="176"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="179"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="196"/>
         <location filename="../../zuluCrypt-gui/createfile.cpp" line="200"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="214"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="222"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="203"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="220"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="228"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="235"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="254"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="262"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="147"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="173"/>
         <source>File name field is empty</source>
         <translation>Le champ Nom de Fichier est vide</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="150"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="176"/>
         <source>File path field is empty</source>
         <translation>Le champ Chemin du Fichier est vide</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="153"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="179"/>
         <source>File size field is empty</source>
         <translation>Le champ Taille du Fichier est vide</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="165"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="183"/>
+        <source>WARNING</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="183"/>
+        <source>Are you really sure you do not want to create a more secured volume?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="200"/>
         <source>File with the same name and at the destination folder already exist</source>
         <translation>Un fichier avec le même nom existe déjà dans le répertoire de destination </translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="168"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="203"/>
         <source>You dont seem to have writing access to the destination folder</source>
         <translation>Vous ne semblez pas avoir les droits d&apos;écriture dans le répertoire destination</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="185"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="220"/>
         <source>Container file must be bigger than 3MB</source>
         <translation>Le fichier conteneur doit être supérieur à la taille de 3MB</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="193"/>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="200"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="228"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="235"/>
         <source>Failed to create volume file</source>
         <translation>Echec de la création du fichier de volume</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="214"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="254"/>
         <source>Operation terminated per user choice</source>
         <translation>Opération interrompue par l&apos;utilisateur</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="222"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="262"/>
         <source>Could not open cryptographic back end to generate random data</source>
         <translation>Ne peut pas ouvrir le module cryptographique pour générer les données aléatoires</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="235"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="276"/>
         <source>Terminating file creation process</source>
         <translation>Finalisation du processus de création du fichier</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="236"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="277"/>
         <source>Are you sure you want to stop file creation process?</source>
         <translation>Êtes vous sûr de vouloir stopper le processus de création du fichier ?</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="161"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="196"/>
         <source>Illegal character in the file size field.Only digits are allowed</source>
         <translation>caractère interdit dans le champ taille du fichier. Seuls les chiffres sont autorisés</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createfile.cpp" line="262"/>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="148"/>
+        <source>
+By default,zuluCrypt creates a volume in a container file over randomly generated data to hide usage patterns of the container.
+
+This process takes time and it may take a very,very long time if the volume about to be created is large enough and this option exists to skip the process for the impatient among us but but it comes at a cost and the cost may be too high when it finally reveal itself while infront of an adversary when they look at the encrypted container and manage to derive meaning based on how the container looks from outside.
+
+If you know what you are doing,then continue by all means,if in doubt,my advise is to endure the process and be safer in the long run.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="160"/>
+        <source>INFO</source>
+        <translation type="unfinished">INFO</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createfile.cpp" line="303"/>
         <source>Select Path to where the file will be created</source>
         <translation>Choisir l&apos;emplacement de création du fichier</translation>
     </message>
