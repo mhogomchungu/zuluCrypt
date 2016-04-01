@@ -47,6 +47,7 @@ public:
 signals :
 	void sendProgress( int ) ;
 public slots:
+	void warnAboutRandomData( int ) ;
 	void HideUI( void ) ;
 	void showUI( void ) ;
 	void pbOpenFolder( void ) ;

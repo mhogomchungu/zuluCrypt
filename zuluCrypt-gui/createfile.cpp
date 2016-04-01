@@ -46,6 +46,7 @@ createfile::createfile( QWidget * parent,std::function< void( const QString& ) >
 
 	m_ui->pbOpenFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 
+	connect( m_ui->checkBoxNoRandomData,SIGNAL( stateChanged( int ) ),this,SLOT( warnAboutRandomData( int ) ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) )  ;
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT(pbOpenFolder() ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
@@ -105,6 +106,7 @@ void createfile::enableAll()
 	m_ui->label_3->setEnabled( true ) ;
 	m_ui->label_4->setEnabled( true ) ;
 	m_ui->pbCreate->setEnabled( true ) ;
+	m_ui->checkBoxNoRandomData->setEnabled( true ) ;
 }
 
 void createfile::disableAll()
@@ -119,7 +121,9 @@ void createfile::disableAll()
 	m_ui->label_2->setEnabled( false ) ;
 	m_ui->label_3->setEnabled( false ) ;
 	m_ui->label_4->setEnabled( false ) ;
+	m_ui->checkBoxNoRandomData->setEnabled( false ) ;
 }
+
 
 void createfile::showUI()
 {
@@ -133,6 +137,28 @@ void createfile::showUI()
 	m_ui->lineEditFileName->setFocus() ;
 
 	this->show() ;
+}
+
+void createfile::warnAboutRandomData( int e )
+{
+	if( e == Qt::Checked ){
+
+		DialogMsg msg( this ) ;
+
+		auto m = tr( "\nBy default,zuluCrypt creates a volume in a container file over randomly generated data \
+to hide usage patterns of the container.\n\
+\n\
+This process takes time and it may take a very,very \
+long time if the volume about to be created is large enough and this option exists to \
+skip the process for the impatient among us but but it comes at a cost and the cost may be \
+too high when it finally reveal itself while infront of an adversary when they look at \
+the encrypted container and manage to derive meaning based on how the container looks from outside.\n\
+\n\
+If you know what you are doing,then continue by all means,if in doubt,my advise is to endure the \
+process and be safer in the long run." ) ;
+
+		msg.ShowUIInfo( tr( "INFO" ),m ) ;
+	}
 }
 
 void createfile::pbCreate()
@@ -151,6 +177,15 @@ void createfile::pbCreate()
 	}
 	if( fileSize.isEmpty()){
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File size field is empty" ) ) ;
+	}
+	if( m_ui->checkBoxNoRandomData->isChecked() ){
+
+		int e = msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),tr( "Are you really sure you do not want to create a more secured volume?" ) ) ;
+
+		if( e != QMessageBox::Yes ){
+
+			return ;
+		}
 	}
 
 	bool test ;
@@ -207,20 +242,26 @@ void createfile::pbCreate()
 	m_exit = false ;
 	m_running = true ;
 
-	int r = utility::clearVolume( filePath,&m_exit,0,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
-
-	if( r == 5 ){
-
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
-		QFile::remove( filePath ) ;
-
-	}else if( r == 0 ){
+	if( m_ui->checkBoxNoRandomData->isChecked() ){
 
 		m_function( filePath ) ;
 
 	}else{
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
-		QFile::remove( filePath ) ;
+		int r = utility::clearVolume( filePath,&m_exit,0,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
+
+		if( r == 5 ){
+
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
+			QFile::remove( filePath ) ;
+
+		}else if( r == 0 ){
+
+			m_function( filePath ) ;
+
+		}else{
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
+			QFile::remove( filePath ) ;
+		}
 	}
 
 	m_running = false ;

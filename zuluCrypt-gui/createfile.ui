@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>521</width>
-    <height>162</height>
+    <height>222</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,7 +78,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>70</y>
+     <y>140</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -97,7 +97,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>70</y>
+     <y>140</y>
      <width>113</width>
      <height>31</height>
     </rect>
@@ -107,7 +107,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>102</y>
+     <y>170</y>
      <width>281</width>
      <height>21</height>
     </rect>
@@ -136,7 +136,7 @@
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>130</y>
+     <y>190</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -155,7 +155,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>90</y>
+     <y>160</y>
      <width>101</width>
      <height>41</height>
     </rect>
@@ -174,7 +174,7 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>130</y>
+     <y>190</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -193,7 +193,7 @@
    <property name="geometry">
     <rect>
      <x>230</x>
-     <y>70</y>
+     <y>140</y>
      <width>51</width>
      <height>31</height>
     </rect>
@@ -216,6 +216,20 @@
      <string>GB</string>
     </property>
    </item>
+  </widget>
+  <widget class="QCheckBox" name="checkBoxNoRandomData">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>70</y>
+     <width>281</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Do Not Write Random Data To
+Container(STRONGLY discouraged)</string>
+   </property>
   </widget>
  </widget>
  <tabstops>

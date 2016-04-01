@@ -301,7 +301,7 @@ int  DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
 
 	this->ShowUI( title,msg ) ;
 
-	return m_status;
+	return m_status ;
 }
 
 bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg )
