@@ -1255,6 +1255,20 @@ void utility::readFavorites( QMenu * m,bool truncate,bool showFolders )
 	}
 }
 
+int utility::favoriteClickedOption( const QString& opt )
+{
+	if( opt == QObject::tr( "Manage Favorites" ) ){
+
+		return 1 ;
+
+	}else if( opt == QObject::tr( "Mount All" ) ){
+
+		return 2 ;
+	}else{
+		return 3 ;
+	}
+}
+
 bool utility::userHasGoodVersionOfWhirlpool()
 {
 #ifdef GCRYPT_VERSION_NUMBER

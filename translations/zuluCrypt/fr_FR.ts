@@ -711,7 +711,7 @@ If you know what you are doing,then continue by all means,if in doubt,my advise 
     <message>
         <location filename="../../zuluCrypt-gui/createfile.cpp" line="160"/>
         <source>INFO</source>
-        <translation type="unfinished">INFO</translation>
+        <translation>INFO</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createfile.cpp" line="303"/>
@@ -3234,7 +3234,7 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
     <message>
         <location filename="../../zuluCrypt-gui/tcrypt.cpp" line="59"/>
         <source>TrueCrypt/VeraCrypt Keys</source>
-        <translation type="unfinished">TrueCrypt/VeraCrypt Clés</translation>
+        <translation>TrueCrypt/VeraCrypt Clés</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/tcrypt.cpp" line="110"/>

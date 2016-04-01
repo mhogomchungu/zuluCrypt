@@ -766,11 +766,13 @@ void zuluCrypt::favClicked( QAction * ac )
 		}
 	} ;
 
-	if( r == tr( "Manage Favorites" ) ){
+	auto e = utility::favoriteClickedOption( r ) ;
+
+	if( e == 1 ){
 
 		favorites::instance( this,false ) ;
 
-	}else if( r == tr( "Mount All" ) ){
+	}else if( e == 2 ){
 
 		for( const auto& it : utility::readFavorites() ){
 

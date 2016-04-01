@@ -350,11 +350,13 @@ void zuluMount::favoriteClicked( QAction * ac )
 	auto e = ac->text() ;
 	e.remove( "&" ) ;
 
-	if( e == tr( "Manage Favorites" ) ){
+	auto r = utility::favoriteClickedOption( e ) ;
+
+	if( r == 1 ){
 
 		favorites::instance( this,true ) ;
 
-	}else if( e == tr( "Mount All" ) ){
+	}else if( r == 2 ){
 
 		for( const auto& it : utility::readFavorites() ){
 

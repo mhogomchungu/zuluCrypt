@@ -226,6 +226,8 @@ namespace utility
 	void showTrayIcon( QAction *,QSystemTrayIcon *,bool = true ) ;
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
 
+	int favoriteClickedOption( const QString& ) ;
+
 	bool reUseMountPointPath( void ) ;
 
 	void setLocalizationLanguage( bool translate,QWidget * obj,QAction * ac,const QString& ) ;
