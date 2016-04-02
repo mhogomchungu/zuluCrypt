@@ -254,8 +254,8 @@ void luksdeletekey::deleteKey( const QStringList& l )
 		}
 	}
 
-	m_keyNumber = l.first().toInt() - 1 ;
-	m_totalKeys = l.at( 1 ) ;
+	auto keyNumber = l.first().toInt() - 1 ;
+	auto totalKeys = l.at( 1 ) ;
 
 	QString keypath ;
 
@@ -276,20 +276,15 @@ void luksdeletekey::deleteKey( const QStringList& l )
 
 	m_isWindowClosable = false ;
 
-	this->taskFinished( utility::exec( exe ).await() ) ;
-}
-
-void luksdeletekey::taskFinished( int r )
-{
-	DialogMsg msg( this ) ;
+	auto e = utility::exec( exe ).await() ;
 
 	m_isWindowClosable = true ;
 
-	QString success;
+	QString success ;
 
-	switch(  r ){
+	switch( e ){
 		case 0 :
-			success = tr( "Key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( m_keyNumber ) ).arg( m_totalKeys ) ;
+			success = tr( "Key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( keyNumber ) ).arg( totalKeys ) ;
 			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
 			return this->HideUI() ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There is no key in the volume that match the presented key" ) ) ;				break ;
@@ -312,7 +307,7 @@ only root user or members of group zulucrypt can do that" ) ) ;											break 
 
 	this->enableAll() ;
 
-	if( r == 2 ){
+	if( e == 2 ){
 
 		this->Key( 0 ) ;
 		m_ui->cbKey->setCurrentIndex( 0 ) ;
