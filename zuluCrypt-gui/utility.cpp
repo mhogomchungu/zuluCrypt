@@ -664,7 +664,7 @@ QString utility::shareMountPointToolTip( const QString& path )
 
 	if( QFile::exists( s ) ){
 
-		return "public mount point: " + s ;
+		return QObject::tr( "public mount point: " ) + s ;
 	}else{
 		return QString() ;
 	}
