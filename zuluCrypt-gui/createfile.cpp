@@ -105,6 +105,7 @@ void createfile::enableAll()
 	m_ui->label_2->setEnabled( true ) ;
 	m_ui->label_3->setEnabled( true ) ;
 	m_ui->label_4->setEnabled( true ) ;
+	m_ui->label_5->setEnabled( true ) ;
 	m_ui->pbCreate->setEnabled( true ) ;
 	m_ui->checkBoxNoRandomData->setEnabled( true ) ;
 }
@@ -121,6 +122,7 @@ void createfile::disableAll()
 	m_ui->label_2->setEnabled( false ) ;
 	m_ui->label_3->setEnabled( false ) ;
 	m_ui->label_4->setEnabled( false ) ;
+	m_ui->label_5->setEnabled( false ) ;
 	m_ui->checkBoxNoRandomData->setEnabled( false ) ;
 }
 
