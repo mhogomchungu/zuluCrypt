@@ -2934,8 +2934,8 @@ Restart zuluCrypt from root&apos;s account to proceed</source>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="728"/>
-        <source>Shared mount point path aleady taken</source>
-        <translation>Gemeinsamer Einhängepunktpfad existiert bereits.</translation>
+        <source>Shared mount point path already taken</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="729"/>
@@ -3225,22 +3225,22 @@ A volume created with a key generated here should be opened with &quot;hmac&quot
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="543"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="545"/>
         <source>Elapsed time: 0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="551"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="553"/>
         <source>Elapsed time: %0 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="553"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="555"/>
         <source>Elapsed time: %0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="564"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="566"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>
