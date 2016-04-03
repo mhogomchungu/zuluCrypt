@@ -230,6 +230,8 @@ void zuluMount::setUpApp( const QString& volume )
 		dir.mkdir( dirPath ) ;
 	}
 
+	m_powerOff = utility::powerOffCommand() ;
+
 	this->disableAll() ;
 
 	this->startAutoMonitor() ;
@@ -610,6 +612,11 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 		if( mt.startsWith( mp ) || mt.startsWith( mp_1 ) ){
 
 			connect( m.addAction( tr( "Unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
+
+			if( !m_powerOff.isEmpty() ){
+
+				connect( m.addAction( tr( "Unmount + Power Down" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount_powerDown() ) ) ;
+			}
 
 			m.addSeparator() ;
 
@@ -1034,7 +1041,7 @@ bool zuluMount::errorNotFound( int r )
 	return false ;
 }
 
-void zuluMount::pbUmount()
+void zuluMount::unmount( const QString& e )
 {
 	this->disableAll() ;
 
@@ -1054,7 +1061,7 @@ void zuluMount::pbUmount()
 			this->enableAll() ;
 		}
 	}else{
-		auto r = zuluMountTask::unmountVolume( path,type ).await() ;
+		auto r = zuluMountTask::unmountVolume( path,type,e ).await() ;
 
 		if( r.failed() ){
 
@@ -1073,6 +1080,16 @@ void zuluMount::pbUmount()
 			this->enableAll() ;
 		}
 	}
+}
+
+void zuluMount::pbUmount()
+{
+	this->unmount();
+}
+
+void zuluMount::pbUmount_powerDown()
+{
+	this->unmount( m_powerOff ) ;
 }
 
 void zuluMount::unMountAll()

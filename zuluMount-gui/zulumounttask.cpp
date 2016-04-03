@@ -178,7 +178,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 	} ) ;
 }
 
-utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QString& volumeType )
+utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QString& volumeType,const QString& powerOffCommand )
 {
 	auto _run = []( const QString& exe ){
 
@@ -205,12 +205,27 @@ utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QStr
 		}
 	}
 
+	if( r.success() && !powerOffCommand.isEmpty() ){
+
+		auto v = volumePath ;
+
+		if( v.startsWith( "/dev/sd" ) || v.startsWith( "/dev/hd" ) ){
+
+			for( char i = '0' ; i < '9' ; i++ ){
+
+				v.remove( i ) ;
+			}
+		}
+
+		utility::Task( powerOffCommand.arg( v ) ) ;
+	}
+
 	return r ;
 }
 
-Task::future< utility::Task >& zuluMountTask::unmountVolume( const QString& volumePath,const QString& volumeType )
+Task::future< utility::Task >& zuluMountTask::unmountVolume( const QString& volumePath,const QString& volumeType,const QString& powerOffCommand )
 {
-	return Task::run< utility::Task >( [ = ](){ return zuluMountTask::volumeUnmount( volumePath,volumeType ) ; } ) ;
+	return Task::run< utility::Task >( [ = ](){ return zuluMountTask::volumeUnmount( volumePath,volumeType,powerOffCommand ) ; } ) ;
 }
 
 static QString _excludeVolumePath()

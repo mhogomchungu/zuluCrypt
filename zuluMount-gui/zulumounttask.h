@@ -60,12 +60,12 @@ namespace zuluMountTask
 	Task::future< QString >& volumeProperties( const QString& volume,const QString& volumeType ) ;
 	Task::future< QVector< volumeEntryProperties > >& updateVolumeList( void ) ;
 	Task::future< volumeEntryProperties >& getVolumeProperties( const QString& e ) ;
-	Task::future< utility::Task >& unmountVolume( const QString& volumePath,const QString& volumeType ) ;
+	Task::future< utility::Task >& unmountVolume( const QString& volumePath,const QString& volumeType,const QString& powerOffCommand ) ;
 
 	Task::future< bool >& encryptedFolderUnMount( const QString& mountPoint ) ;
 	Task::future< encryptedVolume >& encryptedFolderMount( const QString& volumePath,const QString& mountPoint,const QString& key,bool ro ) ;
 
-	utility::Task volumeUnmount( const QString& volumePath,const QString& volumeType ) ;
+	utility::Task volumeUnmount( const QString& volumePath,const QString& volumeType,const QString& powerOffCommand = QString() ) ;
 
 	void checkUnMount( const QString& ) ;
 

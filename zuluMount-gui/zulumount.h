@@ -74,6 +74,8 @@ private slots:
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
 	void pbUmount( void ) ;
+	void pbUmount_powerDown( void ) ;
+	void unmount( const QString& = QString() ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
 	void enableAll( void ) ;
@@ -132,6 +134,7 @@ private:
 	bool m_autoOpenFolderOnMount ;
 	bool m_removeAllVolumes = false ;
 	QString m_env ;
+	QString m_powerOff ;
 
 	QSystemTrayIcon m_trayIcon ;
 

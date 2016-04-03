@@ -1805,3 +1805,19 @@ bool utility::autoOpenFolderOnMount( const QString& app )
 {
 	return !QFile::exists( _auto_open_config_path( app ) ) ;
 }
+
+QString utility::powerOffCommand()
+{
+	QFile f( utility::homePath() + "/.zuluCrypt/power-off-command" ) ;
+
+	QString e ;
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		e = f.readAll() ;
+
+		e.remove( '\n' ) ;
+	}
+
+	return e ;
+}

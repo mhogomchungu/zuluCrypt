@@ -226,6 +226,8 @@ namespace utility
 	void showTrayIcon( QAction *,QSystemTrayIcon *,bool = true ) ;
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
 
+	QString powerOffCommand( void ) ;
+
 	int favoriteClickedOption( const QString& ) ;
 
 	bool reUseMountPointPath( void ) ;
