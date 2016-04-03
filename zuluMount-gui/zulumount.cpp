@@ -586,9 +586,9 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	auto mt = m_ui->tableWidget->item( row,1 )->text() ;
 
-	auto _properties_menu = [ & ]( bool addSeparator ){
+	auto fs = m_ui->tableWidget->item( row,2 )->text() ;
 
-		auto fs = m_ui->tableWidget->item( row,2 )->text() ;
+	auto _properties_menu = [ & ]( const QString& fs,bool addSeparator ){
 
 		if( fs != "encfs" && fs != "cryfs" ){
 
@@ -613,14 +613,14 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			connect( m.addAction( tr( "Unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 
-			if( !m_powerOff.isEmpty() ){
+			if( !m_powerOff.isEmpty() && fs != "encfs" && fs != "cryfs" ){
 
 				connect( m.addAction( tr( "Unmount + Power Down" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount_powerDown() ) ) ;
 			}
 
 			m.addSeparator() ;
 
-			_properties_menu( true ) ;
+			_properties_menu( fs,true ) ;
 
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
 
@@ -641,15 +641,15 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 				if( utility::pathIsReadable( mt ) ){
 
-					_properties_menu( true ) ;
+					_properties_menu( fs,true ) ;
 
 					connect( m.addAction( tr( "Open Folder" ) ),SIGNAL( triggered() ),
 						 this,SLOT( slotOpenFolder() ) ) ;
 				}else{
-					_properties_menu( false ) ;
+					_properties_menu( fs,false ) ;
 				}
 			}else{
-				_properties_menu( true ) ;
+				_properties_menu( fs,true ) ;
 
 				connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenSharedFolder() ) ) ;
@@ -1084,7 +1084,7 @@ void zuluMount::unmount( const QString& e )
 
 void zuluMount::pbUmount()
 {
-	this->unmount();
+	this->unmount() ;
 }
 
 void zuluMount::pbUmount_powerDown()
