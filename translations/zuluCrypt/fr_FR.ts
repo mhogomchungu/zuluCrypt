@@ -1166,7 +1166,7 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
 Creating a backup of the &quot;%1&quot; volume header is strongly advised.
 Please read documentation on why this is important.</source>
         <translation>
-Créer une sauvegarde de l&apos;en-tête &quot;% 1&quot; du volume est fortement conseillé.
+Créer une sauvegarde de l&apos;en-tête &quot;%1&quot; du volume est fortement conseillé.
 SVP, lire la documentation sur pourquoi cela est important.</translation>
     </message>
     <message>
