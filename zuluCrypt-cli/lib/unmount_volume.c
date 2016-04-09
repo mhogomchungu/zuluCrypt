@@ -135,6 +135,14 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 
 	stringList_t stl ;
 
+	StringListIterator it ;
+	StringListIterator end ;
+
+	ssize_t r ;
+
+	string_t st ;
+	string_t xt ;
+
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 
 		/*
@@ -171,14 +179,58 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 		h = _zuluCryptUnmountVolume_0( StringListStringAtFirstPlace( stl ),m_point ) ;
 	}else{
 		/*
-		 * there are multiple mount points for the same volume,refuse to proceed.
+		 * There are multiple mount points for the same volume.
+		 *
+		 * Try to figure out which one among the mount points is ours and then try
+		 * first to unmount the rest of them.
 		 */
 
-		/*
-		 * TODO: look into trying to unmount them all and return what we think
-		 * is our mount point.
-		 */
-		h = 10 ;
+		r = StringListHasSequence( stl," /run/media/private/" ) ;
+
+		if( r == -1 ){
+
+			/*
+			 * Probable reason for getting here is if a user use a home mount point path,
+			 * we dont know the path because we dont know the user we are serving
+			 * and hence we bail out with an error.
+			 */
+			h = 10 ;
+		}else{
+			/*
+			 * We got our mount point,take it out of the list to use it last
+			 */
+			st = StringListDetachAt( stl,r ) ;
+
+			StringListGetIterators( stl,&it,&end ) ;
+
+			while( it != end ){
+
+				xt = *it ;
+
+				it++ ;
+
+				if( _zuluCryptUnmountVolume_0( xt,NULL ) != 0 ){
+
+					/*
+					 * Failed to unmount one of the extra mount point,
+					 * bail out with an error.
+					 */
+					h = 10 ;
+
+					break ;
+				}
+			}
+
+			if( h != 10 ){
+
+				/*
+				 * Attempt to unmount our mount point last.
+				 */
+				h = _zuluCryptUnmountVolume_0( st,m_point ) ;
+			}
+
+			StringDelete( &st ) ;
+		}
 	}
 
 	if( h != 0 && h != 3 && h != 4 && h != 1 && h != 10 ){
