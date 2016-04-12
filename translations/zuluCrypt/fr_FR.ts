@@ -981,6 +981,36 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
         <translation>Fichier de clé</translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/createvolume.cpp" line="102"/>
+        <source>LUKS1</source>
+        <translation>LUKS1</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolume.cpp" line="103"/>
+        <source>LUKS1+External Header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolume.cpp" line="104"/>
+        <source>LUKS2</source>
+        <translation>LUKS2</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolume.cpp" line="105"/>
+        <source>LUKS2+External Header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolume.cpp" line="107"/>
+        <source>LUKS</source>
+        <translation>LUKS</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolume.cpp" line="108"/>
+        <source>LUKS+External Header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="110"/>
         <source>Normal TrueCrypt</source>
         <translation></translation>

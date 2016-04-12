@@ -99,13 +99,13 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 
 	m_ui->comboBoxVolumeType->addItem( "PLAIN dm-crypt" ) ;
 #ifdef CRYPT_LUKS2
-	m_ui->comboBoxVolumeType->addItem( "LUKS1" ) ;
-	m_ui->comboBoxVolumeType->addItem( "LUKS1+External Header" ) ;
-	m_ui->comboBoxVolumeType->addItem( "LUKS2" ) ;
-	m_ui->comboBoxVolumeType->addItem( "LUKS2+External Header" ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "LUKS1" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "LUKS1+External Header" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "LUKS2" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "LUKS2+External Header" ) ) ;
 #else
-	m_ui->comboBoxVolumeType->addItem( "LUKS" ) ;
-	m_ui->comboBoxVolumeType->addItem( "LUKS+External Header" ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "LUKS" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "LUKS+External Header" ) ) ;
 #endif
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal TrueCrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden TrueCrypt" ) ) ;

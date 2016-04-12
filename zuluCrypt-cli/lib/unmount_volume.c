@@ -212,7 +212,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 				if( _zuluCryptUnmountVolume_0( xt,NULL ) != 0 ){
 
 					/*
-					 * Failed to unmount one of the extra mount point,
+					 * Failed to unmount one of the extra mount points,
 					 * bail out with an error.
 					 */
 					h = 10 ;
