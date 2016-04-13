@@ -424,7 +424,7 @@ void zuluMount::autoMountVolume( volumeEntryProperties * q )
 {
 	std::unique_ptr< volumeEntryProperties > r( q ) ;
 
-	if( r && r->entryisValid() ){
+	if( r && r->isValid() ){
 
 		auto& p = *r ;
 
@@ -986,7 +986,7 @@ void zuluMount::volumeMiniProperties_0( volumeEntryProperties * volumeInfo )
 
 void zuluMount::updateList( const volumeEntryProperties& entry )
 {
-	if( entry.isNotEmpty() ){
+	if( entry.isValid() ){
 
 		auto table = m_ui->tableWidget ;
 
@@ -1178,7 +1178,7 @@ void zuluMount::updateVolumeList( const QVector< volumeEntryProperties >& r )
 	}else{
 		for( const auto& it : r ){
 
-			if( it.entryisValid() ){
+			if( it.isValid() ){
 
 				this->updateList( it ) ;
 			}

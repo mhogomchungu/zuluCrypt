@@ -71,7 +71,7 @@ public:
 	{
 		return !m_volume.isEmpty() ;
 	}
-	bool entryisValid() const
+	bool isValid() const
 	{
 		if( m_volume.isEmpty() ){
 			return false ;
