@@ -315,7 +315,7 @@ et un «miroir» secondaire du point de montage accessible au public sera créé
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="667"/>
         <source>public mount point: </source>
-        <translation type="unfinished"></translation>
+        <translation>point de montage public :</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1238"/>
@@ -469,7 +469,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="40"/>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="57"/>
         <source>Failed To Check For Update.</source>
-        <translation>Echec du test de version à jour.</translation>
+        <translation>Echec de la vérification de la mise à jour de version.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="48"/>
@@ -988,7 +988,7 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="103"/>
         <source>LUKS1+External Header</source>
-        <translation type="unfinished"></translation>
+        <translation>LUKS1+Header Externe</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="104"/>
@@ -998,7 +998,7 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="105"/>
         <source>LUKS2+External Header</source>
-        <translation type="unfinished"></translation>
+        <translation>LUKS2+Header Externe</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="107"/>
@@ -1008,7 +1008,7 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="108"/>
         <source>LUKS+External Header</source>
-        <translation type="unfinished"></translation>
+        <translation>LUKS+Header Externe</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="110"/>
@@ -2267,7 +2267,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="241"/>
         <source>
 Deleting it will make the volume unopenable and lost forever.</source>
-        <translation>Cet effacement rendra le volume impossible à ouvrir et perdu définitivement</translation>
+        <translation>Cet effacement rendra le volume impossible à ouvrir et perdu définitivement.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="242"/>

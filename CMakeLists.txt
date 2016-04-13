@@ -21,6 +21,19 @@ if( LIB_SUFFIX )
 	set( CMAKE_INSTALL_FULL_LIBDIR "${CMAKE_INSTALL_PREFIX}/${LIB_SUFFIX}" )
 endif()
 
+if( NOT "${CMAKE_INSTALL_DOCDIR}" )
+	set( CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_PREFIX}/share/doc/zuluCrypt" )
+endif()
+
+if( NOT "${CMAKE_INSTALL_MANDIR}" )
+	set( CMAKE_INSTALL_MANDIR "${CMAKE_INSTALL_PREFIX}/man" )
+endif()
+
+if( NOT "${CMAKE_INSTALL_DATADIR}" )
+	set( CMAKE_INSTALL_DATADIR "${CMAKE_INSTALL_PREFIX}/share" )
+endif()
+
+
 # uninstall target
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
