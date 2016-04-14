@@ -582,11 +582,18 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	m.setFont( this->font() ) ;
 
+	auto _text = [ this ]( int row,int column ){
+
+		return m_ui->tableWidget->item( row,column )->text() ;
+	} ;
+
 	auto row = item->row() ;
 
-	auto mt = m_ui->tableWidget->item( row,1 )->text() ;
+	auto device = _text( row,0 ) ;
 
-	auto fs = m_ui->tableWidget->item( row,2 )->text() ;
+	auto mt = _text( row,1 ) ;
+
+	auto fs = _text( row,2 ) ;
 
 	auto _properties_menu = [ & ]( const QString& fs,bool addSeparator ){
 
@@ -613,7 +620,7 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			connect( m.addAction( tr( "Unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 
-			if( !m_powerOff.isEmpty() && fs != "encfs" && fs != "cryfs" ){
+			if( !m_powerOff.isEmpty() && fs != "encfs" && fs != "cryfs" && ( device.startsWith( "/dev/sd" ) || device.startsWith( "/dev/hd" ) ) ){
 
 				connect( m.addAction( tr( "Unmount + Power Down" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount_powerDown() ) ) ;
 			}

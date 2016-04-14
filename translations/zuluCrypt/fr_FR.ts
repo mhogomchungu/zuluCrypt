@@ -315,7 +315,7 @@ et un «miroir» secondaire du point de montage accessible au public sera créé
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="667"/>
         <source>public mount point: </source>
-        <translation>point de montage public :</translation>
+        <translation>point de montage public: </translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1238"/>

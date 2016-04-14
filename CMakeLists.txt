@@ -23,15 +23,15 @@ endif()
 
 # These variables are used but they dont always appear to be set and we set them if we found them to be not set
 if( NOT CMAKE_INSTALL_DOCDIR )
-	set( CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_PREFIX}/share/doc/zuluCrypt" )
+	set( CMAKE_INSTALL_DOCDIR "share/doc/zuluCrypt" )
 endif()
 
 if( NOT CMAKE_INSTALL_MANDIR )
-	set( CMAKE_INSTALL_MANDIR "${CMAKE_INSTALL_PREFIX}/share/man" )
+	set( CMAKE_INSTALL_MANDIR "share/man" )
 endif()
 
 if( NOT CMAKE_INSTALL_DATADIR )
-	set( CMAKE_INSTALL_DATADIR "${CMAKE_INSTALL_PREFIX}/share" )
+	set( CMAKE_INSTALL_DATADIR "share" )
 endif()
 
 
@@ -321,7 +321,7 @@ install ( FILES zuluMount-gui.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
 install ( FILES zuluSafe-cli.1  DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
 install ( FILES docs/zuluCrypt.pdf  DESTINATION ${CMAKE_INSTALL_DOCDIR} )
 
-file( WRITE ${PROJECT_BINARY_DIR}/pdf_path.h "\n#define PDF_PATH \"${CMAKE_INSTALL_DOCDIR}/zuluCrypt.pdf\"\n" )
+file( WRITE ${PROJECT_BINARY_DIR}/pdf_path.h "\n#define PDF_PATH \"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}/zuluCrypt.pdf\"\n" )
 
 #install ( FILES translations/zuluMount/de_DE.qm DESTINATION share/zuluCrypt/translations/zuluMount-gui )
 install ( FILES translations/zuluCrypt/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluCrypt-gui )
