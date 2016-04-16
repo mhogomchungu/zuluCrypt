@@ -239,3 +239,9 @@ version 5.0.0
 -- its now possible to unlock VeraCrypt volumes from favorite feature in zuluCrypt-gui
 -- add complete French translation to both zuluCrypt-gui and zuluMount-gui
 -- try to silently solve problems caused by other tools mounting zuluCrypt's encryption mapper.
+-- add support for creating a "plain dm-crypt" volume at a "none zero offset".This type of volume is useful as a
+   "poor man's version of a hidden volume feature in TrueCrypt and VeraCrypt".Best thing about this type of hidden
+   volume is that the outer volume can be anything including an "exposed file system".Currently,only zuluMount-gui can
+   open this type of volume by clicking "options" followed by "Set Volume Offset" on the mounting dialog prompt.
+
+

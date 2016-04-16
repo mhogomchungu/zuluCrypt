@@ -190,6 +190,7 @@ void createvolume::volumeType( int s )
 		m_ui->comboBoxHiddenSize->setEnabled( true ) ;
 		m_ui->cbHiddenVolume->setEnabled( true ) ;
 
+		m_ui->label->setEnabled( true ) ;
 		m_ui->labelHidden->setEnabled( true ) ;
 		m_ui->label_2Hidden->setEnabled( true ) ;
 	} ;
@@ -250,7 +251,6 @@ void createvolume::volumeType( int s )
 	case createvolume::normal_veracrypt :
 
 		m_ui->comboBoxRNG->setEnabled( true ) ;
-		m_ui->groupBox->setEnabled( false ) ;
 		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt Keys" ) ) ;
 
 		_disableHidden() ;
@@ -777,11 +777,6 @@ void createvolume::enableAll()
 	m_ui->cbNormalVolume->setEnabled( true ) ;
 	m_ui->labelvolumeOptions->setEnabled( true ) ;
 	m_ui->comboBoxOptions->setEnabled( true ) ;
-
-	if( m_ui->comboBoxVolumeType->currentIndex() > createvolume::luks ){
-
-		m_ui->groupBox->setEnabled( true ) ;
-	}
 }
 
 void createvolume::disableAll()
@@ -804,7 +799,6 @@ void createvolume::disableAll()
 	m_ui->cbNormalVolume->setEnabled( false ) ;
 	m_ui->labelvolumeOptions->setEnabled( false ) ;
 	m_ui->comboBoxOptions->setEnabled( false ) ;
-	m_ui->groupBox->setEnabled( false ) ;
 }
 
 void createvolume::pbCreateClicked()
