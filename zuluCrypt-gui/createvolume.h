@@ -52,6 +52,7 @@ class createvolume : public QDialog
 public:
 	typedef enum{
 		plain,
+		plain_with_offset,
 		luks,
 		luks_external_header,
 #ifdef CRYPT_LUKS2

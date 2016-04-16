@@ -93,9 +93,11 @@ static int _open_plain( const char * device,const resolve_path_t * opts )
 	params.hash = "ripemd160" ;
 
 	if( zuluCryptPathIsNotValid( device ) ){
+
 		return 3 ;
 	}
 	if( crypt_init( &cd,device ) != 0 ){
+
 		return 2 ;
 	}
 
@@ -127,10 +129,15 @@ int zuluCryptOpenPlain_1( const open_struct_t * opt )
 	return zuluCryptResolveDevicePath_0( _open_plain,opt,2 ) ;
 }
 
-int zuluCryptOpenPlain( const char * device,const char * mapper,
-			const char * mode,const char * key,size_t key_len )
+int zuluCryptOpenPlain_2( const char * device,const char * mapper,
+			  const char * mode,const char * key,size_t key_len,
+			  const char * options )
 {
 	open_struct_t opt ;
+
+	stringList_t stl ;
+
+	int r ;
 
 	memset( &opt,'\0',sizeof( open_struct_t ) ) ;
 
@@ -140,5 +147,26 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,
 	opt.key_len     = key_len ;
 	opt.m_opts      = mode ;
 
-	return zuluCryptOpenPlain_1( &opt ) ;
+	stl = StringListSplit( options,'.' ) ;
+
+	if( StringListSize( stl ) >= 6 ){
+
+		opt.offset = StringListContentAt( stl,5 ) ;
+	}
+
+	r = zuluCryptOpenPlain_1( &opt ) ;
+
+	StringListDelete( &stl ) ;
+
+	return r ;
+}
+
+int zuluCryptOpenPlain( const char * device,const char * mapper,
+			const char * mode,const char * key,size_t key_len )
+{
+	return zuluCryptOpenPlain_2( device,
+				     mapper,
+				     mode,
+				     key,key_len,
+				     "/dev/urandom.aes.cbc-essiv:sha256.256.ripemd160.0" ) ;
 }

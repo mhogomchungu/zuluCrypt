@@ -79,7 +79,7 @@ public:
 		if( m_fileSystem == "encfs" || m_fileSystem == "cryfs" ){
 			return true ;
 		}
-		if( m_volumeSize == "1.0 KB" || m_volumeSize == "1,0 KB" || m_volumeSize == "Nil" ){
+		if( m_volumeSize == "1.0 KB" || m_volumeSize == "1,0 KB" || m_volumeSize == "0 B" || m_volumeSize == "Nil" ){
 			return false ;
 		}
 		if( m_mountPoint == "/run/media/public/" ){

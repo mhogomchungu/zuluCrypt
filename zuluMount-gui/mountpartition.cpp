@@ -174,7 +174,9 @@ void mountPartition::pbMount()
 	auto test_mount = m_ui->lineEdit->text() ;
 
 	if( test_mount.contains( "/" ) ){
+
 		if( this->isVisible() ){
+
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
 			m_ui->lineEdit->setFocus() ;
@@ -210,12 +212,14 @@ void mountPartition::pbMount()
 	}
 
 	if( m_ui->checkBoxMountReadOnly->isChecked() ){
+
 		exe += " -e -ro" ;
 	}else{
 		exe += " -e -rw" ;
 	}
 
 	if( !m_options.isEmpty() ){
+
 		exe += " -Y " + m_options ;
 	}
 

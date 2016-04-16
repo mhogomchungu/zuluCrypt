@@ -27,6 +27,13 @@
 #include <stdio.h>
 #include <limits.h>
 
+int zuluCryptOpenPlain_2( const char * device,
+			const char * mapper,
+			const char * mode,
+			const char * key,
+			size_t key_len,
+			const char * rng ) ;
+
 static int zuluExit( int st,string_t m )
 {
 	StringDelete( &m ) ;
@@ -125,7 +132,7 @@ static int _create_volume( const char * device,const resolve_path_t * opts )
 
 	if( StringsAreEqual( args->type,"plain" ) ){
 
-		if( zuluCryptOpenPlain( device,mapper,"rw",args->pass,args->pass_size ) != 0 ){
+		if( zuluCryptOpenPlain_2( device,mapper,"rw",args->pass,args->pass_size,args->rng ) != 0 ){
 
 			return zuluExit( 3,m ) ;
 		}

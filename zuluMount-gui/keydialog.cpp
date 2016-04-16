@@ -684,7 +684,7 @@ void keyDialog::openVolume()
 
 	if( !m_deviceOffSet.isEmpty() ){
 
-		exe += " -o " + m_deviceOffSet ;
+		exe += m_deviceOffSet ;
 	}
 
 	if( !m_keyFiles.isEmpty() ){

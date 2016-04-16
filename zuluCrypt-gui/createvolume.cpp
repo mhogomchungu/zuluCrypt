@@ -66,7 +66,7 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	connect( m_ui->pbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenHiddenKeyFile() ) ) ;
 	connect( m_ui->comboBoxVolumeType,SIGNAL( activated( int ) ),this,SLOT( setOptions( int ) ) ) ;
 
-	m_ui->groupBox->setEnabled( false ) ;
+	m_ui->groupBox->setEnabled( true ) ;
 
 	this->installEventFilter( this ) ;
 
@@ -98,6 +98,7 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	m_ui->comboBoxVolumeType->clear() ;
 
 	m_ui->comboBoxVolumeType->addItem( "PLAIN dm-crypt" ) ;
+	m_ui->comboBoxVolumeType->addItem( "PLAIN dm-crypt with offset" ) ;
 #ifdef CRYPT_LUKS2
 	m_ui->comboBoxVolumeType->addItem( tr( "LUKS1" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "LUKS1+External Header" ) ) ;
@@ -188,6 +189,9 @@ void createvolume::volumeType( int s )
 		m_ui->pbHiddenKeyFile->setEnabled( true ) ;
 		m_ui->comboBoxHiddenSize->setEnabled( true ) ;
 		m_ui->cbHiddenVolume->setEnabled( true ) ;
+
+		m_ui->labelHidden->setEnabled( true ) ;
+		m_ui->label_2Hidden->setEnabled( true ) ;
 	} ;
 
 	auto _disableHidden = [ this ](){
@@ -198,13 +202,23 @@ void createvolume::volumeType( int s )
 
 		m_ui->lineEditHiddenKey->setEnabled( false ) ;
 		m_ui->lineEditHiddenKey1->setEnabled( false ) ;
-		m_ui->lineEditHiddenSize->setEnabled( false ) ;
 		m_ui->pbHiddenKeyFile->setEnabled( false ) ;
 		m_ui->comboBoxHiddenSize->setEnabled( false ) ;
 		m_ui->cbHiddenVolume->setEnabled( false ) ;
+
+		m_ui->labelHidden->setEnabled( false ) ;
+		m_ui->label_2Hidden->setEnabled( false ) ;
+
+		auto e = m_ui->comboBoxVolumeType->currentIndex() == createvolume::plain_with_offset ;
+
+		m_ui->label->setEnabled( e ) ;
+		m_ui->lineEditHiddenSize->setEnabled( e ) ;
+		m_ui->comboBoxHiddenSize->setEnabled( e ) ;
 	} ;
 
-	switch( createvolume::createVolumeType( s ) ){
+	auto type = createvolume::createVolumeType( s ) ;
+
+	switch( type ){
 
 	case createvolume::luks :
 	case createvolume::luks_external_header :
@@ -213,15 +227,14 @@ void createvolume::volumeType( int s )
 	case createvolume::luks2_external_header :
 #endif
 		m_ui->comboBoxRNG->setEnabled( true ) ;
-		m_ui->groupBox->setEnabled( false ) ;
 
 		_disableHidden() ;
 
 		break ;
 	case createvolume::plain :
+	case createvolume::plain_with_offset :
 
 		m_ui->comboBoxRNG->setEnabled( false ) ;
-		m_ui->groupBox->setEnabled( false ) ;
 
 		_disableHidden() ;
 
@@ -229,7 +242,6 @@ void createvolume::volumeType( int s )
 	case createvolume::normal_truecrypt :
 
 		m_ui->comboBoxRNG->setEnabled( true ) ;
-		m_ui->groupBox->setEnabled( false ) ;
 		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt Keys" ) ) ;
 
 		_disableHidden() ;
@@ -247,7 +259,6 @@ void createvolume::volumeType( int s )
 	case createvolume::normal_and_hidden_truecrypt :
 
 		m_ui->comboBoxRNG->setEnabled( true ) ;
-		m_ui->groupBox->setEnabled( true ) ;
 		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
 		m_ui->cbHiddenVolume->addItem( tr( "TrueCrypt Keys" ) ) ;
 		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt Keys" ) ) ;
@@ -260,7 +271,6 @@ void createvolume::volumeType( int s )
 	case createvolume::normal_and_hidden_veracrypt :
 
 		m_ui->comboBoxRNG->setEnabled( true ) ;
-		m_ui->groupBox->setEnabled( true ) ;
 		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
 		m_ui->cbHiddenVolume->addItem( tr( "VeraCrypt Keys" ) ) ;
 		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt Keys" ) ) ;
@@ -270,6 +280,13 @@ void createvolume::volumeType( int s )
 		_enableHidden() ;
 
 		break ;
+	}
+
+	if( type == createvolume::plain_with_offset ){
+
+		m_ui->label->setText( tr( "Volume Offset" ) ) ;
+	}else{
+		m_ui->label->setText( tr( "Volume Size" ) ) ;
 	}
 }
 
@@ -341,16 +358,36 @@ void createvolume::setOptions( int e )
 
 	Q_UNUSED( e ) ;
 
-	auto type = m_ui->comboBoxVolumeType->currentText() ;
+	auto _plain_dmcrypt = [ this ](){
 
-	if( type.contains( "PLAIN" ) ){
+		auto type = m_ui->comboBoxVolumeType->currentIndex() ;
+
+		return type == createvolume::plain || type == createvolume::plain_with_offset ;
+	} ;
+
+	auto _luks = [ this ](){
+
+		auto type = m_ui->comboBoxVolumeType->currentIndex() ;
+
+		#ifdef CRYPT_LUKS2
+			return	type == createvolume::luks                  ||
+				type == createvolume::luks_external_header  ||
+				type == createvolume::luks2_external_header ||
+				type == createvolume::luks2 ;
+
+		#else
+			return type == createvolume::luks || type == createvolume::luks_external_header;
+		#endif
+	} ;
+
+	if( _plain_dmcrypt() ){
 
 		/*
 		 * crypto options for plain dm-crypt volumes
 		 */
 		options->addItem( "aes.cbc-essiv:256.256.ripemd160" ) ;
 
-	}else if( type.contains( "LUKS" ) ){
+	}else if( _luks() ){
 
 		/*
 		 * cryto options for LUKS volumes.
@@ -878,6 +915,7 @@ void createvolume::pbCreateClicked()
 		break ;
 #endif
 	case createvolume::plain :
+	case createvolume::plain_with_offset :
 
 		m_volumeType = "plain" ;
 
@@ -907,6 +945,19 @@ void createvolume::pbCreateClicked()
 	}
 
 	g += "." + m_ui->comboBoxOptions->currentText() ;
+
+	if( type == createvolume::plain_with_offset ){
+
+		g += "." + m_ui->lineEditHiddenSize->text() ;
+
+		switch( m_ui->comboBoxHiddenSize->currentIndex() ){
+
+			case 0 : g += "b" ; break ;
+			case 1 : g += "k" ; break ;
+			case 2 : g += "m" ; break ;
+			case 3 : g += "g" ; break ;
+		}
+	}
 
 	volumePath.replace( "\"","\"\"\"" ) ;
 
