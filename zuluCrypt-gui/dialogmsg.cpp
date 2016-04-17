@@ -222,20 +222,29 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 
 		this->setFixedSize( this->size() ) ;
 
-		m_ui->labelType->setText( stl.at( 0 ) ) ;
-		m_ui->labelCipher->setText( stl.at( 1 ) ) ;
-		m_ui->labelKeySize->setText( stl.at( 2 ) ) ;
-		m_ui->labelOffset->setText( stl.at( 3 ) ) ;
-		m_ui->labelDevice->setText( _trancate_long_path( stl.at( 4 ) ) ) ;
-		m_ui->labelLoop->setText( _trancate_long_path( stl.at( 5 ) ) ) ;
-		m_ui->labelSize->setText( stl.at( 6 ) ) ;
-		m_ui->labelMode->setText( stl.at( 7 ) ) ;
-		m_ui->labelActiveSlots->setText( stl.at( 8 ) ) ;
-		m_ui->labelFs->setText( stl.at( 9 ) ) ;
-		m_ui->labelSize_2->setText( stl.at( 10 ) ) ;
-		m_ui->labelUsed->setText( stl.at( 11 ) ) ;
-		m_ui->labelUnused->setText( stl.at( 12 ) ) ;
-		m_ui->labelUsedPerc->setText( stl.at( 13 ) ) ;
+		auto _replace = [ & ]( int position,const char * txt,const QString& translated ){
+
+			auto e = stl.at( position ) ;
+
+			e.replace( txt,translated ) ;
+
+			return e ;
+		} ;
+
+		m_ui->labelType->setText( _replace( 0,"type:",tr( "type:" ) ) ) ;
+		m_ui->labelCipher->setText( _replace( 1,"cipher:",tr( "cipher:" ) ) ) ;
+		m_ui->labelKeySize->setText( _replace( 2,"keysize:",tr( "keysize:" ) ) ) ;
+		m_ui->labelOffset->setText( _replace( 3,"offset:",tr( "offset:" ) ) ) ;
+		m_ui->labelDevice->setText( _trancate_long_path( _replace( 4,"device:",tr( "device:" ) ) ) ) ;
+		m_ui->labelLoop->setText( _trancate_long_path( _replace( 5,"loop:",tr( "loop:" ) ) ) ) ;
+		m_ui->labelSize->setText( _replace( 6,"mode:",tr( "mode:" ) ) ) ;
+		m_ui->labelMode->setText( _replace( 7,"active slots:",tr( "active slots:" ) ) ) ;
+		m_ui->labelActiveSlots->setText( _replace( 8,"file system:",tr( "file system:" ) ) ) ;
+		m_ui->labelFs->setText( _replace( 9,"total space:",tr( "total space:" ) ) ) ;
+		m_ui->labelSize_2->setText( _replace( 10,"used space:",tr( "used space:" ) ) ) ;
+		m_ui->labelUsed->setText( _replace( 11,"free space:",tr( "free space:" ) ) ) ;
+		m_ui->labelUnused->setText( _replace( 12,"used%:",tr( "used%:" ) ) ) ;
+		m_ui->labelUsedPerc->setText( _replace( 13,"UUID:",tr( "UUID:" ) ) ) ;
 
 		//QString m = stl.at( 15 ) ;
 		//m.replace( QString( "mount point2" ),QString( "public mount point" ) ) ;

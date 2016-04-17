@@ -159,7 +159,77 @@ nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</
         <translation>Sie scheinen nicht genügend Rechte für den Zugriff auf die verschlüsselte Datei im %1 zu haben. Überprüfen Sie die Dateirechte und probieren Sie es erneut.</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="309"/>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="234"/>
+        <source>type:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="235"/>
+        <source>cipher:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="236"/>
+        <source>keysize:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="237"/>
+        <source>offset:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="238"/>
+        <source>device:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="239"/>
+        <source>loop:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="240"/>
+        <source>mode:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="241"/>
+        <source>active slots:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="242"/>
+        <source>file system:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="243"/>
+        <source>total space:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="244"/>
+        <source>used space:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="245"/>
+        <source>free space:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="246"/>
+        <source>used%:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="247"/>
+        <source>UUID:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="318"/>
         <source>Do not show this dialog again</source>
         <translation>Diesen Dialog nicht erneut zeigen</translation>
     </message>

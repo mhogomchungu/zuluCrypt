@@ -134,7 +134,77 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
         <translation>Vous ne semblez pas avoir les autorisations nécessaires pour accéder au fichier chiffré en mode %1, vérifiez les droits du fichier et essayez à nouveau</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="309"/>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="234"/>
+        <source>type:</source>
+        <translation>type:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="235"/>
+        <source>cipher:</source>
+        <translation>clé de chiffrement:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="236"/>
+        <source>keysize:</source>
+        <translation>taille de la clé:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="237"/>
+        <source>offset:</source>
+        <translation>décalage:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="238"/>
+        <source>device:</source>
+        <translation>device:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="239"/>
+        <source>loop:</source>
+        <translation>boucle:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="240"/>
+        <source>mode:</source>
+        <translation>mode:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="241"/>
+        <source>active slots:</source>
+        <translation>slots actifs:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="242"/>
+        <source>file system:</source>
+        <translation>système de fichiers:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="243"/>
+        <source>total space:</source>
+        <translation>espace total:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="244"/>
+        <source>used space:</source>
+        <translation>espace utilisé:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="245"/>
+        <source>free space:</source>
+        <translation>espace libre:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="246"/>
+        <source>used%:</source>
+        <translation>% utilisé:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="247"/>
+        <source>UUID:</source>
+        <translation>UUID:</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="318"/>
         <source>Do not show this dialog again</source>
         <translation>Ne plus montrer ce message désormais</translation>
     </message>
@@ -166,7 +236,7 @@ et un «miroir» secondaire du point de montage accessible au public sera créé
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="667"/>
         <source>public mount point: </source>
-        <translation type="unfinished"></translation>
+        <translation>point de montage public: </translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1238"/>
@@ -1071,7 +1141,7 @@ Les droits nécessaires peuvent être obtenus par :
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="625"/>
         <source>Unmount + Power Down</source>
-        <translation type="unfinished"></translation>
+        <translation>Démonter + Éteindre</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="636"/>
