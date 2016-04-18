@@ -90,7 +90,7 @@ private :
 	bool m_open_with_path ;
 	QMenu * m_pluginMenu ;
 	QWidget * m_parent ;
-	QString m_key ;
+	QByteArray m_key ;
 	QStringList m_keyFiles ;
 	QString m_device ;
 	QString m_point ;

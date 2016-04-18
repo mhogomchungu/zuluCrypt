@@ -165,7 +165,7 @@ void passwordDialog::tcryptGui()
 
 	tcrypt::instance( this,false,[ this ]( const QString& key,const QStringList& keyFiles ) {
 
-		m_key = key ;
+		m_key = key.toLatin1() ;
 		m_keyFiles = keyFiles ;
 
 		this->openVolume() ;
@@ -271,7 +271,7 @@ void passwordDialog::cbActicated( int e )
 
 void passwordDialog::keyAndKeyFile()
 {
-	QString key ;
+	QByteArray key ;
 
 	if( utility::pluginKey( this,&key,"hmac" ) ){
 
@@ -436,7 +436,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 			w = utility::getKeyFromWallet( LxQt::Wallet::secretServiceBackEnd,keyID ) ;
 		}else{
-			m_key = m_ui->PassPhraseField->text() ;
+			m_key = m_ui->PassPhraseField->text().toLatin1() ;
 			return this->openVolume() ;
 		}
 
@@ -450,7 +450,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 				this->enableAll() ;
 			}else{
-				m_key = w.key ;
+				m_key = w.key.toLatin1() ;
 				this->openVolume() ;
 			}
 		}else{
@@ -458,7 +458,7 @@ void passwordDialog::buttonOpenClicked( void )
 			this->enableAll() ;
 		}
 	}else{
-		m_key = m_ui->PassPhraseField->text() ;
+		m_key = m_ui->PassPhraseField->text().toLatin1() ;
 		this->openVolume() ;
 	}
 }
@@ -601,7 +601,7 @@ void passwordDialog::openVolume()
 
 			return this->enableAll() ;
 		}else{
-			QString r = m_ui->PassPhraseField->text() ;
+			auto r = m_ui->PassPhraseField->text() ;
 
 			if( r == tr( KWALLET ) || r == tr( INTERNAL_WALLET ) || r == tr( GNOME_WALLET ) ){
 
@@ -645,7 +645,7 @@ void passwordDialog::openVolume()
 	const QString& e = passtype ;
 	const QString& f = keyPath ;
 
-	QString exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a,b,c,d,e,f ) ;
+	auto exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a,b,c,d,e,f ) ;
 
 	if( !m_keyFiles.isEmpty() ){
 

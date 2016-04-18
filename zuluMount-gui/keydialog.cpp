@@ -177,7 +177,7 @@ void keyDialog::tcryptGui()
 
 	tcrypt::instance( this,false,[ this ]( const QString& key,const QStringList& keyFiles ){
 
-		m_key = key ;
+		m_key = key.toLatin1() ;
 		m_keyFiles = keyFiles ;
 
 		this->openVolume() ;
@@ -428,7 +428,7 @@ void keyDialog::pbOpen()
 					m_ui->lineEditKey->setEnabled( false ) ;
 				}
 			}else{
-				m_key = w.key ;
+				m_key = w.key.toLatin1() ;
 				this->openVolume() ;
 			}
 		}else{
@@ -551,7 +551,7 @@ void keyDialog::openVolume()
 
 		if( keyType == keyDialog::Key || keyType == keyDialog::keyKeyFile ){
 
-			m_key = m_ui->lineEditKey->text() ;
+			m_key = m_ui->lineEditKey->text().toLatin1() ;
 
 		}else if( keyType == keyDialog::keyfile ){
 
@@ -799,7 +799,7 @@ void keyDialog::cbActicated( int e )
 
 void keyDialog::keyAndKeyFile()
 {
-	QString key ;
+	QByteArray key ;
 
 	if( utility::pluginKey( this,&key,"hmac" ) ){
 

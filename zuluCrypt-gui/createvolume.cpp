@@ -97,8 +97,8 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 
 	m_ui->comboBoxVolumeType->clear() ;
 
-	m_ui->comboBoxVolumeType->addItem( "PLAIN dm-crypt" ) ;
-	m_ui->comboBoxVolumeType->addItem( "PLAIN dm-crypt with offset" ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "PLAIN dm-crypt" ) ) ;
+	m_ui->comboBoxVolumeType->addItem( tr( "PLAIN dm-crypt with offset" ) ) ;
 #ifdef CRYPT_LUKS2
 	m_ui->comboBoxVolumeType->addItem( tr( "LUKS1" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "LUKS1+External Header" ) ) ;
@@ -769,14 +769,42 @@ void createvolume::enableAll()
 	m_ui->comboBoxFS->setEnabled( true ) ;
 	m_ui->comboBoxVolumeType->setEnabled( true ) ;
 
-	if( m_ui->comboBoxVolumeType->currentIndex() != createvolume::plain ){
+	m_ui->cbNormalVolume->setEnabled( true ) ;
+	m_ui->labelvolumeOptions->setEnabled( true ) ;
+	m_ui->comboBoxOptions->setEnabled( true ) ;
+
+	auto e = m_ui->comboBoxVolumeType->currentIndex() ;
+
+	if( e != createvolume::plain ){
 
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 	}
 
-	m_ui->cbNormalVolume->setEnabled( true ) ;
-	m_ui->labelvolumeOptions->setEnabled( true ) ;
-	m_ui->comboBoxOptions->setEnabled( true ) ;
+	if( e == createvolume::plain_with_offset ){
+
+		m_ui->lineEditHiddenSize->setEnabled( true ) ;
+		m_ui->label->setEnabled( true ) ;
+		m_ui->comboBoxHiddenSize->setEnabled( true ) ;
+
+	}else if( e == createvolume::normal_and_hidden_truecrypt || e == createvolume::normal_and_hidden_veracrypt ){
+
+		m_ui->lineEditHiddenSize->setEnabled( true ) ;
+		m_ui->label->setEnabled( true ) ;
+		m_ui->comboBoxHiddenSize->setEnabled( true ) ;
+
+		m_ui->cbHiddenVolume->setEnabled( true ) ;
+		m_ui->pbHiddenKeyFile->setEnabled( true ) ;
+
+		m_ui->cbHiddenVolume->setEnabled( true ) ;
+
+		m_ui->labelHidden->setEnabled( true ) ;
+		m_ui->label_2Hidden->setEnabled( true ) ;
+		m_ui->lineEditHiddenKey->setEnabled( true ) ;
+		m_ui->lineEditHiddenKey1->setEnabled( true ) ;
+
+		m_ui->pbHiddenKeyFile->setEnabled(  m_ui->cbHiddenVolume->currentIndex() == 1 ) ;
+		m_ui->lineEditHiddenKey1->setEnabled(  m_ui->cbHiddenVolume->currentIndex() != 1 ) ;
+	}
 }
 
 void createvolume::disableAll()
@@ -799,6 +827,15 @@ void createvolume::disableAll()
 	m_ui->cbNormalVolume->setEnabled( false ) ;
 	m_ui->labelvolumeOptions->setEnabled( false ) ;
 	m_ui->comboBoxOptions->setEnabled( false ) ;
+	m_ui->lineEditHiddenSize->setEnabled( false ) ;
+	m_ui->label->setEnabled( false ) ;
+	m_ui->comboBoxHiddenSize->setEnabled( false ) ;
+	m_ui->labelHidden->setEnabled( false ) ;
+	m_ui->label_2Hidden->setEnabled( false ) ;
+	m_ui->lineEditHiddenKey->setEnabled( false ) ;
+	m_ui->lineEditHiddenKey1->setEnabled( false ) ;
+	m_ui->cbHiddenVolume->setEnabled( false ) ;
+	m_ui->pbHiddenKeyFile->setEnabled( false ) ;
 }
 
 void createvolume::pbCreateClicked()

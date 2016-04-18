@@ -24,6 +24,7 @@
 #include <QDialog>
 #include <QObject>
 #include <QString>
+#include <QByteArray>
 #include <QVector>
 
 #include <functional>
@@ -43,7 +44,7 @@ class plugin : public QDialog
 public:
 	static plugin& instance( QDialog * parent,
 				  plugins::plugin t,
-				  std::function< void( const QString& ) > e,
+				  std::function< void( const QByteArray& ) > e,
 				  const QString& f = QString(),
 				  const QVector<QString>& g = QVector<QString>() )
 	{
@@ -51,7 +52,7 @@ public:
 	}
 	plugin( QDialog * parent,
 	      plugins::plugin,
-	      std::function< void( const QString& ) >,
+	      std::function< void( const QByteArray& ) >,
 	      const QString& = QString(),const QVector<QString>& = QVector<QString>() ) ;
 	~plugin() ;
 private slots:
@@ -66,8 +67,8 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::plugin * m_ui ;
-	QString m_key = QString() ;
-	std::function< void( const QString& ) > m_function ;
+	QByteArray m_key = QByteArray() ;
+	std::function< void( const QByteArray& ) > m_function ;
 	plugins::plugin m_pluginType ;
 	QVector<QString> m_exe ;
 };

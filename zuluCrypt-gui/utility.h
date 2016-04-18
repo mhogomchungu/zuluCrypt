@@ -216,6 +216,7 @@ namespace utility
 	bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
 	bool getOpenVolumeReadOnlyOption( const QString& app ) ;
 	QString keyPath( void ) ;
+	void keySend( const QString& keyPath,const QByteArray& key ) ;
 	void keySend( const QString& keyPath,const QString& key ) ;
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	QStringList split( const QString&,char token = '\n' ) ;
@@ -242,7 +243,7 @@ namespace utility
 
 	void createPlugInMenu( QMenu *,const QString&,const QString&,const QString&,bool ) ;
 
-	int pluginKey( QDialog *,QString *,const QString& ) ;
+	int pluginKey( QDialog *,QByteArray *,const QString& ) ;
 
 	QFont getFont( QWidget * ) ;
 	void saveFont( const QFont& ) ;

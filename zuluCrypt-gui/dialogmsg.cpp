@@ -203,24 +203,24 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 	QString msg = m ;
 	msg.replace( "   ","" ) ;
 
-	QStringList stl = msg.split( "\n" ) ;
-
-	auto _trancate_long_path = []( QString e ){
-
-		const int len    = 40 ;
-		const int length = e.length() ;
-
-		if( length <= len ){
-
-			return e ;
-		}else{
-			return e.replace( 25,length - len,"......" ) ;
-		}
-	} ;
+	auto stl = msg.split( "\n" ) ;
 
 	if( stl.size() >= 14 ){
 
 		this->setFixedSize( this->size() ) ;
+
+		auto _trancate_long_path = []( QString e ){
+
+			const int len    = 40 ;
+			const int length = e.length() ;
+
+			if( length <= len ){
+
+				return e ;
+			}else{
+				return e.replace( 25,length - len,"......" ) ;
+			}
+		} ;
 
 		auto _replace = [ & ]( int position,const char * txt,const QString& translated ){
 

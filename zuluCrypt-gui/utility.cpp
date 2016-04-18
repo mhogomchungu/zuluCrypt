@@ -183,7 +183,7 @@ int utility::startApplication( const char * appName,std::function<int()> start )
 	}
 }
 
-void utility::keySend( const QString& path,const QString& key )
+void utility::keySend( const QString& path,const QByteArray& key )
 {
 	::Task::exec( [ path,key ](){
 
@@ -203,10 +203,15 @@ void utility::keySend( const QString& path,const QString& key )
 				size = ZULUCRYPT_KEYFILE_MAX_SIZE ;
 			}
 
-			::zuluCryptPluginManagerSendKey( handle,key.toLatin1().constData(),size ) ;
+			::zuluCryptPluginManagerSendKey( handle,key.constData(),size ) ;
 			::zuluCryptPluginManagerCloseConnection( handle ) ;
 		}
 	} ) ;
+}
+
+void utility::keySend( const QString& keyPath,const QString& key )
+{
+	utility::keySend( keyPath,key.toLatin1() ) ;
 }
 
 void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,const QString& c,bool addPlugIns )
@@ -1520,7 +1525,7 @@ bool utility::userBelongsToGroup( const char * groupname )
 	return false ;
 }
 
-int utility::pluginKey( QDialog * w,QString * key,const QString& p )
+int utility::pluginKey( QDialog * w,QByteArray * key,const QString& p )
 {
 	plugins::plugin pluginType ;
 	QString pluginString ;
@@ -1568,7 +1573,7 @@ int utility::pluginKey( QDialog * w,QString * key,const QString& p )
 
 	QEventLoop l ;
 
-	plugin::instance( w,pluginType,[ & ]( const QString& e ){
+	plugin::instance( w,pluginType,[ & ]( const QByteArray& e ){
 
 		*key = e ;
 
