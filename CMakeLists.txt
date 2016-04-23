@@ -34,6 +34,9 @@ if( NOT CMAKE_INSTALL_DATADIR )
 	set( CMAKE_INSTALL_DATADIR "share" )
 endif()
 
+if( NOT DEFINED QT5 )
+    set( QT5 "true" )
+endif()
 
 # uninstall target
 configure_file(

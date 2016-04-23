@@ -853,6 +853,14 @@ void createvolume::pbCreateClicked()
 		return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume path field is empty" ) ) ;
 	}
 
+	if( type == createvolume::plain_with_offset ){
+
+		if( m_ui->lineEditHiddenSize->text().isEmpty() ){
+
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+		}
+	}
+
 	if( type == createvolume::normal_and_hidden_truecrypt || type == createvolume::normal_and_hidden_veracrypt ){
 
 		auto x = m_ui->lineEditHiddenSize->text() ;

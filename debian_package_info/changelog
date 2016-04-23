@@ -1,3 +1,21 @@
+zulucrypt (5.0.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- add support for creating LUKS volumes that only uses a detached header.The detached header will be created in the
+        user home directory and the volume can not be unlocked without this detached header.The detached header can be
+        reattached later on through zuluCrypt-gui->menu->Volumes->Restore Volume Header.
+     -- its now possible to create a shared mount point when unlocking a volume in zuluCrypt-gui
+     -- its now possible to unlock VeraCrypt volumes from favorite feature in zuluCrypt-gui
+     -- add complete French translation to both zuluCrypt-gui and zuluMount-gui
+     -- try to silently solve problems caused by other tools mounting zuluCrypt's encryption mapper.
+     -- add support for creating a "plain dm-crypt" volume at a "none zero offset".This type of volume is useful as a
+        "poor man's version of a hidden volume feature in TrueCrypt and VeraCrypt".Best thing about this type of hidden
+        volume is that the outer volume can be anything including an "exposed file system".Currently,only zuluMount-gui can
+        open this type of volume by clicking "options" followed by "Set Volume Offset" on the mounting dialog prompt.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sun, 1 May 2016 16:38:48 +0000
+
+
 zulucrypt (4.9.0-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features
