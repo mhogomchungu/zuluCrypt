@@ -243,5 +243,5 @@ version 5.0.0
    "poor man's version of a hidden volume feature in TrueCrypt and VeraCrypt".Best thing about this type of hidden
    volume is that the outer volume can be anything including an "exposed file system".Currently,only zuluMount-gui can
    open this type of volume by clicking "options" followed by "Set Volume Offset" on the mounting dialog prompt.
-
+-- Qt5 is now the default Qt dependency.
 
