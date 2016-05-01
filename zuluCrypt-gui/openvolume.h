@@ -55,6 +55,7 @@ public slots:
 	void HideUI( void ) ;
 	void allowLUKSOnly( void ) ;
 private slots:
+	void pbOpen( void ) ;
 	void pbHelp( void ) ;
 	void pbUUID( void ) ;
 	void pbCancel( void ) ;
@@ -67,7 +68,7 @@ private:
 	Ui::openvolume * m_ui ;
 	QAction * m_action ;
 	enum { nonSystemVolumes,systemVolumes,allVolumes } m_option ;
-	bool m_diableNonLUKS = false ;
+	bool m_disableNonLUKS = false ;
 	bool m_showEncryptedOnly = false ;
 	bool m_showLuksOnly = false ;
 	std::function< void( const QString& ) > m_function ;

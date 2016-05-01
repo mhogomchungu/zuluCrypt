@@ -55,6 +55,7 @@ openvolume::openvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::ope
 	connect( m_ui->pbHelp,SIGNAL( clicked() ),this,SLOT( pbHelp() ) ) ;
 	connect( m_ui->pbUUID,SIGNAL( clicked() ),this,SLOT( pbUUID() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
+	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 
 	m_action = new QAction( this ) ;
 	QList<QKeySequence> keys ;
@@ -181,7 +182,7 @@ void openvolume::ShowAllPartitions( std::function< void( const QString& ) > f )
 
 void openvolume::allowLUKSOnly()
 {
-	m_diableNonLUKS = true ;
+	m_disableNonLUKS = true ;
 }
 
 void openvolume::partitionList( const QString& title,const QString& volumeType )
@@ -267,6 +268,8 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 		}
 	}
 
+	m_ui->pbOpen->setEnabled( m_ui->tableWidget->rowCount() > 0 ) ;
+
 	m_ui->tableWidget->setEnabled( true ) ;
 	m_ui->tableWidget->setFocus() ;
 }
@@ -277,11 +280,21 @@ void openvolume::HideUI()
 	this->deleteLater() ;
 }
 
+void openvolume::pbOpen()
+{
+	auto table = m_ui->tableWidget ;
+
+	if( table->rowCount() > 0 ){
+
+		this->tableEntryDoubleClicked( table->currentItem() ) ;
+	}
+}
+
 void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 {
 	auto tw = m_ui->tableWidget ;
 
-	if( m_diableNonLUKS ){
+	if( m_disableNonLUKS ){
 
 		if( !tw->item( item->row(),3 )->text().startsWith( "crypto_LUKS" ) ){
 

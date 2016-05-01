@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>740</width>
+    <width>751</width>
     <height>353</height>
    </rect>
   </property>
@@ -25,7 +25,7 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>560</x>
+     <x>650</x>
      <y>320</y>
      <width>71</width>
      <height>31</height>
@@ -54,7 +54,7 @@
   <widget class="QPushButton" name="pbUUID">
    <property name="geometry">
     <rect>
-     <x>240</x>
+     <x>310</x>
      <y>320</y>
      <width>131</width>
      <height>31</height>
@@ -70,7 +70,7 @@
   <widget class="QPushButton" name="pbCancel">
    <property name="geometry">
     <rect>
-     <x>370</x>
+     <x>440</x>
      <y>320</y>
      <width>131</width>
      <height>31</height>
@@ -91,7 +91,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>721</width>
+     <width>731</width>
      <height>311</height>
     </rect>
    </property>
@@ -103,7 +103,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>701</width>
+      <width>711</width>
       <height>291</height>
      </rect>
     </property>
@@ -142,7 +142,7 @@
       <string>partition</string>
      </property>
      <property name="textAlignment">
-      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+      <set>AlignCenter</set>
      </property>
     </column>
     <column>
@@ -150,7 +150,7 @@
       <string>size</string>
      </property>
      <property name="textAlignment">
-      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+      <set>AlignCenter</set>
      </property>
     </column>
     <column>
@@ -158,7 +158,7 @@
       <string>label</string>
      </property>
      <property name="textAlignment">
-      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+      <set>AlignCenter</set>
      </property>
     </column>
     <column>
@@ -166,7 +166,7 @@
       <string>type</string>
      </property>
      <property name="textAlignment">
-      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+      <set>AlignCenter</set>
      </property>
     </column>
     <column>
@@ -174,10 +174,23 @@
       <string>uuid</string>
      </property>
      <property name="textAlignment">
-      <set>AlignHCenter|AlignVCenter|AlignCenter</set>
+      <set>AlignCenter</set>
      </property>
     </column>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="pbOpen">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>320</y>
+     <width>131</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>&amp;Open</string>
+   </property>
   </widget>
  </widget>
  <tabstops>
