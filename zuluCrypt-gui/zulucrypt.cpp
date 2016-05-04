@@ -825,7 +825,21 @@ void zuluCrypt::openpdf()
 	auto x = tr( "WARNING!" ) ;
 	auto y = tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ;
 
-	utility::openPath( PDF_PATH,m_openPath,m_env,this,x,y ) ;
+	QString e = PDF_PATH ;
+
+	if( utility::pathExists( e ) ){
+
+		utility::openPath( e,m_openPath,m_env,this,x,y ) ;
+	}else{
+		e += ".gz" ;
+
+		if( utility::pathExists( e ) ){
+
+			utility::openPath( e,m_openPath,m_env,this,x,y ) ;
+		}else{
+			utility::openPath( PDF_PATH,m_openPath,m_env,this,x,y ) ;
+		}
+	}
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )
