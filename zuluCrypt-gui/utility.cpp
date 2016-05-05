@@ -353,52 +353,6 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 	} ) ;
 }
 
-utility::Array::Array( const QString& s,char splitter )
-{
-	if( !s.isEmpty() ){
-
-		m_list = s.toLatin1().split( splitter ) ;
-	}
-
-	this->setUp() ;
-}
-
-utility::Array::Array( const QStringList& s )
-{
-	for( const auto& it : s ){
-
-		m_list.append( it.toLatin1() ) ;
-	}
-
-	this->setUp() ;
-}
-
-size_t utility::Array::size()
-{
-	return m_list.size() ;
-}
-
-void utility::Array::setUp()
-{
-	auto p = m_list.size() ;
-
-	m_vector.resize( p + 1 ) ;
-
-	auto q = m_vector.data() ;
-
-	for( decltype( p ) i = 0 ; i < p ; i++ ){
-
-		*( q + i ) = m_list.at( i ).constData() ;
-	}
-
-	*( q + p ) = nullptr ;
-}
-
-char * const * utility::Array::value()
-{
-	return const_cast< char * const * >( m_vector.data() ) ;
-}
-
 static bool _execute_process( const QString& m,const QString& exe,const QString& env,int uid )
 {
 	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
@@ -456,16 +410,11 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 {
 	utility::wallet w{ false,false,"","" } ;
 
-	auto _getBackEnd = []( LxQt::Wallet::walletBackEnd e ){
-
-		return LxQt::Wallet::getWalletBackend( e ) ;
-	} ;
-
 	using storage_t = std::unique_ptr< LxQt::Wallet::Wallet > ;
 
 	if( storage == LxQt::Wallet::kwalletBackEnd ){
 
-		storage_t e( _getBackEnd( storage ) ) ;
+		storage_t e( LxQt::Wallet::getWalletBackend( storage ) ) ;
 
 		w.opened = e->await_open( "default",utility::applicationName() ) ;
 
@@ -481,9 +430,9 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 		auto walletName = utility::walletName() ;
 		auto appName    = utility::applicationName() ;
 
-		if( LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,walletName,appName ) ){
+		if( LxQt::Wallet::walletExists( storage,walletName,appName ) ){
 
-			storage_t e( _getBackEnd( storage ) ) ;
+			storage_t e( LxQt::Wallet::getWalletBackend( storage ) ) ;
 
 			e->setImage( ":/zuluCrypt.png" ) ;
 
@@ -504,7 +453,7 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 
 	}else if( storage == LxQt::Wallet::secretServiceBackEnd ){
 
-		storage_t e( _getBackEnd( storage ) ) ;
+		storage_t e( LxQt::Wallet::getWalletBackend( storage ) ) ;
 
 		w.opened = e->await_open( utility::walletName(),utility::applicationName() ) ;
 

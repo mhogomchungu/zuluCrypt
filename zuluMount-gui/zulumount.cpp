@@ -140,31 +140,41 @@ void zuluMount::setUpApp( const QString& volume )
 
 	trayMenu->setFont( this->font() ) ;
 
-	m_autoMountAction = new QAction( this ) ;
 	m_autoMount = this->autoMount() ;
-	m_autoMountAction->setCheckable( true ) ;
-	m_autoMountAction->setChecked( m_autoMount ) ;
-
-	m_autoMountAction->setText( tr( "Automount Volumes" ) ) ;
-
-	connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoMountToggled( bool ) ) ) ;
-
-	trayMenu->addAction( m_autoMountAction ) ;
-
-	auto autoOpenFolderOnMount = new QAction( this ) ;
-	autoOpenFolderOnMount->setCheckable( true ) ;
 	m_autoOpenFolderOnMount = this->autoOpenFolderOnMount() ;
-	autoOpenFolderOnMount->setChecked( m_autoOpenFolderOnMount ) ;
-	autoOpenFolderOnMount->setText( tr( "Auto Open Mount Point" ) ) ;
-	connect( autoOpenFolderOnMount,SIGNAL( toggled( bool ) ),this,SLOT( autoOpenFolderOnMount( bool ) ) ) ;
 
-	trayMenu->addAction( autoOpenFolderOnMount ) ;
+	trayMenu->addAction( [ this ](){
 
-	auto ac = new QAction( this ) ;
-	ac->setText( tr( "Unmount All" ) ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( unMountAll() ) ) ;
+		m_autoMountAction = new QAction( tr( "Automount Volumes" ),this ) ;
 
-	trayMenu->addAction( ac ) ;
+		m_autoMountAction->setCheckable( true ) ;
+		m_autoMountAction->setChecked( m_autoMount ) ;
+
+		connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoMountToggled( bool ) ) ) ;
+
+		return m_autoMountAction ;
+	}() ) ;
+
+	trayMenu->addAction( [ this ](){
+
+		auto e = new QAction( tr( "Auto Open Mount Point" ),this ) ;
+
+		e->setCheckable( true ) ;
+		e->setChecked( m_autoOpenFolderOnMount ) ;
+
+		connect( e,SIGNAL( toggled( bool ) ),this,SLOT( autoOpenFolderOnMount( bool ) ) ) ;
+
+		return e ;
+	}() ) ;
+
+	trayMenu->addAction( [ this ](){
+
+		auto ac = new QAction( tr( "Unmount All" ),this ) ;
+
+		connect( ac,SIGNAL( triggered() ),this,SLOT( unMountAll() ) ) ;
+
+		return ac ;
+	}() ) ;
 
 	m_favorite_menu = trayMenu->addMenu( tr( "Favorites" ) ) ;
 
@@ -200,15 +210,24 @@ void zuluMount::setUpApp( const QString& volume )
 	m_languageAction->setText( tr( "Select Language" ) ) ;
 
 	trayMenu->addAction( m_languageAction ) ;
-	ac = new QAction( this ) ;
-	ac->setText( tr( "Check For Update" ) ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
-	trayMenu->addAction( ac ) ;
 
-	ac = new QAction( this ) ;
-	ac->setText( tr( "About" ) ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( licenseInfo() ) ) ;
-	trayMenu->addAction( ac ) ;
+	trayMenu->addAction( [ this ](){
+
+		auto ac = new QAction( tr( "Check For Update" ),this ) ;
+		
+		connect( ac,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
+
+		return ac ;
+	}() ) ;
+
+	trayMenu->addAction( [ this ](){
+
+		auto ac = new QAction( tr( "About" ),this ) ;
+
+		connect( ac,SIGNAL( triggered() ),this,SLOT( licenseInfo() ) ) ;
+
+		return ac ;
+	}() ) ;
 
 	trayMenu->addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
 	m_trayIcon.setContextMenu( trayMenu ) ;
@@ -283,11 +302,14 @@ static void _manage_volume_list( QMenu * menu,const QStringList& l )
 
 	if( l.isEmpty() ){
 
-		auto ac = new QAction( QObject::tr( "List Is Empty" ),menu ) ;
+		menu->addAction( [ &menu ](){
 
-		ac->setEnabled( false ) ;
+			auto ac = new QAction( QObject::tr( "List Is Empty" ),menu ) ;
 
-		menu->addAction( ac ) ;
+			ac->setEnabled( false ) ;
+
+			return ac ;
+		}() ) ;
 	}else{
 		for( const auto& it : l ){
 

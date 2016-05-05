@@ -44,10 +44,12 @@
 createkeyfile::createkeyfile( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::createkeyfile )
 {
 	m_ui->setupUi( this ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
 	m_ui->pbOpenFolder->setIcon( QIcon( ":/folder.png" ) ) ;
+
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT( pbOpenFolder() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;

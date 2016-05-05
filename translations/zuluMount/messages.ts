@@ -216,35 +216,35 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="661"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="610"/>
         <source>If the option is checked,a primary private mount point will be created in &quot;%1&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="672"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="621"/>
         <source>public mount point: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1243"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1265"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1192"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1214"/>
         <source>Manage Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1245"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1269"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1194"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1218"/>
         <source>Mount All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1303"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1252"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1537"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1486"/>
         <source>hmac plugin.
 
 This plugin generates a key using below formular:
@@ -253,7 +253,7 @@ key = hmac(sha256,passphrase,keyfile contents)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1542"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1491"/>
         <source>keykeyfile plugin.
 
 This plugin generates a key using below formular:
@@ -262,34 +262,34 @@ key = passphrase + keyfile contents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1547"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1496"/>
         <source>gpg plugin.
 
 This plugin retrives a key locked in a gpg file with a symmetric key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1565"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1514"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1565"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1514"/>
         <source>Could not find &quot;gpg&quot; executable in &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; and &quot;/usr/sbin&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1747"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1696"/>
         <source>INFO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1747"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1696"/>
         <source>Translation will be done the next time you restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="286"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="307"/>
         <source>List Is Empty</source>
         <translation type="unfinished"></translation>
     </message>
@@ -383,8 +383,8 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="58"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="149"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="829"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="153"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="833"/>
         <source>Key</source>
         <translation type="unfinished"></translation>
     </message>
@@ -414,25 +414,25 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="422"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="463"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="468"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="473"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="478"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="483"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="488"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="493"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="496"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="583"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="592"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="605"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="739"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="766"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="426"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="467"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="472"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="477"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="482"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="487"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="492"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="497"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="500"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="587"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="596"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="609"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="743"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="770"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="739"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="743"/>
         <source>An error has occured and the volume could not be opened</source>
         <translation type="unfinished"></translation>
     </message>
@@ -442,70 +442,66 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="144"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="224"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="148"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="228"/>
         <source>Set File System Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="145"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="228"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="149"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="232"/>
         <source>Set Volume Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="232"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="236"/>
         <source>Set Volume As VeraCrypt Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="158"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="162"/>
         <source>TrueCrypt/VeraCrypt Keys</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="146"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="236"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="150"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="240"/>
         <source>Set VeraCrypt PIM value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="150"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="154"/>
         <source>KeyFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="151"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="155"/>
         <source>Key+KeyFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="152"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="156"/>
         <source>Plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="275"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="279"/>
         <source>Select A Folder To Create A Mount Point In</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="326"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="330"/>
         <source>Select A File To Be Used As A Keyfile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="359"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="370"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="363"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="374"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="403"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="516"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="517"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="518"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="519"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="407"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="520"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="521"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="522"/>
@@ -525,168 +521,172 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="536"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="537"/>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="538"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="539"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="540"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="541"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="542"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="403"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="407"/>
         <source>Internal wallet is not configured</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="422"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="426"/>
         <source>The volume does not appear to have an entry in the wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="463"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="467"/>
         <source>Failed to unlock a cryfs volume.
 Wrong password entered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="468"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="472"/>
         <source>Failed to unlock an encfs volume.
 Wrong password entered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="473"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="477"/>
         <source>Failed to unlock a cryfs volume.
 cryfs executable could not be found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="478"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="482"/>
         <source>Failed to unlock an encfs volume.
 encfs executable could not be found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="483"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="487"/>
         <source>Failed to create mount point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="488"/>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="496"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="492"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="500"/>
         <source>Failed to unlock the volume.
 Not supported volume encountered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="493"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="497"/>
         <source>Failed to unlock the volume.
 Backend not responding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="516"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="520"/>
         <source>Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="517"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="521"/>
         <source>There seem to be an open volume accociated with given address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="518"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="522"/>
         <source>No file or device exist on given path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="519"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="523"/>
         <source>Volume could not be opened with the presented key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="520"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="524"/>
         <source>Insufficient privilege to mount the device with given options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="521"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="525"/>
         <source>Insufficient privilege to open device in read write mode or device does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="522"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="526"/>
         <source>Only root user can perform this operation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="523"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="527"/>
         <source>-O and -m options can not be used together</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="524"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="528"/>
         <source>Could not create mount point, invalid path or path already taken</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="525"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="529"/>
         <source>Shared mount point path aleady taken</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="526"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="530"/>
         <source>There seem to be an opened mapper associated with the device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="527"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="531"/>
         <source>Could not get a passphrase from the module</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="528"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="532"/>
         <source>Could not get passphrase in silent mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="529"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="533"/>
         <source>Insufficient memory to hold passphrase</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="530"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="534"/>
         <source>One or more required argument(s) for this operation is missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="531"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="535"/>
         <source>Invalid path to key file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="532"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="536"/>
         <source>Could not get enought memory to hold the key file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="533"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="537"/>
         <source>Insufficient privilege to open key file for reading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="534"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="538"/>
         <source>Could not get a passphrase through a local socket</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="535"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="539"/>
         <source>Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="536"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="540"/>
         <source>Could not create a lock on /etc/mtab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="537"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="541"/>
         <source>Insufficient privilege to open a system volume.
 
 Consult menu-&gt;help-&gt;permission for more informaion
@@ -694,7 +694,7 @@ Consult menu-&gt;help-&gt;permission for more informaion
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="538"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="542"/>
         <source>A non supported device encountered,device is missing or permission denied
 Possible reasons for getting the error are:
 1.Device path is invalid.
@@ -702,27 +702,27 @@ Possible reasons for getting the error are:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="583"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="587"/>
         <source>Plug in name field is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="592"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="596"/>
         <source>Keyfile field is empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="819"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="823"/>
         <source>Plugin name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="839"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="843"/>
         <source>Keyfile path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="605"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="609"/>
         <source>&quot;/&quot; character is not allowed in the mount name field</source>
         <translation type="unfinished"></translation>
     </message>
@@ -732,7 +732,7 @@ Possible reasons for getting the error are:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="762"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="766"/>
         <source>ERROR: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -803,51 +803,51 @@ Possible reasons for getting the error are:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="83"/>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="272"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="87"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="276"/>
         <source>Set File System Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="84"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="88"/>
         <source>Set Volume Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="151"/>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="152"/>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="153"/>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="154"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="155"/>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="156"/>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="157"/>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="158"/>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="159"/>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="160"/>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="161"/>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="162"/>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="163"/>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="164"/>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="165"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="166"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="167"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="168"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="169"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="151"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="155"/>
         <source>Could not resolve path to device or device could not be opened in read write mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="152"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="156"/>
         <source>Insuffienct privileges to mount the volume with given mount options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="153"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="157"/>
         <source>Device already mounted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="154"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="158"/>
         <source>Insuffienct privilege to manage a system volume.
 necessary privileges can be acquired by:
 1. Adding an entry for the volume in fstab with &quot;user&quot; mount option
@@ -855,73 +855,73 @@ necessary privileges can be acquired by:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="156"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="160"/>
         <source>&quot;/etc/fstab&quot; entry for this volume requires it to be mounted read only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="157"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="161"/>
         <source>&quot;/etc/fstab&quot; entry for this volume is malformed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="158"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="162"/>
         <source>&quot;/etc/fstab&quot; entry for this volume does not allow you to mount it</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="159"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="163"/>
         <source>Could not create mount point path,path already taken</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="160"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="164"/>
         <source>Shared mount point path aleady taken</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="161"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="165"/>
         <source>Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="162"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="166"/>
         <source>Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="163"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="167"/>
         <source>Mount failed,no or unrecognized file system</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="164"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="168"/>
         <source>Mount failed,could not get a lock on /etc/mtab~</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="165"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="169"/>
         <source>Failed to mount the partition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="181"/>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="242"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="185"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="246"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="181"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="185"/>
         <source>&quot;/&quot; character is not allowed in the mount name field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="239"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="243"/>
         <source>ERROR: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/mountpartition.cpp" line="286"/>
+        <location filename="../../zuluMount-gui/mountpartition.cpp" line="290"/>
         <source>Select Path To Mount Point Folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -942,22 +942,22 @@ necessary privileges can be acquired by:
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="546"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="491"/>
         <source>Elapsed time: 0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="554"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="499"/>
         <source>Elapsed time: %0 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="556"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="501"/>
         <source>Elapsed time: %0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="567"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="512"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>
@@ -1027,273 +1027,273 @@ necessary privileges can be acquired by:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="158"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="160"/>
         <source>Auto Open Mount Point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="164"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="172"/>
         <source>Unmount All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="169"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="179"/>
         <source>Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="179"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="189"/>
         <source>Hide Volume From View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="189"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="199"/>
         <source>Unhide Volume From View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="200"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="210"/>
         <source>Select Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="204"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="216"/>
         <source>Check For Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="209"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="225"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="213"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="232"/>
         <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="506"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="516"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="526"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="528"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="538"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="548"/>
         <source>LABEL=&quot;%1&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="528"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="550"/>
         <source>LABEL=&quot;%1&quot;
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="614"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="636"/>
         <source>Mount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="621"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="643"/>
         <source>Unmount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="625"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="647"/>
         <source>Unmount + Power Down</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1024"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1025"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1026"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1027"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1028"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1029"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1030"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1031"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1032"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1033"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1034"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1035"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1036"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1037"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1038"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1039"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1040"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1041"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1042"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1043"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1044"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1046"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1047"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1048"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1049"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1050"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1051"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1052"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1053"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1054"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1055"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1056"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1057"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1058"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1059"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1060"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1061"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1062"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1063"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1064"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1065"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1066"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1024"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1046"/>
         <source>Volume is not open or was opened by a different user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1025"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1047"/>
         <source>One or more files in the volume are in use.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1026"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1048"/>
         <source>Volume does not have an entry in /etc/mtab</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1027"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1049"/>
         <source>Could not get a lock on /etc/mtab~</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1028"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1050"/>
         <source>Volume is unmounted but could not close mapper,advice to close it manually</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1029"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1051"/>
         <source>Could not resolve full path of device
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1030"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1052"/>
         <source>Shared mount point appear to be busy
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1031"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1053"/>
         <source>Shared mount point appear to belong to a different user or multiple mount points detected
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1032"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1038"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1054"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1060"/>
         <source>Shared mount point appear to be in an ambiguous state,advice to unmount manually</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1033"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1055"/>
         <source>Multiple mount points for the volume detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1034"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1056"/>
         <source>Device does not appear to be mounted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1035"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1057"/>
         <source>Only root user of members of group &quot;zulumount&quot; can unmount this volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1036"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1058"/>
         <source>Shared mount point appear to be busy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1037"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1059"/>
         <source>Shared mount point appear to belong to a different user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1039"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1061"/>
         <source>Device does not exist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1040"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1062"/>
         <source>Failed to unmount,the mount point and/or one or more files are in use</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1041"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1063"/>
         <source>Failed to unmount,could not get a lock on /etc/mtab~</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1042"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1064"/>
         <source>Failed to unmount the partition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1043"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1065"/>
         <source>Failed to unmount,multiple mount points for the volume detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1044"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1066"/>
         <source>Close failed, could not find any partition with the presented UUID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1067"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1089"/>
         <source>Failed to unmount encfs/cryfs volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="602"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="624"/>
         <source>Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="636"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="653"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="658"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="675"/>
         <source>Open Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="639"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="661"/>
         <source>Open Private Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="641"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="661"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="663"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="683"/>
         <source>Open Shared Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="668"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="690"/>
         <source>Close Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="715"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="737"/>
         <source>Warning</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="716"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="738"/>
         <source>Could not open mount point because &quot;%1&quot; tool does not appear to be working correctly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="742"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="750"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="880"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1067"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1084"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1181"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="764"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="772"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="902"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1089"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1106"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1203"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="743"/>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="751"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="765"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="773"/>
         <source>Could not get volume properties.
 volume is not open or was opened by a different user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="748"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="770"/>
         <source>Volume Properties</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="881"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="903"/>
         <source>Permission to access the volume was denied
 or
 the volume is not supported
@@ -1301,22 +1301,22 @@ the volume is not supported
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="907"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="929"/>
         <source>Select An Image File To Mount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="921"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="943"/>
         <source>Select An Encfs Volume Directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1081"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1103"/>
         <source>ERROR: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/zulumount.cpp" line="1182"/>
+        <location filename="../../zuluMount-gui/zulumount.cpp" line="1204"/>
         <source>Reading partition properties took longer than expected and operation was terminated,click refresh to try again</source>
         <translation type="unfinished"></translation>
     </message>

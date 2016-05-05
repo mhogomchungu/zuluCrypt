@@ -57,15 +57,20 @@ openvolume::openvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::ope
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 
-	m_action = new QAction( this ) ;
-	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter ) ;
-	keys.append( Qt::Key_Return ) ;
-	m_action->setShortcuts( keys ) ;
+	this->addAction( [ this ](){
 
-	connect( m_action,SIGNAL( triggered() ),this,SLOT( EnterKeyPressed() ) ) ;
+		auto ac = new QAction( this ) ;
 
-	this->addAction( m_action ) ;
+		QList<QKeySequence> keys ;
+		keys.append( Qt::Key_Enter ) ;
+		keys.append( Qt::Key_Return ) ;
+
+		ac->setShortcuts( keys ) ;
+
+		connect( ac,SIGNAL( triggered() ),this,SLOT( EnterKeyPressed() ) ) ;
+
+		return ac ;
+	}() ) ;
 
 	auto tw = m_ui->tableWidget ;
 

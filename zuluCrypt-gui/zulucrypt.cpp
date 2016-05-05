@@ -175,13 +175,21 @@ void zuluCrypt::updateVolumeList( QString volume,QString r )
 
 void zuluCrypt::initKeyCombo()
 {
-	auto ac = new QAction( this ) ;
-	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Menu ) ;
-	keys.append( Qt::CTRL + Qt::Key_M ) ;
-	ac->setShortcuts( keys ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( menuKeyPressed() ) ) ;
-	this->addAction( ac ) ;
+	this->addAction( [ this ](){
+
+		auto ac = new QAction( this ) ;
+
+		QList<QKeySequence> keys ;
+
+		keys.append( Qt::Key_Menu ) ;
+		keys.append( Qt::CTRL + Qt::Key_M ) ;
+
+		ac->setShortcuts( keys ) ;
+
+		connect( ac,SIGNAL( triggered() ),this,SLOT( menuKeyPressed() ) ) ;
+
+		return ac ;
+	}() ) ;
 }
 
 void zuluCrypt::initFont()
@@ -984,7 +992,6 @@ void zuluCrypt::close()
 		//utility::Task::waitForOneSecond() ; //for UI effect
 
 		return utility::Task( exe ).exitCode() ;
-
 	} ) ;
 
 	m_ui->tableWidget->setEnabled( true ) ;

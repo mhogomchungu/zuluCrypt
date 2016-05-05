@@ -64,48 +64,6 @@ class QEvent ;
 
 namespace utility
 {
-	template< typename T >
-	class qObject_unique_ptr
-	{
-	public:
-		explicit qObject_unique_ptr( T * t ) : m_qObject( t )
-		{
-		}
-
-		qObject_unique_ptr( const qObject_unique_ptr& ) = delete ;
-		qObject_unique_ptr& operator =( const qObject_unique_ptr& ) = delete ;
-
-		qObject_unique_ptr( qObject_unique_ptr&& other )
-		{
-			this->deleteHandle() ;
-			m_qObject = other.m_qObject ;
-			other.m_qObject = nullptr ;
-		}
-
-		T * operator->()
-		{
-			return m_qObject ;
-		}
-
-		~qObject_unique_ptr()
-		{
-			this->deleteHandle() ;
-		}
-	private:
-		void deleteHandle()
-		{
-			if( m_qObject ){
-
-				m_qObject->deleteLater() ;
-			}
-		}
-
-		T * m_qObject = nullptr ;
-	};
-}
-
-namespace utility
-{
 	void setUID( int ) ;
 
 	int getUID() ;
@@ -146,19 +104,6 @@ namespace utility
 
 namespace utility
 {
-	class Array
-	{
-	public:
-		explicit Array( const QString&,char splitter = '\n' ) ;
-		explicit Array( const QStringList& ) ;
-		size_t size() ;
-		char * const * value() ;
-	private :
-		void setUp() ;
-		QVector< const char * > m_vector ;
-		QList< QByteArray > m_list ;
-	};
-
 	struct wallet
 	{
 		bool opened ;

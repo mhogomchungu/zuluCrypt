@@ -59,14 +59,22 @@ favorites::favorites( QWidget * parent,bool e ) : QDialog( parent ),m_ui( new Ui
 
 	m_ui->pbFolderAddress->setEnabled( e ) ;
 
-	m_ac = new QAction( this ) ;
-	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter ) ;
-	keys.append( Qt::Key_Return ) ;
-	keys.append( Qt::Key_Menu ) ;
-	m_ac->setShortcuts( keys ) ;
-	connect( m_ac,SIGNAL( triggered() ),this,SLOT( shortcutPressed() ) ) ;
-	this->addAction( m_ac ) ;
+	this->addAction( [ this ](){
+
+		auto ac = new QAction( this ) ;
+
+		QList<QKeySequence> keys ;
+
+		keys.append( Qt::Key_Enter ) ;
+		keys.append( Qt::Key_Return ) ;
+		keys.append( Qt::Key_Menu ) ;
+
+		ac->setShortcuts( keys ) ;
+
+		connect( ac,SIGNAL( triggered() ),this,SLOT( shortcutPressed() ) ) ;
+
+		return ac ;
+	}() ) ;
 
 	this->installEventFilter( this ) ;
 

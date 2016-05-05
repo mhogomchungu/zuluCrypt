@@ -51,14 +51,22 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) : QDialog( parent )
 	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
 		SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
-	m_ac = new QAction( this ) ;
-	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter ) ;
-	keys.append( Qt::Key_Return ) ;
-	keys.append( Qt::Key_Menu ) ;
-	m_ac->setShortcuts( keys ) ;
-	connect( m_ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
-	this->addAction( m_ac ) ;
+	this->addAction( [ this ](){
+
+		auto ac = new QAction( this ) ;
+
+		QList<QKeySequence> keys ;
+
+		keys.append( Qt::Key_Enter ) ;
+		keys.append( Qt::Key_Return ) ;
+		keys.append( Qt::Key_Menu ) ;
+
+		ac->setShortcuts( keys ) ;
+
+		connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
+
+		return ac ;
+	}() ) ;
 
 	this->installEventFilter( this ) ;
 }

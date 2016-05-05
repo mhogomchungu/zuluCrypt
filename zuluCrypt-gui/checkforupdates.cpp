@@ -29,9 +29,9 @@
 #include "dialogmsg.h"
 #include "version_1.h"
 
-void checkForUpdates::networkReply( QNetworkReply * p )
+void checkForUpdates::networkReply( QNetworkReply * e )
 {
-	QString l = p->readAll() ;
+	QString l = e->readAll() ;
 
 	DialogMsg msg( m_widget ) ;
 
@@ -66,13 +66,16 @@ checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) : m_widget( 
 {
 	connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),this,SLOT( networkReply( QNetworkReply * ) ) ) ;
 
-	QNetworkRequest r( QUrl( "https://raw.githubusercontent.com/mhogomchungu/zuluCrypt/master/version" ) ) ;
+	m_manager.get( [](){
 
-	r.setRawHeader( "Host","raw.githubusercontent.com" ) ;
-	r.setRawHeader( "User-Agent","Mozilla/5.0 (X11; Linux x86_64; rv:39.0) Gecko/20100101 Firefox/39.0" ) ;
-	r.setRawHeader( "Accept-Encoding","text/plain" ) ;
+		QNetworkRequest e( QUrl( "https://raw.githubusercontent.com/mhogomchungu/zuluCrypt/master/version" ) ) ;
 
-	m_manager.get( r ) ;
+		e.setRawHeader( "Host","raw.githubusercontent.com" ) ;
+		e.setRawHeader( "User-Agent","Mozilla/5.0 (X11; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0" ) ;
+		e.setRawHeader( "Accept-Encoding","text/plain" ) ;
+
+		return e ;
+	}() ) ;
 }
 
 void checkForUpdates::instance( QWidget * widget,const QString& e )

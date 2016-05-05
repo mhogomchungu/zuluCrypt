@@ -52,6 +52,7 @@ mountOptions::~mountOptions()
 void mountOptions::pbOK()
 {
 	if( m_options ){
+
 		*m_options = m_ui->lineEditOptions->text() ;
 	}
 	this->HideUI() ;
@@ -60,6 +61,7 @@ void mountOptions::pbOK()
 void mountOptions::pbCancel()
 {
 	if( m_options ){
+
 		*m_options = QString() ;
 	}
 	this->HideUI() ;

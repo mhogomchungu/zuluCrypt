@@ -69,7 +69,6 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::manageSystemVolumes * m_ui ;
 	QString m_path ;
-	QAction * m_ac ;
 };
 
 #endif // MANAGESYSTEMVOLUMES_H

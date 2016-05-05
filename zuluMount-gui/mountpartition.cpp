@@ -72,11 +72,15 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,std::funct
 
 	m_ui->pbMountFolder->setVisible( false ) ;
 
-	auto ac = new QAction( this ) ;
-	QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
-	ac->setShortcut( s ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
-	this->addAction( ac ) ;
+	this->addAction( [ this ](){
+
+		auto ac = new QAction( this ) ;
+		QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
+		ac->setShortcut( s ) ;
+		connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
+
+		return ac ;
+	}() ) ;
 
 	m_menu = new QMenu( this ) ;
 

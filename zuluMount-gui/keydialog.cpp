@@ -122,11 +122,15 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 	m_ui->lineEditMountPoint->setText( m_point ) ;
 
-	auto ac = new QAction( this ) ;
-	QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
-	ac->setShortcut( s ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
-	this->addAction( ac ) ;
+	this->addAction( [ this ](){
+
+		auto ac = new QAction( this ) ;
+		QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
+		ac->setShortcut( s ) ;
+		connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
+
+		return ac ;
+	}() ) ;
 
 	m_menu_1 = new QMenu( this ) ;
 
@@ -138,7 +142,7 @@ keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryPro
 
 		auto _add_action = [ & ]( const QString& e ){
 
-			ac = m_menu_1->addAction( e ) ;
+			m_menu_1->addAction( e ) ;
 		} ;
 
 		_add_action( tr( "Set File System Options" ) ) ;

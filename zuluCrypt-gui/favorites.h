@@ -65,7 +65,6 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void addEntries( const QStringList& ) ;
 	Ui::favorites * m_ui ;
-	QAction * m_ac ;
 };
 
 #endif // MANAGEDEVICENAMES_H

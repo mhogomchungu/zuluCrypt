@@ -66,7 +66,6 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::openvolume * m_ui ;
-	QAction * m_action ;
 	enum { nonSystemVolumes,systemVolumes,allVolumes } m_option ;
 	bool m_disableNonLUKS = false ;
 	bool m_showEncryptedOnly = false ;
