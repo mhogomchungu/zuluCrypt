@@ -784,41 +784,26 @@ void zuluMount::volumeProperties()
 
 void zuluMount::setUpShortCuts()
 {
-	auto ac = new QAction( this ) ;
-	QList<QKeySequence> keys ;
-	keys.append( Qt::Key_Enter ) ;
-	keys.append( Qt::Key_Return ) ;
-	ac->setShortcuts( keys ) ;
-	connect( ac,SIGNAL( triggered() ),this,SLOT( defaultButton() ) ) ;
-	this->addAction( ac ) ;
+	auto _addAction = [ this ]( std::initializer_list<QKeySequence> s,const char * slot ){
 
-	auto qa = new QAction( this ) ;
-	QList<QKeySequence> z ;
-	z.append( Qt::Key_M ) ;
-	qa->setShortcuts( z ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( pbMount() ) ) ;
-	this->addAction( qa ) ;
+		auto ac = new QAction( this ) ;
 
-	qa = new QAction( this ) ;
-	QList<QKeySequence> p ;
-	p.append( Qt::Key_U ) ;
-	qa->setShortcuts( p ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
-	this->addAction( qa ) ;
+		ac->setShortcuts( s ) ;
 
-	qa = new QAction( this ) ;
-	QList<QKeySequence> q ;
-	q.append( Qt::Key_R ) ;
-	qa->setShortcuts( q ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( pbUpdate() ) ) ;
-	this->addAction( qa ) ;
+		connect( ac,SIGNAL( triggered() ),this,slot ) ;
 
-	qa = new QAction( this ) ;
-	QList<QKeySequence> e ;
-	e.append( Qt::Key_C ) ;
-	qa->setShortcuts( e ) ;
-	connect( qa,SIGNAL( triggered() ),this,SLOT( closeApplication() ) ) ;
-	this->addAction( qa ) ;
+		return ac ;
+	} ;
+
+	this->addAction( _addAction( { Qt::Key_Enter,Qt::Key_Return },SLOT( defaultButton() ) ) ) ;
+
+	this->addAction( _addAction( { Qt::Key_M },SLOT( pbMount() ) ) ) ;
+
+	this->addAction( _addAction( { Qt::Key_U },SLOT( pbUmount() ) ) ) ;
+
+	this->addAction( _addAction( { Qt::Key_R },SLOT( pbUpdate() ) ) ) ;
+
+	this->addAction( _addAction( { Qt::Key_C },SLOT( closeApplication() ) ) ) ;
 }
 
 void zuluMount::setUpFont()

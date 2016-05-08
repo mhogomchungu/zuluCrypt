@@ -179,12 +179,7 @@ void zuluCrypt::initKeyCombo()
 
 		auto ac = new QAction( this ) ;
 
-		QList<QKeySequence> keys ;
-
-		keys.append( Qt::Key_Menu ) ;
-		keys.append( Qt::CTRL + Qt::Key_M ) ;
-
-		ac->setShortcuts( keys ) ;
+		ac->setShortcuts( { Qt::Key_Menu,Qt::CTRL + Qt::Key_M } ) ;
 
 		connect( ac,SIGNAL( triggered() ),this,SLOT( menuKeyPressed() ) ) ;
 
@@ -806,13 +801,23 @@ void zuluCrypt::addToFavorite()
 
 void zuluCrypt::menuKeyPressed()
 {
-	this->itemClicked( m_ui->tableWidget->currentItem(),false ) ;
+	auto table = m_ui->tableWidget ;
+
+	if( table->rowCount() > 0 ){
+
+		this->itemClicked( m_ui->tableWidget->currentItem(),false ) ;
+	}
 }
 
 void zuluCrypt::openFolder()
 {
-	auto item = m_ui->tableWidget->currentItem() ;
-	this->openFolder( m_ui->tableWidget->item( item->row(),1 )->text() ) ;
+	auto table = m_ui->tableWidget ;
+
+	if( table->rowCount() > 0 ){
+
+		auto item = table->currentItem() ;
+		this->openFolder( table->item( item->row(),1 )->text() ) ;
+	}
 }
 
 void zuluCrypt::openSharedFolder()

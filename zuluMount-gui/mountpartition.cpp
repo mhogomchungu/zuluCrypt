@@ -75,8 +75,9 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,std::funct
 	this->addAction( [ this ](){
 
 		auto ac = new QAction( this ) ;
-		QKeySequence s( Qt::CTRL + Qt::Key_F ) ;
-		ac->setShortcut( s ) ;
+
+		ac->setShortcut( Qt::CTRL + Qt::Key_F ) ;
+
 		connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
 
 		return ac ;
