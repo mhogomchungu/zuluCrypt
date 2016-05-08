@@ -708,14 +708,19 @@ void zuluMount::itemClicked( QTableWidgetItem * item )
 
 void zuluMount::defaultButton()
 {
-	auto row = m_ui->tableWidget->currentRow() ;
-	auto mt = m_ui->tableWidget->item( row,1 )->text() ;
+	auto table = m_ui->tableWidget ;
 
-	if( mt == "Nil" ){
+	if( table->rowCount() > 0 ){
 
-		this->slotMount() ;
-	}else{
-		this->showContextMenu( m_ui->tableWidget->currentItem(),false ) ;
+		auto row = m_ui->tableWidget->currentRow() ;
+		auto mt = m_ui->tableWidget->item( row,1 )->text() ;
+
+		if( mt == "Nil" ){
+
+			this->slotMount() ;
+		}else{
+			this->showContextMenu( m_ui->tableWidget->currentItem(),false ) ;
+		}
 	}
 }
 
