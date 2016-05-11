@@ -154,7 +154,7 @@
     <string/>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -162,9 +162,6 @@
      <width>501</width>
      <height>131</height>
     </rect>
-   </property>
-   <property name="title">
-    <string/>
    </property>
    <widget class="QLineEdit" name="lineEditPassWord">
     <property name="geometry">
@@ -241,7 +238,7 @@
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBox_2">
+  <widget class="QFrame" name="frame_2">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -249,9 +246,6 @@
      <width>501</width>
      <height>111</height>
     </rect>
-   </property>
-   <property name="title">
-    <string/>
    </property>
    <widget class="QRadioButton" name="rbNormalTrueCrypt">
     <property name="geometry">
@@ -296,7 +290,7 @@
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="groupBox_3">
+  <widget class="QFrame" name="frame_3">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -304,9 +298,6 @@
      <width>501</width>
      <height>71</height>
     </rect>
-   </property>
-   <property name="title">
-    <string/>
    </property>
    <widget class="QRadioButton" name="rbLuksHeader">
     <property name="geometry">

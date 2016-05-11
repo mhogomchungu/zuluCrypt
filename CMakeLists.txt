@@ -305,7 +305,7 @@ if( UDEVSUPPORT )
 	file( WRITE ${PROJECT_BINARY_DIR}/udev_support.h "\n#define UDEV_SUPPORT 1\n")
 
 	message ( STATUS "udev will be consulted when deciding if a volume is system or not." )
-	message ( STATUS "please read \"udev_support\" file for more information about udev support and associated problems.\n\n" )
+	message ( STATUS "please read \"udev_support\" file for more information about udev support and associated problems.\n" )
 
 else( UDEVSUPPORT )
 
@@ -313,9 +313,25 @@ else( UDEVSUPPORT )
 
 	message ( STATUS "udev will NOT be consulted when deciding if a volume is system or not." )
 	message ( STATUS "please read \"udev_support\" file for more information about udev support and how to enable it." )
-	message ( STATUS "It is probably a good idea to enable it if you are creating a package for distribution.\n\n" )
+	message ( STATUS "It is probably a good idea to enable it if you are creating a package for distribution.\n" )
 
 endif( UDEVSUPPORT )
+
+if( NOT NOGUI )
+	if( QT5 )
+		message ( STATUS "---------------------------------------------------------------------------" )
+		message ( STATUS "Building GUI components using Qt5" )
+		message ( STATUS "---------------------------------------------------------------------------\n\n" )
+	else()
+		message ( STATUS "---------------------------------------------------------------------------" )
+		message ( STATUS "Building GUI components using Qt4" )
+		message ( STATUS "---------------------------------------------------------------------------\n\n" )
+	endif()
+else()
+	message ( STATUS "---------------------------------------------------------------------------" )
+	message ( STATUS "Not building GUI components" )
+	message ( STATUS "---------------------------------------------------------------------------\n\n" )
+endif()
 
 install ( FILES zuluCrypt-cli.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
 install ( FILES zuluCrypt-gui.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )

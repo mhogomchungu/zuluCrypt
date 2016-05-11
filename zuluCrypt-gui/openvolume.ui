@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>751</width>
-    <height>353</height>
+    <height>383</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,7 +26,7 @@
    <property name="geometry">
     <rect>
      <x>650</x>
-     <y>320</y>
+     <y>350</y>
      <width>71</width>
      <height>31</height>
     </rect>
@@ -39,7 +39,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>320</y>
+     <y>350</y>
      <width>121</width>
      <height>31</height>
     </rect>
@@ -55,7 +55,7 @@
    <property name="geometry">
     <rect>
      <x>310</x>
-     <y>320</y>
+     <y>350</y>
      <width>131</width>
      <height>31</height>
     </rect>
@@ -71,7 +71,7 @@
    <property name="geometry">
     <rect>
      <x>440</x>
-     <y>320</y>
+     <y>350</y>
      <width>131</width>
      <height>31</height>
     </rect>
@@ -92,7 +92,7 @@
      <x>10</x>
      <y>10</y>
      <width>731</width>
-     <height>311</height>
+     <height>341</height>
     </rect>
    </property>
    <property name="title">
@@ -102,9 +102,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>30</y>
       <width>711</width>
-      <height>291</height>
+      <height>301</height>
      </rect>
     </property>
     <property name="editTriggers">
@@ -183,7 +183,7 @@
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>320</y>
+     <y>350</y>
      <width>131</width>
      <height>31</height>
     </rect>

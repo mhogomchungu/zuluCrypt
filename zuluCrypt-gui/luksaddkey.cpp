@@ -473,8 +473,8 @@ void luksaddkey::disableAll()
 	m_ui->labelExistingPassphrase->setEnabled( false ) ;
 	m_ui->labelLuksVolume->setEnabled( false ) ;
 	m_ui->labelNewPassphrase->setEnabled( false ) ;
-	m_ui->groupBox->setEnabled( false ) ;
-	m_ui->groupBox_2->setEnabled( false ) ;
+	m_ui->frame->setEnabled( false ) ;
+	m_ui->frame_2->setEnabled( false ) ;
 	m_ui->textEditExistingPassphrase->setEnabled( false ) ;
 	m_ui->textEditPassphraseToAdd->setEnabled( false ) ;
 	m_ui->textEditPathToVolume->setEnabled( false ) ;
@@ -498,8 +498,8 @@ void luksaddkey::enableAll()
 	m_ui->labelExistingPassphrase->setEnabled( true ) ;
 	m_ui->labelLuksVolume->setEnabled( true ) ;
 	m_ui->labelNewPassphrase->setEnabled( true ) ;
-	m_ui->groupBox->setEnabled( true ) ;
-	m_ui->groupBox_2->setEnabled( true ) ;
+	m_ui->frame->setEnabled( true ) ;
+	m_ui->frame_2->setEnabled( true ) ;
 	m_ui->textEditExistingPassphrase->setEnabled( true ) ;
 	m_ui->textEditPassphraseToAdd->setEnabled( true ) ;
 	m_ui->textEditPathToVolume->setEnabled( true ) ;

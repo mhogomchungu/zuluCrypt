@@ -73,7 +73,7 @@
     <string/>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -81,12 +81,6 @@
      <width>581</width>
      <height>61</height>
     </rect>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
    </property>
    <widget class="QLabel" name="labelExistingPassphrase">
     <property name="geometry">
@@ -210,7 +204,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox_2">
+  <widget class="QFrame" name="frame_2">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -218,12 +212,6 @@
      <width>581</width>
      <height>91</height>
     </rect>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
    </property>
    <widget class="QPushButton" name="pushButtonOpenNewKeyFile">
     <property name="geometry">

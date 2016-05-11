@@ -93,6 +93,8 @@ openvolume::openvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::ope
 	m_ui->pbHelp->setVisible( false ) ;
 
 	this->installEventFilter( this ) ;
+
+	this->disableAll() ;
 }
 
 bool openvolume::eventFilter( QObject * watched,QEvent * event )
@@ -275,14 +277,36 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 
 	m_ui->pbOpen->setEnabled( m_ui->tableWidget->rowCount() > 0 ) ;
 
-	m_ui->tableWidget->setEnabled( true ) ;
 	m_ui->tableWidget->setFocus() ;
+
+	this->enableAll() ;
+}
+
+void openvolume::enableAll()
+{
+	m_ui->tableWidget->setEnabled( true ) ;
+	m_ui->pbCancel->setEnabled( true ) ;
+	m_ui->pbOpen->setEnabled( true ) ;
+	m_ui->pbUUID->setEnabled( true ) ;
+	m_ui->pbHelp->setEnabled( true ) ;
+}
+
+void openvolume::disableAll()
+{
+	m_ui->tableWidget->setEnabled( false ) ;
+	m_ui->pbCancel->setEnabled( false ) ;
+	m_ui->pbOpen->setEnabled( false ) ;
+	m_ui->pbUUID->setEnabled( false ) ;
+	m_ui->pbHelp->setEnabled( false ) ;
 }
 
 void openvolume::HideUI()
 {
-	this->hide() ;
-	this->deleteLater() ;
+	if( m_ui->pbCancel->isEnabled() ){
+
+		this->hide() ;
+		this->deleteLater() ;
+	}
 }
 
 void openvolume::pbOpen()
