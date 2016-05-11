@@ -39,7 +39,7 @@
     <string>&amp;Cancel</string>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -47,9 +47,6 @@
      <width>581</width>
      <height>151</height>
     </rect>
-   </property>
-   <property name="title">
-    <string/>
    </property>
    <widget class="QLabel" name="label">
     <property name="geometry">
