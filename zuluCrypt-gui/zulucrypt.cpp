@@ -93,7 +93,11 @@ void zuluCrypt::setLocalizationLanguage( bool translate )
 
 void zuluCrypt::languageMenu( QAction * ac )
 {
-	utility::languageMenu( this,m_ui->actionSelect_Language->menu(),ac,"zuluCrypt-gui" ) ;
+	auto m = m_ui->actionSelect_Language->menu() ;
+
+	utility::languageMenu( this,m,ac,"zuluCrypt-gui" ) ;
+
+	m_ui->retranslateUi( this ) ;
 }
 
 void zuluCrypt::setUpApp( const QString& volume )
@@ -1139,6 +1143,8 @@ zuluCrypt::~zuluCrypt()
 						    q->columnWidth( 0 ),
 						    q->columnWidth( 1 ),
 						    q->columnWidth( 2 ) } ) ;
+
+	utility::unloadLanguages() ;
 
 	delete m_ui ;
 }

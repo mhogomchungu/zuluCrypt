@@ -408,7 +408,11 @@ void zuluMount::setLocalizationLanguage( bool translate )
 
 void zuluMount::languageMenu( QAction * ac )
 {
-	utility::languageMenu( this,m_languageAction->menu(),ac,"zuluMount-gui" ) ;
+	auto m = m_languageAction->menu() ;
+
+	utility::languageMenu( this,m,ac,"zuluMount-gui" ) ;
+
+	m_ui->retranslateUi( this ) ;
 }
 
 void zuluMount::autoOpenFolderOnMount( bool e )
@@ -1357,6 +1361,8 @@ zuluMount::~zuluMount()
 						    q->columnWidth( 2 ),
 						    q->columnWidth( 4 ),
 						    q->columnWidth( 5 ) } ) ;
+
+	utility::unloadLanguages() ;
 
 	delete m_ui ;
 }

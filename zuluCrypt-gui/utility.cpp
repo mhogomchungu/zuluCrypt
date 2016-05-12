@@ -1603,7 +1603,37 @@ void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )
 	}
 }
 
-static void _set_checked( QMenu * m,const QString& e )
+static std::array< QTranslator *,2 > _translator = { { nullptr,nullptr } } ;
+
+void utility::unloadLanguages()
+{
+	for( auto e : _translator ){
+
+		delete e ;
+	}
+}
+
+static QTranslator * _get_translator( const QString& app,const QByteArray& r,int s )
+{
+	auto e = *( _translator.data() + s ) ;
+
+	if( e ){
+
+		QCoreApplication::removeTranslator( e ) ;
+
+		delete e ;
+	}
+
+	e = new QTranslator() ;
+
+	e->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
+
+	*( _translator.data() + s ) = e ;
+
+	return e ;
+}
+
+static void _selectLanguage( QMenu * m,const QString& language )
 {
 	for( auto& it : m->actions() ){
 
@@ -1611,7 +1641,7 @@ static void _set_checked( QMenu * m,const QString& e )
 
 		p.remove( "&" ) ;
 
-		it->setChecked( e == p ) ;
+		it->setChecked( language == p ) ;
 	}
 }
 
@@ -1619,35 +1649,18 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 {
 	auto r = utility::localizationLanguage( app ).toLatin1() ;
 
-	auto e = utility::localizationLanguagePath( app ) ;
-
 	if( translate ){
 
-		if( r == "en_US" ){
+		QCoreApplication::installTranslator( _get_translator( app,r,0 ) ) ;
+
+		if( app == "zuluMount-gui" ){
+
 			/*
-			 * english_US language,its the default and hence dont load anything
+			 * We are loading zuluCrypt-gui translation file to get translations for
+			 * lxqtwallet strings.
 			 */
-		}else{
-			auto translator = new QTranslator( w ) ;
-
-			translator->load( r.constData(),e ) ;
-			QCoreApplication::installTranslator( translator ) ;
-
-			if( app == "zuluMount-gui" ){
-
-				/*
-				 * We are loading zuluCrypt-gui translation file to get translations for
-				 * lxqtwallet strings.
-				 */
-				translator = new QTranslator( w ) ;
-
-				e = utility::localizationLanguagePath( "zuluCrypt-gui" ) ;
-
-				translator->load( r.constData(),e ) ;
-				QCoreApplication::installTranslator( translator ) ;
-			}
+			QCoreApplication::installTranslator( _get_translator( "zuluCrypt-gui",r,1 ) ) ;
 		}
-
 	}else{
 		auto m = new QMenu( w ) ;
 
@@ -1655,9 +1668,7 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 
 		w->connect( m,SIGNAL( triggered( QAction * ) ),w,SLOT( languageMenu( QAction * ) ) ) ;
 
-		QDir d( e ) ;
-
-		m->addAction( "en_US" )->setCheckable( true ) ;
+		QDir d( utility::localizationLanguagePath( app ) ) ;
 
 		auto t = d.entryList() ;
 
@@ -1677,19 +1688,23 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 			ac->setMenu( m ) ;
 		}
 
-		_set_checked( m,r ) ;
+		_selectLanguage( m,r ) ;
 	}
 }
 
 void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac,const char * app )
 {
-	Q_UNUSED( m ) ;
-
 	auto e = ac->text() ;
 
 	e.remove( "&" ) ;
 
 	utility::setLocalizationLanguage( app,e ) ;
+
+	utility::setLocalizationLanguage( true,w,ac,app ) ;
+
+	_selectLanguage( m,e ) ;
+
+	return ;
 
 	DialogMsg msg( w ) ;
 

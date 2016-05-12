@@ -49,9 +49,10 @@ openvolume::openvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::ope
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
-	connect( m_ui->tableWidget,SIGNAL( itemDoubleClicked( QTableWidgetItem * ) ),this,SLOT( tableEntryDoubleClicked( QTableWidgetItem * ) ) ) ;
-	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),this,
-		 SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
+	connect( m_ui->tableWidget,SIGNAL( itemDoubleClicked( QTableWidgetItem * ) ),
+		 this,SLOT( tableEntryDoubleClicked( QTableWidgetItem * ) ) ) ;
+	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
+		 this,SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
 	connect( m_ui->pbHelp,SIGNAL( clicked() ),this,SLOT( pbHelp() ) ) ;
 	connect( m_ui->pbUUID,SIGNAL( clicked() ),this,SLOT( pbUUID() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
@@ -61,11 +62,7 @@ openvolume::openvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::ope
 
 		auto ac = new QAction( this ) ;
 
-		QList<QKeySequence> keys ;
-		keys.append( Qt::Key_Enter ) ;
-		keys.append( Qt::Key_Return ) ;
-
-		ac->setShortcuts( keys ) ;
+		ac->setShortcuts( { Qt::Key_Enter,Qt::Key_Return } ) ;
 
 		connect( ac,SIGNAL( triggered() ),this,SLOT( EnterKeyPressed() ) ) ;
 

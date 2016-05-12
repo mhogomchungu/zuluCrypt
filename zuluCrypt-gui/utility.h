@@ -180,6 +180,7 @@ namespace utility
 
 	void setLocalizationLanguage( bool translate,QWidget * obj,QAction * ac,const QString& ) ;
 	void languageMenu( QWidget *,QMenu *,QAction *,const char * ) ;
+	void unloadLanguages( void ) ;
 
 	using array_t = std::array< int,10 > ;
 

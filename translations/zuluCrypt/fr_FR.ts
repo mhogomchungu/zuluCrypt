@@ -451,12 +451,12 @@ Ce plugin récupère une clé de verrouillage dans un fichier gpg avec une clé 
         <translation>Ne trouve pas de &quot;gpg&quot; executable dans &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; ou &quot;/usr/sbin&quot;</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1696"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1699"/>
         <source>INFO</source>
         <translation>INFO</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1696"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1699"/>
         <source>Translation will be done the next time you restart.</source>
         <translation>Les traductions seront mises à jour au prochain démarrage.</translation>
     </message>
@@ -1978,55 +1978,55 @@ Are you sure you want to continue? </source>
         <translation>Ouvrir une partition</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="101"/>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="150"/>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="257"/>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="316"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="95"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="144"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="245"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="304"/>
         <location filename="../../zuluCrypt-gui/luksaddkey.cpp" line="176"/>
         <location filename="../../zuluCrypt-gui/luksaddkey.cpp" line="222"/>
         <source>Key</source>
         <translation>Clé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="155"/>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="321"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="149"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="309"/>
         <source>KeyFile</source>
         <translation>Fichier de clé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="160"/>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="326"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="154"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="314"/>
         <source>Key+KeyFile</source>
         <translation>Clé + fichier de clé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="175"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="169"/>
         <source>&amp;Add</source>
         <translation>&amp;Ajouter</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="194"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="188"/>
         <source>&amp;Cancel</source>
         <translation>&amp;Annuler</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="296"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="284"/>
         <source>Reenter Key</source>
         <translation>Réentrer la clé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="341"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="329"/>
         <source>Key Already In The Encrypted Volume</source>
         <translation>Clé déjà dans le volume chiffré</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="357"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="345"/>
         <source> Key To Be Added To The Encrypted Volume</source>
         <translation>Clé à ajouter dans le volume chiffré</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="120"/>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="238"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="114"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="226"/>
         <source>open keyfile</source>
         <translation>ouvrir un fichier de clé</translation>
     </message>
@@ -2558,38 +2558,38 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
         <translation>Chemin du volume</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="205"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="234"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="202"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="231"/>
         <source>Key</source>
         <translation>Clé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="221"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="218"/>
         <source>Keyfile</source>
         <translation>Fichier de clé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="266"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="260"/>
         <source>Normal Volume</source>
         <translation>Volume Normal</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="282"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="276"/>
         <source>Windows System Volume</source>
         <translation>Volume Système Windows</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="295"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="289"/>
         <source>Whole Drive Encrypted Volume</source>
         <translation>Disque Entier en Volume Chiffré</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="321"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="312"/>
         <source>Manage A LUKS Header</source>
         <translation>Gérer un LUKS Header</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="337"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="328"/>
         <source>Manage A TrueCrypt Header</source>
         <translation>Gérer un TrueCrypt Header</translation>
     </message>
@@ -2862,52 +2862,52 @@ Si possible, stockez le en toute sécurité.</translation>
         <translation>&amp;Ouvrir</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="123"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="122"/>
         <source>A list of all partitions on this system are displayed here.
 Double click an entry to use it</source>
         <translation>Une liste de toutes les partitions sur ce système est affichée ici.
 Double-cliquez sur l&apos;une d&apos;elle pour l&apos;utiliser</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="127"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="126"/>
         <source>Restart the tool from root&apos;s account or after you have created and added yourself to group &quot;zulucrypt&quot; if the volume you want to use is not on the list.</source>
         <translation>Redémarrez l&apos;outil de compte root ou bien après avoir créé / vous être ajouté au groupe &quot;zulucrypt&quot; si le volume que vous souhaitez utiliser ne figure pas sur la liste.</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="129"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="128"/>
         <source>You are a root user and all partitions are displayed.
 Double click an entry to use it</source>
         <translation>Vous êtes un utilisateur root et toutes les partitions sont affichées.
 Double-cliquez sur l&apos;une d&apos;elle pour l&apos;utiliser</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="133"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="132"/>
         <source>INFO</source>
         <translation>INFO</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="171"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="170"/>
         <source>Select A Partition To Create An Encrypted Volume In</source>
         <translation>Sélectionner la partition où vous voulez créer le volume chiffré</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="185"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="184"/>
         <source>Select An Encrypted Partition To Open</source>
         <translation>Sélectionner une partition chiffrée à ouvrir</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="308"/>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="324"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="329"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="345"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="308"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="329"/>
         <source>Only crypto_LUKS volumes can be selected</source>
         <translation>Seuls les volumes crypto_LUKS peuvent être séléctionnés</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="322"/>
+        <location filename="../../zuluCrypt-gui/openvolume.cpp" line="343"/>
         <source>Insufficient privileges to operate on a system volume.
 Restart zuluCrypt from root&apos;s account to proceed</source>
         <translation>Privilèges insuffisants pour opérer sur un volume système.
@@ -3502,22 +3502,22 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/walletconfiginput.ui" line="64"/>
+        <location filename="../../zuluCrypt-gui/walletconfiginput.ui" line="61"/>
         <source>Volume ID</source>
         <translation>Volume ID</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/walletconfiginput.ui" line="83"/>
+        <location filename="../../zuluCrypt-gui/walletconfiginput.ui" line="80"/>
         <source>Comment</source>
         <translation>Commentaires</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/walletconfiginput.ui" line="102"/>
+        <location filename="../../zuluCrypt-gui/walletconfiginput.ui" line="99"/>
         <source>Key</source>
         <translation>Clé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/walletconfiginput.ui" line="121"/>
+        <location filename="../../zuluCrypt-gui/walletconfiginput.ui" line="118"/>
         <source>Repeat Key</source>
         <translation>Réentrer la clé</translation>
     </message>
@@ -3757,7 +3757,7 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="326"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="282"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="281"/>
         <source>Quit</source>
         <translation>Quitter</translation>
     </message>
@@ -3979,38 +3979,38 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
         <translation></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="645"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="644"/>
         <source>INFO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="361"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="360"/>
         <source>Restore Volume Header</source>
         <translation>Restaurer Header Volume</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="362"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="361"/>
         <source>Backup Volume Header</source>
         <translation>Backup Header Volume</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="825"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="833"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="834"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="842"/>
         <source>WARNING!</source>
         <translation>ATTENTION!</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="834"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="843"/>
         <source>Failed to open zuluCrypt.pdf,make sure your system can open pdf files using &quot;%1&quot; tool and try again</source>
         <translation>Impossible de lire zuluCrypt.pdf, assurez vous que votre système puisse lire les fichiers PDF utilisant &quot;%1&quot; tool et essayez à nouveau</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="645"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="644"/>
         <source>Resetting font size to %1 because larger font sizes do not fit</source>
         <translation>Réinitialisation à une taille de police de %1 car des tailles trop importantes ne s&apos;adapteront pas</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="708"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="707"/>
         <source>
 LUKS,TrueCrypt and VeraCrypt based encrypted volumes have what is called a &quot;volume header&quot;.
 
@@ -4030,152 +4030,152 @@ Les dommages causés à l&apos;en-tête sont habituellement causés par un forma
 Avoir une sauvegarde de l&apos;en-tête de volume est fortement recommandé car elle est la seule façon de rendre accessible à nouveau les données chiffrées si l&apos;en-tête sur le volume est corrompue.</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="717"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="716"/>
         <source>Important Information On Volume Header Backup</source>
         <translation>Information Importante sur le Volume Header Backup</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="750"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="964"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="965"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="966"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="967"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="968"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="969"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="970"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="971"/>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="972"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="749"/>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="973"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="974"/>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="975"/>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="976"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="977"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="978"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="979"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="980"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="981"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="982"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="984"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="985"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="750"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="749"/>
         <source>Volume is not open or was opened by a different user</source>
         <translation>Le volume n&apos;est pas ouvert ou a été ouvert par un autre utilisateur</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="752"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="751"/>
         <source>Volume Properties</source>
         <translation>Propriétés du volume</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="826"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="835"/>
         <source>Could not open mount point because &quot;%1&quot; tool does not appear to be working correctly</source>
         <translation>Impossible d&apos;ouvrir le point de montage parce que &quot;%1&quot; ne semble pas fonctionner correctement</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="862"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="871"/>
         <source>Close</source>
         <translation>Fermer/Démonter</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="866"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="875"/>
         <source>Properties</source>
         <translation>Propriétés</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="876"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="885"/>
         <source>Open Folder</source>
         <translation>Ouvrir Répertoire</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="878"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="887"/>
         <source>Open Private Folder</source>
         <translation>Ouvrir Répertoire Privé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="880"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="889"/>
         <source>Open Shared Folder</source>
         <translation>Ouvrir Répertoire Partagé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="890"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="899"/>
         <source>Add Key</source>
         <translation>Ajouter une clé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="891"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="900"/>
         <source>Remove Key</source>
         <translation>Enlever une clé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="895"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="904"/>
         <source>Backup LUKS Header</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="911"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="920"/>
         <source>Add To Favorite</source>
         <translation>Ajouter aux Favoris</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="928"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="937"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="964"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="973"/>
         <source>Close failed, volume is not open or was opened by a different user</source>
         <translation>Echec de la fermeture, le volume n&apos;est pas ouvert ou a été ouvert par un autre utilisateur</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="965"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="974"/>
         <source>Close failed, one or more files in the volume are in use.</source>
         <translation>Echec de la fermeture, un ou plusieurs fichiers encore en cours d&apos;utilisation.</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="966"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="975"/>
         <source>Close failed, volume does not have an entry in /etc/mtab</source>
         <translation>Echec de la fermeture, le volume n&apos;a pas d&apos;entrée dans le /etc/mtab</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="967"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="976"/>
         <source>Close failed, could not get a lock on /etc/mtab~</source>
         <translation>Echec de la fermeture, ne peut pas créer un lock sur /etc/mtab</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="968"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="977"/>
         <source>Close failed, volume is unmounted but could not close mapper,advice to close it manually</source>
         <translation>Echec de la fermeture, le volume est démonté, mais ne pouvait pas fermer le mappeur, il est conseillé de le fermer manuellement</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="969"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="978"/>
         <source>Close failed, could not resolve full path of device
 </source>
         <translation>Echec de la fermeture, ne peut pas trouver la totalité du chemin d&apos;emplacement du périphérique</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="970"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="979"/>
         <source>Close failed, shared mount point appear to be busy
 </source>
         <translation>Echec de la fermeture, le point de montage semble être occupé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="971"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="980"/>
         <source>Close failed, shared mount point appear to belong to a different user or multiple mount points detected
 </source>
         <translation>Echec de la fermeture, le point de montage semble appartenir à un autre utilisateur ou bien points de montage multiples</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="972"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="981"/>
         <source>Close failed, shared mount point appear to be in an ambiguous state,advice to unmount manually</source>
         <translation>Echec de la fermeture, le point de montage semble être dans un état incohérent, il est conseillé de le démonter manuellement</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="973"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="982"/>
         <source>Close failed, multiple mount points for the volume detected</source>
         <translation>Echec de la fermeture, plusieurs points de montage détectés pour le volume</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="975"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="984"/>
         <source>Close failed, could not find any partition with the presented UUID</source>
         <translation>Echec de la fermeture, ne trouve aucune partition avec l&apos;UUID correspondante</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="976"/>
+        <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="985"/>
         <source>Unrecognized error with status number %1 encountered</source>
         <translation>Erreur inconnue avec numéro de statut %1 rencontrée</translation>
     </message>
