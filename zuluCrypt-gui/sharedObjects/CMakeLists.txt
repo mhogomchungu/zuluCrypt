@@ -15,6 +15,7 @@ set( MOC_FILES
 	../readonlywarning.h
 	../checkforupdates.h
 	../plugin.h
+	../utility.h
 )
 
 set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui )

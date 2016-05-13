@@ -250,6 +250,15 @@ void zuluCrypt::start()
 
 void zuluCrypt::initTray()
 {
+	utility::setIconMenu( "zuluCrypt",m_ui->actionSelect_Icons,this,[ this ]( const QString& e ){
+
+		utility::setIcons( "zuluCrypt",e ) ;
+
+		this->setIcons() ;
+	} ) ;
+
+	this->setIcons() ;
+
 	utility::showTrayIcon( m_ui->actionTray_icon,&m_trayIcon ) ;
 }
 
@@ -266,13 +275,7 @@ void zuluCrypt::setupUIElements()
 {
 	m_ui->setupUi( this ) ;
 
-	const auto& icon = utility::getIcon( "zuluCrypt" ) ;
-
-	this->setWindowIcon( icon ) ;
-
 	m_trayIcon.setParent( this ) ;
-
-	m_trayIcon.setIcon( icon ) ;
 
 	auto trayMenu = new QMenu( this ) ;
 
@@ -293,6 +296,15 @@ void zuluCrypt::setupUIElements()
 	table->setColumnWidth( 0,*( e + 4 ) ) ;
 	table->setColumnWidth( 1,*( e + 5 ) ) ;
 	table->setColumnWidth( 2,*( e + 6 ) ) ;
+}
+
+void zuluCrypt::setIcons()
+{
+	const auto& icon = utility::getIcon( "zuluCrypt" ) ;
+
+	m_trayIcon.setIcon( icon ) ;
+
+	this->setWindowIcon( icon ) ;
 }
 
 void zuluCrypt::itemEntered( QTableWidgetItem * item )
@@ -1143,8 +1155,6 @@ zuluCrypt::~zuluCrypt()
 						    q->columnWidth( 0 ),
 						    q->columnWidth( 1 ),
 						    q->columnWidth( 2 ) } ) ;
-
-	utility::unloadLanguages() ;
 
 	delete m_ui ;
 }

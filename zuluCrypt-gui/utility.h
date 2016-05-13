@@ -64,6 +64,51 @@ class QEvent ;
 
 namespace utility
 {
+	class selectMenuOption : public QObject
+	{
+		Q_OBJECT
+	public:
+		using function_t = std::function< void( const QString& e ) > ;
+
+		selectMenuOption( QMenu * m,bool e,
+				  function_t && f = []( const QString& e ){ Q_UNUSED( e ) } ) :
+		m_menu( m ),m_function( f )
+		{
+			if( e ){
+
+				this->setParent( m ) ;
+			}
+		}
+	public slots :
+		void selectIcons( const QString& f )
+		{
+			for( const auto& it : m_menu->actions() ){
+
+				QString e = it->text() ;
+
+				e.remove( "&" ) ;
+
+				it->setChecked( f == e ) ;
+			}
+
+			m_function( f ) ;
+		}
+		void selectIcons( QAction * ac )
+		{
+			auto e = ac->text() ;
+
+			e.remove( "&" ) ;
+
+			this->selectIcons( e ) ;
+		}
+	private:
+		QMenu * m_menu ;
+		std::function< void( const QString& ) > m_function ;
+	};
+}
+
+namespace utility
+{
 	void setUID( int ) ;
 
 	int getUID() ;
@@ -119,6 +164,8 @@ namespace utility
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 
 	QIcon getIcon( const QString& ) ;
+	void setIcons( const QString&,const QString& ) ;
+	void setIconMenu( const QString& app,QAction * ac,QWidget *,std::function< void( const QString& ) >&& ) ;
 
 	bool autoSetVolumeAsVeraCrypt( const QString& ) ;
 	void autoSetVolumeAsVeraCrypt( const QString&,bool ) ;
@@ -180,7 +227,6 @@ namespace utility
 
 	void setLocalizationLanguage( bool translate,QWidget * obj,QAction * ac,const QString& ) ;
 	void languageMenu( QWidget *,QMenu *,QAction *,const char * ) ;
-	void unloadLanguages( void ) ;
 
 	using array_t = std::array< int,10 > ;
 

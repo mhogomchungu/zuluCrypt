@@ -161,6 +161,7 @@ private slots :
 	void updateVolumeList( const QString& = QString() ) ;
 	void updateVolumeList( QString,QString ) ;
 private:
+	void setIcons( void ) ;
 	void quitApplication( void ) ;
 	void removeRowFromTable( int ) ;
 	void openFolder( const QString& ) ;

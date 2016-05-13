@@ -1603,46 +1603,56 @@ void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )
 	}
 }
 
-static std::array< QTranslator *,2 > _translator = { { nullptr,nullptr } } ;
-
-void utility::unloadLanguages()
+class translator
 {
-	for( auto e : _translator ){
+public:
+	void set( const QString& app,const QByteArray& r,int s )
+	{
+		QCoreApplication::installTranslator( [ & ](){
 
-		delete e ;
+			auto f = m_translator.data() ;
+			auto e = *( f + s ) ;
+
+			if( e ){
+
+				QCoreApplication::removeTranslator( e ) ;
+
+				delete e ;
+			}
+
+			e = new QTranslator() ;
+
+			e->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
+
+			*( f + s ) = e ;
+
+			return e ;
+		}() ) ;
 	}
-}
+	~translator()
+	{
+		for( auto e : m_translator ){
 
-static QTranslator * _get_translator( const QString& app,const QByteArray& r,int s )
+			if( e ){
+
+				/*
+				 * QApplication appear to already be gone by the time we get here.
+				 */
+				//QCoreApplication::removeTranslator( e ) ;
+
+				delete e ;
+			}
+		}
+	}
+
+private:
+	std::array< QTranslator *,2 > m_translator = { { nullptr,nullptr } } ;
+} static _translator ;
+
+static void _selectOption( QMenu * m,const QString& opt )
 {
-	auto e = *( _translator.data() + s ) ;
-
-	if( e ){
-
-		QCoreApplication::removeTranslator( e ) ;
-
-		delete e ;
-	}
-
-	e = new QTranslator() ;
-
-	e->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
-
-	*( _translator.data() + s ) = e ;
-
-	return e ;
-}
-
-static void _selectLanguage( QMenu * m,const QString& language )
-{
-	for( auto& it : m->actions() ){
-
-		QString p = it->text() ;
-
-		p.remove( "&" ) ;
-
-		it->setChecked( language == p ) ;
-	}
+	utility::selectMenuOption s( m,false ) ;
+	s.selectIcons( opt ) ;
 }
 
 void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,const QString& app )
@@ -1651,7 +1661,7 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 
 	if( translate ){
 
-		QCoreApplication::installTranslator( _get_translator( app,r,0 ) ) ;
+		_translator.set( app,r,0 ) ;
 
 		if( app == "zuluMount-gui" ){
 
@@ -1659,7 +1669,7 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 			 * We are loading zuluCrypt-gui translation file to get translations for
 			 * lxqtwallet strings.
 			 */
-			QCoreApplication::installTranslator( _get_translator( "zuluCrypt-gui",r,1 ) ) ;
+			_translator.set( "zuluCrypt-gui",r,1 ) ;
 		}
 	}else{
 		auto m = new QMenu( w ) ;
@@ -1688,7 +1698,7 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 			ac->setMenu( m ) ;
 		}
 
-		_selectLanguage( m,r ) ;
+		_selectOption( m,r ) ;
 	}
 }
 
@@ -1702,7 +1712,7 @@ void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac,const char * app 
 
 	utility::setLocalizationLanguage( true,w,ac,app ) ;
 
-	_selectLanguage( m,e ) ;
+	_selectOption( m,e ) ;
 
 	return ;
 
@@ -1723,11 +1733,87 @@ QStringList utility::directoryList( const QString& e )
 	return l ;
 }
 
-QIcon utility::getIcon( const QString& application )
+static QString _iconNamePath( const QString& app )
 {
-	QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + application + ".png" ) ;
+	return utility::homePath() + "/.zuluCrypt/" + app + ".iconName" ;
+}
 
-	return QIcon::fromTheme( application,icon ) ;
+void utility::setIconMenu( const QString& app,QAction * ac,QWidget * w,
+			   std::function< void( const QString& ) >&& function )
+{
+	ac->setMenu( [ & ](){
+
+		auto m = new QMenu( w ) ;
+
+		auto n = new utility::selectMenuOption( m,true,std::move( function ) ) ;
+
+		w->connect( m,SIGNAL( triggered( QAction * ) ),n,SLOT( selectIcons( QAction * ) ) ) ;
+
+		QDir d( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" ) ;
+
+		if( !QFile::exists( _iconNamePath( app ) ) ){
+
+			utility::setIcons( app,app ) ;
+		}
+
+		QFile f( _iconNamePath( app ) ) ;
+
+		f.open( QIODevice::ReadOnly ) ;
+
+		QString s = f.readAll() ;
+
+		for( auto& it : d.entryList() ){
+
+			if( it.startsWith( app ) ){
+
+				it.remove( ".png" ) ;
+
+				auto ac = m->addAction( it ) ;
+
+				ac->setCheckable( true ) ;
+
+				ac->setChecked( it == s ) ;
+			}
+		}
+
+		return m ;
+	}() ) ;
+}
+
+void utility::setIcons( const QString& app,const QString& iconName )
+{
+	QFile f( _iconNamePath( app ) ) ;
+
+	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+
+	f.write( iconName.toLatin1() ) ;
+}
+
+QIcon utility::getIcon( const QString& app )
+{
+	if( !QFile::exists( _iconNamePath( app ) ) ){
+
+		utility::setIcons( app,app ) ;
+	}
+
+	QFile f( _iconNamePath( app ) ) ;
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		QString e = f.readAll() ;
+
+		if( e == "zuluCrypt" || e == "zuluMount" ){
+
+			QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + e + ".png" ) ;
+			return QIcon::fromTheme( app,icon ) ;
+		}else{
+			return QIcon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + e + ".png" ) ;
+		}
+	}else{
+		QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + app + ".png" ) ;
+
+		return QIcon::fromTheme( app,icon ) ;
+	}
 }
 
 static QString _veraCryptOptionPath( const QString& app )

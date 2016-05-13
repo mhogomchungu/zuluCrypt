@@ -142,6 +142,7 @@
     <addaction name="actionAuto_Open_Mount_Point"/>
     <addaction name="actionSelect_Language"/>
     <addaction name="actionFonts"/>
+    <addaction name="actionSelect_Icons"/>
     <addaction name="actionManage_names"/>
     <addaction name="actionManage_volumes_in_internal_wallet"/>
     <addaction name="actionManage_volumes_in_kde_wallet"/>
@@ -518,6 +519,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionSelect_Icons">
+   <property name="text">
+    <string>Select Icons</string>
    </property>
   </action>
  </widget>

@@ -98,6 +98,7 @@ private slots:
 	void updateCheck( void ) ;
 	void languageMenu( QAction * ac ) ;
 private:
+	void setIcons( void ) ;
 	bool errorNotFound( int ) ;
 	QString resolveFavoriteMountPoint( const QString& ) ;
 	void autoUpdateCheck( void ) ;

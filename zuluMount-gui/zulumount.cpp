@@ -211,6 +211,22 @@ void zuluMount::setUpApp( const QString& volume )
 
 	trayMenu->addAction( m_languageAction ) ;
 
+	trayMenu->addMenu( [ this ](){
+
+		auto ac = new QAction( tr( "Select Icons" ),this ) ;
+
+		utility::setIconMenu( "zuluMount",ac,this,[ this ]( const QString& e ){
+
+			utility::setIcons( "zuluMount",e ) ;
+
+			this->setIcons() ;
+		} ) ;
+
+		this->setIcons() ;
+
+		return ac->menu() ;
+	}() ) ;
+
 	trayMenu->addAction( [ this ](){
 
 		auto ac = new QAction( tr( "Check For Update" ),this ) ;
@@ -265,6 +281,15 @@ void zuluMount::setUpApp( const QString& volume )
 	}
 
 	this->autoUpdateCheck() ;
+}
+
+void zuluMount::setIcons()
+{
+	const auto& icon = utility::getIcon( "zuluMount" ) ;
+
+	m_trayIcon.setIcon( icon ) ;
+
+	this->setWindowIcon( icon ) ;
 }
 
 void zuluMount::licenseInfo()
@@ -1361,8 +1386,6 @@ zuluMount::~zuluMount()
 						    q->columnWidth( 2 ),
 						    q->columnWidth( 4 ),
 						    q->columnWidth( 5 ) } ) ;
-
-	utility::unloadLanguages() ;
 
 	delete m_ui ;
 }
