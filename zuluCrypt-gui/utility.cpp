@@ -1766,6 +1766,11 @@ void utility::setIconMenu( const QString& app,QAction * ac,QWidget * w,
 
 			if( it.startsWith( app ) ){
 
+				if( it != "zuluCrypt.png" && it != "zuluMount.png" ){
+
+					it.remove( app + "." ) ;
+				}
+
 				it.remove( ".png" ) ;
 
 				auto ac = m->addAction( it ) ;
@@ -1807,7 +1812,7 @@ QIcon utility::getIcon( const QString& app )
 			QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + e + ".png" ) ;
 			return QIcon::fromTheme( app,icon ) ;
 		}else{
-			return QIcon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + e + ".png" ) ;
+			return QIcon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + app + "." + e + ".png" ) ;
 		}
 	}else{
 		QIcon icon( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" + app + ".png" ) ;

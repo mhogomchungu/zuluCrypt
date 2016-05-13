@@ -3,7 +3,6 @@
  <RCC version="1.0">
 	 <qresource>
 		 <file>zuluCrypt.png</file>
-		 <file>zuluCrypt-1.png</file>
 		 <file>keyfile.png</file>
 		 <file>folder.png</file>
 		 <file>partition.png</file>
