@@ -3909,7 +3909,7 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="526"/>
         <source>Select Icons</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le type d&apos;icônes</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="314"/>

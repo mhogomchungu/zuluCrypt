@@ -1749,8 +1749,6 @@ void utility::setIconMenu( const QString& app,QAction * ac,QWidget * w,
 
 		w->connect( m,SIGNAL( triggered( QAction * ) ),n,SLOT( selectIcons( QAction * ) ) ) ;
 
-		QDir d( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" ) ;
-
 		if( !QFile::exists( _iconNamePath( app ) ) ){
 
 			utility::setIcons( app,app ) ;
@@ -1761,6 +1759,10 @@ void utility::setIconMenu( const QString& app,QAction * ac,QWidget * w,
 		f.open( QIODevice::ReadOnly ) ;
 
 		QString s = f.readAll() ;
+
+		QDir d( INSTALL_PREFIX "/share/icons/hicolor/48x48/apps/" ) ;
+
+		d.setNameFilters( { "zuluCrypt.*","zuluMount.*" } ) ;
 
 		for( auto& it : d.entryList() ){
 

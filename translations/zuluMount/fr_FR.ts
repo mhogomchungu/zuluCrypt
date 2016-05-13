@@ -1097,7 +1097,7 @@ Les droits nécessaires peuvent être obtenus par :
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="216"/>
         <source>Select Icons</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le type d&apos;icônes</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="232"/>
