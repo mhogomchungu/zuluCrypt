@@ -104,6 +104,8 @@ install( FILES zuluMount.nicolas.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/ic
 install( FILES zuluMount.nicolas.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 install( FILES zuluMount.papirus.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
 install( FILES zuluMount.papirus.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
+install( FILES zuluMount.papirus.dark.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluMount.papirus.dark.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 #install ( FILES zuluMount.png DESTINATION share/icons/hicolor/32x32/apps )
 
 # desktop file section
