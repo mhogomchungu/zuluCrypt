@@ -59,7 +59,7 @@ LxQt::Wallet::secretService::~secretService()
 {
 }
 
-void LxQt::Wallet::secretService::setImage( const QString& image )
+void LxQt::Wallet::secretService::setImage( const QIcon& image )
 {
 	Q_UNUSED( image ) ;
 }

@@ -43,7 +43,7 @@ LxQt::Wallet::kwallet::~kwallet()
 	}
 }
 
-void LxQt::Wallet::kwallet::setImage( const QString& image )
+void LxQt::Wallet::kwallet::setImage( const QIcon& image )
 {
 	Q_UNUSED( image ) ;
 }

@@ -81,7 +81,7 @@ public:
 	QStringList managedWalletList( void ) ;
 	QString localDefaultWalletName( void ) ;
 	QString networkDefaultWalletName( void ) ;
-	void setImage( const QString& ) ;
+	void setImage( const QIcon& ) ;
 signals:
 	void walletIsOpen( bool ) ;
 	void getPassWord( QString ) ;
@@ -95,7 +95,6 @@ private:
 	QString m_applicationName ;
 	QString m_displayApplicationName ;
 	QString m_password ;
-	QString m_image ;
 	QWidget * m_interfaceObject ;
 	QEventLoop m_loop ;
 	bool m_opened ;

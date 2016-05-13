@@ -398,7 +398,7 @@ void keyDialog::pbOpen()
 
 		}else if( wallet == tr( INTERNAL_WALLET ) ){
 
-			w = utility::getKeyFromWallet( LxQt::Wallet::internalBackEnd,m_path,_internalPassWord ) ;
+			w = utility::getKeyFromWallet( LxQt::Wallet::internalBackEnd,m_path,_internalPassWord,"zuluMount" ) ;
 
 			if( w.notConfigured ){
 

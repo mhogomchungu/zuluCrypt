@@ -71,7 +71,7 @@ public:
 	QStringList managedWalletList( void ) ;
 	QString localDefaultWalletName( void ) ;
 	QString networkDefaultWalletName( void ) ;
-	void setImage( const QString& ) ;
+	void setImage( const QIcon& ) ;
 signals:
 	void walletpassWordChanged( bool ) ;
 	void walletOpened_1( bool ) ;

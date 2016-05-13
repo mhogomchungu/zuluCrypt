@@ -159,7 +159,8 @@ namespace utility
 
 	int startApplication( const char * appName,std::function<int()> ) ;
 
-	wallet getKeyFromWallet( LxQt::Wallet::walletBackEnd,const QString& keyID,const QString& pwd = QString() ) ;
+	wallet getKeyFromWallet( LxQt::Wallet::walletBackEnd,const QString& keyID,
+				 const QString& pwd = QString(),const QString& app = QString() ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
 

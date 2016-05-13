@@ -420,7 +420,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 		}else if( wallet == tr( INTERNAL_WALLET ) ){
 
-			w = utility::getKeyFromWallet( LxQt::Wallet::internalBackEnd,keyID,_internalPassWord ) ;
+			w = utility::getKeyFromWallet( LxQt::Wallet::internalBackEnd,keyID,_internalPassWord,"zuluCrypt" ) ;
 
 			if( w.notConfigured ){
 

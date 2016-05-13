@@ -406,7 +406,7 @@ void utility::openPath( const QString& path,const QString& opener,const QString&
 	} ) ;
 }
 
-utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,const QString& keyID,const QString& pwd )
+utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,const QString& keyID,const QString& pwd,const QString& app )
 {
 	utility::wallet w{ false,false,"","" } ;
 
@@ -434,7 +434,7 @@ utility::wallet utility::getKeyFromWallet( LxQt::Wallet::walletBackEnd storage,c
 
 			storage_t e( LxQt::Wallet::getWalletBackend( storage ) ) ;
 
-			e->setImage( ":/zuluCrypt.png" ) ;
+			e->setImage( utility::getIcon( app ) ) ;
 
 			w.opened = e->await_open( walletName,appName,pwd ) ;
 

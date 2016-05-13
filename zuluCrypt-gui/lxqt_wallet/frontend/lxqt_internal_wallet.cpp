@@ -41,10 +41,9 @@ LxQt::Wallet::internalWallet::~internalWallet()
 	lxqt_wallet_close( &m_wallet ) ;
 }
 
-void LxQt::Wallet::internalWallet::setImage( const QString& image )
+void LxQt::Wallet::internalWallet::setImage( const QIcon& image )
 {
-	m_image = image ;
-	this->setWindowIcon( QIcon( image ) ) ;
+	this->setWindowIcon( image ) ;
 }
 
 void LxQt::Wallet::internalWallet::openWallet( QString password )
