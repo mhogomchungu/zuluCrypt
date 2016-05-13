@@ -129,6 +129,8 @@ install( FILES zuluCrypt.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hico
 install( FILES zuluCrypt.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 install( FILES zuluCrypt-1.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
 install( FILES zuluCrypt-1.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
+install( FILES zuluCrypt-2.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluCrypt-2.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 #install (FILES zuluCrypt.png DESTINATION share/icons/hicolor/32x32/apps)
 
 # desktop file section

@@ -102,6 +102,8 @@ install( FILES zuluMount.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hico
 install( FILES zuluMount.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 install( FILES zuluMount-1.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
 install( FILES zuluMount-1.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
+install( FILES zuluMount-2.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluMount-2.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 #install ( FILES zuluMount.png DESTINATION share/icons/hicolor/32x32/apps )
 
 # desktop file section
