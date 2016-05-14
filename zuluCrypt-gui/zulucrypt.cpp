@@ -707,6 +707,7 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionContact_Info->setFont( Font ) ;
 	m_ui->actionSelect_Language->setFont( Font ) ;
 	m_ui->actionAuto_Open_Mount_Point->setFont( Font ) ;
+	m_ui->actionSelect_Icons->setFont( Font ) ;
 }
 
 void zuluCrypt::aboutMenuOption( void )

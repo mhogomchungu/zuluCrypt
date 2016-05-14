@@ -143,77 +143,106 @@ void zuluMount::setUpApp( const QString& volume )
 	m_autoMount = this->autoMount() ;
 	m_autoOpenFolderOnMount = this->autoOpenFolderOnMount() ;
 
+	#define _qAction( ac,x ) \
+		auto ac = new QAction( tr( x ),this ) ; \
+		m_actionPair.append( { ac,x } ) ;
+
+	#define _qMenu( m,x ) \
+		auto m = trayMenu->addMenu( tr( x ) ) ; \
+		m_menuPair.append( { m,x } ) ;
+
 	trayMenu->addAction( [ this ](){
 
-		m_autoMountAction = new QAction( tr( "Automount Volumes" ),this ) ;
+		_qAction( ac,"Automount Volumes" ) ;
 
-		m_autoMountAction->setCheckable( true ) ;
-		m_autoMountAction->setChecked( m_autoMount ) ;
+		ac->setCheckable( true ) ;
+		ac->setChecked( m_autoMount ) ;
 
-		connect( m_autoMountAction,SIGNAL( toggled( bool ) ),this,SLOT( autoMountToggled( bool ) ) ) ;
+		connect( ac,SIGNAL( toggled( bool ) ),this,SLOT( autoMountToggled( bool ) ) ) ;
 
-		return m_autoMountAction ;
+		m_autoMountAction = ac ;
+
+		return ac ;
 	}() ) ;
 
 	trayMenu->addAction( [ this ](){
 
-		auto e = new QAction( tr( "Auto Open Mount Point" ),this ) ;
+		_qAction( ac,"Auto Open Mount Point" ) ;
 
-		e->setCheckable( true ) ;
-		e->setChecked( m_autoOpenFolderOnMount ) ;
+		ac->setCheckable( true ) ;
+		ac->setChecked( m_autoOpenFolderOnMount ) ;
 
-		connect( e,SIGNAL( toggled( bool ) ),this,SLOT( autoOpenFolderOnMount( bool ) ) ) ;
+		connect( ac,SIGNAL( toggled( bool ) ),this,SLOT( autoOpenFolderOnMount( bool ) ) ) ;
 
-		return e ;
+		return ac ;
 	}() ) ;
 
 	trayMenu->addAction( [ this ](){
 
-		auto ac = new QAction( tr( "Unmount All" ),this ) ;
+		_qAction( ac,"Unmount All" ) ;
 
 		connect( ac,SIGNAL( triggered() ),this,SLOT( unMountAll() ) ) ;
 
 		return ac ;
 	}() ) ;
 
-	m_favorite_menu = trayMenu->addMenu( tr( "Favorites" ) ) ;
+	m_favorite_menu = [ this,trayMenu ](){
 
-	m_favorite_menu->setFont( this->font() ) ;
+		_qMenu( m,"Favorites" ) ;
 
-	connect( m_favorite_menu,SIGNAL( triggered( QAction * ) ),
-		 this,SLOT( favoriteClicked( QAction * ) ) ) ;
+		m->setFont( this->font() ) ;
 
-	connect( m_favorite_menu,SIGNAL( aboutToShow() ),
-		 this,SLOT( showFavorites() ) ) ;
+		connect( m,SIGNAL( triggered( QAction * ) ),
+			 this,SLOT( favoriteClicked( QAction * ) ) ) ;
 
-	m_not_hidden_volume_menu = trayMenu->addMenu( tr( "Hide Volume From View" ) ) ;
+		connect( m,SIGNAL( aboutToShow() ),
+			 this,SLOT( showFavorites() ) ) ;
 
-	m_not_hidden_volume_menu->setFont( this->font() ) ;
+		return m ;
+	}() ;
 
-	connect( m_not_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),
-		 this,SLOT( removeVolumeFromVisibleVolumeList( QAction * ) ) ) ;
+	m_not_hidden_volume_menu = [ this,trayMenu ](){
 
-	connect( m_not_hidden_volume_menu,SIGNAL( aboutToShow() ),
-		 this,SLOT( showVisibleVolumeList() ) ) ;
+		_qMenu( m,"Hide Volume From View" ) ;
 
-	m_hidden_volume_menu = trayMenu->addMenu( tr( "Unhide Volume From View" ) ) ;
+		m->setFont( this->font() ) ;
 
-	m_hidden_volume_menu->setFont( this->font() ) ;
+		connect( m,SIGNAL( triggered( QAction * ) ),
+			 this,SLOT( removeVolumeFromVisibleVolumeList( QAction * ) ) ) ;
 
-	connect( m_hidden_volume_menu,SIGNAL( triggered( QAction * ) ),
-		 this,SLOT( removeVolumeFromHiddenVolumeList( QAction * ) ) ) ;
+		connect( m,SIGNAL( aboutToShow() ),
+			 this,SLOT( showVisibleVolumeList() ) ) ;
 
-	connect( m_hidden_volume_menu,SIGNAL( aboutToShow() ),
-		 this,SLOT( showHiddenVolumeList() ) ) ;
+		return m ;
+	}() ;
 
-	m_languageAction = new QAction( this ) ;
-	m_languageAction->setText( tr( "Select Language" ) ) ;
+	m_hidden_volume_menu = [ this,trayMenu ](){
 
-	trayMenu->addAction( m_languageAction ) ;
+		_qMenu( m,"Unhide Volume From View" ) ;
+
+		m->setFont( this->font() ) ;
+
+		connect( m,SIGNAL( triggered( QAction * ) ),
+			 this,SLOT( removeVolumeFromHiddenVolumeList( QAction * ) ) ) ;
+
+		connect( m,SIGNAL( aboutToShow() ),
+			 this,SLOT( showHiddenVolumeList() ) ) ;
+
+		return m ;
+	}() ;
+
+	trayMenu->addAction( [ this ](){
+
+		_qAction( ac,"Select Language" ) ;
+
+		m_languageAction = ac ;
+
+		return ac ;
+	}() ) ;
 
 	trayMenu->addMenu( [ this ](){
 
-		auto ac = new QAction( tr( "Select Icons" ),this ) ;
+		_qAction( ac,"Select Icons" ) ;
 
 		utility::setIconMenu( "zuluMount",ac,this,[ this ]( const QString& e ){
 
@@ -229,7 +258,7 @@ void zuluMount::setUpApp( const QString& volume )
 
 	trayMenu->addAction( [ this ](){
 
-		auto ac = new QAction( tr( "Check For Update" ),this ) ;
+		_qAction( ac,"Check For Update" ) ;
 		
 		connect( ac,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
 
@@ -238,14 +267,22 @@ void zuluMount::setUpApp( const QString& volume )
 
 	trayMenu->addAction( [ this ](){
 
-		auto ac = new QAction( tr( "About" ),this ) ;
+		_qAction( ac,"About" ) ;
 
 		connect( ac,SIGNAL( triggered() ),this,SLOT( licenseInfo() ) ) ;
 
 		return ac ;
 	}() ) ;
 
-	trayMenu->addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
+	trayMenu->addAction( [ this ](){
+
+		_qAction( ac,"Quit" ) ;
+
+		connect( ac,SIGNAL( triggered() ),this,SLOT( closeApplication() ) ) ;
+
+		return ac ;
+	}() ) ;
+
 	m_trayIcon.setContextMenu( trayMenu ) ;
 
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
@@ -438,6 +475,16 @@ void zuluMount::languageMenu( QAction * ac )
 	utility::languageMenu( this,m,ac,"zuluMount-gui" ) ;
 
 	m_ui->retranslateUi( this ) ;
+
+	for( auto& it : m_actionPair ){
+
+		it.first->setText( tr( it.second ) ) ;
+	}
+
+	for( auto& it : m_menuPair ){
+
+		it.first->setTitle( tr( it.second ) ) ;
+	}
 }
 
 void zuluMount::autoOpenFolderOnMount( bool e )
@@ -1251,7 +1298,7 @@ void zuluMount::removeDisappearedEntries( const QVector< volumeEntryProperties >
 
 	auto l = tablewidget::tableColumnEntries( table,0 ) ;
 
-	auto _hasNoEntry = [&]( const QString& volume ){
+	auto _hasNoEntry = [ & ]( const QString& volume ){
 
 		for( const auto& it : entries ){
 

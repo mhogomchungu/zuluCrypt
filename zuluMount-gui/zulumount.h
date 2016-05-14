@@ -137,6 +137,9 @@ private:
 	QString m_env ;
 	QString m_powerOff ;
 
+	QVector< std::pair< QAction *,const char * > > m_actionPair ;
+	QVector< std::pair< QMenu *,const char * > > m_menuPair ;
+
 	QSystemTrayIcon m_trayIcon ;
 
 	monitor_mountinfo& m_mountInfo ;
