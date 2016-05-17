@@ -235,16 +235,16 @@ void zuluMount::setUpApp( const QString& volume )
 		return m ;
 	}() ;
 
-	trayMenu->addAction( [ this ](){
+	m_language_menu = [ this,trayMenu ](){
 
-		auto ac = new QAction( tr( "Select Language" ),this ) ;
+		auto m = trayMenu->addMenu( tr( "Select Language" ) ) ;
 
-		m_actionPair.append( { ac,"Select Language" } ) ;
+		m_menuPair.append( { m,"Select Language" } ) ;
 
-		m_languageAction = ac ;
+		connect( m,SIGNAL( triggered( QAction * ) ),this,SLOT( languageMenu( QAction * ) ) ) ;
 
-		return ac ;
-	}() ) ;
+		return m ;
+	}() ;
 
 	trayMenu->addMenu( [ this ](){
 
@@ -302,7 +302,7 @@ void zuluMount::setUpApp( const QString& volume )
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
 
-	m_ui->pbmenu->setMenu( m_trayIcon.contextMenu() ) ;
+	m_ui->pbmenu->setMenu( trayMenu ) ;
 
 	this->setLocalizationLanguage( false ) ;
 
@@ -479,14 +479,12 @@ void zuluMount::showFavorites()
 
 void zuluMount::setLocalizationLanguage( bool translate )
 {
-	utility::setLocalizationLanguage( translate,this,m_languageAction,"zuluMount-gui" ) ;
+	utility::setLocalizationLanguage( translate,m_language_menu,"zuluMount-gui" ) ;
 }
 
 void zuluMount::languageMenu( QAction * ac )
 {
-	auto m = m_languageAction->menu() ;
-
-	utility::languageMenu( this,m,ac,"zuluMount-gui" ) ;
+	utility::languageMenu( this,m_language_menu,ac,"zuluMount-gui" ) ;
 
 	m_ui->retranslateUi( this ) ;
 

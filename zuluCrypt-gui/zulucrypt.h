@@ -185,6 +185,8 @@ private:
 
 	Ui::zuluCrypt * m_ui = nullptr ;
 
+	QMenu * m_language_menu = nullptr ;
+
 	QSystemTrayIcon m_trayIcon ;
 
 	QString m_sharedMountPoint ;

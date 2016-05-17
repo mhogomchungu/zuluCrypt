@@ -85,17 +85,15 @@ void zuluCrypt::setLocalizationLanguage( bool translate )
 {
 	if( translate ){
 
-		utility::setLocalizationLanguage( translate,this,nullptr,"zuluCrypt-gui" ) ;
+		utility::setLocalizationLanguage( translate,nullptr,"zuluCrypt-gui" ) ;
 	}else{
-		utility::setLocalizationLanguage( translate,this,m_ui->actionSelect_Language,"zuluCrypt-gui" ) ;
+		utility::setLocalizationLanguage( translate,m_language_menu,"zuluCrypt-gui" ) ;
 	}
 }
 
 void zuluCrypt::languageMenu( QAction * ac )
 {
-	auto m = m_ui->actionSelect_Language->menu() ;
-
-	utility::languageMenu( this,m,ac,"zuluCrypt-gui" ) ;
+	utility::languageMenu( this,m_language_menu,ac,"zuluCrypt-gui" ) ;
 
 	m_ui->retranslateUi( this ) ;
 }
@@ -388,6 +386,18 @@ void zuluCrypt::setupConnections()
 
 	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,SLOT( updateVolumeList() ) ) ;
 
+	m_language_menu = [ this ](){
+
+		auto m = new QMenu( tr( "Select Language" ),this ) ;
+
+		connect( m,SIGNAL( triggered( QAction * ) ),
+			 this,SLOT( languageMenu( QAction * ) ) ) ;
+
+		m_ui->actionSelect_Language->setMenu( m ) ;
+
+		return m ;
+	}() ;
+
 	m_ui->actionManage_system_partitions->setEnabled( utility::userIsRoot() ) ;
 	m_ui->actionManage_non_system_partitions->setEnabled( utility::userIsRoot() ) ;
 
@@ -406,8 +416,11 @@ void zuluCrypt::autoOpenMountPoint( bool e )
 
 void zuluCrypt::optionMenuAboutToShow()
 {
-	auto b = LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,utility::walletName(),utility::applicationName() ) ;
-	m_ui->actionChange_internal_wallet_password->setEnabled( b ) ;
+	auto a = utility::walletName() ;
+	auto b = utility::applicationName() ;
+	auto c = LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,a,b ) ;
+
+	m_ui->actionChange_internal_wallet_password->setEnabled( c ) ;
 }
 
 void zuluCrypt::updateCheck()

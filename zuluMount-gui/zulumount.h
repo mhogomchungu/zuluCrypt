@@ -126,8 +126,7 @@ private:
 	QMenu * m_favorite_menu = nullptr ;
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
-
-	QAction * m_languageAction ;
+	QMenu * m_language_menu = nullptr ;
 
 	bool m_startHidden ;
 	bool m_autoMount ;

@@ -1652,10 +1652,10 @@ private:
 static void _selectOption( QMenu * m,const QString& opt )
 {
 	utility::selectMenuOption s( m,false ) ;
-	s.selectIcons( opt ) ;
+	s.selectOption( opt ) ;
 }
 
-void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,const QString& app )
+void utility::setLocalizationLanguage( bool translate,QMenu * m,const QString& app )
 {
 	auto r = utility::localizationLanguage( app ).toLatin1() ;
 
@@ -1672,12 +1672,6 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 			_translator.set( "zuluCrypt-gui",r,1 ) ;
 		}
 	}else{
-		auto m = new QMenu( w ) ;
-
-		m->setFont( w->font() ) ;
-
-		w->connect( m,SIGNAL( triggered( QAction * ) ),w,SLOT( languageMenu( QAction * ) ) ) ;
-
 		QDir d( utility::localizationLanguagePath( app ) ) ;
 
 		auto t = d.entryList() ;
@@ -1693,11 +1687,6 @@ void utility::setLocalizationLanguage( bool translate,QWidget * w,QAction * ac,c
 			}
 		}
 
-		if( ac ){
-
-			ac->setMenu( m ) ;
-		}
-
 		_selectOption( m,r ) ;
 	}
 }
@@ -1710,7 +1699,7 @@ void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac,const char * app 
 
 	utility::setLocalizationLanguage( app,e ) ;
 
-	utility::setLocalizationLanguage( true,w,ac,app ) ;
+	utility::setLocalizationLanguage( true,m,app ) ;
 
 	_selectOption( m,e ) ;
 

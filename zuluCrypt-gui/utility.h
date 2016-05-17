@@ -80,7 +80,7 @@ namespace utility
 			}
 		}
 	public slots :
-		void selectIcons( const QString& f )
+		void selectOption( const QString& f )
 		{
 			for( const auto& it : m_menu->actions() ){
 
@@ -93,13 +93,13 @@ namespace utility
 
 			m_function( f ) ;
 		}
-		void selectIcons( QAction * ac )
+		void selectOption( QAction * ac )
 		{
 			auto e = ac->text() ;
 
 			e.remove( "&" ) ;
 
-			this->selectIcons( e ) ;
+			this->selectOption( e ) ;
 		}
 	private:
 		QMenu * m_menu ;
@@ -226,7 +226,7 @@ namespace utility
 
 	bool reUseMountPointPath( void ) ;
 
-	void setLocalizationLanguage( bool translate,QWidget * obj,QAction * ac,const QString& ) ;
+	void setLocalizationLanguage( bool translate,QMenu * ac,const QString& ) ;
 	void languageMenu( QWidget *,QMenu *,QAction *,const char * ) ;
 
 	using array_t = std::array< int,10 > ;
