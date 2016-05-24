@@ -1736,7 +1736,7 @@ void utility::setIconMenu( const QString& app,QAction * ac,QWidget * w,
 
 		auto n = new utility::selectMenuOption( m,true,std::move( function ) ) ;
 
-		w->connect( m,SIGNAL( triggered( QAction * ) ),n,SLOT( selectIcons( QAction * ) ) ) ;
+		w->connect( m,SIGNAL( triggered( QAction * ) ),n,SLOT( selectOption( QAction * ) ) ) ;
 
 		if( !QFile::exists( _iconNamePath( app ) ) ){
 

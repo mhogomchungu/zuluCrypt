@@ -20,30 +20,90 @@
 #ifndef CHECKFORUPDATES_H
 #define CHECKFORUPDATES_H
 
+#include <QVector>
 #include <QObject>
+#include <QWidget>
+
 #include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
+#include <QtNetwork/QNetworkReply>
 
-class QWidget ;
-class QNetworkReply ;
+#include <QEventLoop>
 
-#include <memory>
+#include <functional>
+#include <utility>
 
-class QNetworkReply ;
-class QWidget ;
-
-class checkForUpdates : public QObject
+class NetworkAccessManager : public QObject
 {
 	Q_OBJECT
 public:
+	NetworkAccessManager()
+	{
+		connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),
+			 this,SLOT( networkReply( QNetworkReply * ) ),Qt::QueuedConnection ) ;
+	}
+	void get( const QNetworkRequest& r,std::function< void( QNetworkReply * ) >&& f )
+	{
+		m_entries.append( { m_manager.get( r ),f } ) ;
+	}
+	QNetworkReply * get( const QNetworkRequest& r )
+	{
+		QNetworkReply * reply ;
+
+		QEventLoop l ;
+
+		this->get( r,[ & ]( QNetworkReply * e ){
+
+			reply = e ;
+
+			l.quit() ;
+		} ) ;
+
+		l.exec() ;
+
+		return reply ;
+	}
+private slots:
+	void networkReply( QNetworkReply * r )
+	{
+		auto s = m_entries.size() ;
+
+		for( decltype( s ) i = 0 ; i < s ; i++ ){
+
+			const auto& q = m_entries.at( i ) ;
+
+			if( q.first == r ){
+
+				q.second( r ) ;
+
+				m_entries.remove( i ) ;
+
+				break ;
+			}
+		}
+	}
+private:
+	using pair_t = std::pair< QNetworkReply *,std::function< void( QNetworkReply * ) > > ;
+
+	QVector< pair_t > m_entries ;
+	QNetworkAccessManager m_manager ;
+};
+
+class checkForUpdates : public QObject
+{
+public:
+	static bool autoCheck( void ) ;
+	static void autoCheck( bool ) ;
+
 	checkForUpdates( QWidget *,bool ) ;
+
 	static void instance( QWidget *,const QString& ) ;
 	static void instance( QWidget * ) ;
-public slots:
-	void networkReply( QNetworkReply * ) ;
 private:
+	void show( const QByteArray&,const QByteArray& ) ;
 	QWidget * m_widget ;
 	bool m_autocheck ;
-	QNetworkAccessManager m_manager ;
+	NetworkAccessManager m_networkAccessManager ;
 };
 
 #endif // CHECKFORUPDATES_H

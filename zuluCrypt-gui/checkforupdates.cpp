@@ -19,63 +19,60 @@
 
 #include "checkforupdates.h"
 
-#include <QNetworkReply>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-
 #include <QWidget>
 
 #include "utility.h"
 #include "dialogmsg.h"
 #include "version_1.h"
 
-void checkForUpdates::networkReply( QNetworkReply * e )
+static QString _tr( const QString& a,const QString& b )
 {
-	QString l = e->readAll() ;
-
-	DialogMsg msg( m_widget ) ;
-
-	if( l.isEmpty() ){
-
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
-	}else{
-		l.replace( "\n","" ) ;
-
-		if( m_autocheck ){
-
-			if( l != "Not Found" && l != THIS_VERSION ){
-
-				l = tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
-				msg.ShowUIOK( tr( "Update Available" ),l ) ;
-			}
-		}else{
-			if( l != "Not Found" ){
-
-				l = tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( THIS_VERSION,l ) ;
-				msg.ShowUIOK( tr( "Version Info" ),l ) ;
-			}else{
-				msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
-			}
-		}
-	}
-
-	this->deleteLater() ;
+	return QObject::tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( a,b ) ;
 }
 
 checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) : m_widget( widget ),m_autocheck( autocheck )
 {
-	connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),this,SLOT( networkReply( QNetworkReply * ) ) ) ;
+	QUrl url( "https://raw.githubusercontent.com/mhogomchungu/zuluCrypt/master/version" ) ;
 
-	m_manager.get( [](){
+	QNetworkRequest e( url ) ;
 
-		QNetworkRequest e( QUrl( "https://raw.githubusercontent.com/mhogomchungu/zuluCrypt/master/version" ) ) ;
+	e.setRawHeader( "Host","raw.githubusercontent.com" ) ;
+	e.setRawHeader( "User-Agent","Mozilla/5.0 (X11; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0" ) ;
+	e.setRawHeader( "Accept-Encoding","text/plain" ) ;
 
-		e.setRawHeader( "Host","raw.githubusercontent.com" ) ;
-		e.setRawHeader( "User-Agent","Mozilla/5.0 (X11; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0" ) ;
-		e.setRawHeader( "Accept-Encoding","text/plain" ) ;
+	m_networkAccessManager.get( e,[ this ]( QNetworkReply * e ){
 
-		return e ;
-	}() ) ;
+		QString l = e->readAll() ;
+
+		DialogMsg msg( m_widget ) ;
+
+		if( l.isEmpty() ){
+
+			if( !m_autocheck ){
+
+				msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
+			}
+		}else{
+			l.replace( "\n","" ) ;
+
+			if( m_autocheck ){
+
+				if( l != "Not Found" && l != THIS_VERSION ){
+
+					msg.ShowUIOK( tr( "Update Available" ),_tr( THIS_VERSION,l ) ) ;
+				}
+			}else{
+				if( l != "Not Found" ){
+
+					msg.ShowUIOK( tr( "Version Info" ),_tr( THIS_VERSION,l ) ) ;
+				}else{
+					msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
+				}
+			}
+		}
+
+		this->deleteLater() ;
+	} ) ;
 }
 
 void checkForUpdates::instance( QWidget * widget,const QString& e )

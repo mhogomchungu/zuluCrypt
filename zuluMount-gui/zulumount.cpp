@@ -286,7 +286,7 @@ void zuluMount::setUpApp( const QString& volume )
 		return ac ;
 	}() ) ;
 
-	trayMenu->addAction( [ this ](){
+	auto _addQuitAction = [ this ](){
 
 		auto ac = new QAction( tr( "Quit" ),this ) ;
 
@@ -295,12 +295,22 @@ void zuluMount::setUpApp( const QString& volume )
 		connect( ac,SIGNAL( triggered() ),this,SLOT( closeApplication() ) ) ;
 
 		return ac ;
-	}() ) ;
+	} ;
 
-	m_trayIcon.setContextMenu( trayMenu ) ;
+	trayMenu->addAction( _addQuitAction() ) ;
 
 	connect( &m_trayIcon,SIGNAL( activated( QSystemTrayIcon::ActivationReason ) ),
 		 this,SLOT( slotTrayClicked( QSystemTrayIcon::ActivationReason ) ) ) ;
+
+	m_trayIcon.setContextMenu( [ this,&_addQuitAction ](){
+
+		auto m = new QMenu( this ) ;
+
+		m->addAction( _addQuitAction() ) ;
+
+		return m ;
+	}() ) ;
+
 
 	m_ui->pbmenu->setMenu( trayMenu ) ;
 
