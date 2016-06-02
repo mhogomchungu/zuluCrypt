@@ -1,6 +1,8 @@
 
 cmake_minimum_required(VERSION 2.6)
 cmake_policy(SET CMP0017 OLD)
+cmake_policy(SET CMP0002 OLD)
+
 set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON)
 
 project(zuluCrypt)
@@ -227,10 +229,10 @@ if( NOT NOGUI )
 		add_definitions( -I${QT_HEADERS_DIR} )
 
 		INCLUDE( ${QT_USE_FILE} )
-	endif()
+        endif()
 
 	ADD_SUBDIRECTORY( zuluCrypt-gui/md5 )
-	ADD_SUBDIRECTORY( zuluCrypt-gui/sharedObjects )
+        ADD_SUBDIRECTORY( zuluCrypt-gui/sharedObjects )
 	ADD_SUBDIRECTORY( zuluCrypt-gui )
 	ADD_SUBDIRECTORY( plugins )
 	ADD_SUBDIRECTORY( zuluMount-gui )

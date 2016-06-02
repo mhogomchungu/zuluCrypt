@@ -107,13 +107,13 @@ if( QT5 )
 
 	target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager zuluCryptMD5 )
 else()
-	if( WITH_PWQUALITY AND library_pwquality )
+        if( WITH_PWQUALITY AND library_pwquality )
 		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${QT_LIBRARIES} ${blkid} ${library_pwquality} )
 	else( WITH_PWQUALITY AND library_pwquality )
 		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${QT_LIBRARIES} ${blkid} ${kwallet_library} )
 	endif( WITH_PWQUALITY AND library_pwquality )
 
-	target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager zuluCryptMD5 )
+        target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager zuluCryptMD5 )
 
 endif()
 

@@ -30,17 +30,21 @@ static QString _tr( const QString& a,const QString& b )
 	return QObject::tr( "\nInstalled Version Is : %1.\nLatest Version Is : %2.\n" ).arg( a,b ) ;
 }
 
-checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) : m_widget( widget ),m_autocheck( autocheck )
+checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) :
+        m_widget( widget ),m_autocheck( autocheck )
 {
-	QUrl url( "https://raw.githubusercontent.com/mhogomchungu/zuluCrypt/master/version" ) ;
+        m_networkAccessManager.get( [](){
 
-	QNetworkRequest e( url ) ;
+                QUrl url( "https://raw.githubusercontent.com/mhogomchungu/zuluCrypt/master/version" ) ;
 
-	e.setRawHeader( "Host","raw.githubusercontent.com" ) ;
-	e.setRawHeader( "User-Agent","Mozilla/5.0 (X11; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0" ) ;
-	e.setRawHeader( "Accept-Encoding","text/plain" ) ;
+                QNetworkRequest e( url ) ;
 
-	m_networkAccessManager.get( e,[ this ]( QNetworkReply * e ){
+                e.setRawHeader( "Host","raw.githubusercontent.com" ) ;
+                e.setRawHeader( "Accept-Encoding","text/plain" ) ;
+
+                return e ;
+
+        }(),[ this ]( NetworkAccessManager::NetworkReply e ){
 
 		QString l = e->readAll() ;
 

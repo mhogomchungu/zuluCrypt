@@ -24,70 +24,7 @@
 #include <QObject>
 #include <QWidget>
 
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
-#include <QtNetwork/QNetworkReply>
-
-#include <QEventLoop>
-
-#include <functional>
-#include <utility>
-
-class NetworkAccessManager : public QObject
-{
-	Q_OBJECT
-public:
-	NetworkAccessManager()
-	{
-		connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),
-			 this,SLOT( networkReply( QNetworkReply * ) ),Qt::QueuedConnection ) ;
-	}
-	void get( const QNetworkRequest& r,std::function< void( QNetworkReply * ) >&& f )
-	{
-		m_entries.append( { m_manager.get( r ),f } ) ;
-	}
-	QNetworkReply * get( const QNetworkRequest& r )
-	{
-		QNetworkReply * reply ;
-
-		QEventLoop l ;
-
-		this->get( r,[ & ]( QNetworkReply * e ){
-
-			reply = e ;
-
-			l.quit() ;
-		} ) ;
-
-		l.exec() ;
-
-		return reply ;
-	}
-private slots:
-	void networkReply( QNetworkReply * r )
-	{
-		auto s = m_entries.size() ;
-
-		for( decltype( s ) i = 0 ; i < s ; i++ ){
-
-			const auto& q = m_entries.at( i ) ;
-
-			if( q.first == r ){
-
-				q.second( r ) ;
-
-				m_entries.remove( i ) ;
-
-				break ;
-			}
-		}
-	}
-private:
-	using pair_t = std::pair< QNetworkReply *,std::function< void( QNetworkReply * ) > > ;
-
-	QVector< pair_t > m_entries ;
-	QNetworkAccessManager m_manager ;
-};
+#include "networkAccessManager.h"
 
 class checkForUpdates : public QObject
 {
