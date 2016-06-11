@@ -66,9 +66,7 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	connect( m_ui->pbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenHiddenKeyFile() ) ) ;
 	connect( m_ui->comboBoxVolumeType,SIGNAL( activated( int ) ),this,SLOT( setOptions( int ) ) ) ;
 
-	m_ui->groupBox->setEnabled( true ) ;
-
-	this->installEventFilter( this ) ;
+        this->installEventFilter( this ) ;
 
 	m_ui->labelvolumeOptions->setVisible( false ) ;
 

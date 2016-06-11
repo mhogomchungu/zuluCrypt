@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>560</width>
-    <height>422</height>
+    <height>402</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -51,9 +51,9 @@
   <widget class="QPushButton" name="pbCreate">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>390</y>
-     <width>91</width>
+     <x>170</x>
+     <y>370</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -71,8 +71,8 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>390</y>
-     <width>91</width>
+     <y>370</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -83,17 +83,14 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox_3">
+  <widget class="QFrame" name="frame_3">
    <property name="geometry">
     <rect>
      <x>30</x>
      <y>40</y>
      <width>501</width>
-     <height>111</height>
+     <height>91</height>
     </rect>
-   </property>
-   <property name="title">
-    <string/>
    </property>
    <widget class="QLineEdit" name="lineEditPassphrase1">
     <property name="geometry">
@@ -184,7 +181,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>360</y>
+     <y>340</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -194,7 +191,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>150</y>
+     <y>130</y>
      <width>301</width>
      <height>31</height>
     </rect>
@@ -217,7 +214,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>360</y>
+     <y>340</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -237,7 +234,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>150</y>
+     <y>130</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -252,17 +249,14 @@
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>210</y>
+     <y>190</y>
      <width>501</width>
      <height>121</height>
     </rect>
-   </property>
-   <property name="title">
-    <string/>
    </property>
    <widget class="QLineEdit" name="lineEditHiddenKey">
     <property name="geometry">
@@ -409,7 +403,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>180</y>
+     <y>160</y>
      <width>381</width>
      <height>31</height>
     </rect>
@@ -422,7 +416,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>390</y>
+     <y>370</y>
      <width>121</width>
      <height>31</height>
     </rect>
@@ -441,7 +435,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>330</y>
+     <y>310</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -457,7 +451,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>330</y>
+     <y>310</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -476,9 +470,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>80</y>
+     <y>40</y>
      <width>521</width>
-     <height>261</height>
+     <height>331</height>
     </rect>
    </property>
    <property name="autoFillBackground">
