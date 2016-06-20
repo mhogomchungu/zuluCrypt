@@ -120,7 +120,7 @@ private:
 		m_isSystem = isSystem ;
 
 		if( l.size() >= 6 ){
-			
+
 			m_volume      = l.at( 0 ) ;
 			m_mountPoint  = l.at( 1 ) ;
 			m_fileSystem  = l.at( 2 ) ;
@@ -161,7 +161,7 @@ private:
 
 								return "0%" ;
 							}else{
-								return QString::number( e,'g',2 ) + "%" ;
+								return QString::number( e,'f',2 ) + "%" ;
 							}
 						}
 					}() ;

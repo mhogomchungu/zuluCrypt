@@ -1877,6 +1877,8 @@ QString utility::prettyfySpaceUsage( quint64 s )
 
 		auto e = QString::number( double( s ) / q,'f',2 ) ;
 
+		e.remove( ".00" ) ;
+
 		return QString( "%1 %2" ).arg( e,p ) ;
 	} ;
 
