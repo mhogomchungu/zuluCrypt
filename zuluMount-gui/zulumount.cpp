@@ -731,14 +731,23 @@ void zuluMount::cryfsVolumeProperties()
 
 		return QString( [](){
 
-			auto a = tr( "Block Size: %1" ) ;
-			auto b = tr( "Used Blocks: %2" ) ;
-			auto c = tr( "Free Blocks: %3" ) ;
-			auto d = tr( "Used Space: %4" ) ;
-			auto e = tr( "Free Space: %5" ) ;
-			auto f = tr( "Used %: %6" ) ;
+			auto l = { tr( "Block Size: %1" ),
+				   tr( "Used Blocks: %2" ),
+				   tr( "Free Blocks: %3" ),
+				   tr( "Total Blocks %4" ),
+				   tr( "Used Space: %5" ),
+				   tr( "Free Space: %6" ),
+				   tr( "Total Space: %7" ),
+				   tr( "Used %: %8" ) } ;
 
-			return a + "\n\n" + b + "\n\n" + c + "\n\n" + d + "\n\n" + e + "\n\n" + f ;
+			QString e = "\n\n\n" ;
+
+			for( const auto& it : l ){
+
+				e += it + "\n\n" ;
+			}
+
+			return e ;
 
 		}() ).arg( [ & ](){
 
@@ -754,6 +763,10 @@ void zuluMount::cryfsVolumeProperties()
 
 		}(),[ & ](){
 
+			return QString::number( vfs.f_blocks ) ;
+
+		}(),[ & ](){
+
 			auto s = vfs.f_bsize * ( vfs.f_blocks - vfs.f_bavail ) ;
 
 			return utility::prettyfySpaceUsage( s ) ;
@@ -761,6 +774,10 @@ void zuluMount::cryfsVolumeProperties()
 		}(),[ & ](){
 
 			return utility::prettyfySpaceUsage( vfs.f_bsize * vfs.f_bavail ) ;
+
+		}(),[ & ](){
+
+			return utility::prettyfySpaceUsage( vfs.f_bsize * vfs.f_blocks ) ;
 
 		}(),[ & ]()->QString{
 
