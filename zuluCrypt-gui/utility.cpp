@@ -860,11 +860,11 @@ QString utility::mapperPath( const QString& r,const QString& component )
 
 	if( rpath.startsWith( "UUID=" ) ){
 
-		rpath.remove( QChar( '\"' ) ) ;
+		rpath.remove( '\"' ) ;
 
 		rpath.replace( "UUID=","UUID-" ) ;
 
-		path += QString( "-" ) + rpath + utility::hashPath( rpath.toLatin1() ) ;
+		path += "-" + rpath + utility::hashPath( rpath.toLatin1() ) ;
 	}else{
 		if( component.isEmpty() ){
 
@@ -874,11 +874,9 @@ QString utility::mapperPath( const QString& r,const QString& component )
 		}
 	}
 
-	QString z = BASH_SPECIAL_CHARS ;
+	for( const auto& it : BASH_SPECIAL_CHARS ){
 
-	for( const auto& it : z ){
-
-		path.replace( it,QChar( '_' ) ) ;
+		path.replace( it,'_' ) ;
 	}
 	return path ;
 }
@@ -906,7 +904,7 @@ QString utility::hashPath( const QByteArray& p )
 
 	hash += ( hash << 15 ) ;
 
-	return QString( "-" ) + QString::number( hash ) ;
+	return "-" + QString::number( hash ) ;
 }
 
 bool utility::pathExists( const QString& path )
@@ -1249,7 +1247,7 @@ You should have received a copy of the GNU General Public License\n\
 along with this program.  If not, see <http://www.gnu.org/licenses/>." ).arg( VERSION_STRING ) ;
 
 	DialogMsg m( parent ) ;
-	m.ShowUIInfo( QObject::tr( "about zuluCrypt" ),license ) ;
+	m.ShowUIInfo( QObject::tr( "about zuluCrypt" ),false,license ) ;
 }
 
 static utility::array_t _default_dimensions( const char * defaults )
@@ -1871,4 +1869,37 @@ QString utility::powerOffCommand()
 	}
 
 	return e ;
+}
+
+QString utility::prettyfySpaceUsage( quint64 s )
+{
+	auto _convert = [ & ]( const char * p,double q ){
+
+		auto e = QString::number( double( s ) / q,'f',2 ) ;
+
+		return QString( "%1 %2" ).arg( e,p ) ;
+	} ;
+
+	switch( QString::number( s ).size() ){
+
+		case 0 :
+		case 1 : case 2 : case 3 :
+
+			return QString( "%1 B" ).arg( QString::number( s ) ) ;
+
+		case 4 : case 5 : case 6 :
+
+			return _convert( "KB",1024 ) ;
+
+		case 7 : case 8 : case 9 :
+
+			return _convert( "MB",1048576 ) ;
+
+		case 10: case 11 : case 12 :
+
+			return _convert( "GB",1073741824 ) ;
+
+		default:
+			return _convert( "TB",1024.0 * 1073741824 ) ;
+	}
 }

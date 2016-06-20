@@ -682,20 +682,9 @@ void passwordDialog::openVolume()
 
 	if( r.success() ){
 
-		if( utility::mapperPathExists( m_device ) ){
+		m_openFolder( utility::mountPath( m_point ) ) ;
 
-			m_openFolder( utility::mountPath( m_point ) ) ;
-
-			this->HideUI() ;
-		}else{
-			/*
-			 * we arrive here if zuluCrypt-cli reports a volume was opened but it was not.
-			 * most likely reason for getting here is if it crashed.
-			 */
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "An error has occured and the volume could not be opened" ) ) ;
-			this->HideUI() ;
-		}
+		this->HideUI() ;
 	}else{
 		this->failed( r.exitCode() ) ;
 

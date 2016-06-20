@@ -52,6 +52,7 @@ public slots:
 	void raiseWindow( void ) ;
 	void raiseWindow( QString ) ;
 private slots:
+	void cryfsVolumeProperties( void ) ;
 	void closeApplication( void ) ;
 	void unlockCryptFs( void ) ;
 	void showVisibleVolumeList( void ) ;

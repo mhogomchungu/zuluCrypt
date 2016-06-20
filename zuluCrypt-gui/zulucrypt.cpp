@@ -739,7 +739,7 @@ Having a backup of the volume header is strongly advised because it is the only 
 again after the header is restored if the header on the volume get corrupted.\n\n" ) ;
 
 	DialogMsg m( this ) ;
-	m.ShowUIInfo( tr( "Important Information On Volume Header Backup" ),msg ) ;
+	m.ShowUIInfo( tr( "Important Information On Volume Header Backup" ),false,msg ) ;
 }
 
 void zuluCrypt::volume_property()
@@ -747,6 +747,12 @@ void zuluCrypt::volume_property()
 	m_ui->tableWidget->setEnabled( false ) ;
 
 	auto item = m_ui->tableWidget->currentItem() ;
+
+	if( item == nullptr ){
+
+		return ;
+	}
+
 	auto x = m_ui->tableWidget->item( item->row(),0 )->text() ;
 
 	x.replace( "\"","\"\"\"" ) ;

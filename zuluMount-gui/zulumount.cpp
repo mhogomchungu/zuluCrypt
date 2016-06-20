@@ -44,6 +44,8 @@
 #include <initializer_list>
 
 #include <unistd.h>
+#include <sys/vfs.h>
+
 #include "keydialog.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/tablewidget.h"
@@ -696,6 +698,88 @@ void zuluMount::Show()
 	} ) ;
 }
 
+void zuluMount::cryfsVolumeProperties()
+{
+	this->disableAll() ;
+
+	auto mountPath = [ this ](){
+
+		auto table = m_ui->tableWidget ;
+
+		auto row = table->currentRow() ;
+
+		if( row >= 0 ){
+
+			return table->item( row,1 )->text() ;
+		}else{
+			return QString() ;
+		}
+	}() ;
+
+	DialogMsg msg( this ) ;
+
+	struct statfs vfs ;
+
+	if( statfs( mountPath.toLatin1().constData(),&vfs ) != 0 ){
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
+
+		return this->enableAll() ;
+	}
+
+	msg.ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
+
+		return QString( [](){
+
+			auto a = tr( "Block Size: %1" ) ;
+			auto b = tr( "Used Blocks: %2" ) ;
+			auto c = tr( "Free Blocks: %3" ) ;
+			auto d = tr( "Used Space: %4" ) ;
+			auto e = tr( "Free Space: %5" ) ;
+			auto f = tr( "Used %: %6" ) ;
+
+			return a + "\n\n" + b + "\n\n" + c + "\n\n" + d + "\n\n" + e + "\n\n" + f ;
+
+		}() ).arg( [ & ](){
+
+			return utility::prettyfySpaceUsage( vfs.f_bsize ) ;
+
+		}(),[ & ](){
+
+			return QString::number( vfs.f_blocks - vfs.f_bavail ) ;
+
+		}(),[ & ](){
+
+			return QString::number( vfs.f_bfree ) ;
+
+		}(),[ & ](){
+
+			auto s = vfs.f_bsize * ( vfs.f_blocks - vfs.f_bavail ) ;
+
+			return utility::prettyfySpaceUsage( s ) ;
+
+		}(),[ & ](){
+
+			return utility::prettyfySpaceUsage( vfs.f_bsize * vfs.f_bavail ) ;
+
+		}(),[ & ]()->QString{
+
+			if( vfs.f_bfree == 0 ){
+
+				return "100%" ;
+			}else{
+				quint64 s = vfs.f_blocks - vfs.f_bavail ;
+
+				auto e = double( s ) / double( vfs.f_blocks ) ;
+
+				return QString::number( e * 100,'g',2 ) + "%" ;
+			}
+		}() ) ;
+	}() ) ;
+
+	this->enableAll() ;
+}
+
 void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	QMenu m ;
@@ -717,10 +801,16 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	auto _properties_menu = [ & ]( const QString& fs,bool addSeparator ){
 
-		if( fs != "encfs" && fs != "cryfs" ){
+		if( fs != "encfs" ){
 
-			connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
-				 this,SLOT( volumeProperties() ) ) ;
+			if( fs == "cryfs" ){
+
+				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
+					 this,SLOT( cryfsVolumeProperties() ) ) ;
+			}else{
+				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
+					 this,SLOT( volumeProperties() ) ) ;
+			}
 
 			if( addSeparator ){
 

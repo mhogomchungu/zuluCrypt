@@ -725,23 +725,8 @@ void keyDialog::openVolume()
 
 	if( s.success() ){
 
-		if( utility::mapperPathExists( m_path ) ) {
+		m_success( utility::mountPath( mountPoint ) ) ;
 
-			/*
-			 * The volume is reported as opened and it actually is
-			 */
-
-			m_success( utility::mountPath( mountPoint ) ) ;
-		}else{
-			/*
-			 * The volume is reported as opened but it isnt,possible reason is a backe end crash
-			 */
-
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIOK( tr( "ERROR" ),tr( "An error has occured and the volume could not be opened" ) ) ;
-			m_cancel() ;
-		}
 		this->HideUI() ;
 	}else{
 		m_veraCryptWarning.hide() ;

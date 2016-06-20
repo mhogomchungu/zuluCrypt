@@ -183,6 +183,7 @@ namespace utility
 	void removeFavoriteEntry( const QString& ) ;
 	bool pathExists( const QString& ) ;
 	bool canCreateFile( const QString& ) ;
+	QString prettyfySpaceUsage( quint64 ) ;
 	QString resolvePath( const QString& ) ;
 	QString hashPath( const QByteArray& ) ;
 	QString cryptMapperPath( void ) ;

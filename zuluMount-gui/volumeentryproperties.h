@@ -24,6 +24,12 @@
 
 #include <initializer_list>
 
+#include <sys/vfs.h>
+
+#include "../zuluCrypt-gui/utility.h"
+
+#include <QDebug>
+
 class volumeEntryProperties
 {
 public:
@@ -129,7 +135,38 @@ private:
 				m_fileSystem = m_fileSystem.replace( "/","\n(" ) + ")" ;
 			}
 
-			m_usedSpacePercentage.remove( QChar( '\n' ) ) ;
+			m_usedSpacePercentage.remove( '\n' ) ;
+
+			if( m_fileSystem == "cryfs" ){
+
+				struct statfs vfs ;
+
+				if( statfs( m_mountPoint.toLatin1().constData(),&vfs ) == 0 ){
+
+					quint64 s = vfs.f_bsize * ( vfs.f_blocks - vfs.f_bavail ) ;
+
+					m_volumeSize = utility::prettyfySpaceUsage( s ) ;
+
+					m_usedSpacePercentage = [ & ]()->QString{
+
+						if( vfs.f_bfree == 0 ){
+
+							return "100%" ;
+						}else{
+							quint64 s = vfs.f_blocks - vfs.f_bavail ;
+
+							auto e = double( s ) / double( vfs.f_blocks ) * 100 ;
+
+							if( e < 0.01 ){
+
+								return "0%" ;
+							}else{
+								return QString::number( e,'g',2 ) + "%" ;
+							}
+						}
+					}() ;
+				}
+			}
 		}
 	}
 

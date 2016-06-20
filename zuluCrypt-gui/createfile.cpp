@@ -159,7 +159,7 @@ the encrypted container and manage to derive meaning based on how the container 
 If you know what you are doing,then continue by all means,if in doubt,my advise is to endure the \
 process and be safer in the long run." ) ;
 
-		msg.ShowUIInfo( tr( "INFO" ),m ) ;
+		msg.ShowUIInfo( tr( "INFO" ),false,m ) ;
 	}
 }
 

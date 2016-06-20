@@ -99,7 +99,7 @@ from root account and then go to \"menu->options->manage non system partitions\"
 and add the volume to the list and the volume will stop being considered as \"system\".\n\n\
 Alternatively,you can add yourself to group \"zulucrypt\" and \"zulumount\" and all restrictions will go away." ) ;
 
-	this->ShowUIInfo( tr( "INFORMATION" ),msg ) ;
+	this->ShowUIInfo( tr( "INFORMATION" ),false,msg ) ;
 }
 
 void DialogMsg::ShowPermissionProblem( const QString& msg,const QString& device )
@@ -254,13 +254,18 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 	}
 }
 
-void DialogMsg::ShowUIInfo( const QString& title,const QString& msg )
+void DialogMsg::ShowUIInfo( const QString& title,bool centered,const QString& msg )
 {
 	m_ui->pbYes->setHidden( true ) ;
 	m_ui->pbNo->setHidden( true ) ;
 	m_ui->pbOk->setHidden( false ) ;
 
-	m_ui->label->setAlignment( Qt::AlignLeft|Qt::AlignVCenter ) ;
+	if( centered ){
+
+		m_ui->label->setAlignment( Qt::AlignHCenter|Qt::AlignVCenter ) ;
+	}else{
+		m_ui->label->setAlignment( Qt::AlignLeft|Qt::AlignVCenter ) ;
+	}
 
 	this->setFixedSize( 562,338 ) ;
 
