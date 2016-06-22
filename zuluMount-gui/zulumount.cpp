@@ -729,7 +729,7 @@ void zuluMount::cryfsVolumeProperties()
 
 	msg.ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
 
-		return QString( [](){
+		return QString( [ this ](){
 
 			auto l = { tr( "Block Size: %1" ),
 				   tr( "Used Blocks: %2" ),
