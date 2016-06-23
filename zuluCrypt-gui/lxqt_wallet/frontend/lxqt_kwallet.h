@@ -64,7 +64,7 @@ public:
 	void closeWallet( bool ) ;
 	LxQt::Wallet::walletBackEnd backEnd( void ) ;
 	bool walletIsOpened( void ) ;
-	void setInterfaceObject( QWidget * parent ) ;
+	void setInterfaceObject( QWidget * parent,bool = true ) ;
 	QObject * qObject( void ) ;
 	QString storagePath( void ) ;
 	void changeWalletPassWord( const QString& walletName,const QString& applicationName = QString() ) ;

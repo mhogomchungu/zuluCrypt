@@ -237,10 +237,14 @@ bool LxQt::Wallet::secretService::walletIsOpened( void )
 	}
 }
 
-void LxQt::Wallet::secretService::setInterfaceObject( QWidget * interfaceObject )
+void LxQt::Wallet::secretService::setInterfaceObject( QWidget * interfaceObject,bool e )
 {
 	m_interfaceObject = interfaceObject ;
-	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
+
+	if( e ){
+
+		connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
+	}
 }
 
 QObject * LxQt::Wallet::secretService::qObject( void )

@@ -177,8 +177,10 @@ bool LxQt::Wallet::kwallet::walletIsOpened( void )
 	return m_kwallet->isOpen() ;
 }
 
-void LxQt::Wallet::kwallet::setInterfaceObject( QWidget * interfaceObject )
+void LxQt::Wallet::kwallet::setInterfaceObject( QWidget * interfaceObject,bool e )
 {
+	Q_UNUSED( e ) ;
+	
 	m_interfaceObject = interfaceObject ;
 }
 

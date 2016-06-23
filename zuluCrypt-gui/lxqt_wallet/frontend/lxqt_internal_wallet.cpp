@@ -291,11 +291,16 @@ bool LxQt::Wallet::internalWallet::walletIsOpened()
 	return m_wallet != 0 ;
 }
 
-void LxQt::Wallet::internalWallet::setInterfaceObject( QWidget * interfaceObject )
+void LxQt::Wallet::internalWallet::setInterfaceObject( QWidget * interfaceObject,bool w )
 {
 	this->setParent( interfaceObject ) ;
+
 	m_interfaceObject = interfaceObject ;
-	connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
+
+	if( w ){
+
+		connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
+	}
 }
 
 QObject * LxQt::Wallet::internalWallet::qObject()

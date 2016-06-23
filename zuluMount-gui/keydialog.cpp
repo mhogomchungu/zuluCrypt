@@ -394,11 +394,11 @@ void keyDialog::pbOpen()
 
 		if( wallet == tr( KWALLET ) ){
 
-			w = utility::getKeyFromWallet( LxQt::Wallet::kwalletBackEnd,m_path ) ;
+			w = utility::getKeyFromWallet( this,LxQt::Wallet::kwalletBackEnd,m_path ) ;
 
 		}else if( wallet == tr( INTERNAL_WALLET ) ){
 
-			w = utility::getKeyFromWallet( LxQt::Wallet::internalBackEnd,m_path,_internalPassWord,"zuluMount" ) ;
+			w = utility::getKeyFromWallet( this,LxQt::Wallet::internalBackEnd,m_path,_internalPassWord,"zuluMount" ) ;
 
 			if( w.notConfigured ){
 
@@ -411,7 +411,7 @@ void keyDialog::pbOpen()
 
 		}else if( wallet == tr( GNOME_WALLET ) ){
 
-			w = utility::getKeyFromWallet( LxQt::Wallet::secretServiceBackEnd,m_path ) ;
+			w = utility::getKeyFromWallet( this,LxQt::Wallet::secretServiceBackEnd,m_path ) ;
 		}else{
 			return this->openVolume() ;
 		}
