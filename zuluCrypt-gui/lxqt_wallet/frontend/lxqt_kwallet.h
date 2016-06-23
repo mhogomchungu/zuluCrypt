@@ -83,6 +83,7 @@ private:
 	QString m_applicationName ;
 	QString m_password ;
 	QWidget * m_interfaceObject ;
+	bool m_announceInterfaceEvents = true ;
 };
 
 }

@@ -57,10 +57,12 @@ bool LxQt::Wallet::kwallet::await_open( const QString& walletName,const QString&
 					const QString& password,const QString& displayApplicationName )
 {
 	if( walletName == "default" ){
+
 		m_walletName = KWallet::Wallet::LocalWallet() ;
 	}else{
 		m_walletName = walletName ;
 	}
+
 	m_applicationName   = applicationName ;
 	m_password          = password ;
 
@@ -91,10 +93,12 @@ void LxQt::Wallet::kwallet::open( const QString& walletName,const QString& appli
 				  const QString& password,const QString& displayApplicationName )
 {
 	if( walletName == "default" ){
+
 		m_walletName = KWallet::Wallet::LocalWallet() ;
 	}else{
 		m_walletName = walletName ;
 	}
+
 	m_applicationName   = applicationName ;
 	m_password          = password ;
 
@@ -119,7 +123,11 @@ void LxQt::Wallet::kwallet::walletOpened( bool opened )
 		}
 	}
 
-	connect( this,SIGNAL( walletOpened_1( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
+	if( m_announceInterfaceEvents ){
+
+		connect( this,SIGNAL( walletOpened_1( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
+	}
+
 	emit walletOpened_1( opened ) ;
 }
 
@@ -158,8 +166,7 @@ void LxQt::Wallet::kwallet::deleteKey( const QString& key )
 
 int LxQt::Wallet::kwallet::walletSize( void )
 {
-	QStringList l = m_kwallet->entryList() ;
-	return l.size() ;
+	return m_kwallet->entryList().size() ;
 }
 
 void LxQt::Wallet::kwallet::closeWallet( bool b )
@@ -179,8 +186,8 @@ bool LxQt::Wallet::kwallet::walletIsOpened( void )
 
 void LxQt::Wallet::kwallet::setInterfaceObject( QWidget * interfaceObject,bool e )
 {
-	Q_UNUSED( e ) ;
-	
+	m_announceInterfaceEvents = e ;
+
 	m_interfaceObject = interfaceObject ;
 }
 
@@ -198,7 +205,12 @@ void LxQt::Wallet::kwallet::changeWalletPassWord( const QString& walletName,cons
 {
 	Q_UNUSED( applicationName ) ;
 	m_kwallet->changePassword( walletName,0 ) ;
-	connect( this,SIGNAL( walletpassWordChanged( bool ) ),m_interfaceObject,SLOT( walletpassWordChanged( bool ) ) ) ;
+
+	if( m_announceInterfaceEvents ){
+
+		connect( this,SIGNAL( walletpassWordChanged( bool ) ),m_interfaceObject,SLOT( walletpassWordChanged( bool ) ) ) ;
+	}
+
 	emit walletpassWordChanged( false ) ;
 }
 
