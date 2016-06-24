@@ -86,7 +86,7 @@ private:
 	const char * m_applicationName ;
 
 	QString m_password ;
-	QWidget * m_interfaceObject ;
+	QWidget * m_interfaceObject = nullptr ;
 
 	std::unique_ptr<void,void(*)( void * )> m_schema ;
 	std::unique_ptr<void,void(*)( void * )> m_schema_1 ;

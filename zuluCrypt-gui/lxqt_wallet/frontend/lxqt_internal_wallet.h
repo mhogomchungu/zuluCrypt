@@ -95,7 +95,7 @@ private:
 	QString m_applicationName ;
 	QString m_displayApplicationName ;
 	QString m_password ;
-	QWidget * m_interfaceObject ;
+	QWidget * m_interfaceObject = nullptr ;
 	QEventLoop m_loop ;
 	bool m_opened ;
 

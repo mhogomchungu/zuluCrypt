@@ -375,7 +375,7 @@ Options:
 	-e   démarre l&apos;application sans afficher l&apos;interface graphique</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="610"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="615"/>
         <source>If the option is checked,a primary private mount point will be created in &quot;%1&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;%2&quot;</source>
         <translation>
@@ -383,29 +383,29 @@ Si l&apos;option est cochée, un point de montage privé primaire sera créé da
 et un «miroir» secondaire du point de montage accessible au public sera créé dans &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="621"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="626"/>
         <source>public mount point: </source>
         <translation>point de montage public: </translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1190"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1212"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1195"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1217"/>
         <source>Manage Favorites</source>
         <translation>Gérer les Favoris</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1192"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1216"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1197"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1221"/>
         <source>Mount All</source>
         <translation>Tout Monter</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1250"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1255"/>
         <source>about zuluCrypt</source>
         <translation>A propos de zuluCrypt</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1484"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1489"/>
         <source>hmac plugin.
 
 This plugin generates a key using below formular:
@@ -418,7 +418,7 @@ Ce plugin génère une clé en utilisant la formule ci-dessous:
 key = hmac(sha256,passphrase,keyfile contents)</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1489"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1494"/>
         <source>keykeyfile plugin.
 
 This plugin generates a key using below formular:
@@ -432,7 +432,7 @@ key = passphrase + keyfile contents
 </translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1494"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1499"/>
         <source>gpg plugin.
 
 This plugin retrives a key locked in a gpg file with a symmetric key</source>
@@ -441,22 +441,22 @@ This plugin retrives a key locked in a gpg file with a symmetric key</source>
 Ce plugin récupère une clé de verrouillage dans un fichier gpg avec une clé symétrique</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1512"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1517"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1512"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1517"/>
         <source>Could not find &quot;gpg&quot; executable in &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; and &quot;/usr/sbin&quot;</source>
         <translation>Ne trouve pas de &quot;gpg&quot; executable dans &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; ou &quot;/usr/sbin&quot;</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1708"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1713"/>
         <source>INFO</source>
         <translation>INFO</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1708"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1713"/>
         <source>Translation will be done the next time you restart.</source>
         <translation>Les traductions seront mises à jour au prochain démarrage.</translation>
     </message>
@@ -3232,7 +3232,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;L&apos;application &lt;span style=&quot; font-weight:600;&quot;&gt;&apos;%1&apos;&lt;/span&gt; a demandé d&apos;ouvrir le trousseau&lt;span style=&quot; font-weight:600;&quot;&gt; &apos;%2&apos;&lt;/span&gt;.Saisissez le mot de passe du trousseau ci-après pour le déverrouiller.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/lxqt_wallet/frontend/password_dialog.ui" line="125"/>
+        <location filename="../../zuluCrypt-gui/lxqt_wallet/frontend/password_dialog.ui" line="124"/>
         <source>&amp;Unlock</source>
         <translation>&amp;Déverrouiller</translation>
     </message>

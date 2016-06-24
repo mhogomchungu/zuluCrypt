@@ -38,6 +38,7 @@ LxQt::Wallet::kwallet::kwallet() : m_kwallet( 0 )
 LxQt::Wallet::kwallet::~kwallet()
 {
 	if( m_kwallet ){
+
 		m_kwallet->sync() ;
 		m_kwallet->deleteLater() ;
 	}
@@ -72,7 +73,7 @@ bool LxQt::Wallet::kwallet::await_open( const QString& walletName,const QString&
 
 	m_kwallet = _task( [ this ](){ return KWallet::Wallet::openWallet( m_walletName,0,KWallet::Wallet::Synchronous ) ; } ) ;
 
-	if( m_kwallet != nullptr ){
+	if( m_kwallet ){
 
 		if( m_applicationName.isEmpty() ){
 
@@ -123,34 +124,39 @@ void LxQt::Wallet::kwallet::walletOpened( bool opened )
 		}
 	}
 
-	if( m_announceInterfaceEvents ){
+	if( m_announceInterfaceEvents && m_interfaceObject ){
 
-		connect( this,SIGNAL( walletOpened_1( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
+		QMetaObject::invokeMethod( m_interfaceObject,"walletIsOpen",
+					   Qt::QueuedConnection,Q_ARG( bool,opened ) ) ;
 	}
-
-	emit walletOpened_1( opened ) ;
 }
 
 QByteArray LxQt::Wallet::kwallet::readValue( const QString& key )
 {
 	QString value ;
+
 	m_kwallet->readPassword( key,value ) ;
+
 	return value.toLatin1() ;
 }
 
 QVector<LxQt::Wallet::walletKeyValues> LxQt::Wallet::kwallet::readAllKeyValues( void )
 {
 	QVector<LxQt::Wallet::walletKeyValues> p ;
-	QStringList l = m_kwallet->entryList() ;
+
+	auto l = m_kwallet->entryList() ;
+
 	QString value ;
+
 	int j = l.size() ;
 
 	for( int i = 0 ; i < j ; i++ ){
 
-		auto& e = l.at( i ) ;
+		const auto& e = l.at( i ) ;
 		m_kwallet->readPassword( e,value ) ;
 		p.append( LxQt::Wallet::walletKeyValues( e,value.toLatin1() ) ) ;
 	}
+
 	return p ;
 }
 
@@ -204,14 +210,8 @@ QString LxQt::Wallet::kwallet::storagePath()
 void LxQt::Wallet::kwallet::changeWalletPassWord( const QString& walletName,const QString& applicationName )
 {
 	Q_UNUSED( applicationName ) ;
+
 	m_kwallet->changePassword( walletName,0 ) ;
-
-	if( m_announceInterfaceEvents ){
-
-		connect( this,SIGNAL( walletpassWordChanged( bool ) ),m_interfaceObject,SLOT( walletpassWordChanged( bool ) ) ) ;
-	}
-
-	emit walletpassWordChanged( false ) ;
 }
 
 QStringList LxQt::Wallet::kwallet::managedWalletList()

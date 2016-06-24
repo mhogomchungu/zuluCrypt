@@ -184,7 +184,11 @@ public:
 	 * This back end requires an object to be passed using "setInterfaceObject()" method of this API and the object must have a slot named
 	 * "void walletIsOpen(bool)".The slot will be called with "true" if the wallet was opened and with "false" otherwise.
 	 *
-	 * Calling this open() method without a password will generate a GUI prompt for a password
+	 * Calling this open() method without a password will generate a GUI prompt for a password.
+	 *
+	 *  open() method will return immediately and the status of the call will be returned through setInterfaceObject() API.
+	 *  await_open() will wait in a non blocking way and will return the status of the call through its return value.
+	 *
 	 */
 	virtual void open( const QString& walletName,const QString& applicationName = QString(),
 			   const QString& password = QString(),const QString& displayApplicationName = QString() ) = 0 ;
@@ -210,7 +214,8 @@ public:
 
 	/*
 	 * change the wallet key to newWalletKey
-	 * internal backend will emit "walletpassWordChanged(bool)" to notify if the password was changed or not
+	 * internal backend will emit "walletpassWordChanged(bool)" to notify if the password was changed or not.
+	 * nothing will be emitted with kwallet backend.
 	 * This method is undefined in secretService backend
 	 */
 	virtual void changeWalletPassWord( const QString& walletName,const QString& applicationName = QString() ) = 0 ;

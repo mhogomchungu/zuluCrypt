@@ -72,9 +72,6 @@ public:
 	QString localDefaultWalletName( void ) ;
 	QString networkDefaultWalletName( void ) ;
 	void setImage( const QIcon& ) ;
-signals:
-	void walletpassWordChanged( bool ) ;
-	void walletOpened_1( bool ) ;
 private slots:
 	void walletOpened( bool ) ;
 private:
@@ -82,7 +79,7 @@ private:
 	QString m_walletName ;
 	QString m_applicationName ;
 	QString m_password ;
-	QWidget * m_interfaceObject ;
+	QWidget * m_interfaceObject = nullptr ;
 	bool m_announceInterfaceEvents = true ;
 };
 
