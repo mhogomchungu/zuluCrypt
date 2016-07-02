@@ -99,9 +99,11 @@
 <a id="currently-known-bugs" class="anchor" href="#currently-known-bugs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>currently known bugs</h2>
 
 <ol>
-<li>Dialog prompt for accepting passwords to unlock kwallet/gnome wallet/internal wallets does not work in unity desktop environment. Git and development version of binary packages already has the fix.
-## cryptsetup</li>
+<li>Dialog prompt for accepting passwords to unlock <code>kde/gnome/internal</code> wallets does not work in unity desktop environment. Git and development version of binary packages already has the fix.</li>
 </ol>
+
+<h2>
+<a id="cryptsetup" class="anchor" href="#cryptsetup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>cryptsetup</h2>
 
 <p><a href="https://gitlab.com/cryptsetup/cryptsetup/blob/master/README.md">cryptsetup</a> is one of the most popular linux native solutions for block device encryption.</p>
 
@@ -121,7 +123,7 @@
 <p>zuluCrypt has a plugin architecture that allows it to retrieve keys to unlock volume from difference source:</p>
 
 <ul>
-<li>gnome's keyring.</li>
+<li>gnome's libsecret(gnome wallet).</li>
 <li>kde's kwallet.</li>
 <li>an internal storage system powered by libgcrypt.</li>
 <li>a keyfile where key = contents of a keyfile.</li>
