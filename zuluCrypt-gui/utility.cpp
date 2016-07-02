@@ -359,8 +359,6 @@ static bool _execute_process( const QString& m,const QString& exe,const QString&
 
 		return utility::Task( exe + " " + utility::Task::makePath( m ),[ & ](){
 
-			qDebug() << env ;
-
 			QProcessEnvironment e ;
 
 			for( const auto& it : env.split( '\n' ) ){
@@ -372,8 +370,6 @@ static bool _execute_process( const QString& m,const QString& exe,const QString&
 					e.insert( q.at( 0 ),q.at( 1 ) ) ;
 				}
 			}
-
-			qDebug() << e.toStringList() ;
 
 			return e ;
 
