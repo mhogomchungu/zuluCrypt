@@ -412,15 +412,18 @@ void passwordDialog::buttonOpenClicked( void )
 		auto wallet = m_ui->PassPhraseField->text() ;
 		auto keyID = m_ui->OpenVolumePath->text() ;
 
+		using wbe = LXQt::Wallet::BackEnd ;
+
 		utility::wallet w ;
 
 		if( wallet == tr( KWALLET ) ){
 
-			w = utility::getKeyFromWallet( this,LxQt::Wallet::kwalletBackEnd,keyID ) ;
+			w = utility::getKeyFromWallet( this,wbe::kwallet,keyID ) ;
 
 		}else if( wallet == tr( INTERNAL_WALLET ) ){
 
-			w = utility::getKeyFromWallet( this,LxQt::Wallet::internalBackEnd,keyID,_internalPassWord,"zuluCrypt" ) ;
+			w = utility::getKeyFromWallet( this,wbe::internal,keyID,
+						       _internalPassWord,"zuluCrypt" ) ;
 
 			if( w.notConfigured ){
 
@@ -434,7 +437,7 @@ void passwordDialog::buttonOpenClicked( void )
 
 		}else if( wallet == tr( GNOME_WALLET ) ){
 
-			w = utility::getKeyFromWallet( this,LxQt::Wallet::secretServiceBackEnd,keyID ) ;
+			w = utility::getKeyFromWallet( this,wbe::libsecret,keyID ) ;
 		}else{
 			m_key = m_ui->PassPhraseField->text().toLatin1() ;
 			return this->openVolume() ;

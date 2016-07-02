@@ -46,7 +46,7 @@ public:
 	}
 	explicit walletconfig( QWidget * parent = 0 ) ;
 	~walletconfig() ;
-	void ShowUI( LxQt::Wallet::walletBackEnd ) ;
+	void ShowUI( LXQt::Wallet::BackEnd ) ;
 	void HideUI( void ) ;
 signals:
 	void HideUISignal( void ) ;
@@ -65,7 +65,7 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
-	LxQt::Wallet::Wallet * m_wallet ;
+	LXQt::Wallet::Wallet * m_wallet ;
 	int m_row ;
 	QString m_volumeID ;
 	QString m_comment ;

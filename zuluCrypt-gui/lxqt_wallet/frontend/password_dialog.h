@@ -45,7 +45,7 @@ namespace Ui{
 class password_dialog;
 }
 
-namespace LxQt{
+namespace LXQt{
 
 namespace Wallet{
 

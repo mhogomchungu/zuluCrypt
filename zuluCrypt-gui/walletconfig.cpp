@@ -171,79 +171,89 @@ void walletconfig::pbAdd()
 	} ) ;
 }
 
-void walletconfig::ShowUI( LxQt::Wallet::walletBackEnd backEnd )
+void walletconfig::ShowUI( LXQt::Wallet::BackEnd backEnd )
 {
 	this->disableAll() ;
 	this->show() ;
 
-	m_wallet = LxQt::Wallet::getWalletBackend( backEnd ) ;
-	m_wallet->setInterfaceObject( this ) ;
+	m_wallet = LXQt::Wallet::getWalletBackend( backEnd ) ;
 
-	if( backEnd == LxQt::Wallet::kwalletBackEnd ){
+	m_wallet->open( [ & ]()->QString{
 
-		m_wallet->open( "default",utility::applicationName() ) ;
-	}else{
-		m_wallet->open( utility::walletName(),utility::applicationName() ) ;
-	}
+		if( backEnd == LXQt::Wallet::BackEnd::kwallet ){
+
+			return "default" ;
+		}else{
+			return utility::walletName() ;
+		}
+
+	}(),utility::applicationName(),[ this ]( bool e ){
+
+		this->walletIsOpen( e ) ;
+
+	},this ) ;
 }
 
 void walletconfig::walletIsOpen( bool opened )
 {
-	using walletKeys = QVector<LxQt::Wallet::walletKeyValues> ;
+	using walletKeys = decltype( m_wallet->readAllKeyValues() ) ;
 
-	if( opened ){
+	if( !opened ){
 
-		Task::run<walletKeys>( [ this ](){
+		emit couldNotOpenWallet() ;
+		return this->HideUI() ;
+	}
 
-			return m_wallet->readAllKeyValues() ;
+	Task::run<walletKeys>( [ this ](){
 
-		} ).then( [ this ]( const walletKeys& keys ){
+		return m_wallet->readAllKeyValues() ;
 
-			if( !keys.empty() ){
+	} ).then( [ this ]( const walletKeys& keys ){
 
-				auto _getEntry = [&]( const QString& acc )-> const QByteArray& {
+		if( !keys.empty() ){
 
-					for( const auto& it : keys ){
-
-						if( it.getKey() == acc ){
-
-							return it.getValue() ;
-						}
-					}
-
-					static QByteArray ShouldNotGetHere ;
-					return ShouldNotGetHere ;
-				} ;
-
-				/*
-				 * each volume gets two entries in wallet:
-				 * First one in the form of  : entry         -> entry password
-				 * Second one in the form of : entry-COMMENT -> comment
-				 *
-				 * This allows to store a a volume volume,a comment about the volume and the passphrase.
-				 *
-				 */
-
-				auto table = m_ui->tableWidget ;
+			auto _getEntry = [&]( const QString& acc )-> const QByteArray& {
 
 				for( const auto& it : keys ){
 
-					const auto& acc = it.getKey() ;
+					if( it.first == acc ){
 
-					if( !acc.endsWith( COMMENT ) ){
-
-						tablewidget::addRowToTable( table,{ acc,_getEntry( acc + COMMENT ) } ) ;
+						return it.second ;
 					}
 				}
+
+				static QByteArray ShouldNotGetHere ;
+				return ShouldNotGetHere ;
 			} ;
 
-			this->enableAll() ;
-			m_ui->tableWidget->setFocus() ;
-		} ) ;
-	}else{
-		emit couldNotOpenWallet() ;
-		this->HideUI() ;
-	}
+			/*
+			 * each volume gets two entries in wallet:
+			 * First one in the form of  : entry         -> entry password
+			 * Second one in the form of : entry-COMMENT -> comment
+			 *
+			 * This allows to store a a volume volume,a comment about the volume
+			 * and the passphrase.
+			 *
+			 */
+
+			auto table = m_ui->tableWidget ;
+
+			for( const auto& it : keys ){
+
+				const auto& acc = it.first ;
+
+				if( !acc.endsWith( COMMENT ) ){
+
+					const auto& e = _getEntry( acc + COMMENT ) ;
+
+					tablewidget::addRowToTable( table,{ acc,e } ) ;
+				}
+			}
+		} ;
+
+		this->enableAll() ;
+		m_ui->tableWidget->setFocus() ;
+	} ) ;
 }
 
 void walletconfig::enableAll()

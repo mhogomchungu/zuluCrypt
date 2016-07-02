@@ -159,7 +159,7 @@ namespace utility
 
 	int startApplication( const char * appName,std::function<int()> ) ;
 
-	wallet getKeyFromWallet( QWidget *,LxQt::Wallet::walletBackEnd,const QString& keyID,
+	wallet getKeyFromWallet( QWidget *,LXQt::Wallet::BackEnd,const QString& keyID,
 				 const QString& pwd = QString(),const QString& app = QString() ) ;
 
 	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
@@ -248,7 +248,7 @@ namespace utility
 	::Task::future< int >& exec( const QString& ) ;
 	::Task::future< QStringList >& luksEmptySlots( const QString& volumePath ) ;
 	::Task::future< QString >& getUUIDFromPath( const QString& ) ;
-	::Task::future<QString>& getKeyFromWallet( LxQt::Wallet::Wallet * wallet,const QString& volumeID ) ;
+	::Task::future<QString>& getKeyFromWallet( LXQt::Wallet::Wallet * wallet,const QString& volumeID ) ;
 	::Task::future< bool >& openPath( const QString& path,const QString& opener,const QString& env = QString() ) ;
 
 	void openPath( const QString& path,const QString& opener,const QString& env,QWidget *,const QString&,const QString& ) ;

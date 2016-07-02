@@ -378,8 +378,13 @@ void zuluCrypt::setupConnections()
 		m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( false ) ;
 		m_ui->actionManage_volumes_in_kde_wallet->setEnabled( false ) ;
 	}else{
-		m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::secretServiceBackEnd ) ) ;
-		m_ui->actionManage_volumes_in_kde_wallet->setEnabled( LxQt::Wallet::backEndIsSupported( LxQt::Wallet::kwalletBackEnd ) ) ;
+		using wbe = LXQt::Wallet::BackEnd ;
+
+		auto a = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
+		auto b = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
+
+		m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( a ) ;
+		m_ui->actionManage_volumes_in_kde_wallet->setEnabled( b ) ;
 	}
 
 	connect( m_ui->menuOptions,SIGNAL( aboutToShow() ),this,SLOT( optionMenuAboutToShow() ) ) ;
@@ -418,7 +423,7 @@ void zuluCrypt::optionMenuAboutToShow()
 {
 	auto a = utility::walletName() ;
 	auto b = utility::applicationName() ;
-	auto c = LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,a,b ) ;
+	auto c = LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,a,b ) ;
 
 	m_ui->actionChange_internal_wallet_password->setEnabled( c ) ;
 }
@@ -445,17 +450,17 @@ void zuluCrypt::info()
 
 void zuluCrypt::manageVolumesInGNOMEWallet()
 {
-	walletconfig::instance( this ).ShowUI( LxQt::Wallet::secretServiceBackEnd ) ;
+	walletconfig::instance( this ).ShowUI( LXQt::Wallet::BackEnd::libsecret ) ;
 }
 
 void zuluCrypt::manageVolumesInInternalWallet()
 {
-	walletconfig::instance( this ).ShowUI( LxQt::Wallet::internalBackEnd ) ;
+	walletconfig::instance( this ).ShowUI( LXQt::Wallet::BackEnd::internal ) ;
 }
 
 void zuluCrypt::manageVolumesInKDEWallet()
 {
-	walletconfig::instance( this ).ShowUI( LxQt::Wallet::kwalletBackEnd ) ;
+	walletconfig::instance( this ).ShowUI( LXQt::Wallet::BackEnd::kwallet ) ;
 }
 
 void zuluCrypt::failedToOpenWallet()

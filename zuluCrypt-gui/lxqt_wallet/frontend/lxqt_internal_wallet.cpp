@@ -30,23 +30,23 @@
 
 #include "lxqt_internal_wallet.h"
 
-namespace Task = LxQt::Wallet::Task ;
+namespace Task = LXQt::Wallet::Task ;
 
-LxQt::Wallet::internalWallet::internalWallet() : m_wallet( 0 )
+LXQt::Wallet::internalWallet::internalWallet() : m_wallet( nullptr )
 {
 }
 
-LxQt::Wallet::internalWallet::~internalWallet()
+LXQt::Wallet::internalWallet::~internalWallet()
 {
 	lxqt_wallet_close( &m_wallet ) ;
 }
 
-void LxQt::Wallet::internalWallet::setImage( const QIcon& image )
+void LXQt::Wallet::internalWallet::setImage( const QIcon& image )
 {
 	this->setWindowIcon( image ) ;
 }
 
-void LxQt::Wallet::internalWallet::openWallet( QString password )
+void LXQt::Wallet::internalWallet::openWallet( QString password )
 {
 	m_password = password ;
 
@@ -63,7 +63,7 @@ void LxQt::Wallet::internalWallet::openWallet( QString password )
 	} ) ;
 }
 
-void LxQt::Wallet::internalWallet::opened( bool opened )
+void LXQt::Wallet::internalWallet::opened( bool opened )
 {
 	m_correctPassword( opened ) ;
 
@@ -73,27 +73,42 @@ void LxQt::Wallet::internalWallet::opened( bool opened )
 
 		m_loop.exit() ;
 
-		emit getPassWord( m_password ) ;
-		emit walletIsOpen( m_opened ) ;
+		this->walletIsOpen( m_opened ) ;
 	}
 }
 
-bool LxQt::Wallet::internalWallet::await_open( const QString& walletName,const QString& applicationName,
-					       const QString& password,const QString& displayApplicationName )
+bool LXQt::Wallet::internalWallet::await_open( const QString& walletName,
+					       const QString& applicationName,
+					       QWidget * parent,
+					       const QString& password,
+					       const QString& displayApplicationName )
 {
-	this->open( walletName,applicationName,password,displayApplicationName ) ;
+	this->open( walletName,
+		    applicationName,
+		    []( bool e ){ Q_UNUSED( e ) ; },
+		    parent,
+		    password,
+		    displayApplicationName ) ;
 
 	m_loop.exec() ;
 
 	return m_opened ;
 }
 
-void LxQt::Wallet::internalWallet::open( const QString& walletName,const QString& applicationName,
-					 const QString& password,const QString& displayApplicationName )
+void LXQt::Wallet::internalWallet::open( const QString& walletName,
+					 const QString& applicationName,
+					 std::function< void( bool ) > function,
+					 QWidget * parent,
+					 const QString& password,
+					 const QString& displayApplicationName )
 {
+	this->setParent( parent ) ;
+
 	m_walletName      = walletName ;
 	m_applicationName = applicationName ;
 	m_password        = password ;
+
+	m_walletOpened = std::move( function ) ;
 
 	if( m_applicationName.isEmpty() ){
 
@@ -107,7 +122,7 @@ void LxQt::Wallet::internalWallet::open( const QString& walletName,const QString
 		m_displayApplicationName = displayApplicationName ;
 	}
 
-	if( LxQt::Wallet::walletExists( LxQt::Wallet::internalBackEnd,m_walletName,m_applicationName ) ){
+	if( LXQt::Wallet::walletExists( LXQt::Wallet::BackEnd::internal,m_walletName,m_applicationName ) ){
 
 		this->openWallet() ;
 	}else{
@@ -115,7 +130,7 @@ void LxQt::Wallet::internalWallet::open( const QString& walletName,const QString
 	}
 }
 
-void LxQt::Wallet::internalWallet::openWallet()
+void LXQt::Wallet::internalWallet::openWallet()
 {
 	if( m_password.isEmpty() ){
 
@@ -142,7 +157,7 @@ void LxQt::Wallet::internalWallet::openWallet()
 				 * passwordless opening failed,prompt a user for a password
 				 */
 
-				using pwd = LxQt::Wallet::password_dialog ;
+				using pwd = LXQt::Wallet::password_dialog ;
 
 				auto _cancelled = [ this ](){
 
@@ -150,7 +165,7 @@ void LxQt::Wallet::internalWallet::openWallet()
 
 					m_loop.exit() ;
 
-					emit walletIsOpen( false ) ;
+					this->walletIsOpen( false ) ;
 				} ;
 
 				pwd::instance( this,
@@ -166,9 +181,9 @@ void LxQt::Wallet::internalWallet::openWallet()
 	}
 }
 
-void LxQt::Wallet::internalWallet::createWallet()
+void LXQt::Wallet::internalWallet::createWallet()
 {
-	using cbd = LxQt::Wallet::changePassWordDialog ;
+	using cbd = LXQt::Wallet::changePassWordDialog ;
 
 	const auto& w = m_walletName ;
 	const auto& d = m_displayApplicationName ;
@@ -192,24 +207,24 @@ void LxQt::Wallet::internalWallet::createWallet()
 
 					this->openWallet( m_password ) ;
 				}else{
-					emit walletIsOpen( false ) ;
+					this->walletIsOpen( false ) ;
 				}
 			} ) ;
 		}else{
-			emit walletIsOpen( false ) ;
+			this->walletIsOpen( false ) ;
 		}
 	} ) ;
 }
 
-void LxQt::Wallet::internalWallet::changeWalletPassWord( const QString& walletName,const QString& applicationName )
+void LXQt::Wallet::internalWallet::changeWalletPassWord( const QString& walletName,
+							 const QString& applicationName,
+							 std::function< void( bool ) > function )
 {
-	LxQt::Wallet::changePassWordDialog::instance_1( this,walletName,applicationName,[ this ]( bool c ){
-
-		QMetaObject::invokeMethod( m_interfaceObject,"walletpassWordChanged",Q_ARG( bool,c ) ) ;
-	} ) ;
+	LXQt::Wallet::changePassWordDialog::instance_1( this,walletName,applicationName,
+							[ this,function ]( bool e ){ function( e ) ;} ) ;
 }
 
-QByteArray LxQt::Wallet::internalWallet::readValue( const QString& key )
+QByteArray LXQt::Wallet::internalWallet::readValue( const QString& key )
 {
 	lxqt_wallet_key_values_t key_value ;
 
@@ -221,26 +236,24 @@ QByteArray LxQt::Wallet::internalWallet::readValue( const QString& key )
 	}
 }
 
-QVector<LxQt::Wallet::walletKeyValues> LxQt::Wallet::internalWallet::readAllKeyValues( void )
+QVector< std::pair< QString,QByteArray > > LXQt::Wallet::internalWallet::readAllKeyValues( void )
 {
-	QVector<LxQt::Wallet::walletKeyValues> w ;
+	QVector< std::pair < QString,QByteArray > > w ;
 
 	lxqt_wallet_iterator_t iter ;
 
 	iter.iter_pos = 0 ;
 
-	#define e QByteArray( iter.entry.key,iter.entry.key_size - 1 )
-	#define f QByteArray( iter.entry.key_value,iter.entry.key_value_size )
-
 	while( lxqt_wallet_iter_read_value( m_wallet,&iter ) ){
 
-		w.append( LxQt::Wallet::walletKeyValues( e,f ) ) ;
+		w.append( { QByteArray( iter.entry.key,iter.entry.key_size - 1 ),
+			    QByteArray( iter.entry.key_value,iter.entry.key_value_size ) } ) ;
 	}
 
 	return w ;
 }
 
-QStringList LxQt::Wallet::internalWallet::readAllKeys()
+QStringList LXQt::Wallet::internalWallet::readAllKeys()
 {
 	QStringList l ;
 	lxqt_wallet_iterator_t iter ;
@@ -255,66 +268,64 @@ QStringList LxQt::Wallet::internalWallet::readAllKeys()
 	return l ;
 }
 
-bool LxQt::Wallet::internalWallet::addKey( const QString& key,const QByteArray& value )
+bool LXQt::Wallet::internalWallet::addKey( const QString& key,const QByteArray& value )
 {
 	/*
 	 * For the key,we add +1 to the key size to include the '\0' character in the key to
 	 * avoid possible collisions if our keys prefix match
 	 */
-	auto r = lxqt_wallet_add_key( m_wallet,key.toLatin1().constData(),key.size() + 1,value.constData(),value.size() ) ;
+	auto r = lxqt_wallet_add_key( m_wallet,
+				      key.toLatin1().constData(),
+				      key.size() + 1,
+				      value.constData(),
+				      value.size() ) ;
+
 	return r == lxqt_wallet_no_error ;
 }
 
-void LxQt::Wallet::internalWallet::deleteKey( const QString& key )
+void LXQt::Wallet::internalWallet::deleteKey( const QString& key )
 {
 	lxqt_wallet_delete_key( m_wallet,key.toLatin1().constData(),key.size() + 1 ) ;
 }
 
-int LxQt::Wallet::internalWallet::walletSize( void )
+int LXQt::Wallet::internalWallet::walletSize( void )
 {
 	return lxqt_wallet_wallet_size( m_wallet ) ;
 }
 
-void LxQt::Wallet::internalWallet::closeWallet( bool b )
+void LXQt::Wallet::internalWallet::closeWallet( bool b )
 {
 	Q_UNUSED( b ) ;
 	lxqt_wallet_close( &m_wallet ) ;
 }
 
-LxQt::Wallet::walletBackEnd LxQt::Wallet::internalWallet::backEnd()
+LXQt::Wallet::BackEnd LXQt::Wallet::internalWallet::backEnd()
 {
-	return LxQt::Wallet::internalBackEnd ;
+	return LXQt::Wallet::BackEnd::internal ;
 }
 
-bool LxQt::Wallet::internalWallet::walletIsOpened()
+bool LXQt::Wallet::internalWallet::walletIsOpened()
 {
 	return m_wallet != 0 ;
 }
 
-void LxQt::Wallet::internalWallet::setInterfaceObject( QWidget * interfaceObject,bool w )
-{
-	this->setParent( interfaceObject ) ;
-
-	m_interfaceObject = interfaceObject ;
-
-	if( w ){
-
-		connect( this,SIGNAL( walletIsOpen( bool ) ),m_interfaceObject,SLOT( walletIsOpen( bool ) ) ) ;
-	}
-}
-
-QObject * LxQt::Wallet::internalWallet::qObject()
+QObject * LXQt::Wallet::internalWallet::qObject()
 {
 	this->setObjectName( m_password ) ;
 	return this ;
 }
 
-QString LxQt::Wallet::internalWallet::storagePath()
+void LXQt::Wallet::internalWallet::walletIsOpen( bool e )
+{
+	m_walletOpened( e ) ;
+}
+
+QString LXQt::Wallet::internalWallet::storagePath()
 {
 	return QString() ;
 }
 
-QStringList LxQt::Wallet::internalWallet::managedWalletList()
+QStringList LXQt::Wallet::internalWallet::managedWalletList()
 {
 	char path[ 4096 ] ;
 	lxqt_wallet_application_wallet_path( path,4096,m_applicationName.toLatin1().constData() ) ;
@@ -334,12 +345,12 @@ QStringList LxQt::Wallet::internalWallet::managedWalletList()
 	return l ;
 }
 
-QString LxQt::Wallet::internalWallet::localDefaultWalletName()
+QString LXQt::Wallet::internalWallet::localDefaultWalletName()
 {
 	return QString() ;
 }
 
-QString LxQt::Wallet::internalWallet::networkDefaultWalletName()
+QString LXQt::Wallet::internalWallet::networkDefaultWalletName()
 {
 	return QString() ;
 }

@@ -47,7 +47,7 @@ namespace Ui {
 class changePassWordDialog;
 }
 
-namespace LxQt{
+namespace LXQt{
 
 namespace Wallet{
 

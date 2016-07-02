@@ -53,28 +53,28 @@ public:
 	{
 		new changeWalletPassWord( parent ) ;
 	}
-	changeWalletPassWord( QWidget * parent ) : m_wallet( LxQt::Wallet::getWalletBackend( LxQt::Wallet::internalBackEnd ) )
+	changeWalletPassWord( QWidget * parent )
 	{
-		m_wallet->setInterfaceObject( this ) ;
+		m_wallet = LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd::internal ) ;
+
 		m_wallet->setParent( parent ) ;
-		m_wallet->changeWalletPassWord( utility::walletName(),utility::applicationName() ) ;
+
+		auto a = utility::walletName() ;
+		auto b = utility::applicationName() ;
+
+		m_wallet->changeWalletPassWord( a,b,[ this ]( bool e ){
+
+			Q_UNUSED( e ) ;
+
+			this->deleteLater() ;
+		} ) ;
 	}
 	~changeWalletPassWord()
 	{
 		m_wallet->deleteLater() ;
 	}
-private slots:
-	void walletpassWordChanged( bool e )
-	{
-		Q_UNUSED( e ) ;
-		this->deleteLater() ;
-	}
-	void walletIsOpen( bool e )
-	{
-		Q_UNUSED( e ) ;
-	}
 private:
-	LxQt::Wallet::Wallet * m_wallet ;
+	LXQt::Wallet::Wallet * m_wallet ;
 };
 
 /*
