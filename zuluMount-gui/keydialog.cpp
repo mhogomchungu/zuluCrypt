@@ -41,6 +41,7 @@
 #include "zulumounttask.h"
 #include "../zuluCrypt-gui/task.h"
 #include "zulumounttask.h"
+#include "cryfstask.h"
 #include "veracrypt_support.h"
 #include "truecrypt_support.h"
 #include "veracryptpimdialog.h"
@@ -449,49 +450,47 @@ void keyDialog::encryptedFolderMount()
 
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-	DialogMsg msg( this ) ;
+	DialogMsg msg( this ) ;	
 
-	switch( zuluMountTask::encryptedFolderMount( m_path,m,m_key,ro ).await().state ){
+	auto& e = cryfsTask::encryptedFolderMount( { m_path,m,m_key,QString(),QString(),ro,m_success } ) ;
 
-	using ev = zuluMountTask::encryptedVolume ;
+	switch( e.await() ){
 
-	case ev::status::success :
-
-		m_success( m ) ;
+	case cryfsTask::status::success :
 
 		return this->HideUI() ;
 
-	case ev::status::cryfs :
+	case cryfsTask::status::cryfs :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\nWrong password entered" ) ) ;
 		break;
 
-	case ev::status::encfs :
+	case cryfsTask::status::encfs :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nWrong password entered" ) ) ;
 		break;
 
-	case ev::status::cryfsNotFound :
+	case cryfsTask::status::cryfsNotFound :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\ncryfs executable could not be found" ) ) ;
 		break;
 
-	case ev::status::encfsNotFound :
+	case cryfsTask::status::encfsNotFound :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nencfs executable could not be found" ) ) ;
 		break;
 
-	case ev::status::failedToCreateMountPoint :
+	case cryfsTask::status::failedToCreateMountPoint :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to create mount point" ) ) ;
 		break;
 
-	case ev::status::unknown :
+	case cryfsTask::status::unknown :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nNot supported volume encountered" ) ) ;
 		break;
 
-	case ev::status::backendFail :
+	case cryfsTask::status::backendFail :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nBackend not responding" ) ) ;
 		break;

@@ -357,11 +357,27 @@ static bool _execute_process( const QString& m,const QString& exe,const QString&
 {
 	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
 
-		auto e = m ;
+		return utility::Task( exe + " " + utility::Task::makePath( m ),[ & ](){
 
-		e.replace( "\"","\"\"\"" ) ;
+			qDebug() << env ;
 
-		return utility::Task( exe + " \"" + e + "\"",-1,env.split( "\n" ),[ uid ](){
+			QProcessEnvironment e ;
+
+			for( const auto& it : env.split( '\n' ) ){
+
+				auto q = it.split( '=' ) ;
+
+				if( q.size() > 1 ){
+
+					e.insert( q.at( 0 ),q.at( 1 ) ) ;
+				}
+			}
+
+			qDebug() << e.toStringList() ;
+
+			return e ;
+
+		}(),[ uid ](){
 
 			if( uid != -1 ){
 
@@ -957,51 +973,41 @@ QString utility::resolvePath( const QString& path )
 	}
 }
 
+QString utility::executableFullPath( const QString& e )
+{
+	QString exe ;
+
+	auto q = { "/usr/local/bin/",
+		   "/usr/local/sbin/",
+		   "/usr/bin/",
+		   "/usr/sbin/",
+		   "/bin/",
+		   "/sbin/" } ;
+
+	for( const auto& it : q ){
+
+		exe = it + e ;
+
+		if( utility::pathExists( exe ) ){
+
+			return exe ;
+		}
+	}
+
+	return QString() ;
+}
+
+
 static QString _absolute_exe_path( const QString& exe )
 {
-	QString e = "/usr/local/bin/" + exe ;
+	auto e = utility::executableFullPath( exe ) ;
 
-	if( utility::pathExists( e ) ){
+	if( e.isEmpty() ){
 
+		return exe ;
+	}else{
 		return e ;
 	}
-
-	e = "/usr/local/sbin/" + exe ;
-
-	if( utility::pathExists( e ) ){
-
-		return e ;
-	}
-
-	e = "/usr/bin/" + exe ;
-
-	if( utility::pathExists( e ) ){
-
-		return e ;
-	}
-
-	e = "/usr/sbin/" + exe ;
-
-	if( utility::pathExists( e ) ){
-
-		return e ;
-	}
-
-	e = "/bin/" + exe ;
-
-	if( utility::pathExists( e ) ){
-
-		return e ;
-	}
-
-	e = "/sbin/" + exe ;
-
-	if( utility::pathExists( e ) ){
-
-		return e ;
-	}
-
-	return exe ;
 }
 
 QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const QString& defaulT )

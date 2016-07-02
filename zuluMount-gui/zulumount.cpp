@@ -54,6 +54,7 @@
 #include "events.h"
 #include "monitor_mountinfo.h"
 #include "../zuluCrypt-gui/utility.h"
+#include "cryfstask.h"
 #include "zulumounttask.h"
 #include "../zuluCrypt-gui/task.h"
 #include "../zuluCrypt-gui/checkforupdates.h"
@@ -1278,7 +1279,7 @@ void zuluMount::unmount( const QString& e )
 
 		auto m = m_ui->tableWidget->item( row,1 )->text() ;
 
-		if( !zuluMountTask::encryptedFolderUnMount( m ).await() ){
+		if( !cryfsTask::encryptedFolderUnMount( m ).await() ){
 
 			DialogMsg m( this ) ;
 			m.ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount encfs/cryfs volume" ) ) ;
@@ -1364,7 +1365,7 @@ void zuluMount::unMountAll()
 
 				if( e == "encfs" || e == "cryfs" ){
 
-					zuluMountTask::encryptedFolderUnMount( n.at( i ) ).get() ;
+					cryfsTask::encryptedFolderUnMount( n.at( i ) ).get() ;
 				}else{
 					zuluMountTask::volumeUnmount( p.at( i ),e ) ;
 				}
