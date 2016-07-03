@@ -91,7 +91,7 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	 * for simplicity's sake,lets only show most popular file systems.
 	 */
 
-	m_ui->comboBoxFS->addItems( { "ext4","vfat","ntfs","ext2","ext3","exfat" } ) ;
+	m_ui->comboBoxFS->addItems( { "ext4","vfat","ntfs","ext2","ext3","exfat","btrfs" } ) ;
 
 	m_ui->comboBoxVolumeType->clear() ;
 

@@ -169,20 +169,23 @@ public:
 	 * libsecret backend:
 	 * "password" argument is ignored.
 	 * "applicationName" argument is ignored.
-	 * "displayApplicationName" is ignored.
+	 * "displayApplicationName" argument is ignored.
+	 * "widget" argument is ignored.
 	 *
 	 * kwallet backend:
 	 * "password" argument is ignored.
 	 * "walletName" argument corresponds to the same name in KWAllet API.
 	 * "displayApplicationName" is ignored.
+	 * "widget" argument is ignored.
 	 * "applicationName" argument corresponds to password folder in KWallet API,default value will
-	 * set passwordFolder to KDE's default. Password argument is not used.
+	 *  set passwordFolder to KDE's default. Password argument is not used.
 	 *
-	 * Internal:
+	 * internal:
 	 * "walletName" argument is the name of the wallet to open.
 	 * "applicationName" argument is the name of the program that owns the wallet.
 	 * "displayApplicationName" argument will be used to show the name of the application that is
-	 * opening the wallet if a GUI prompt is generated.
+	 *  opening the wallet if a GUI prompt is generated.
+	 * "widget" argument is necessary to give generated GUI prompts a parent object.
 	 *
 	 * If "password" argument is given,it will be used to unlock the wallet.
 	 * If "password" argument is not given,a GUI window will be generated to ask the user for the password.
@@ -265,7 +268,7 @@ void TestClass::testWallet()
 	/*
 	 * open a default backend( internal one )
 	 */
-	m_wallet = LxQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd::internal ) ;
+	m_wallet = LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd::internal ) ;
 
 	/*
 	 * Open the wallet and read its contents
