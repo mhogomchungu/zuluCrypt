@@ -107,7 +107,11 @@ void LXQt::Wallet::secretService::open( const QString& walletName,
 					const QString& password,
 					const QString& displayApplicationName )
 {
-	this->setParent( parent ) ;
+	if( parent ){
+
+		this->setParent( parent ) ;
+	}
+
 	m_walletOpened = std::move( function ) ;
 
 	Q_UNUSED( password ) ;

@@ -70,7 +70,10 @@ bool LXQt::Wallet::kwallet::await_open( const QString& walletName,
 	m_applicationName   = applicationName ;
 	m_password          = password ;
 
-	this->setParent( parent ) ;
+	if( parent ){
+
+		this->setParent( parent ) ;
+	}
 
 	Q_UNUSED( displayApplicationName ) ;
 

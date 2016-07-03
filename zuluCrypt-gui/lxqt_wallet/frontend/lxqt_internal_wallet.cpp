@@ -102,7 +102,10 @@ void LXQt::Wallet::internalWallet::open( const QString& walletName,
 					 const QString& password,
 					 const QString& displayApplicationName )
 {
-	this->setParent( parent ) ;
+	if( parent ){
+
+		this->setParent( parent ) ;
+	}
 
 	m_walletName      = walletName ;
 	m_applicationName = applicationName ;
