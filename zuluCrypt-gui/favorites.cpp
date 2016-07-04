@@ -151,7 +151,7 @@ void favorites::HideUI()
 
 void favorites::addEntries( const QStringList& l )
 {
-	tablewidget::addRowToTable( m_ui->tableWidget,l ) ;
+	tablewidget::addRow( m_ui->tableWidget,l ) ;
 }
 
 void favorites::itemClicked( QTableWidgetItem * current )
@@ -193,7 +193,7 @@ void favorites::removeEntryFromFavoriteList()
 
 		utility::removeFavoriteEntry( QString( "%1\t%2" ).arg( p,q ) ) ;
 
-		tablewidget::deleteRowFromTable( table,row ) ;
+		tablewidget::deleteRow( table,row ) ;
 	}
 
 	table->setEnabled( true ) ;
@@ -265,5 +265,5 @@ void favorites::closeEvent( QCloseEvent * e )
 
 void favorites::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
-	tablewidget::selectTableRow( current,previous ) ;
+	tablewidget::selectRow( current,previous ) ;
 }

@@ -431,7 +431,7 @@ void zuluMount::removeVolumeFromVisibleVolumeList( QAction * ac )
 
 	tablewidget::selectRow( table,e ) ;
 	utility::Task::suspendForOneSecond() ;
-	tablewidget::deleteTableRow( table,e ) ;
+	tablewidget::deleteRow( table,e ) ;
 
 	tablewidget::selectLastRow( table ) ;
 
@@ -582,7 +582,7 @@ void zuluMount::volumeRemoved( QString volume )
 
 		if( row != -1 ){
 
-			tablewidget::deleteRowFromTable( table,row ) ;
+			tablewidget::deleteRow( table,row ) ;
 			/*
 			* see if a user just removed the device without properly closing it/unmounting it
 			* and try to do so for them
@@ -602,7 +602,7 @@ void zuluMount::removeVolume( QString volume )
 		tablewidget::selectLastRow( m_ui->tableWidget ) ;
 		this->enableAll() ;
 	}else{
-		tablewidget::deleteTableRow( m_ui->tableWidget,volume ) ;
+		tablewidget::deleteRow( m_ui->tableWidget,volume ) ;
 	}
 }
 
@@ -1158,9 +1158,9 @@ void zuluMount::addEntryToTable( bool systemVolume,const QStringList& l )
 {
 	if( systemVolume ){
 
-		tablewidget::addRowToTable( m_ui->tableWidget,l,this->getSystemVolumeFont() ) ;
+		tablewidget::addRow( m_ui->tableWidget,l,this->getSystemVolumeFont() ) ;
 	}else{
-		tablewidget::addRowToTable( m_ui->tableWidget,l ) ;
+		tablewidget::addRow( m_ui->tableWidget,l ) ;
 	}
 }
 
@@ -1177,7 +1177,7 @@ void zuluMount::removeEntryFromTable( QString volume )
 
 	if( r != -1 ){
 
-		tablewidget::deleteRowFromTable( table,r ) ;
+		tablewidget::deleteRow( table,r ) ;
 		this->enableAll() ;
 	}else{
 		this->pbUpdate() ;
@@ -1219,13 +1219,13 @@ void zuluMount::updateList( const volumeEntryProperties& entry )
 
 		if( row == -1 ){
 
-			row = tablewidget::addEmptyRow( table ) ;
+			row = tablewidget::addRow( table ) ;
 		}
 		if( entry.isSystem() ){
 
-			tablewidget::updateRowInTable( table,entry.entryList(),row,this->getSystemVolumeFont() ) ;
+			tablewidget::updateRow( table,entry.entryList(),row,this->getSystemVolumeFont() ) ;
 		}else{
-			tablewidget::updateRowInTable( table,entry.entryList(),row,this->font() ) ;
+			tablewidget::updateRow( table,entry.entryList(),row,this->font() ) ;
 		}
 
 		tablewidget::selectRow( table,row ) ;
@@ -1474,7 +1474,7 @@ void zuluMount::removeDisappearedEntries( const QVector< volumeEntryProperties >
 
 			tablewidget::selectRow( table,e ) ;
 			utility::Task::suspendForOneSecond() ;
-			tablewidget::deleteTableRow( table,e ) ;
+			tablewidget::deleteRow( table,e ) ;
 		}
 
 		utility::Task::suspendForOneSecond() ;
@@ -1484,7 +1484,7 @@ void zuluMount::removeDisappearedEntries( const QVector< volumeEntryProperties >
 
 void zuluMount::slotCurrentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
-	tablewidget::selectTableRow( current,previous ) ;
+	tablewidget::selectRow( current,previous ) ;
 }
 
 void zuluMount::disableAll()

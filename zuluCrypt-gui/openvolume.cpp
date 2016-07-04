@@ -160,7 +160,7 @@ void openvolume::EnterKeyPressed()
 
 void openvolume::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
 {
-	tablewidget::selectTableRow( current,previous ) ;
+	tablewidget::selectRow( current,previous ) ;
 }
 
 void openvolume::ShowNonSystemPartitions( std::function< void( const QString& ) > f )
@@ -257,16 +257,16 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 
 					if( fs.startsWith( "crypto_LUKS" ) ){
 
-						tablewidget::addRowToTable( m_ui->tableWidget,z,font ) ;
+						tablewidget::addRow( m_ui->tableWidget,z,font ) ;
 					}
 				}else if( m_showEncryptedOnly ){
 
 					if( fs.startsWith( "crypto" ) || fs.contains( "Nil" ) ){
 
-						tablewidget::addRowToTable( m_ui->tableWidget,z,font ) ;
+						tablewidget::addRow( m_ui->tableWidget,z,font ) ;
 					}
 				}else{
-					tablewidget::addRowToTable( m_ui->tableWidget,z,font ) ;
+					tablewidget::addRow( m_ui->tableWidget,z,font ) ;
 				}
 			}
 		}

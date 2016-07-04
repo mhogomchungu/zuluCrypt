@@ -96,7 +96,7 @@ void manageSystemVolumes::defaultButton()
 
 void manageSystemVolumes::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
-	tablewidget::selectTableRow( current,previous ) ;
+	tablewidget::selectRow( current,previous ) ;
 }
 
 void manageSystemVolumes::readSystemPartitions()
@@ -187,7 +187,7 @@ void manageSystemVolumes::removeCurrentRow()
 
 	if( msg.ShowUIYesNoDefaultNo( tr( "WARNING"),m ) == QMessageBox::Yes ){
 
-		tablewidget::deleteRowFromTable( m_ui->tableWidget,it->row() ) ;
+		tablewidget::deleteRow( m_ui->tableWidget,it->row() ) ;
 	}
 }
 
@@ -203,7 +203,7 @@ void manageSystemVolumes::addItemsToTable( QString path )
 
 void manageSystemVolumes::addItemsToTable( QStringList paths )
 {
-	tablewidget::addRowToTable( m_ui->tableWidget,paths ) ;
+	tablewidget::addRow( m_ui->tableWidget,paths ) ;
 }
 
 void manageSystemVolumes::pbDone()

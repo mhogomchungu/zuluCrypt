@@ -91,7 +91,7 @@ static QTableWidgetItem * _set_item( QTableWidgetItem * item,
 	return item ;
 }
 
-void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous )
+void tablewidget::selectRow( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
 	if( current && previous && previous->row() == current->row() ){
 
@@ -103,20 +103,6 @@ void tablewidget::selectTableRow( QTableWidgetItem * current,QTableWidgetItem * 
 		_update_table_row( current,true ) ;
 		_update_table_row( previous,false ) ;
 	}
-}
-
-int tablewidget::addEmptyRow( QTableWidget * table )
-{
-	count_t row = table->rowCount() ;
-
-	table->insertRow( row ) ;
-
-	_for_each_column( table,row,[ table ]( count_t row,count_t col ){
-
-		table->setItem( row,col,_set_item( new QTableWidgetItem ) ) ;
-	} ) ;
-
-	return row ;
 }
 
 int tablewidget::columnHasEntry( QTableWidget * table,const QString& entry,int column )
@@ -139,41 +125,96 @@ int tablewidget::columnHasEntry( QTableWidget * table,const QString& entry,int c
 	}
 }
 
-void tablewidget::addRowToTable( QTableWidget * table,const QStringList& list,const QFont& font )
+using list_t = std::initializer_list< QString > ;
+
+template< typename T >
+const QString& _at( const T& e,count_t pos )
 {
-	count_t j = list.size() ;
+	return e.at( pos ) ;
+}
 
-	if( j != table->columnCount() ){
+template<>
+const QString& _at< list_t >( const list_t& e,count_t pos )
+{
+	return *( &*e.begin() + pos ) ;
+}
 
-		qDebug() << "ERROR: Table column count is NOT the same as QStringList size" ;
+template< typename T >
+static void _manage_row( QTableWidget * table,const T& l,std::function< void()> function )
+{
+	if( size_t( l.size() ) != size_t( table->columnCount() ) ){
+
+		qDebug() << "ERROR: Table column count is NOT the same as object size" ;
 	}else{
+		function() ;
+	}
+}
+
+template< typename T >
+static void _add_row( QTableWidget * table,const T& l,const QFont& font )
+{
+	_manage_row( table,l,[ & ](){
+
 		count_t row = table->rowCount() ;
 
 		table->insertRow( row ) ;
 
 		_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
-			table->setItem( row,col,_set_item( new QTableWidgetItem,list.at( col ),font ) ) ;
+			auto e = _set_item( new QTableWidgetItem,_at( l,col ),font ) ;
+
+			table->setItem( row,col,e ) ;
 		} ) ;
-	}
+	} ) ;
 }
 
-void tablewidget::updateRowInTable( QTableWidget * table,const QStringList& list,int row,const QFont& font )
+template< typename T >
+static void _update_row( QTableWidget * table,const T& list,int row,const QFont& font )
 {
-	count_t j = list.size() ;
+	_manage_row( table,list,[ & ](){
 
-	if( j != table->columnCount() ){
-
-		qDebug() << "ERROR: table column count is NOT the same as QStringList size" ;
-	}else{
 		_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
-			_set_item( table->item( row,col ),list.at( col ),font ) ;
+			_set_item( table->item( row,col ),_at( list,col ),font ) ;
 		} ) ;
-	}
+	} ) ;
 }
 
-void tablewidget::setRowFont( QTableWidget * table ,int row,const QFont& font )
+void tablewidget::addRow( QTableWidget * table,const QStringList& l,const QFont& font )
+{
+	_add_row( table,l,font ) ;
+}
+
+void tablewidget::addRow( QTableWidget * table,const list_t& l,const QFont& font )
+{
+	_add_row( table,l,font ) ;
+}
+
+int tablewidget::addRow( QTableWidget * table )
+{
+	count_t row = table->rowCount() ;
+
+	table->insertRow( row ) ;
+
+	_for_each_column( table,row,[ table ]( count_t row,count_t col ){
+
+		table->setItem( row,col,_set_item( new QTableWidgetItem ) ) ;
+	} ) ;
+
+	return row ;
+}
+
+void tablewidget::updateRow( QTableWidget * table,const QStringList& list,int row,const QFont& font )
+{
+	_update_row( table,list,row,font ) ;
+}
+
+void tablewidget::updateRow( QTableWidget * table,const list_t& list,int row,const QFont& font )
+{
+	_update_row( table,list,row,font ) ;
+}
+
+void tablewidget::setFont( QTableWidget * table ,int row,const QFont& font )
 {
 	_for_each_column( table,row,[ & ]( count_t row,count_t col ){
 
@@ -181,7 +222,7 @@ void tablewidget::setRowFont( QTableWidget * table ,int row,const QFont& font )
 	} ) ;
 }
 
-void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
+void tablewidget::deleteRow( QTableWidget * table,int row )
 {
 	if( row >= 0 && row < table->rowCount() ){
 
@@ -191,9 +232,9 @@ void tablewidget::deleteRowFromTable( QTableWidget * table,int row )
 	}
 }
 
-void tablewidget::deleteTableRow( QTableWidget * table,const QString& value,int column )
+void tablewidget::deleteRow( QTableWidget * table,const QString& value,int column )
 {
-	tablewidget::deleteRowFromTable( table,tablewidget::columnHasEntry( table,value,column ) ) ;
+	tablewidget::deleteRow( table,tablewidget::columnHasEntry( table,value,column ) ) ;
 }
 
 void tablewidget::selectRow( QTableWidget * table,int row )
@@ -206,19 +247,14 @@ void tablewidget::selectRow( QTableWidget * table,int row )
 	table->setFocus() ;
 }
 
-void tablewidget::selectRow( QTableWidget * table,const QString& e )
+void tablewidget::selectRow( QTableWidget * table,const QString& e,int column )
 {
-	tablewidget::selectRow( table,tablewidget::columnHasEntry( table,e ) ) ;
+	tablewidget::selectRow( table,tablewidget::columnHasEntry( table,e,column ) ) ;
 }
 
 void tablewidget::selectLastRow( QTableWidget * table )
 {
 	tablewidget::selectRow( table,table->rowCount() - 1 ) ;
-}
-
-void tablewidget::setText( QTableWidget * table,int row,int col,const QString& text )
-{
-	table->setItem( row,col,_set_item( new QTableWidgetItem,text,table->item( row,col )->font() ) ) ;
 }
 
 QStringList tablewidget::tableColumnEntries( QTableWidget * table,int col )
@@ -253,4 +289,12 @@ void tablewidget::clearTable( QTableWidget * table )
 
 		table->removeRow( 0 ) ;
 	}
+}
+
+void tablewidget::setRowToolTip( QTableWidget * table,int row,const QString& tooltip )
+{
+	_for_each_column( table,row,[ & ]( count_t row,count_t col ){
+
+		table->item( row,col )->setToolTip( tooltip ) ;
+	} ) ;
 }

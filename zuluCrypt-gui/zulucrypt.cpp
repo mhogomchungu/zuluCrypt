@@ -161,7 +161,7 @@ void zuluCrypt::updateVolumeList( QString volume,QString r )
 					z.replace( 2,e.toLower() ) ;
 				}
 
-				tablewidget::addRowToTable( m_ui->tableWidget,z ) ;
+				tablewidget::addRow( m_ui->tableWidget,z ) ;
 			}
 		}
 	}
@@ -515,7 +515,7 @@ void zuluCrypt::ShowManageNonSystemPartitions()
 
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
 {
-	tablewidget::selectTableRow( current,previous ) ;
+	tablewidget::selectRow( current,previous ) ;
 
 	if( m_ui->tableWidget->rowCount() > 12 ){
 
@@ -585,7 +585,7 @@ void zuluCrypt::closeAll( QTableWidgetItem * item,int st )
 
 void zuluCrypt::removeRowFromTable( int x )
 {
-	tablewidget::deleteRowFromTable( m_ui->tableWidget,x ) ;
+	tablewidget::deleteRow( m_ui->tableWidget,x ) ;
 }
 
 void zuluCrypt::minimizeToTray()

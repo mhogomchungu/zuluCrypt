@@ -23,27 +23,38 @@
 #include <QString>
 #include <QStringList>
 #include <QFont>
+#include <initializer_list>
 
 class QTableWidget ;
 class QTableWidgetItem ;
 
 namespace tablewidget
 {
-	void selectTableRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
-	void addRowToTable( QTableWidget *,const QStringList&,const QFont& = QFont() ) ;
-	void updateRowInTable( QTableWidget *,const QStringList&,int row,const QFont& ) ;
-	void setRowFont( QTableWidget *,int row,const QFont& ) ;
-	void deleteRowFromTable( QTableWidget *,int row ) ;
-	void deleteTableRow( QTableWidget *,const QString&,int = 0 ) ;
+	void selectRow( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void selectRow( QTableWidget *,int row ) ;
-	void selectRow( QTableWidget *,const QString& ) ;
+	void selectRow( QTableWidget *,const QString&,int column = 0 ) ;
 	void selectLastRow( QTableWidget * ) ;
-	void setText( QTableWidget *,int row,int col,const QString& text ) ;
-	int addEmptyRow( QTableWidget * ) ;
+
+	void addRow( QTableWidget *,const QStringList&,const QFont& = QFont() ) ;
+	void addRow( QTableWidget *,const std::initializer_list< QString >&,const QFont& = QFont() ) ;
+	int  addRow( QTableWidget * ) ;
+
+	void updateRow( QTableWidget *,const QStringList&,int row,const QFont& ) ;
+	void updateRow( QTableWidget *,const std::initializer_list< QString >&,int row,const QFont& ) ;
+
+	void setFont( QTableWidget *,int row,const QFont& ) ;
+
+	void deleteRow( QTableWidget *,int row ) ;
+	void deleteRow( QTableWidget *,const QString&,int = 0 ) ;
+
 	int columnHasEntry( QTableWidget *,const QString&,int = 0 ) ;
+
 	QStringList tableColumnEntries( QTableWidget * table,int = 0 ) ;
 	QStringList tableRowEntries( QTableWidget * table,int = 0 ) ;
+
 	void clearTable( QTableWidget * ) ;
+
+	void setRowToolTip( QTableWidget *,int row,const QString& ) ;
 }
 
 #endif // TABLEWIDGET_H
