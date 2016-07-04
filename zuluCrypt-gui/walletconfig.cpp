@@ -211,46 +211,43 @@ void walletconfig::walletIsOpen( bool opened )
 
 	} ).then( [ this ]( const walletKeys& keys ){
 
-		if( !keys.empty() ){
-
-			auto _getEntry = [&]( const QString& acc )-> const QByteArray& {
-
-				for( const auto& it : keys ){
-
-					if( it.first == acc ){
-
-						return it.second ;
-					}
-				}
-
-				static QByteArray ShouldNotGetHere ;
-				return ShouldNotGetHere ;
-			} ;
-
-			/*
-			 * each volume gets two entries in wallet:
-			 * First one in the form of  : entry         -> entry password
-			 * Second one in the form of : entry-COMMENT -> comment
-			 *
-			 * This allows to store a a volume volume,a comment about the volume
-			 * and the passphrase.
-			 *
-			 */
-
-			auto table = m_ui->tableWidget ;
+		auto _getEntry = [&]( const QString& acc )-> const QByteArray& {
 
 			for( const auto& it : keys ){
 
-				const auto& acc = it.first ;
+				if( it.first == acc ){
 
-				if( !acc.endsWith( COMMENT ) ){
-
-					const auto& e = _getEntry( acc + COMMENT ) ;
-
-					tablewidget::addRowToTable( table,{ acc,e } ) ;
+					return it.second ;
 				}
 			}
+
+			static QByteArray ShouldNotGetHere ;
+			return ShouldNotGetHere ;
 		} ;
+
+		/*
+		 * each volume gets two entries in wallet:
+		 * First one in the form of  : entry         -> entry password
+		 * Second one in the form of : entry-COMMENT -> comment
+		 *
+		 * This allows to store a a volume volume,a comment about the volume
+		 * and the passphrase.
+		 *
+		 */
+
+		auto table = m_ui->tableWidget ;
+
+		for( const auto& it : keys ){
+
+			const auto& acc = it.first ;
+
+			if( !acc.endsWith( COMMENT ) ){
+
+				const auto& e = _getEntry( acc + COMMENT ) ;
+
+				tablewidget::addRowToTable( table,{ acc,e } ) ;
+			}
+		}
 
 		this->enableAll() ;
 		m_ui->tableWidget->setFocus() ;
