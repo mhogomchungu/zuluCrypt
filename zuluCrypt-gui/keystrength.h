@@ -52,8 +52,12 @@ private:
 class keystrength
 {
 public:
-	keystrength() ;
-	~keystrength() ;
+	keystrength()
+	{
+	}
+	~keystrength()
+	{
+	}
 	int quality( const QString& e )
 	{
 		Q_UNUSED( e ) ;
