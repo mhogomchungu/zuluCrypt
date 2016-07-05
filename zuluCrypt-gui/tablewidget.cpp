@@ -128,15 +128,15 @@ int tablewidget::columnHasEntry( QTableWidget * table,const QString& entry,int c
 using list_t = std::initializer_list< QString > ;
 
 template< typename T >
-const QString& _at( const T& e,count_t pos )
+static const QString& _at( const T& e,count_t p )
 {
-	return e.at( pos ) ;
+	return e.at( p ) ;
 }
 
 template<>
-const QString& _at< list_t >( const list_t& e,count_t pos )
+const QString& _at( const list_t& e,count_t p )
 {
-	return *( &*e.begin() + pos ) ;
+	return *( e.begin() + p ) ;
 }
 
 template< typename T >
