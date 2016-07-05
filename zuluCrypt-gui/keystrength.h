@@ -21,15 +21,51 @@
 
 #include <QString>
 
+#include "can_build_pwquality.h"
+
+#if BUILD_PWQUALITY
+class keystrength
+{
+public:
+	keystrength() : m_handle( pwquality_default_settings() )
+	{
+	}
+	~keystrength()
+	{
+		pwquality_free_settings( m_handle ) ;
+	}
+	int quality( const QString& e )
+	{
+		return pwquality_check( m_handle,e.toLatin1().constData(),
+					nullptr,nullptr,nullptr ) ;
+	}
+	bool canCheckQuality()
+	{
+		return true ;
+	}
+private:
+	pwquality_settings_t * m_handle ;
+};
+
+#else
+
 class keystrength
 {
 public:
 	keystrength() ;
 	~keystrength() ;
-	int quality( const QString& ) ;
-	bool canCheckQuality( void ) ;
+	int quality( const QString& e )
+	{
+		Q_UNUSED( e ) ;
+		return -1 ;
+	}
+	bool canCheckQuality()
+	{
+		return false ;
+	}
 private:
-	void * m_handle ;
 };
+
+#endif
 
 #endif // KEYSTRENGTH_H
