@@ -446,11 +446,19 @@ void keyDialog::pbOpen()
 
 void keyDialog::encryptedFolderMount()
 {
+	DialogMsg msg( this ) ;
+
+	if( m_key.isEmpty() ){
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Atleast one required field is empty" ) ) ;
+
+		return this->enableAll() ;
+	}
+
 	auto m = utility::mountPath( utility::mountPathPostFix( m_ui->lineEditMountPoint->text() ) ) ;
 
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-	DialogMsg msg( this ) ;	
 
 	auto& e = cryfsTask::encryptedFolderMount( { m_path,m,m_key,QString(),QString(),ro,m_success } ) ;
 
