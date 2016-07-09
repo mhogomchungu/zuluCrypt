@@ -53,8 +53,8 @@ walletconfig::walletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	connect( m_ui->pbDelete,SIGNAL( clicked() ),this,SLOT( pbDelete() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT(currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
-	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
-		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
+	//connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
+	//	 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -102,7 +102,12 @@ void walletconfig::itemClicked( QTableWidgetItem * item )
 
 void walletconfig::pbDelete()
 {
-	this->itemClicked( m_ui->tableWidget->currentItem() ) ;
+	auto item = m_ui->tableWidget->currentItem() ;
+
+	if( item ){
+
+		this->itemClicked( item ) ;
+	}
 }
 
 void walletconfig::pbClose()

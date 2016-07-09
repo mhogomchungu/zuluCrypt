@@ -806,7 +806,12 @@ void zuluCrypt::favClicked( QAction * ac )
 
 		if( e.size() > 1 ){
 
-			this->ShowPasswordDialog( e.at( 0 ),e.at( 1 ) ) ;
+			const auto& first = e.first() ;
+
+			if( !utility::pathPointsToAFolder( first ) ){
+
+				this->ShowPasswordDialog( first,e.at( 1 ) ) ;
+			}
 		}
 	} ;
 
