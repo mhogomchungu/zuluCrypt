@@ -49,8 +49,6 @@ configure_file(
 add_custom_target( uninstall
 COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake )
 
-add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
-
 INCLUDE(CMakeDependentOption)
 INCLUDE(FindPkgConfig)
 
@@ -193,7 +191,50 @@ ADD_SUBDIRECTORY( zuluSafe )
 
 if( NOT NOGUI )
 
-	ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
+	pkg_check_modules( LXQT_WALLET lxqtwallet )
+
+	if( NOT DEFINED INTERNAL_LXQT_WALLET )
+		set( INTERNAL_LXQT_WALLET "false" )
+	endif()
+
+	if( INTERNAL_LXQT_WALLET )
+
+			message ( STATUS "---------------------------------------------------------------------------" )
+			message ( STATUS "lxqt wallet support will be provided by an internal library" )
+			message ( STATUS "---------------------------------------------------------------------------" )
+
+			include_directories( ${LXQT_WALLET_INCLUDEDIR} )
+			add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
+	else()
+		if( NOT LXQT_WALLET_FOUND )
+
+			message ( STATUS "ERROR: could not find lxqt_wallet package" )
+			message ( STATUS "---------------------------------------------------------------------------" )
+			message ( STATUS "lxqt wallet support will be provided by an internal library" )
+			message ( STATUS "---------------------------------------------------------------------------" )
+
+			include_directories( ${LXQT_WALLET_INCLUDEDIR} )
+			add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
+		else()
+			if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" )
+
+				set( lxqt_wallet "-llxqtwallet" )
+
+				message ( STATUS "---------------------------------------------------------------------------" )
+				message ( STATUS "lxqt wallet support will be provided by an external libary" )
+				message ( STATUS "---------------------------------------------------------------------------" )
+			else()
+				message ( STATUS "---------------------------------------------------------------------------" )
+				message ( STATUS "lxqt wallet support will be provided by an internal library" )
+				message ( STATUS "because external library is too old(<= 2.0.0)" )
+
+				message ( STATUS "---------------------------------------------------------------------------" )
+
+				include_directories( ${LXQT_WALLET_INCLUDEDIR} )
+				add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
+			endif()
+		endif()
+	endif()
 
 	if( WITH_PWQUALITY AND PWQUALITY_FOUND )
 		find_file ( header_pwquality pwquality.h PATHS ${PWQUALITY_INCLUDE_DIRS} )

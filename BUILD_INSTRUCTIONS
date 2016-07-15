@@ -62,7 +62,7 @@ mkdir build
 
 cd build
 
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DSHARE_MOUNT_PREFIX=default -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false -DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DNOKDE=false -DCMAKE_BUILD_TYPE=RELEASE . ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DSHARE_MOUNT_PREFIX=default -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false -DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DNOKDE=false -DINTERNAL_LXQT_WALLET=false -DCMAKE_BUILD_TYPE=RELEASE . ..
 
 make
 
@@ -119,6 +119,11 @@ By default,the project demands exclusive control over the mount point path causi
 the path to already be taken when mounting and to unconditionally delete it on unmount.
 Set this option to "true" if you want to overide the above behavior and this ability seems useful when mounting
 volumes in a directory(like home directory) and wanting folder count to remain unchanged between volumes mounts.
+
+-DINTERNAL_LXQT_WALLET=false
+This project depends on lxqt_wallet project and it ships with an internal copy of the project. Set this option to "true"
+if you want zuluCrypt to unconditionally use the internal copy of the project or to "false" to make the build process
+use a system installed version if found.
 
 Build errors/test fails/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/zuluCrypt/issues
 or using my private email address at: mhogomchungu@gmail.com

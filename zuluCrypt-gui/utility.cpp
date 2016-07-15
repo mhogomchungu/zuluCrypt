@@ -57,7 +57,6 @@
 #include "version.h"
 #include "locale_path.h"
 #include "mount_prefix_path.h"
-#include "storage_manager.h"
 #include "dialogmsg.h"
 #include "support_whirlpool.h"
 #include "readonlywarning.h"
