@@ -53,8 +53,8 @@ walletconfig::walletconfig( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	connect( m_ui->pbDelete,SIGNAL( clicked() ),this,SLOT( pbDelete() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT(currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
-	//connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
-	//	 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
+	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),
+		 this,SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -70,6 +70,17 @@ void walletconfig::currentItemChanged( QTableWidgetItem * current,QTableWidgetIt
 }
 
 void walletconfig::itemClicked( QTableWidgetItem * item )
+{
+	Q_UNUSED( item ) ;
+
+	QMenu m ;
+
+	m.addAction( tr( "Delete Entry" ),this,SLOT( pbDelete() ) ) ;
+
+	m.exec( QCursor::pos() ) ;
+}
+
+void walletconfig::itemClicked_0( QTableWidgetItem * item )
 {
 	this->disableAll() ;
 
@@ -106,7 +117,7 @@ void walletconfig::pbDelete()
 
 	if( item ){
 
-		this->itemClicked( item ) ;
+		this->itemClicked_0( item ) ;
 	}
 }
 
@@ -129,9 +140,9 @@ void walletconfig::pbAdd()
 
 			auto _add = [ this ](){
 
-				if( m_wallet->addKey( m_volumeID,m_key.toLatin1() ) ){
+				if( m_wallet->addKey( m_volumeID,m_key ) ){
 
-					if( m_wallet->addKey( m_volumeID + COMMENT,m_comment.toLatin1() ) ){
+					if( m_wallet->addKey( m_volumeID + COMMENT,m_comment ) ){
 
 						return true ;
 					}else{

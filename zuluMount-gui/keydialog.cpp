@@ -459,7 +459,6 @@ void keyDialog::encryptedFolderMount()
 
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-
 	auto& e = cryfsTask::encryptedFolderMount( { m_path,m,m_key,QString(),QString(),ro,m_success } ) ;
 
 	switch( e.await() ){

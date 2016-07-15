@@ -46,11 +46,11 @@ namespace LXQt{
 
 namespace Wallet{
 
-class secretService : public LXQt::Wallet::Wallet
+class libsecret : public LXQt::Wallet::Wallet
 {
 public:
-	secretService() ;
-	~secretService() ;
+	libsecret() ;
+	~libsecret() ;
 
 	void open( const QString& walletName,
 		   const QString& applicationName,
@@ -81,7 +81,6 @@ public:
 
 	void deleteKey( const QString& key ) ;
 	void closeWallet( bool ) ;
-	void setInterfaceObject( QWidget * parent,std::function< void( bool ) > ) ;
 	void changeWalletPassWord( const QString& walletName,
 				   const QString& applicationName = QString(),
 				   std::function< void( bool ) > = []( bool e ){ Q_UNUSED( e ) ; } ) ;

@@ -24,7 +24,7 @@
 #include <QObject>
 #include <QWidget>
 
-#include "networkAccessManager.h"
+#include "networkAccessManager.hpp"
 
 class checkForUpdates : public QObject
 {

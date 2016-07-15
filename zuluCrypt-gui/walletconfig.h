@@ -59,6 +59,7 @@ private slots:
 	void pbAdd( void ) ;
 	void walletIsOpen( bool ) ;
 private:
+	void itemClicked_0( QTableWidgetItem * item ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	Ui::walletconfig * m_ui ;

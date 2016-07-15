@@ -15,7 +15,7 @@ set( MOC_FILES
 	../readonlywarning.h
 	../plugin.h
 	../utility.h
-	../networkAccessManager.h
+	../networkAccessManager.hpp
 )
 
 set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui )

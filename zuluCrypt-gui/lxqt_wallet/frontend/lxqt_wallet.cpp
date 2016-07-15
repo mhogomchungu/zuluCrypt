@@ -39,7 +39,7 @@
 #endif
 
 #if HAS_SECRET_SUPPORT
-#include "lxqt_secret_service.h"
+#include "lxqt_libsecret.h"
 #endif
 
 LXQt::Wallet::Wallet::Wallet()
@@ -67,7 +67,7 @@ LXQt::Wallet::Wallet * LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd bk 
 
 	if( bk == LXQt::Wallet::BackEnd::libsecret ){
 		#if HAS_SECRET_SUPPORT
-			return new LXQt::Wallet::secretService() ;
+			return new LXQt::Wallet::libsecret() ;
 		#else
 			return nullptr ;
 		#endif

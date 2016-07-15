@@ -81,7 +81,6 @@ public:
 
 	void deleteKey( const QString& key ) ;
 	void closeWallet( bool ) ;
-	void setInterfaceObject( QWidget * parent,std::function< void( bool ) > ) ;
 	void changeWalletPassWord( const QString& walletName,
 				   const QString& applicationName = QString(),
 				   std::function< void( bool ) > = []( bool e ){ Q_UNUSED( e ) ; } ) ;

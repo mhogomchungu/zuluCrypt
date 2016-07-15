@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include "lxqt_secret_service.h"
+#include "lxqt_libsecret.h"
 
 #include "task.h"
 
@@ -40,31 +40,31 @@
  * static library is then used in C++
  */
 extern "C" {
-char * lxqt_secret_service_get_value( const char * key,const void * ) ;
-int lxqt_secret_service_password_store_sync( const char * key,const char * value,const void *,const void * ) ;
-int lxqt_secret_service_clear_sync( const char * key,const void *,const void * ) ;
-char ** lxqt_secret_get_all_keys( const void *,const void *,int * count ) ;
-int lxqt_secret_service_wallet_size( const void * ) ;
-int lxqt_secret_service_wallet_is_open( const void * ) ;
-void * lxqt_secret_service_create_schema( const char * schemaName,const char * type ) ;
+char * lxqt_libsecret_get_value( const char * key,const void * ) ;
+int lxqt_libsecret_password_store_sync( const char * key,const char * value,const void *,const void * ) ;
+int lxqt_libsecret_clear_sync( const char * key,const void *,const void * ) ;
+char ** lxqt_secret_get_all_keys( const void *,const void *,size_t * count ) ;
+int lxqt_libsecret_wallet_size( const void * ) ;
+int lxqt_libsecret_wallet_is_open( const void * ) ;
+void * lxqt_libsecret_create_schema( const char * schemaName,const char * type ) ;
 }
 
 namespace Task = LXQt::Wallet::Task ;
 
-LXQt::Wallet::secretService::secretService(): m_schema( nullptr,free ),m_schema_1( nullptr,free )
+LXQt::Wallet::libsecret::libsecret(): m_schema( nullptr,free ),m_schema_1( nullptr,free )
 {
 }
 
-LXQt::Wallet::secretService::~secretService()
+LXQt::Wallet::libsecret::~libsecret()
 {
 }
 
-void LXQt::Wallet::secretService::setImage( const QIcon& image )
+void LXQt::Wallet::libsecret::setImage( const QIcon& image )
 {
 	Q_UNUSED( image ) ;
 }
 
-bool LXQt::Wallet::secretService::addKey( const QString& key,const QByteArray& value )
+bool LXQt::Wallet::libsecret::addKey( const QString& key,const QByteArray& value )
 {
 	if( key.isEmpty() ){
 
@@ -72,7 +72,7 @@ bool LXQt::Wallet::secretService::addKey( const QString& key,const QByteArray& v
 	}else{
 		if( m_schema && m_schema_1 ){
 
-			return lxqt_secret_service_password_store_sync( key.toLatin1().constBegin(),
+			return lxqt_libsecret_password_store_sync( key.toLatin1().constBegin(),
 									value.constData(),
 									m_schema.get(),
 									m_schema_1.get() ) ;
@@ -82,7 +82,7 @@ bool LXQt::Wallet::secretService::addKey( const QString& key,const QByteArray& v
 	}
 }
 
-bool LXQt::Wallet::secretService::await_open( const QString& walletName,
+bool LXQt::Wallet::libsecret::await_open( const QString& walletName,
 					      const QString& applicationName,
 					      QWidget * parent,
 					      const QString& password,
@@ -100,7 +100,7 @@ bool LXQt::Wallet::secretService::await_open( const QString& walletName,
 	return m_opened ;
 }
 
-void LXQt::Wallet::secretService::open( const QString& walletName,
+void LXQt::Wallet::libsecret::open( const QString& walletName,
 					const QString& applicationName,
 					std::function< void( bool ) > function,
 					QWidget * parent,
@@ -136,12 +136,12 @@ void LXQt::Wallet::secretService::open( const QString& walletName,
 		m_byteArraySchemaName = QString( "lxqt.Wallet.%1.%2" ).arg( walletName,applicationName ).toLatin1() ;
 	}
 
-	m_schema.reset( lxqt_secret_service_create_schema( m_byteArraySchemaName.constData(),"string" ) ) ;
-	m_schema_1.reset( lxqt_secret_service_create_schema( m_byteArraySchemaName.constData(),"integer" ) ) ;
+	m_schema.reset( lxqt_libsecret_create_schema( m_byteArraySchemaName.constData(),"string" ) ) ;
+	m_schema_1.reset( lxqt_libsecret_create_schema( m_byteArraySchemaName.constData(),"integer" ) ) ;
 
 	Task::run<bool>( [ this ](){
 
-		return lxqt_secret_service_wallet_is_open( m_schema.get() ) ;
+		return lxqt_libsecret_wallet_is_open( m_schema.get() ) ;
 
 	} ).then( [ this ]( bool opened ){
 
@@ -149,20 +149,20 @@ void LXQt::Wallet::secretService::open( const QString& walletName,
 	} ) ;
 }
 
-void LXQt::Wallet::secretService::walletOpened( bool opened )
+void LXQt::Wallet::libsecret::walletOpened( bool opened )
 {
 	m_opened = opened ;
 	m_loop.exit() ;
 	m_walletOpened( opened ) ;
 }
 
-QByteArray LXQt::Wallet::secretService::readValue( const QString& key )
+QByteArray LXQt::Wallet::libsecret::readValue( const QString& key )
 {
 	if( m_schema ){
 
 		QByteArray r ;
 
-		std::unique_ptr<char> e( lxqt_secret_service_get_value( key.toLatin1().constData(),m_schema.get() ) ) ;
+		std::unique_ptr<char> e( lxqt_libsecret_get_value( key.toLatin1().constData(),m_schema.get() ) ) ;
 
 		if( e ){
 
@@ -175,7 +175,7 @@ QByteArray LXQt::Wallet::secretService::readValue( const QString& key )
 	}
 }
 
-QVector< std::pair< QString,QByteArray > > LXQt::Wallet::secretService::readAllKeyValues( void )
+QVector< std::pair< QString,QByteArray > > LXQt::Wallet::libsecret::readAllKeyValues( void )
 {
 	QVector< std::pair <QString,QByteArray > > p ;
 
@@ -187,93 +187,96 @@ QVector< std::pair< QString,QByteArray > > LXQt::Wallet::secretService::readAllK
 	return p ;
 }
 
-QStringList LXQt::Wallet::secretService::readAllKeys( void )
+QStringList LXQt::Wallet::libsecret::readAllKeys( void )
 {
 	if( m_schema && m_schema_1 ){
 
-		int count ;
+		class allKeys{
 
-		QStringList l ;
-
-		std::unique_ptr< char * > p( lxqt_secret_get_all_keys( m_schema.get(),
-								       m_schema_1.get(),
-								       &count ) ) ;
-
-		auto c = p.get() ;
-
-		if( c ){
-
-			for( int i = 0 ; i < count ; i++ ){
-
-				auto e = *( c + i ) ;
-
-				l.append( e ) ;
-
-				free( e ) ;
+		public:
+			allKeys( const void * e,const void * f )
+			{
+				entries = lxqt_secret_get_all_keys( e,f,&count ) ;
 			}
-		}
+			QStringList keys()
+			{
+				QStringList l ;
 
-		return l ;
+				for( size_t i = 0 ; i < count ; i++ ){
+
+					auto e = *( entries + i ) ;
+
+					l.append( e ) ;
+
+					free( e ) ;
+				}
+
+				return l ;
+			}
+			~allKeys()
+			{
+				free( entries ) ;
+			}
+		private:
+			char ** entries = nullptr ;
+			size_t count ;
+		} ;
+
+		return allKeys( m_schema.get(),m_schema_1.get() ).keys() ;
 	}else{
 		return QStringList() ;
 	}
 }
 
-void LXQt::Wallet::secretService::deleteKey( const QString& key )
+void LXQt::Wallet::libsecret::deleteKey( const QString& key )
 {
 	if( m_schema && m_schema_1 && !key.isEmpty() ){
 
-		lxqt_secret_service_clear_sync( key.toLatin1().constData(),m_schema.get(),m_schema_1.get() ) ;
+		lxqt_libsecret_clear_sync( key.toLatin1().constData(),m_schema.get(),m_schema_1.get() ) ;
 	}
 }
 
-int LXQt::Wallet::secretService::walletSize( void )
+int LXQt::Wallet::libsecret::walletSize( void )
 {
 	if( m_schema ){
 
-		return lxqt_secret_service_wallet_size( m_schema.get() ) ;
+		return lxqt_libsecret_wallet_size( m_schema.get() ) ;
 	}else{
 		return -1 ;
 	}
 }
 
-void LXQt::Wallet::secretService::closeWallet( bool b )
+void LXQt::Wallet::libsecret::closeWallet( bool b )
 {
 	Q_UNUSED( b ) ;
 }
 
-LXQt::Wallet::BackEnd LXQt::Wallet::secretService::backEnd( void )
+LXQt::Wallet::BackEnd LXQt::Wallet::libsecret::backEnd( void )
 {
 	return LXQt::Wallet::BackEnd::libsecret ;
 }
 
-bool LXQt::Wallet::secretService::walletIsOpened( void )
+bool LXQt::Wallet::libsecret::walletIsOpened( void )
 {
 	if( m_schema ){
 
-		return lxqt_secret_service_wallet_is_open( m_schema.get() ) ;
+		return lxqt_libsecret_wallet_is_open( m_schema.get() ) ;
 	}else{
 		return false ;
 	}
 }
 
-void LXQt::Wallet::secretService::setInterfaceObject( QWidget * w,std::function< void( bool ) > f )
-{
-	Q_UNUSED( w ) ;
-	m_walletOpened = std::move( f ) ;
-}
-
-QObject * LXQt::Wallet::secretService::qObject( void )
+QObject * LXQt::Wallet::libsecret::qObject( void )
 {
 	return this ;
 }
 
-QString LXQt::Wallet::secretService::storagePath()
+QString LXQt::Wallet::libsecret::storagePath()
 {
 	return QString() ;
 }
 
-void LXQt::Wallet::secretService::changeWalletPassWord( const QString& walletName,
+void LXQt::Wallet::libsecret::changeWalletPassWord( const QString& walletName,
 							const QString& applicationName,
 							std::function< void( bool ) > function )
 {
@@ -282,17 +285,17 @@ void LXQt::Wallet::secretService::changeWalletPassWord( const QString& walletNam
 	Q_UNUSED( function )
 }
 
-QStringList LXQt::Wallet::secretService::managedWalletList()
+QStringList LXQt::Wallet::libsecret::managedWalletList()
 {
 	return QStringList() ;
 }
 
-QString LXQt::Wallet::secretService::localDefaultWalletName()
+QString LXQt::Wallet::libsecret::localDefaultWalletName()
 {
 	return QString() ;
 }
 
-QString LXQt::Wallet::secretService::networkDefaultWalletName()
+QString LXQt::Wallet::libsecret::networkDefaultWalletName()
 {
 	return QString() ;
 }

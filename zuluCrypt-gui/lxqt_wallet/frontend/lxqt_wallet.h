@@ -105,6 +105,14 @@ public:
 	virtual bool addKey( const QString& key,const QByteArray& value ) = 0 ;
 
 	/*
+	 * overloaded method to add a key to the wallet.
+	 */
+	bool addKey( const QString& key,const QString& value )
+	{
+		return this->addKey( key,value.toLatin1() ) ;
+	}
+
+	/*
 	 * Get a value through a key.
 	 */
 	virtual QByteArray readValue( const QString& key ) = 0 ;
