@@ -201,6 +201,7 @@ if( NOT NOGUI )
 			message ( STATUS "lxqt wallet support will be provided by an internal library" )
 			message ( STATUS "---------------------------------------------------------------------------" )
 
+			ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 			add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
 	else()
 		pkg_check_modules( LXQT_WALLET lxqtwallet )
@@ -212,6 +213,7 @@ if( NOT NOGUI )
 			message ( STATUS "lxqt wallet support will be provided by an internal library" )
 			message ( STATUS "---------------------------------------------------------------------------" )
 
+			ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 			add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
 		else()
 			if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" )
@@ -231,6 +233,7 @@ if( NOT NOGUI )
 
 				message ( STATUS "---------------------------------------------------------------------------" )
 
+				ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 				add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
 			endif()
 		endif()
