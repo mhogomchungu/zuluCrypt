@@ -191,8 +191,6 @@ ADD_SUBDIRECTORY( zuluSafe )
 
 if( NOT NOGUI )
 
-	pkg_check_modules( LXQT_WALLET lxqtwallet )
-
 	if( NOT DEFINED INTERNAL_LXQT_WALLET )
 		set( INTERNAL_LXQT_WALLET "false" )
 	endif()
@@ -203,9 +201,10 @@ if( NOT NOGUI )
 			message ( STATUS "lxqt wallet support will be provided by an internal library" )
 			message ( STATUS "---------------------------------------------------------------------------" )
 
-			include_directories( ${LXQT_WALLET_INCLUDEDIR} )
 			add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
 	else()
+		pkg_check_modules( LXQT_WALLET lxqtwallet )
+
 		if( NOT LXQT_WALLET_FOUND )
 
 			message ( STATUS "ERROR: could not find lxqt_wallet package" )
@@ -213,10 +212,12 @@ if( NOT NOGUI )
 			message ( STATUS "lxqt wallet support will be provided by an internal library" )
 			message ( STATUS "---------------------------------------------------------------------------" )
 
-			include_directories( ${LXQT_WALLET_INCLUDEDIR} )
 			add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
 		else()
 			if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" )
+
+				include_directories( ${LXQT_WALLET_INCLUDEDIR} )
+				link_directories( ${LXQT_WALLET_LIBDIR} )
 
 				set( lxqt_wallet "-llxqtwallet" )
 
@@ -230,7 +231,6 @@ if( NOT NOGUI )
 
 				message ( STATUS "---------------------------------------------------------------------------" )
 
-				include_directories( ${LXQT_WALLET_INCLUDEDIR} )
 				add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
 			endif()
 		endif()
