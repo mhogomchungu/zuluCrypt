@@ -100,17 +100,17 @@ set_target_properties( zuluCrypt-gui PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BI
 
 if( QT5 )
 	if( WITH_PWQUALITY AND library_pwquality )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${library_pwquality} )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${library_pwquality} )
 	else( WITH_PWQUALITY AND library_pwquality )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${kwallet_library} )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${kwallet_library} )
 	endif( WITH_PWQUALITY AND library_pwquality )
 
 	target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager zuluCryptMD5 )
 else()
         if( WITH_PWQUALITY AND library_pwquality )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${QT_LIBRARIES} ${blkid} ${library_pwquality} )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${QT_LIBRARIES} ${blkid} ${library_pwquality} )
 	else( WITH_PWQUALITY AND library_pwquality )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqtwallet ${QT_LIBRARIES} ${blkid} ${kwallet_library} )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${QT_LIBRARIES} ${blkid} ${kwallet_library} )
 	endif( WITH_PWQUALITY AND library_pwquality )
 
         target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager zuluCryptMD5 )

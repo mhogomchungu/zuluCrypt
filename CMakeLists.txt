@@ -204,7 +204,7 @@ if( NOT NOGUI )
 			ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
 			add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
 	else()
-		pkg_check_modules( LXQT_WALLET lxqtwallet )
+		pkg_check_modules( LXQT_WALLET lxqt-wallet )
 
 		if( NOT LXQT_WALLET_FOUND )
 
@@ -220,8 +220,6 @@ if( NOT NOGUI )
 
 				include_directories( ${LXQT_WALLET_INCLUDEDIR} )
 				link_directories( ${LXQT_WALLET_LIBDIR} )
-
-				set( lxqt_wallet "-llxqtwallet" )
 
 				message ( STATUS "---------------------------------------------------------------------------" )
 				message ( STATUS "lxqt wallet support will be provided by an external libary" )
