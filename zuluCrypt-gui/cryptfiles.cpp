@@ -37,7 +37,6 @@
 #include "ui_cryptfiles.h"
 #include "utility.h"
 #include "openvolume.h"
-#include "crypttask.h"
 #include "dialogmsg.h"
 #include "lxqt_wallet/backend/lxqtwallet.h"
 
@@ -186,13 +185,8 @@ void cryptfiles::pbCancel()
 
 void cryptfiles::HideUI()
 {
-	if( m_OperationInProgress ){
-
-		m_task->terminate() ;
-	}else{		
-		this->hide() ;
-		this->deleteLater() ;
-	}
+	this->hide() ;
+	this->deleteLater() ;
 }
 
 void cryptfiles::enableAll()
@@ -297,11 +291,8 @@ void cryptfiles::pbCreate()
 	this->disableAll() ;
 
 	if( m_operation == "-D" && source.endsWith( ".zc" ) ){
-		/*
-		 * deprecated code path used to decrypt volumes created with zuluCrypt < 4.6.9
-		 */
-		m_task = new CryptTask( source,dest,keySource,key_1,m_operation ) ;
-		this->cryptFileDeprecatedFunctionality() ;
+
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "These very old encrypted files are no longer supported" ) ) ;
 	}else{
 		#define _constPtr toLatin1().constData()
 
@@ -349,7 +340,7 @@ void cryptfiles::cryptFile( const char * s,const char * d,const char * k,unsigne
 
 	if( r == lxqt_wallet_wrong_password ){
 
-		this->taskFinished( CryptTask::wrongKey ) ;
+		this->taskFinished( cryptfiles::wrongKey ) ;
 
 	}else if( r == lxqt_wallet_no_error ){
 
@@ -359,33 +350,20 @@ void cryptfiles::cryptFile( const char * s,const char * d,const char * k,unsigne
 
 			if( encrypt ){
 
-				this->taskFinished( CryptTask::encryptSuccess ) ;
+				this->taskFinished( cryptfiles::encryptSuccess ) ;
 			}else{
-				this->taskFinished( CryptTask::decryptSuccess ) ;
+				this->taskFinished( cryptfiles::decryptSuccess ) ;
 			}
 		}else{
-			this->taskFinished( CryptTask::quit ) ;
+			this->taskFinished( cryptfiles::quit ) ;
 		}
 	}else{
 		/*
 		 * we shouldnt get here and we return a bogus return value for lack of better
 		 * alternative
 		 */
-		this->taskFinished( CryptTask::openMapperReadFail ) ;
+		this->taskFinished( cryptfiles::openMapperReadFail ) ;
 	}
-}
-
-void cryptfiles::cryptFileDeprecatedFunctionality()
-{
-	m_OperationInProgress = true ;
-
-	connect( m_task,SIGNAL( complete( int ) ),this,SLOT( taskFinished( int ) ) ) ;
-	connect( m_task,SIGNAL( progressUpdate( int ) ),this,SLOT( progressBarUpdate( int ) ) ) ;
-	connect( m_task,SIGNAL( titleUpdate( QString ) ),this,SLOT( titleUpdate( QString ) ) ) ;
-	connect( m_task,SIGNAL( enableCancel() ),this,SLOT( enableCancel() ) ) ;
-	connect( m_task,SIGNAL( disableCancel() ),this,SLOT( disableCancel() ) ) ;
-
-	m_task->start() ;
 }
 
 void cryptfiles::disableCancel()
@@ -534,46 +512,46 @@ void cryptfiles::taskFinished( int st )
 
 	m_OperationInProgress = false ;
 
-	CryptTask::status status = CryptTask::status( st ) ;
+	cryptfiles::status status = cryptfiles::status( st ) ;
 
 	switch( status ){
-	case CryptTask::encryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "Encrypted file created successfully" ) )     ;
+	case cryptfiles::encryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "Encrypted file created successfully" ) )     ;
 		 return this->HideUI() ;
-	case CryptTask::md5Pass               :
-	case CryptTask::decryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "Decrypted file created successfully" ) )	;
+	case cryptfiles::md5Pass               :
+	case cryptfiles::decryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "Decrypted file created successfully" ) )	;
 		 return this->HideUI() ;
-	case CryptTask::openKeyFileReadFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open keyfile for reading" ) )	;
+	case cryptfiles::openKeyFileReadFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open keyfile for reading" ) )	;
 		 break ;
-	case CryptTask::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open encryption routines" ) )	;
+	case cryptfiles::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open encryption routines" ) )	;
 		break ;
-	case CryptTask::destinationFileExists : msg.ShowUIOK( tr( "ERROR!" ),tr( "File or folder already exist at destination address" ) )    ;
+	case cryptfiles::destinationFileExists : msg.ShowUIOK( tr( "ERROR!" ),tr( "File or folder already exist at destination address" ) )    ;
 		break ;
-	case CryptTask::OpenDestinationFail   :
-	case CryptTask::createFileFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to create destination file" ) )      ;
+	case cryptfiles::OpenDestinationFail   :
+	case cryptfiles::createFileFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to create destination file" ) )      ;
 		break ;
-	case CryptTask::wrongKey              : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented key did not match the encryption key" ) )         ;
+	case cryptfiles::wrongKey              : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented key did not match the encryption key" ) )         ;
 		break ;
-	case CryptTask::quit                  : msg.ShowUIOK( tr( "INFO!" ),tr( "Operation terminated per user request" ) )                   ;
+	case cryptfiles::quit                  : msg.ShowUIOK( tr( "INFO!" ),tr( "Operation terminated per user request" ) )                   ;
 		return this->HideUI() ;
-	case CryptTask::OpenSourceFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open source file for reading" ) ) ;
+	case cryptfiles::OpenSourceFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open source file for reading" ) ) ;
 		break ;
-	case CryptTask::md5Fail               : msg.ShowUIOK( tr( "WARNING"),tr( "Decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
+	case cryptfiles::md5Fail               : msg.ShowUIOK( tr( "WARNING"),tr( "Decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
 		return this->HideUI() ;
-	case CryptTask::openMapperReadFail    : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open reading encryption routines" ) )	;
+	case cryptfiles::openMapperReadFail    : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open reading encryption routines" ) )	;
 		break ;
-	case CryptTask::openMapperWriteFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open writing encryption routines" ) )	;
+	case cryptfiles::openMapperWriteFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open writing encryption routines" ) )	;
 		break ;
-	case CryptTask::closeMapperFail       : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to close encryption routine" ) )		;
+	case cryptfiles::closeMapperFail       : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to close encryption routine" ) )		;
 		break ;
-	case CryptTask::unset                 :
-	case CryptTask::success               :
-	case CryptTask::QProcessFail          :
+	case cryptfiles::unset                 :
+	case cryptfiles::success               :
+	case cryptfiles::QProcessFail          :
 		break ;
 	}
 
 	this->enableAll() ;
 
-	if( status == CryptTask::wrongKey  ){
+	if( status == cryptfiles::wrongKey  ){
 
 		m_ui->lineEditPass_1->clear() ;
 		m_ui->lineEditPass_1->setFocus() ;

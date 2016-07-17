@@ -41,7 +41,6 @@ set( MOC_FILES
 		erasedevice.h
 		managevolumeheader.h
 		cryptfiles.h
-		crypttask.h
 		createvolumedialog.h
 		managesystemvolumes.h
 		walletconfig.h
@@ -67,7 +66,6 @@ set( SRC
 	erasedevice.cpp
 	managevolumeheader.cpp
 	cryptfiles.cpp
-	crypttask.cpp
 	createvolumedialog.cpp
 	managesystemvolumes.cpp
 	keystrength.cpp
@@ -105,7 +103,7 @@ if( QT5 )
 		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${kwallet_library} )
 	endif( WITH_PWQUALITY AND library_pwquality )
 
-	target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager zuluCryptMD5 )
+	target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager )
 else()
         if( WITH_PWQUALITY AND library_pwquality )
 		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${QT_LIBRARIES} ${blkid} ${library_pwquality} )
@@ -113,7 +111,7 @@ else()
 		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${QT_LIBRARIES} ${blkid} ${kwallet_library} )
 	endif( WITH_PWQUALITY AND library_pwquality )
 
-        target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager zuluCryptMD5 )
+        target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager )
 
 endif()
 

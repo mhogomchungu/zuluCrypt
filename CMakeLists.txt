@@ -273,7 +273,6 @@ if( NOT NOGUI )
 		INCLUDE( ${QT_USE_FILE} )
         endif()
 
-	ADD_SUBDIRECTORY( zuluCrypt-gui/md5 )
         ADD_SUBDIRECTORY( zuluCrypt-gui/sharedObjects )
 	ADD_SUBDIRECTORY( zuluCrypt-gui )
 	ADD_SUBDIRECTORY( plugins )
