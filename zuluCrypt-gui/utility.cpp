@@ -425,17 +425,36 @@ utility::wallet utility::getKeyFromWallet( QWidget * widget,
 {
 	utility::wallet w{ false,false,"","" } ;
 
-	using storage_t = std::unique_ptr< LXQt::Wallet::Wallet > ;
+	class Wallet
+	{
+	public:
+		Wallet( LXQt::Wallet::BackEnd storage ) :
+			m_wallet( LXQt::Wallet::getWalletBackend( storage ) )
+		{
+		}
+		LXQt::Wallet::Wallet * operator->()
+		{
+			return m_wallet ;
+		}
+		LXQt::Wallet::Wallet * operator*()
+		{
+			return this->operator->() ;
+		}
+		~Wallet()
+		{
+			m_wallet->deleteLater() ;
+		}
+	private:
+		LXQt::Wallet::Wallet * m_wallet ;
+	} wallet( storage );
 
 	if( storage == LXQt::Wallet::BackEnd::kwallet ){
 
-		storage_t e( LXQt::Wallet::getWalletBackend( storage ) ) ;
-
-		w.opened = e->await_open( "default",utility::applicationName() ) ;
+		w.opened = wallet->open( "default",utility::applicationName() ) ;
 
 		if( w.opened ){
 
-			w.key = utility::getKeyFromWallet( e.get(),keyID ).await() ;
+			w.key = utility::getKeyFromWallet( *wallet,keyID ).await() ;
 		}
 
 		return w ;
@@ -447,16 +466,14 @@ utility::wallet utility::getKeyFromWallet( QWidget * widget,
 
 		if( LXQt::Wallet::walletExists( storage,walletName,appName ) ){
 
-			storage_t e( LXQt::Wallet::getWalletBackend( storage ) ) ;
+			wallet->setImage( utility::getIcon( app ) ) ;
 
-			e->setImage( utility::getIcon( app ) ) ;
-
-			w.opened = e->await_open( walletName,appName,widget,pwd ) ;
+			w.opened = wallet->open( walletName,appName,widget,pwd ) ;
 
 			if( w.opened ){
 
-				w.key = utility::getKeyFromWallet( e.get(),keyID ).await() ;
-				w.password = e->qObject()->objectName() ;
+				w.key = utility::getKeyFromWallet( *wallet,keyID ).await() ;
+				w.password = wallet->qObject()->objectName() ;
 				w.notConfigured = false ;
 			}
 
@@ -468,13 +485,11 @@ utility::wallet utility::getKeyFromWallet( QWidget * widget,
 
 	}else if( storage == LXQt::Wallet::BackEnd::libsecret ){
 
-		storage_t e( LXQt::Wallet::getWalletBackend( storage ) ) ;
-
-		w.opened = e->await_open( utility::walletName(),utility::applicationName() ) ;
+		w.opened = wallet->open( utility::walletName(),utility::applicationName() ) ;
 
 		if( w.opened ){
 
-			w.key = utility::getKeyFromWallet( e.get(),keyID ).await() ;
+			w.key = utility::getKeyFromWallet( *wallet,keyID ).await() ;
 		}
 
 		return w ;

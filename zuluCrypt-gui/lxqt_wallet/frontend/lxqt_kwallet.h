@@ -59,11 +59,11 @@ public:
 		   const QString& password = QString(),
 		   const QString& displayApplicationName = QString() ) ;
 
-	bool await_open( const QString& walletName,
-			 const QString& applicationName,
-			 QWidget * = nullptr,
-			 const QString& password = QString(),
-			 const QString& displayApplicationName = QString() ) ;
+	bool open( const QString& walletName,
+		   const QString& applicationName,
+		   QWidget * = nullptr,
+		   const QString& password = QString(),
+		   const QString& displayApplicationName = QString() ) ;
 
 	bool addKey( const QString& key,const QByteArray& value ) ;
 	bool walletIsOpened( void ) ;

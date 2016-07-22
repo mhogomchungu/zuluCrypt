@@ -82,11 +82,11 @@ bool LXQt::Wallet::libsecret::addKey( const QString& key,const QByteArray& value
 	}
 }
 
-bool LXQt::Wallet::libsecret::await_open( const QString& walletName,
-					      const QString& applicationName,
-					      QWidget * parent,
-					      const QString& password,
-					      const QString& displayApplicationName )
+bool LXQt::Wallet::libsecret::open( const QString& walletName,
+				    const QString& applicationName,
+				    QWidget * parent,
+				    const QString& password,
+				    const QString& displayApplicationName )
 {
 	this->open( walletName,
 		    applicationName,

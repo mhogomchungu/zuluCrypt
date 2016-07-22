@@ -58,7 +58,7 @@ namespace Wallet{
 class internalWallet : public LXQt::Wallet::Wallet
 {
 public:
-	internalWallet() ;	
+	internalWallet() ;
 	~internalWallet() ;
 
 	void open( const QString& walletName,
@@ -68,11 +68,11 @@ public:
 		   const QString& password = QString(),
 		   const QString& displayApplicationName = QString() ) ;
 
-	bool await_open( const QString& walletName,
-			 const QString& applicationName,
-			 QWidget * = nullptr,
-			 const QString& password = QString(),
-			 const QString& displayApplicationName = QString() ) ;
+	bool open( const QString& walletName,
+		   const QString& applicationName,
+		   QWidget * = nullptr,
+		   const QString& password = QString(),
+		   const QString& displayApplicationName = QString() ) ;
 
 	bool addKey( const QString& key,const QByteArray& value ) ;
 	bool walletIsOpened( void ) ;
@@ -116,7 +116,7 @@ private:
 	QEventLoop m_loop ;
 	bool m_opened ;
 
-	std::function< void( bool ) > m_correctPassword = []( bool e ){ Q_UNUSED( e ) } ;	
+	std::function< void( bool ) > m_correctPassword = []( bool e ){ Q_UNUSED( e ) } ;
 	std::function< void( bool ) > m_walletOpened = []( bool e ){ Q_UNUSED( e ) ; } ;
 };
 

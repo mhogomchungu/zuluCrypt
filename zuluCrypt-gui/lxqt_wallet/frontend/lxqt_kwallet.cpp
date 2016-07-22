@@ -54,11 +54,11 @@ bool LXQt::Wallet::kwallet::addKey( const QString& key,const QByteArray& value )
 	return m_kwallet->writePassword( key,value ) == 0 ;
 }
 
-bool LXQt::Wallet::kwallet::await_open( const QString& walletName,
-					const QString& applicationName,
-					QWidget * parent,
-					const QString& password,
-					const QString& displayApplicationName )
+bool LXQt::Wallet::kwallet::open( const QString& walletName,
+				  const QString& applicationName,
+				  QWidget * parent,
+				  const QString& password,
+				  const QString& displayApplicationName )
 {
 	if( walletName == "default" ){
 
