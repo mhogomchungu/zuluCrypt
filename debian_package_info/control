@@ -3,11 +3,20 @@ Section: admin
 Priority: extra
 Maintainer: Mhogo Mchungu <mhogomchungu@gmail.com>
 Uploaders:
-Build-Depends: debhelper (>= 9), cmake, pkg-config, libsecret-1-dev, libcryptsetup-dev, libblkid-dev, libpwquality-dev, libdevmapper-dev, uuid-dev, libgcrypt11-dev, libqt4-dev, libudev-dev, chrpath, bzip2
-Standards-Version: 3.9.5
+Build-Depends: chrpath, debhelper (>= 9), cmake, pkg-config, libcryptsetup-dev, libblkid-dev, libdevmapper-dev, uuid-dev, libgcrypt11-dev, libqt4-dev, libudev-dev, bzip2, qt5keychain-dev, qtkeychain-dev, libkf5wallet-dev, qtbase5-dev, qttools5-dev, libsecret-1-dev, libpwquality-dev
+Standards-Version: 3.9.8
 Homepage: http://mhogomchungu.github.io/zuluCrypt/
 Vcs-Git: git://git@github.com:mhogomchungu/zuluCrypt.git
 Vcs-Browser: https://github.com/mhogomchungu/zuluCrypt
+
+Package: zulucrypt
+Architecture: all
+Depends: zulucrypt-gui, zulucrypt-cli
+Description: front-end for cryptsetup and tcplay
+ ZuluCrypt makes it easier to use cryptsetup by providing a Qt based
+ GUI and a simpler to use cli front end to cryptsetup.
+ .
+ This metapackage installs the gui and che cli frontends.
 
 Package: zulucrypt-gui
 Architecture: any
