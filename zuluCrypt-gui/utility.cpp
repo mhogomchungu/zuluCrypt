@@ -446,11 +446,16 @@ utility::wallet utility::getKeyFromWallet( QWidget * widget,
 		}
 	private:
 		LXQt::Wallet::Wallet * m_wallet ;
-	} wallet( storage );
+	} wallet( storage ) ;
 
-	if( storage == LXQt::Wallet::BackEnd::kwallet ){
+	if( storage == LXQt::Wallet::BackEnd::kwallet || storage == LXQt::Wallet::BackEnd::libsecret ){
 
-		w.opened = wallet->open( "default",utility::applicationName() ) ;
+		if( storage == LXQt::Wallet::BackEnd::kwallet ){
+
+			w.opened = wallet->open( "default",utility::applicationName() ) ;
+		}else{
+			w.opened = wallet->open( utility::walletName(),utility::applicationName() ) ;
+		}
 
 		if( w.opened ){
 
@@ -483,16 +488,6 @@ utility::wallet utility::getKeyFromWallet( QWidget * widget,
 			return w ;
 		}
 
-	}else if( storage == LXQt::Wallet::BackEnd::libsecret ){
-
-		w.opened = wallet->open( utility::walletName(),utility::applicationName() ) ;
-
-		if( w.opened ){
-
-			w.key = utility::getKeyFromWallet( *wallet,keyID ).await() ;
-		}
-
-		return w ;
 	}else{
 		/*
 		 * shouldnt get here
