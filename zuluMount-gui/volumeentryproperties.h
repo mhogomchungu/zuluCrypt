@@ -139,15 +139,20 @@ private:
 
 			if( m_fileSystem == "cryfs" ){
 
-				struct statfs vfs ;
+				m_usedSpacePercentage = [ this ]()->QString{
 
-				if( statfs( m_mountPoint.toLatin1().constData(),&vfs ) == 0 ){
+					struct statfs vfs ;
 
-					quint64 s = vfs.f_bsize * ( vfs.f_blocks - vfs.f_bavail ) ;
+					auto passed = Task::await< bool >( [ & ](){
 
-					m_volumeSize = utility::prettyfySpaceUsage( s ) ;
+						return statfs( m_mountPoint.toLatin1().constData(),&vfs ) == 0 ;
+					} ) ;
 
-					m_usedSpacePercentage = [ & ]()->QString{
+					if( passed ){
+
+						quint64 s = vfs.f_bsize * ( vfs.f_blocks - vfs.f_bavail ) ;
+
+						m_volumeSize = utility::prettyfySpaceUsage( s ) ;
 
 						if( vfs.f_bfree == 0 ){
 
@@ -164,8 +169,10 @@ private:
 								return QString::number( e,'f',2 ) + "%" ;
 							}
 						}
-					}() ;
-				}
+					}else{
+						return "Nil" ;
+					}
+				}() ;
 			}
 		}
 	}

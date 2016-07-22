@@ -741,12 +741,14 @@ void zuluMount::cryfsVolumeProperties()
 				   tr( "Total Space: %7" ),
 				   tr( "Used %: %8" ) } ;
 
-			QString e = "\n\n\n" ;
+			QString e ;
 
 			for( const auto& it : l ){
 
 				e += it + "\n\n" ;
 			}
+
+			e.truncate( e.size() - 2 ) ;
 
 			return e ;
 
