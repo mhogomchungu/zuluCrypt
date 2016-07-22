@@ -81,12 +81,19 @@ public:
 	};
 
 	using function_t = std::function< void( NetworkAccessManager::NetworkReply ) > ;
-
+#if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
 	NetworkAccessManager()
 	{
 		connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),
 			 this,SLOT( networkReply( QNetworkReply * ) ),Qt::QueuedConnection ) ;
 	}
+#else
+	NetworkAccessManager()
+	{
+		connect( &m_manager,&QNetworkAccessManager::finished,
+		         this,&NetworkAccessManager::networkReply,Qt::QueuedConnection ) ;
+	}
+#endif
 	QNetworkAccessManager& QtNAM()
 	{
 		return m_manager ;

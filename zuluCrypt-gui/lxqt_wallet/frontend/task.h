@@ -77,9 +77,11 @@
  *
  * [1] http://en.cppreference.com/w/cpp/utility/functional/reference_wrapper
  */
-namespace LXQt{
+namespace LXQt
+{
 
-namespace Wallet{
+namespace Wallet
+{
 
 namespace Task
 {
@@ -89,7 +91,11 @@ namespace Task
 	public:
 		Thread()
 		{
-			connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
+			#if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
+				connect( this,SIGNAL( finished() ),this,SLOT( deleteLater() ) ) ;
+			#else
+				connect( this,&QThread::finished,this,&QThread::deleteLater ) ;
+			#endif
 		}
 	protected:
 		virtual ~Thread()
