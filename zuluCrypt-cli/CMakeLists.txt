@@ -67,7 +67,6 @@
  lib/mount_fs_options.c
  lib/real_path.c
  lib/file_path_security.c
- lib/canonicalize/canonicalize.c
  lib/create_tcrypt.c
  lib/parse_fstab.c
  lib/resolve_paths.c

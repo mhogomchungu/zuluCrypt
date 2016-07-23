@@ -23,31 +23,42 @@
 #include <string.h>
 #include <sys/stat.h>
 #include "includes.h"
+#include <stdlib.h>
 
-#include "canonicalize/canonicalize.h"
-
-/*
-static char * _private_real_path( const char * path )
-{
-	if( path ){;}
-	return NULL ;
-}
-*/
-/*
- * canonicalize_path() is defined in canonicalize/canonicalize.c
- */
 char * zuluCryptRealPath( const char * path )
 {
-	return canonicalize_path( path ) ;
+	string_t st ;
+	string_t xt ;
+
+	char * e = realpath( path,NULL ) ;
+
+	if( StringPrefixEqual( e,"/dev/dm-" ) ){
+
+		st = String_1( "/sys/block/",e + 5,"/dm/name",NULL ) ;
+
+		xt = StringGetFromVirtualFile( StringContent( st ) ) ;
+
+		StringRemoveRight( xt,1 ) ;
+
+		StringPrepend( xt,"/dev/mapper/" ) ;
+
+		StringFree( e ) ;
+
+		StringDelete( &st ) ;
+
+		return StringDeleteHandle( &xt ) ;
+	}else{
+		return e ;
+	}
 }
 
 int zuluCryptPathStartsWith( const char * path,const char * start )
 {
 	int st = 0 ;
-	char * p = canonicalize_path( path ) ;
+	char * p = zuluCryptRealPath( path ) ;
 	if( p != NULL ){
 		st = StringPrefixEqual( p,start ) ;
-		free( p ) ;
+		StringFree( p ) ;
 	}
 	return st ;
 }
@@ -55,21 +66,21 @@ int zuluCryptPathStartsWith( const char * path,const char * start )
 int zuluCryptPathDoesNotStartsWith( const char * path,const char * start )
 {
 	int st = 0;
-	char * p = canonicalize_path( path ) ;
+	char * p = zuluCryptRealPath( path ) ;
 	if( p != NULL ){
 		st = StringPrefixEqual( p,start ) ;
-		free( p ) ;
+		StringFree( p ) ;
 	}
 	return st == 0 ;
 }
 
 int zuluCryptPathDidNotChange( const char * path )
 {
-	char * p = canonicalize_path( path ) ;
+	char * p = zuluCryptRealPath( path ) ;
 	int st = 0 ;
 	if( p != NULL ){
 		st = StringsAreEqual( path,p ) ;
-		free( p ) ;
+		StringFree( p ) ;
 	}
 	return st ;
 }
