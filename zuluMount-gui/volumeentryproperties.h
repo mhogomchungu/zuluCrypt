@@ -30,6 +30,55 @@
 
 #include <QDebug>
 
+#if 0
+static void setFsSize( const QString& path,QString * volumeSize,QString * usedPercentage )
+{
+	struct statfs vfs ;
+
+	auto passed = Task::await< bool >( [ & ](){
+
+		return statfs( path.toLatin1().constData(),&vfs ) == 0 ;
+	} ) ;
+
+	if( passed ){
+
+		quint64 s = vfs.f_bsize * ( vfs.f_blocks - vfs.f_bavail ) ;
+
+		*volumeSize = utility::prettyfySpaceUsage( s ) ;
+
+		if( vfs.f_bfree == 0 ){
+
+			*usedPercentage = "100%" ;
+		}else{
+			quint64 s = vfs.f_blocks - vfs.f_bavail ;
+
+			auto e = double( s ) / double( vfs.f_blocks ) * 100 ;
+
+			if( e < 0.01 ){
+
+				*usedPercentage = "0%" ;
+			}else{
+				*usedPercentage = QString::number( e,'f',2 ) + "%" ;
+			}
+		}
+	}else{
+		*usedPercentage = "Nil" ;
+	}
+}
+
+#else
+
+static void setFsSize( const QString& path,QString * volumeSize,QString * usedPercentage )
+{
+	Q_UNUSED( path ) ;
+
+	Q_UNUSED( volumeSize ) ;
+
+	Q_UNUSED( usedPercentage ) ;
+}
+
+#endif
+
 class volumeEntryProperties
 {
 public:
@@ -139,40 +188,7 @@ private:
 
 			if( m_fileSystem == "cryfs" ){
 
-				m_usedSpacePercentage = [ this ]()->QString{
-
-					struct statfs vfs ;
-
-					auto passed = Task::await< bool >( [ & ](){
-
-						return statfs( m_mountPoint.toLatin1().constData(),&vfs ) == 0 ;
-					} ) ;
-
-					if( passed ){
-
-						quint64 s = vfs.f_bsize * ( vfs.f_blocks - vfs.f_bavail ) ;
-
-						m_volumeSize = utility::prettyfySpaceUsage( s ) ;
-
-						if( vfs.f_bfree == 0 ){
-
-							return "100%" ;
-						}else{
-							quint64 s = vfs.f_blocks - vfs.f_bavail ;
-
-							auto e = double( s ) / double( vfs.f_blocks ) * 100 ;
-
-							if( e < 0.01 ){
-
-								return "0%" ;
-							}else{
-								return QString::number( e,'f',2 ) + "%" ;
-							}
-						}
-					}else{
-						return "Nil" ;
-					}
-				}() ;
+				setFsSize( m_mountPoint,&m_volumeSize,&m_usedSpacePercentage ) ;
 			}
 		}
 	}
