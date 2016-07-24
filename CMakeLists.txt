@@ -187,55 +187,65 @@ set_target_properties( crypt_buffer PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BIT
 TARGET_LINK_LIBRARIES( crypt_buffer -lgcrypt )
 
 ADD_SUBDIRECTORY( zuluCrypt-cli )
-ADD_SUBDIRECTORY( zuluSafe )
 
-if( NOT NOGUI )
+if( NOT DEFINED INTERNAL_LXQT_WALLET )
+	set( INTERNAL_LXQT_WALLET "false" )
+endif()
 
-	if( NOT DEFINED INTERNAL_LXQT_WALLET )
-		set( INTERNAL_LXQT_WALLET "false" )
-	endif()
+if( INTERNAL_LXQT_WALLET )
 
-	if( INTERNAL_LXQT_WALLET )
+	message ( STATUS "---------------------------------------------------------------------------" )
+	message ( STATUS "lxqt wallet support will be provided by an internal library" )
+	message ( STATUS "---------------------------------------------------------------------------" )
 
-			message ( STATUS "---------------------------------------------------------------------------" )
-			message ( STATUS "lxqt wallet support will be provided by an internal library" )
-			message ( STATUS "---------------------------------------------------------------------------" )
+	include_directories( zuluCrypt-gui/lxqt_wallet )
+	include_directories( zuluCrypt-gui/lxqt_wallet/frontend )
+	include_directories( zuluCrypt-gui/lxqt_wallet/backend )
 
-			ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
-			add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
+	add_subdirectory( zuluCrypt-gui/lxqt_wallet )
+else()
+	pkg_check_modules( LXQT_WALLET lxqt-wallet )
+
+	if( NOT LXQT_WALLET_FOUND )
+
+		message ( STATUS "ERROR: could not find lxqt_wallet package" )
+		message ( STATUS "---------------------------------------------------------------------------" )
+		message ( STATUS "lxqt wallet support will be provided by an internal library" )
+		message ( STATUS "---------------------------------------------------------------------------" )
+
+		include_directories( zuluCrypt-gui/lxqt_wallet )
+		include_directories( zuluCrypt-gui/lxqt_wallet/frontend )
+		include_directories( zuluCrypt-gui/lxqt_wallet/backend )
+
+		add_subdirectory( zuluCrypt-gui/lxqt_wallet )
 	else()
-		pkg_check_modules( LXQT_WALLET lxqt-wallet )
+		if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" )
 
-		if( NOT LXQT_WALLET_FOUND )
+			include_directories( ${LXQT_WALLET_INCLUDEDIR} )
+			link_directories( ${LXQT_WALLET_LIBDIR} )
 
-			message ( STATUS "ERROR: could not find lxqt_wallet package" )
+			message ( STATUS "---------------------------------------------------------------------------" )
+			message ( STATUS "lxqt wallet support will be provided by an external libary" )
+			message ( STATUS "---------------------------------------------------------------------------" )
+		else()
 			message ( STATUS "---------------------------------------------------------------------------" )
 			message ( STATUS "lxqt wallet support will be provided by an internal library" )
+			message ( STATUS "because external library is too old(<= 2.0.0)" )
+
 			message ( STATUS "---------------------------------------------------------------------------" )
 
-			ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
-			add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
-		else()
-			if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" )
+			include_directories( zuluCrypt-gui/lxqt_wallet )
+			include_directories( zuluCrypt-gui/lxqt_wallet/frontend )
+			include_directories( zuluCrypt-gui/lxqt_wallet/backend )
 
-				include_directories( ${LXQT_WALLET_INCLUDEDIR} )
-				link_directories( ${LXQT_WALLET_LIBDIR} )
-
-				message ( STATUS "---------------------------------------------------------------------------" )
-				message ( STATUS "lxqt wallet support will be provided by an external libary" )
-				message ( STATUS "---------------------------------------------------------------------------" )
-			else()
-				message ( STATUS "---------------------------------------------------------------------------" )
-				message ( STATUS "lxqt wallet support will be provided by an internal library" )
-				message ( STATUS "because external library is too old(<= 2.0.0)" )
-
-				message ( STATUS "---------------------------------------------------------------------------" )
-
-				ADD_SUBDIRECTORY( zuluCrypt-gui/lxqt_wallet )
-				add_definitions( -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
-			endif()
+			add_subdirectory( zuluCrypt-gui/lxqt_wallet )
 		endif()
 	endif()
+endif()
+
+add_subdirectory( zuluSafe )
+
+if( NOT NOGUI )
 
 	if( WITH_PWQUALITY AND PWQUALITY_FOUND )
 		find_file ( header_pwquality pwquality.h PATHS ${PWQUALITY_INCLUDE_DIRS} )

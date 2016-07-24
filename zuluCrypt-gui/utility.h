@@ -51,7 +51,7 @@
 #include <blkid/blkid.h>
 
 #include "task.h"
-#include "lxqt_wallet/frontend/lxqt_wallet.h"
+#include "lxqt_wallet.h"
 
 #include <QObject>
 #include <QLabel>
@@ -422,7 +422,7 @@ namespace utility
 			if( fd != -1 ){
 
 				::close( fd ) ;
-			}			
+			}
 		} ;
 	} ;
 }

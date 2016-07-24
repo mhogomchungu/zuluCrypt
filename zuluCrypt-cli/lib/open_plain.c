@@ -167,6 +167,7 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,
 	return zuluCryptOpenPlain_2( device,
 				     mapper,
 				     mode,
-				     key,key_len,
+				     key,
+				     key_len,
 				     "/dev/urandom.aes.cbc-essiv:sha256.256.ripemd160.0" ) ;
 }

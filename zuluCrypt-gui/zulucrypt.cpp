@@ -65,7 +65,6 @@
 #include "tablewidget.h"
 #include "utility.h"
 #include "task.h"
-#include "lxqt_wallet/frontend/lxqt_wallet.h"
 #include "contactinfo.h"
 
 #include "veracrypt_support.h"

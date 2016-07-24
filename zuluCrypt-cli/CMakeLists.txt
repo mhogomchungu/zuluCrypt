@@ -151,11 +151,10 @@
  set_target_properties( zuluCrypt-cli PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
  set_target_properties( zuluMount-cli PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 
-
-  #zuluCryptKeyServer not used
- add_executable( zuluCryptKeyServer ../plugins/network_key/server.c ../zuluCrypt-gui/lxqt_wallet/backend/lxqtwallet.c )
- set_target_properties( zuluCryptKeyServer PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
- TARGET_LINK_LIBRARIES( zuluCryptKeyServer crypt_buffer )
+ #zuluCryptKeyServer not used
+ #add_executable( zuluCryptKeyServer ../plugins/network_key/server.c )
+ #set_target_properties( zuluCryptKeyServer PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
+ #TARGET_LINK_LIBRARIES( zuluCryptKeyServer lxqtwallet crypt_buffer )
 
  if( NOT NOSECRETSUPPORT )
 

@@ -200,8 +200,9 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 	m_ui->pbOk->setHidden( false ) ;
 
 	m_ui->label->setHidden( true ) ;
+
 	QString msg = m ;
-	msg.replace( "   ","" ) ;
+	msg.remove( "   " ) ;
 
 	auto stl = msg.split( "\n" ) ;
 
@@ -209,7 +210,7 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 
 		this->setFixedSize( this->size() ) ;
 
-		auto _trancate_long_path = []( QString e ){
+		auto _trancate_long_path = []( const QString& e )->QString{
 
 			const int len    = 40 ;
 			const int length = e.length() ;
@@ -218,7 +219,7 @@ void DialogMsg::ShowUIVolumeProperties( const QString& title,const QString& m )
 
 				return e ;
 			}else{
-				return e.replace( 25,length - len,"......" ) ;
+				return e.mid( 0,18 ) + "...." + e.mid( length - 18 ) ;
 			}
 		} ;
 

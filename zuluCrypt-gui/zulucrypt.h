@@ -26,7 +26,7 @@
 #include <QSystemTrayIcon>
 
 #include "../zuluMount-gui/monitor_mountinfo.h"
-#include "lxqt_wallet/frontend/lxqt_wallet.h"
+#include "lxqt_wallet.h"
 #include "utility.h"
 
 class QWidget ;

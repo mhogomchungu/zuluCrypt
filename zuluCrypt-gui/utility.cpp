@@ -71,8 +71,6 @@
 
 #include <gcrypt.h>
 
-#include "lxqt_wallet/frontend/lxqt_wallet.h"
-
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 
 #include "../zuluCrypt-cli/utility/process/process.h"

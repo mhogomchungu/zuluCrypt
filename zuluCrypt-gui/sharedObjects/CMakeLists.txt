@@ -11,6 +11,7 @@ set( SRC
 )
 
 set( MOC_FILES
+	../task.h
 	../dialogmsg.h
 	../readonlywarning.h
 	../plugin.h

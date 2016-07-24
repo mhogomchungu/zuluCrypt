@@ -38,7 +38,7 @@
 #include "utility.h"
 #include "openvolume.h"
 #include "dialogmsg.h"
-#include "lxqt_wallet/backend/lxqtwallet.h"
+#include "lxqtwallet.h"
 
 #include "plugin.h"
 

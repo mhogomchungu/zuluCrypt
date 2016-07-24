@@ -32,7 +32,7 @@
 #include <libintl.h>
 #include <locale.h>
 
-#include "../zuluCrypt-gui/lxqt_wallet/backend/lxqtwallet.h"
+#include "lxqtwallet.h"
 #include "version.h"
 
 #define PASSWORD_SIZE         512

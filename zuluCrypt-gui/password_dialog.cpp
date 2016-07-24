@@ -19,7 +19,7 @@
 
 #include "password_dialog.h"
 #include "zulucrypt.h"
-#include "lxqt_wallet/frontend/lxqt_wallet.h"
+#include "lxqt_wallet.h"
 
 #include <QMenu>
 #include <Qt>

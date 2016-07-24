@@ -35,7 +35,7 @@
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/utility.h"
-#include "../zuluCrypt-gui/lxqt_wallet/frontend/lxqt_wallet.h"
+#include "lxqt_wallet.h"
 #include "mountoptions.h"
 #include "../zuluCrypt-gui/tcrypt.h"
 #include "zulumounttask.h"
