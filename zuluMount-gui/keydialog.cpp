@@ -50,13 +50,17 @@
 #define INTERNAL_WALLET "internal wallet"
 #define GNOME_WALLET    "gnome wallet"
 
-/*
- * this ugly global variable is defined in zulucrypt.cpp to prevent multiple prompts when opening multiple volumes
- */
-static QString _internalPassWord ;
-
-keyDialog::keyDialog( QWidget * parent,QTableWidget * table,const volumeEntryProperties& e,std::function< void() > p,std::function< void( const QString& ) > q ) :
-	QDialog( parent ),m_ui( new Ui::keyDialog ),m_cancel( std::move( p ) ),m_success( std::move( q ) )
+keyDialog::keyDialog( QWidget * parent,
+		      QTableWidget * table,
+		      secrets& s,
+		      const volumeEntryProperties& e,
+		      std::function< void() > p,
+		      std::function< void( const QString& ) > q ) :
+	QDialog( parent ),
+	m_ui( new Ui::keyDialog ),
+	m_secrets( s ),
+	m_cancel( std::move( p ) ),
+	m_success( std::move( q ) )
 {
 	m_ui->setupUi( this ) ;
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
@@ -395,24 +399,28 @@ void keyDialog::pbOpen()
 
 		if( wallet == tr( KWALLET ) ){
 
-			w = utility::getKeyFromWallet( this,LXQt::Wallet::BackEnd::kwallet,m_path ) ;
+			auto s = m_secrets.walletBk( LXQt::Wallet::BackEnd::kwallet ) ;
+
+			w = utility::getKey( s.bk(),m_path ) ;
 
 		}else if( wallet == tr( INTERNAL_WALLET ) ){
 
-			w = utility::getKeyFromWallet( this,LXQt::Wallet::BackEnd::internal,m_path,_internalPassWord,"zuluMount" ) ;
+			auto s = m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ) ;
+
+			w = utility::getKey( s.bk(),m_path,"zuluMount" ) ;
 
 			if( w.notConfigured ){
 
 				DialogMsg msg( this ) ;
 				msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal wallet is not configured" ) ) ;
 				return this->enableAll() ;
-			}else{
-				_internalPassWord = w.password ;
 			}
 
 		}else if( wallet == tr( GNOME_WALLET ) ){
 
-			w = utility::getKeyFromWallet( this,LXQt::Wallet::BackEnd::libsecret,m_path ) ;
+			auto s = m_secrets.walletBk( LXQt::Wallet::BackEnd::libsecret ) ;
+
+			w = utility::getKey( s.bk(),m_path ) ;
 		}else{
 			return this->openVolume() ;
 		}
@@ -436,7 +444,6 @@ void keyDialog::pbOpen()
 				this->openVolume() ;
 			}
 		}else{
-			_internalPassWord.clear() ;
 			this->enableAll() ;
 		}
 	}else{

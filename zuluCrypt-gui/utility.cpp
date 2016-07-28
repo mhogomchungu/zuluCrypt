@@ -294,35 +294,6 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 	} ) ;
 }
 
-::Task::future<QString>& utility::getKeyFromWallet( LXQt::Wallet::Wallet * wallet,const QString& volumeID )
-{
-	return ::Task::run<QString>( [ wallet,volumeID ](){
-
-		decltype( wallet->readValue( volumeID ) ) key ;
-
-		if( volumeID.startsWith( "UUID=" ) ){
-
-			key = wallet->readValue( volumeID ) ;
-		}else{
-			auto uuid = utility::getUUIDFromPath( volumeID ).get() ;
-
-			if( uuid.isEmpty() ){
-
-				key = wallet->readValue( utility::getVolumeID( volumeID ) ) ;
-			}else{
-				key = wallet->readValue( uuid ) ;
-
-				if( key.isEmpty() ){
-
-					key = wallet->readValue( volumeID ) ;
-				}
-			}
-		}
-
-		return key ;
-	} ) ;
-}
-
 ::Task::future<QString>& utility::getUUIDFromPath( const QString& dev )
 {
 	return ::Task::run<QString>( [ dev ](){
@@ -416,82 +387,82 @@ void utility::openPath( const QString& path,const QString& opener,
 	} ) ;
 }
 
-utility::wallet utility::getKeyFromWallet( QWidget * widget,
-					   LXQt::Wallet::BackEnd storage,
-					   const QString& keyID,
-					   const QString& pwd,const QString& app )
+static ::Task::future<QString>& _getKey( LXQt::Wallet::Wallet& wallet,const QString& volumeID )
 {
-	utility::wallet w{ false,false,"","" } ;
+	return ::Task::run<QString>( [ & ](){
 
-	class Wallet
-	{
-	public:
-		Wallet( LXQt::Wallet::BackEnd storage ) :
-			m_wallet( LXQt::Wallet::getWalletBackend( storage ) )
-		{
-		}
-		LXQt::Wallet::Wallet * operator->()
-		{
-			return m_wallet ;
-		}
-		LXQt::Wallet::Wallet * operator*()
-		{
-			return this->operator->() ;
-		}
-		~Wallet()
-		{
-			m_wallet->deleteLater() ;
-		}
-	private:
-		LXQt::Wallet::Wallet * m_wallet ;
-	} wallet( storage ) ;
+		decltype( wallet.readValue( volumeID ) ) key ;
 
-	if( storage == LXQt::Wallet::BackEnd::kwallet || storage == LXQt::Wallet::BackEnd::libsecret ){
+		if( volumeID.startsWith( "UUID=" ) ){
 
-		if( storage == LXQt::Wallet::BackEnd::kwallet ){
-
-			w.opened = wallet->open( "default",utility::applicationName() ) ;
+			key = wallet.readValue( volumeID ) ;
 		}else{
-			w.opened = wallet->open( utility::walletName(),utility::applicationName() ) ;
+			auto uuid = utility::getUUIDFromPath( volumeID ).get() ;
+
+			if( uuid.isEmpty() ){
+
+				key = wallet.readValue( utility::getVolumeID( volumeID ) ) ;
+			}else{
+				key = wallet.readValue( uuid ) ;
+
+				if( key.isEmpty() ){
+
+					key = wallet.readValue( volumeID ) ;
+				}
+			}
+		}
+
+		return key ;
+	} ) ;
+}
+
+utility::wallet utility::getKey( LXQt::Wallet::Wallet& wallet,const QString& keyID,const QString& app )
+{
+	utility::wallet w{ false,false,"" } ;
+
+	auto s = wallet.backEnd() ;
+
+	if( s == LXQt::Wallet::BackEnd::kwallet || s == LXQt::Wallet::BackEnd::libsecret ){
+
+		if( s == LXQt::Wallet::BackEnd::kwallet ){
+
+			w.opened = wallet.open( "default",utility::applicationName() ) ;
+		}else{
+			w.opened = wallet.open( utility::walletName(),utility::applicationName() ) ;
 		}
 
 		if( w.opened ){
 
-			w.key = utility::getKeyFromWallet( *wallet,keyID ).await() ;
+			w.key = _getKey( wallet,keyID ).await() ;
 		}
 
-		return w ;
-
-	}else if( storage == LXQt::Wallet::BackEnd::internal ){
+	}else if( s == LXQt::Wallet::BackEnd::internal ){
 
 		auto walletName = utility::walletName() ;
 		auto appName    = utility::applicationName() ;
 
-		if( LXQt::Wallet::walletExists( storage,walletName,appName ) ){
+		if( LXQt::Wallet::walletExists( s,walletName,appName ) ){
 
-			wallet->setImage( utility::getIcon( app ) ) ;
+			wallet.setImage( utility::getIcon( app ) ) ;
 
-			w.opened = wallet->open( walletName,appName,widget,pwd ) ;
+			if( wallet.opened() ){
+
+				w.opened = true ;
+			}else{
+				w.opened = wallet.open( walletName,appName ) ;
+			}
 
 			if( w.opened ){
 
-				w.key = utility::getKeyFromWallet( *wallet,keyID ).await() ;
-				w.password = wallet->qObject()->objectName() ;
+				w.key = _getKey( wallet,keyID ).await() ;
 				w.notConfigured = false ;
 			}
-
-			return w ;
 		}else{
 			w.notConfigured = true ;
-			return w ;
 		}
-
-	}else{
-		/*
-		 * shouldnt get here
-		 */
-		return w ;
 	}
+
+	return w ;
 }
 
 static quint64 _volumeSize( const QString& e,size_t size )

@@ -154,7 +154,7 @@ public:
 	 * If the wallet is not open,libsecret backend will block while the user is
 	 * prompted for a key to inlock it.
 	 */
-	virtual bool walletIsOpened() = 0 ;
+	virtual bool opened() = 0 ;
 
 	/*
 	 * Return QObject pointer of the backend,not sure why you would want this.

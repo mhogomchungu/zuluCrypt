@@ -272,6 +272,8 @@ void zuluCrypt::setupUIElements()
 {
 	m_ui->setupUi( this ) ;
 
+	m_secrets.setParent( this ) ;
+
 	m_trayIcon.setParent( this ) ;
 
 	auto trayMenu = new QMenu( this ) ;
@@ -449,17 +451,17 @@ void zuluCrypt::info()
 
 void zuluCrypt::manageVolumesInGNOMEWallet()
 {
-	walletconfig::instance( this ).ShowUI( LXQt::Wallet::BackEnd::libsecret ) ;
+	walletconfig::instance( this,m_secrets ).ShowUI( LXQt::Wallet::BackEnd::libsecret ) ;
 }
 
 void zuluCrypt::manageVolumesInInternalWallet()
 {
-	walletconfig::instance( this ).ShowUI( LXQt::Wallet::BackEnd::internal ) ;
+	walletconfig::instance( this,m_secrets ).ShowUI( LXQt::Wallet::BackEnd::internal ) ;
 }
 
 void zuluCrypt::manageVolumesInKDEWallet()
 {
-	walletconfig::instance( this ).ShowUI( LXQt::Wallet::BackEnd::kwallet ) ;
+	walletconfig::instance( this,m_secrets ).ShowUI( LXQt::Wallet::BackEnd::kwallet ) ;
 }
 
 void zuluCrypt::failedToOpenWallet()
@@ -470,7 +472,10 @@ void zuluCrypt::failedToOpenWallet()
 
 void zuluCrypt::changePassWordOfInternalWallet()
 {
-	changeWalletPassWord::instance( this ) ;
+	auto a = utility::walletName() ;
+	auto b = utility::applicationName() ;
+
+	m_secrets.changeInternalWalletPassword( a,b ) ;
 }
 
 void zuluCrypt::permissionExplanation()
@@ -1127,7 +1132,7 @@ void zuluCrypt::ShowOpenPartition()
 
 passwordDialog& zuluCrypt::setUpPasswordDialog()
 {
-	return passwordDialog::instance( m_ui->tableWidget,this,[ this ]( const QString& path ){
+	return passwordDialog::instance( m_ui->tableWidget,this,m_secrets,[ this ]( const QString& path ){
 
 		if( m_autoOpenMountPoint ){
 

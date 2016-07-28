@@ -45,6 +45,7 @@ set(SRC 	main.cpp
 		veracryptpimdialog.cpp
 		../zuluCrypt-gui/favorites.cpp
 		../zuluCrypt-gui/openvolume.cpp
+		../zuluCrypt-gui/secrets.cpp
 )
 
 if( QT5 )

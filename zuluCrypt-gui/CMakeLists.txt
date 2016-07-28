@@ -51,6 +51,7 @@ set( MOC_FILES
  )
 
 set( SRC
+	secrets.cpp
 	tcrypt.cpp
 	createfile.cpp
 	createvolume.cpp

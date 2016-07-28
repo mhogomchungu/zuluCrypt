@@ -154,19 +154,20 @@ namespace utility
 		bool opened ;
 		bool notConfigured ;
 		QString key ;
-		QString password ;
 	};
 
 	int startApplication( const char * appName,std::function<int()> ) ;
 
-	wallet getKeyFromWallet( QWidget *,LXQt::Wallet::BackEnd,const QString& keyID,
-				 const QString& pwd = QString(),const QString& app = QString() ) ;
+	wallet getKey( LXQt::Wallet::Wallet&,const QString& keyID,
+		       const QString& app = QString() ) ;
 
-	QString cmdArgumentValue( const QStringList&,const QString& arg,const QString& defaulT = QString() ) ;
+	QString cmdArgumentValue( const QStringList&,const QString& arg,
+				  const QString& defaulT = QString() ) ;
 
 	QIcon getIcon( const QString& ) ;
 	void setIcons( const QString&,const QString& ) ;
-	void setIconMenu( const QString& app,QAction * ac,QWidget *,std::function< void( const QString& ) >&& ) ;
+	void setIconMenu( const QString& app,QAction * ac,QWidget *,
+			  std::function< void( const QString& ) >&& ) ;
 
 	bool autoSetVolumeAsVeraCrypt( const QString& ) ;
 	void autoSetVolumeAsVeraCrypt( const QString&,bool ) ;
@@ -248,7 +249,6 @@ namespace utility
 	::Task::future< int >& exec( const QString& ) ;
 	::Task::future< QStringList >& luksEmptySlots( const QString& volumePath ) ;
 	::Task::future< QString >& getUUIDFromPath( const QString& ) ;
-	::Task::future<QString>& getKeyFromWallet( LXQt::Wallet::Wallet * wallet,const QString& volumeID ) ;
 	::Task::future< bool >& openPath( const QString& path,const QString& opener,const QString& env = QString() ) ;
 
 	void openPath( const QString& path,const QString& opener,const QString& env,QWidget *,const QString&,const QString& ) ;

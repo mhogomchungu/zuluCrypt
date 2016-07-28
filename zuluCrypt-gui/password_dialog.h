@@ -29,6 +29,7 @@
 #include <memory>
 
 #include "utility.h"
+#include "secrets.h"
 
 namespace Ui {
 class PasswordDialog ;
@@ -44,11 +45,11 @@ class passwordDialog :  public QDialog
 {
 	Q_OBJECT
 public:
-	static passwordDialog& instance( QTableWidget * table,QWidget * parent,std::function< void( const QString& ) > f )
+	static passwordDialog& instance( QTableWidget * table,QWidget * parent,secrets& s,std::function< void( const QString& ) > f )
 	{
-		return *( new passwordDialog( table,parent,std::move( f ) ) ) ;
+		return *( new passwordDialog( table,parent,s,std::move( f ) ) ) ;
 	}
-	passwordDialog( QTableWidget * table,QWidget * parent,std::function< void( const QString& ) > ) ;
+	passwordDialog( QTableWidget * table,QWidget * parent,secrets&,std::function< void( const QString& ) > ) ;
 	virtual ~passwordDialog() ;
 signals :
 	void addItemToTable( QString,QString,QString ) ;
@@ -87,6 +88,7 @@ private :
 	void failed( void ) ;
 	Ui::PasswordDialog * m_ui ;
 	QTableWidget * m_table ;
+	secrets& m_secrets ;
 	bool m_open_with_path ;
 	QMenu * m_pluginMenu ;
 	QWidget * m_parent ;

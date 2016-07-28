@@ -28,6 +28,7 @@
 #include "../zuluMount-gui/monitor_mountinfo.h"
 #include "lxqt_wallet.h"
 #include "utility.h"
+#include "secrets.h"
 
 class QWidget ;
 class QTableWidgetItem ;
@@ -44,38 +45,6 @@ class managevolumeheader ;
 class cryptfiles ;
 class walletconfig ;
 class QNetworkReply ;
-
-class changeWalletPassWord : public QWidget
-{
-	Q_OBJECT
-public:
-	static void instance( QWidget * parent )
-	{
-		new changeWalletPassWord( parent ) ;
-	}
-	changeWalletPassWord( QWidget * parent )
-	{
-		m_wallet = LXQt::Wallet::getWalletBackend( LXQt::Wallet::BackEnd::internal ) ;
-
-		m_wallet->setParent( parent ) ;
-
-		auto a = utility::walletName() ;
-		auto b = utility::applicationName() ;
-
-		m_wallet->changeWalletPassWord( a,b,[ this ]( bool e ){
-
-			Q_UNUSED( e ) ;
-
-			this->deleteLater() ;
-		} ) ;
-	}
-	~changeWalletPassWord()
-	{
-		m_wallet->deleteLater() ;
-	}
-private:
-	LXQt::Wallet::Wallet * m_wallet ;
-};
 
 /*
  * below header is created at build time,it is set by CMakeLists.txt located in the root folder
@@ -182,6 +151,8 @@ private:
 	void closeStatusErrorMessage( int ) ;
 	void setUpApp( const QString& ) ;
 	void decryptFile( const QString& ) ;
+
+	secrets m_secrets ;
 
 	Ui::zuluCrypt * m_ui = nullptr ;
 

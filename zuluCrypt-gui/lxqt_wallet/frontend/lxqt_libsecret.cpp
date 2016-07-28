@@ -256,7 +256,7 @@ LXQt::Wallet::BackEnd LXQt::Wallet::libsecret::backEnd( void )
 	return LXQt::Wallet::BackEnd::libsecret ;
 }
 
-bool LXQt::Wallet::libsecret::walletIsOpened( void )
+bool LXQt::Wallet::libsecret::opened( void )
 {
 	if( m_schema ){
 

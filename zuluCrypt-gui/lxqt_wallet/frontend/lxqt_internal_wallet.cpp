@@ -307,7 +307,7 @@ LXQt::Wallet::BackEnd LXQt::Wallet::internalWallet::backEnd()
 	return LXQt::Wallet::BackEnd::internal ;
 }
 
-bool LXQt::Wallet::internalWallet::walletIsOpened()
+bool LXQt::Wallet::internalWallet::opened()
 {
 	return m_wallet != 0 ;
 }

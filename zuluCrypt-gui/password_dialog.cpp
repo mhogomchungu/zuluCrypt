@@ -61,13 +61,14 @@
  */
 #include "truecrypt_support.h"
 
-/*
- * this ugly global variable is defined in zulucrypt.cpp to prevent multiple prompts when opening multiple volumes
- */
-static QString _internalPassWord ;
-
-passwordDialog::passwordDialog( QTableWidget * table,QWidget * parent,std::function< void( const QString& ) > f ) :
-	QDialog( parent ),m_ui( new Ui::PasswordDialog() ),m_openFolder( std::move( f ) )
+passwordDialog::passwordDialog( QTableWidget * table,
+				QWidget * parent,
+				secrets& s,
+				std::function< void( const QString& ) > f ) :
+	QDialog( parent ),
+	m_ui( new Ui::PasswordDialog() ),
+	m_secrets( s ),
+	m_openFolder( std::move( f ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -418,26 +419,28 @@ void passwordDialog::buttonOpenClicked( void )
 
 		if( wallet == tr( KWALLET ) ){
 
-			w = utility::getKeyFromWallet( this,wbe::kwallet,keyID ) ;
+			auto s = m_secrets.walletBk( wbe::kwallet ) ;
+
+			w = utility::getKey( s.bk(),keyID ) ;
 
 		}else if( wallet == tr( INTERNAL_WALLET ) ){
 
-			w = utility::getKeyFromWallet( this,wbe::internal,keyID,
-						       _internalPassWord,"zuluCrypt" ) ;
+			auto s = m_secrets.walletBk( wbe::internal ) ;
+
+			w = utility::getKey( s.bk(),keyID,"zuluCrypt" ) ;
 
 			if( w.notConfigured ){
 
 				DialogMsg msg( this ) ;
 				msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal wallet is not configured" ) ) ;
 				return this->enableAll() ;
-
-			}else{
-				_internalPassWord = w.password ;
 			}
 
 		}else if( wallet == tr( GNOME_WALLET ) ){
 
-			w = utility::getKeyFromWallet( this,wbe::libsecret,keyID ) ;
+			auto s = m_secrets.walletBk( wbe::libsecret ) ;
+
+			w = utility::getKey( s.bk(),keyID ) ;
 		}else{
 			m_key = m_ui->PassPhraseField->text().toLatin1() ;
 			return this->openVolume() ;
@@ -457,7 +460,6 @@ void passwordDialog::buttonOpenClicked( void )
 				this->openVolume() ;
 			}
 		}else{
-			_internalPassWord.clear() ;
 			this->enableAll() ;
 		}
 	}else{

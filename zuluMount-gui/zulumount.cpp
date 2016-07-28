@@ -314,6 +314,7 @@ void zuluMount::setUpApp( const QString& volume )
 		return m ;
 	}() ) ;
 
+	m_secrets.setParent( this ) ;
 
 	m_ui->pbmenu->setMenu( trayMenu ) ;
 
@@ -1062,7 +1063,7 @@ void zuluMount::mount( const volumeEntryProperties& entry )
 
 	if( entry.encryptedVolume() ){
 
-		keyDialog::instance( this,m_ui->tableWidget,entry,[ this ](){
+		keyDialog::instance( this,m_ui->tableWidget,m_secrets,entry,[ this ](){
 
 			this->enableAll() ;
 

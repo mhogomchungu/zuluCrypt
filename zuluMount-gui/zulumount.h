@@ -27,6 +27,7 @@
 #include <QVector>
 
 #include "volumeentryproperties.h"
+#include "../zuluCrypt-gui/secrets.h"
 
 class QCloseEvent ;
 class QAction ;
@@ -118,16 +119,20 @@ private:
 
 	Ui::zuluMount * m_ui = nullptr ;
 	QString m_folderOpener ;
+
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * e ) ;
 	void setUpFont( void ) ;
 	void setUpShortCuts( void ) ;
 	void setUpApp( const QString& ) ;
+
 	QAction * m_autoMountAction = nullptr ;
 	QMenu * m_favorite_menu = nullptr ;
 	QMenu * m_hidden_volume_menu = nullptr ;
 	QMenu * m_not_hidden_volume_menu = nullptr ;
 	QMenu * m_language_menu = nullptr ;
+
+	secrets m_secrets ;
 
 	bool m_startHidden ;
 	bool m_autoMount ;
