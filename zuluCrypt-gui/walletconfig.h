@@ -41,13 +41,13 @@ class walletconfig : public QDialog
 {
 	Q_OBJECT
 public:
-	static walletconfig& instance( QWidget * parent,secrets& s )
+	static walletconfig& instance( QWidget * parent )
 	{
-		return *( new walletconfig( parent,s ) ) ;
+		return *( new walletconfig( parent ) ) ;
 	}
-	explicit walletconfig( QWidget * parent,secrets& ) ;
+	explicit walletconfig( QWidget * parent ) ;
 	~walletconfig() ;
-	void ShowUI( LXQt::Wallet::BackEnd ) ;
+	void ShowUI( secrets::wallet&& ) ;
 	void HideUI( void ) ;
 private slots:
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
@@ -64,7 +64,6 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
-	secrets& m_secrets ;
 	secrets::wallet m_wallet ;
 	int m_row ;
 	QString m_volumeID ;

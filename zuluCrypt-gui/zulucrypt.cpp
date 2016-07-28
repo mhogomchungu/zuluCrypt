@@ -449,19 +449,24 @@ void zuluCrypt::info()
 	cryptoinfo::instance( this,utility::homePath() + "/.zuluCrypt/doNotshowWarning.option",QString() ) ;
 }
 
+static void _walletconfig( QWidget * widget,secrets& s,LXQt::Wallet::BackEnd e )
+{
+	walletconfig::instance( widget ).ShowUI( s.walletBk( e ) ) ;
+}
+
 void zuluCrypt::manageVolumesInGNOMEWallet()
 {
-	walletconfig::instance( this,m_secrets ).ShowUI( LXQt::Wallet::BackEnd::libsecret ) ;
+	_walletconfig( this,m_secrets,LXQt::Wallet::BackEnd::libsecret ) ;
 }
 
 void zuluCrypt::manageVolumesInInternalWallet()
 {
-	walletconfig::instance( this,m_secrets ).ShowUI( LXQt::Wallet::BackEnd::internal ) ;
+	_walletconfig( this,m_secrets,LXQt::Wallet::BackEnd::internal ) ;
 }
 
 void zuluCrypt::manageVolumesInKDEWallet()
 {
-	walletconfig::instance( this,m_secrets ).ShowUI( LXQt::Wallet::BackEnd::kwallet ) ;
+	_walletconfig( this,m_secrets,LXQt::Wallet::BackEnd::kwallet ) ;
 }
 
 void zuluCrypt::failedToOpenWallet()

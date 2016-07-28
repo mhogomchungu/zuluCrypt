@@ -37,8 +37,8 @@
 
 #define COMMENT "-zuluCrypt_Comment_ID"
 
-walletconfig::walletconfig( QWidget * parent,secrets& s ) :
-	QDialog( parent ),m_ui( new Ui::walletconfig ),m_secrets( s )
+walletconfig::walletconfig( QWidget * parent ) :
+	QDialog( parent ),m_ui( new Ui::walletconfig )
 {
 	m_ui->setupUi( this ) ;
 
@@ -188,11 +188,11 @@ void walletconfig::pbAdd()
 	} ) ;
 }
 
-void walletconfig::ShowUI( LXQt::Wallet::BackEnd backEnd )
+void walletconfig::ShowUI( secrets::wallet&& wallet )
 {
 	this->disableAll() ;
 
-	m_wallet = m_secrets.walletBk( backEnd ) ;
+	m_wallet = std::move( wallet ) ;
 
 	if( m_wallet->opened() ){
 
@@ -200,7 +200,7 @@ void walletconfig::ShowUI( LXQt::Wallet::BackEnd backEnd )
 	}else{
 		m_wallet->open( [ & ]()->QString{
 
-			if( backEnd == LXQt::Wallet::BackEnd::kwallet ){
+			if( m_wallet->backEnd() == LXQt::Wallet::BackEnd::kwallet ){
 
 				return "default" ;
 			}else{
