@@ -617,7 +617,7 @@ void passwordDialog::openVolume()
 
 			}else if( r == "hmac" || r == "gpg" || r == "keykeyfile" ){
 
-				if( utility::pluginKey( this,&m_key,r ) ){
+				if( utility::pluginKey( m_secrets.parent(),&m_key,r ) ){
 
 					return this->enableAll() ;
 				}else{

@@ -26,6 +26,7 @@
 #include <QString>
 #include <QByteArray>
 #include <QVector>
+#include <QWidget>
 
 #include <functional>
 
@@ -42,7 +43,7 @@ class plugin : public QDialog
 {
 	Q_OBJECT
 public:
-	static plugin& instance( QDialog * parent,
+	static plugin& instance( QWidget * parent,
 				  plugins::plugin t,
 				  std::function< void( const QByteArray& ) > e,
 				  const QString& f = QString(),
@@ -50,7 +51,7 @@ public:
 	{
 		return *( new plugin( parent,t,e,f,g ) ) ;
 	}
-	plugin( QDialog * parent,
+	plugin( QWidget * parent,
 	      plugins::plugin,
 	      std::function< void( const QByteArray& ) >,
 	      const QString& = QString(),const QVector<QString>& = QVector<QString>() ) ;

@@ -240,7 +240,7 @@ namespace utility
 
 	void createPlugInMenu( QMenu *,const QString&,const QString&,const QString&,bool ) ;
 
-	int pluginKey( QDialog *,QByteArray *,const QString& ) ;
+	int pluginKey( QWidget *,QByteArray *,const QString& ) ;
 
 	QFont getFont( QWidget * ) ;
 	void saveFont( const QFont& ) ;

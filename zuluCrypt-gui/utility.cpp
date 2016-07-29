@@ -1456,7 +1456,7 @@ bool utility::userBelongsToGroup( const char * groupname )
 	return false ;
 }
 
-int utility::pluginKey( QDialog * w,QByteArray * key,const QString& p )
+int utility::pluginKey( QWidget * w,QByteArray * key,const QString& p )
 {
 	plugins::plugin pluginType ;
 	QString pluginString ;
