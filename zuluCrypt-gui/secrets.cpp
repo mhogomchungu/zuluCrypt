@@ -20,26 +20,13 @@
 #include "secrets.h"
 #include "utility.h"
 
-#include <QEventLoop>
-
 secrets::secrets( QWidget * parent ) : m_parent( parent )
 {
 }
 
 void secrets::changeInternalWalletPassword( const QString& walletName,const QString& appName )
 {
-	auto wallet = this->walletBk( LXQt::Wallet::BackEnd::internal ) ;
-
-	QEventLoop loop ;
-
-	wallet->changeWalletPassWord( walletName,appName,[ & ]( bool e ){
-
-		Q_UNUSED( e ) ;
-
-		loop.exit() ;
-	} ) ;
-
-	loop.exec() ;
+	this->internalWallet()->changeWalletPassWord( walletName,appName ) ;
 }
 
 secrets::~secrets()
@@ -47,18 +34,25 @@ secrets::~secrets()
 	delete m_internalWallet ;
 }
 
+LXQt::Wallet::Wallet * secrets::internalWallet()
+{
+	if( m_internalWallet == nullptr ){
+
+		namespace w = LXQt::Wallet ;
+
+		m_internalWallet = w::getWalletBackend( w::BackEnd::internal ) ;
+
+		m_internalWallet->setParent( m_parent ) ;
+	}
+
+	return m_internalWallet ;
+}
+
 secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e )
 {
 	if( e == LXQt::Wallet::BackEnd::internal ){
 
-		if( m_internalWallet == nullptr ){
-
-			m_internalWallet = LXQt::Wallet::getWalletBackend( e ) ;
-
-			m_internalWallet->setParent( m_parent ) ;
-		}
-
-		return m_internalWallet ;
+		return this->internalWallet() ;
 	}else{
 		return LXQt::Wallet::getWalletBackend( e ) ;
 	}
