@@ -69,6 +69,7 @@ signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
 	void updateVolumeListSignal( QString,QString ) ;
 private slots :
+	void showTrayGUI( void ) ;
 	void autoOpenMountPoint( bool ) ;
 	void languageMenu( QAction * ) ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;

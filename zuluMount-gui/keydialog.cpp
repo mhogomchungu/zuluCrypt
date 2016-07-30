@@ -178,32 +178,6 @@ bool keyDialog::eventFilter( QObject * watched,QEvent * event )
 	return utility::eventFilter( this,watched,event,[ this ](){ this->pbCancel() ; } ) ;
 }
 
-void keyDialog::tcryptGui()
-{
-	this->disableAll() ;
-	m_ui->lineEditKey->setText( QString() ) ;
-
-	tcrypt::instance( this,false,[ this ]( const QString& key,const QStringList& keyFiles ){
-
-		m_key = key.toLatin1() ;
-		m_keyFiles = keyFiles ;
-
-		this->openVolume() ;
-
-		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
-		m_ui->lineEditKey->setText( QString() ) ;
-		m_ui->lineEditKey->setEnabled( false ) ;
-
-	},[ this ](){
-
-		m_key.clear() ;
-		m_keyFiles.clear() ;
-		m_ui->cbKeyType->setCurrentIndex( keyDialog::Key ) ;
-		m_ui->lineEditKey->setText( QString() ) ;
-		this->enableAll() ;
-	} ) ;
-}
-
 void keyDialog::pbOptions()
 {
 	m_menu_1->exec( QCursor::pos() ) ;
@@ -302,9 +276,11 @@ void keyDialog::enableAll()
 	m_ui->label->setEnabled( true ) ;
 	m_ui->cbKeyType->setEnabled( true ) ;
 
-	m_ui->lineEditKey->setEnabled( m_ui->cbKeyType->currentIndex() == keyDialog::Key ) ;
+	auto index = m_ui->cbKeyType->currentIndex() ;
 
-	m_ui->pbkeyOption->setEnabled( true ) ;
+	m_ui->lineEditKey->setEnabled( index == keyDialog::Key ) ;
+
+	m_ui->pbkeyOption->setEnabled( index == keyDialog::Key || index == keyDialog::keyfile ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
 	m_ui->checkBoxShareMountPoint->setEnabled( !m_encryptedFolder ) ;
@@ -565,7 +541,7 @@ void keyDialog::openVolume()
 
 	if( m_encryptedFolder ){
 
-		if( keyType == keyDialog::Key || keyType == keyDialog::keyKeyFile ){
+		if( keyType == keyDialog::Key ){
 
 			m_key = m_ui->lineEditKey->text().toLatin1() ;
 
@@ -589,11 +565,7 @@ void keyDialog::openVolume()
 
 	if( m_ui->lineEditKey->text().isEmpty() ){
 
-		if( keyType == keyDialog::Key || keyType == keyDialog::keyKeyFile ){
-
-			;
-
-		}else if( keyType == keyDialog::plugin ){
+		 if( keyType == keyDialog::plugin ){
 
 			DialogMsg msg( this ) ;
 			msg.ShowUIOK( tr( "ERROR" ),tr( "Plug in name field is empty" ) ) ;
@@ -626,12 +598,24 @@ void keyDialog::openVolume()
 	}
 
 	QString m ;
-	if( keyType == keyDialog::Key || keyType == keyDialog::keyKeyFile ){
+	if( keyType == keyDialog::Key ){
 
 		auto addr = utility::keyPath() ;
 		m = QString( "-f %1" ).arg( addr ) ;
 
 		utility::keySend( addr,m_ui->lineEditKey->text() ) ;
+
+	}else if( keyType == keyDialog::keyKeyFile ){
+
+		if( utility::pluginKey( m_secrets.parent(),&m_key,"hmac" ) ){
+
+			return this->enableAll() ;
+		}
+
+		auto addr = utility::keyPath() ;
+		m = QString( "-f %1" ).arg( addr ) ;
+
+		utility::keySend( addr,m_key ) ;
 
 	}else if( keyType == keyDialog::keyfile ){
 
@@ -659,7 +643,36 @@ void keyDialog::openVolume()
 
 			utility::keySend( addr,m_key ) ;
 		}
+
 	}else if( keyType == keyDialog::tcryptKeys ){
+
+		QEventLoop wait ;
+
+		bool cancelled = false ;
+
+		tcrypt::instance( this,false,[ this,&wait ]( const QString& key,
+				  const QStringList& keyFiles ){
+
+			m_key = key.toLatin1() ;
+			m_keyFiles = keyFiles ;
+
+			wait.exit() ;
+
+		},[ this,&wait,&cancelled ](){
+
+			cancelled = true ;
+			m_key.clear() ;
+			m_keyFiles.clear() ;
+
+			wait.exit() ;
+		} ) ;
+
+		wait.exec() ;
+
+		if( cancelled ){
+
+			return this->enableAll() ;
+		}
 
 		auto addr = utility::keyPath() ;
 		m = QString( "-f %1 " ).arg( addr ) ;
@@ -800,17 +813,12 @@ void keyDialog::cbActicated( int e )
 
 void keyDialog::keyAndKeyFile()
 {
-	QByteArray key ;
-
-	if( utility::pluginKey( this,&key,"hmac" ) ){
-
-		m_ui->cbKeyType->setCurrentIndex( 0 ) ;
-	}else{
-		this->key() ;
-
-		m_ui->lineEditKey->setEnabled( false ) ;
-		m_ui->lineEditKey->setText( key ) ;
-	}
+	m_ui->pbkeyOption->setIcon( QIcon( ":/module.png" ) ) ;
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
+	m_ui->label->setText( tr( "Plugin name" ) ) ;
+	m_ui->pbkeyOption->setEnabled( false ) ;
+	m_ui->lineEditKey->setEnabled( false ) ;
+	m_ui->lineEditKey->setText( tr( "Key+KeyFile" ) ) ;
 }
 
 void keyDialog::plugIn()
@@ -841,6 +849,16 @@ void keyDialog::keyFile()
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
+}
+
+void keyDialog::tcryptGui()
+{
+	m_ui->pbkeyOption->setIcon( QIcon( ":/module.png" ) ) ;
+	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
+	m_ui->label->setText( tr( "Plugin name" ) ) ;
+	m_ui->pbkeyOption->setEnabled( false ) ;
+	m_ui->lineEditKey->setEnabled( false ) ;
+	m_ui->lineEditKey->setText( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 }
 
 void keyDialog::pbCancel()

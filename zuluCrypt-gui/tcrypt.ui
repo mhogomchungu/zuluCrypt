@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>623</width>
-    <height>352</height>
+    <height>382</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -19,8 +19,8 @@
   <widget class="QPushButton" name="pbSend">
    <property name="geometry">
     <rect>
-     <x>109</x>
-     <y>320</y>
+     <x>110</x>
+     <y>350</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>410</x>
-     <y>320</y>
+     <y>350</y>
      <width>101</width>
      <height>31</height>
     </rect>
@@ -46,7 +46,7 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>290</y>
+     <y>320</y>
      <width>441</width>
      <height>31</height>
     </rect>
@@ -59,7 +59,7 @@
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>320</y>
+     <y>350</y>
      <width>201</width>
      <height>31</height>
     </rect>
@@ -72,9 +72,9 @@
    <property name="geometry">
     <rect>
      <x>90</x>
-     <y>40</y>
+     <y>50</y>
      <width>441</width>
-     <height>221</height>
+     <height>231</height>
     </rect>
    </property>
    <property name="acceptDrops">
@@ -122,10 +122,10 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>5</y>
-     <width>621</width>
-     <height>31</height>
+     <width>601</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
@@ -134,14 +134,17 @@
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>260</y>
-     <width>621</width>
-     <height>31</height>
+     <x>10</x>
+     <y>280</y>
+     <width>601</width>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
@@ -149,6 +152,9 @@
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>

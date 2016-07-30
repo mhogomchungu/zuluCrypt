@@ -280,6 +280,7 @@ void zuluCrypt::setupUIElements()
 
 	trayMenu->setFont( this->font() ) ;
 
+	trayMenu->addAction( tr( "Show/Hide" ),this,SLOT( showTrayGUI() ) ) ;
 	trayMenu->addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
 
 	m_trayIcon.setContextMenu( trayMenu ) ;
@@ -411,6 +412,11 @@ void zuluCrypt::setupConnections()
 	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( true ) ;
 
 	this->setAcceptDrops( true ) ;
+}
+
+void zuluCrypt::showTrayGUI()
+{
+	this->trayClicked( QSystemTrayIcon::Trigger ) ;
 }
 
 void zuluCrypt::autoOpenMountPoint( bool e )

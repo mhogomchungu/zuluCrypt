@@ -309,6 +309,17 @@ void zuluMount::setUpApp( const QString& volume )
 
 		auto m = new QMenu( this ) ;
 
+		m->addAction( [ this ](){
+
+			auto ac = new QAction( tr( "Show/Hide" ),this ) ;
+
+			m_actionPair.append( { ac,"Show/Hide" } ) ;
+
+			connect( ac,SIGNAL( triggered() ),this,SLOT( showTrayGUI() ) ) ;
+
+			return ac ;
+		}() ) ;
+
 		m->addAction( _addQuitAction() ) ;
 
 		return m ;
@@ -346,6 +357,11 @@ void zuluMount::setUpApp( const QString& volume )
 	}
 
 	this->autoUpdateCheck() ;
+}
+
+void zuluMount::showTrayGUI()
+{
+	this->slotTrayClicked( QSystemTrayIcon::Trigger ) ;
 }
 
 void zuluMount::setIcons()
