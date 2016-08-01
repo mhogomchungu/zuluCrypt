@@ -129,15 +129,19 @@ public:
 	bool isValid() const
 	{
 		if( m_volume.isEmpty() ){
+
 			return false ;
 		}
-		if( m_fileSystem == "encfs" || m_fileSystem == "cryfs" ){
+		if( this->encryptedFolder( m_fileSystem ) ){
+
 			return true ;
 		}
-		if( m_volumeSize == "1.0 KB" || m_volumeSize == "1,0 KB" || m_volumeSize == "0 B" || m_volumeSize == "Nil" ){
+		if( utility::equalsAtleastOne( m_volumeSize,"1.0 KB","1,0 KB","0 B","Nil" ) ){
+
 			return false ;
 		}
 		if( m_mountPoint == "/run/media/public/" ){
+
 			return false ;
 		}
 		return true ;
@@ -145,10 +149,8 @@ public:
 	bool encryptedVolume() const
 	{
 		return  m_fileSystem.startsWith( "crypto" ) ||
-			m_fileSystem == "Nil"   ||
-			m_fileSystem == "cryptfs" ||
-			m_fileSystem == "cryfs" ||
-			m_fileSystem == "encfs" ;
+				this->encryptedFolder( m_fileSystem ) ;
+
 	}
 	bool mounted() const
 	{
@@ -156,7 +158,8 @@ public:
 	}
 	QStringList entryList() const
 	{
-		return { m_volume,m_mountPoint,m_fileSystem,m_label,m_volumeSize,m_usedSpacePercentage } ;
+		return { m_volume,m_mountPoint,m_fileSystem,m_label,
+					m_volumeSize,m_usedSpacePercentage } ;
 	}
 	volumeEntryProperties& setMountPoint( const QString& m )
 	{
@@ -164,6 +167,12 @@ public:
 		return *this ;
 	}
 private:
+	bool encryptedFolder( const QString& e ) const
+	{
+		return utility::equalsAtleastOne( e,"Nil","cryptfs","cryfs","encfs",
+						  "gocryptfs","securefs" ) ;
+	}
+
 	void setValues( const QStringList& l,bool isSystem )
 	{
 		m_isSystem = isSystem ;

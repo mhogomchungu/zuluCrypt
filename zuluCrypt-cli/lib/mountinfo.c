@@ -67,11 +67,17 @@ static void _add_entry( string_t ( *function )( const vInfo * ),stringList_t tmp
 	volumeInfo.mountOptions = *( *entry + 5 ) ;
 	volumeInfo.rootPath     = *( *entry + 3 ) ;
 
-	if( StringAtLeastOneMatch_1( volumeInfo.fileSystem,"fuse.encfs","fuse.cryfs",NULL ) ){
+	if( StringAtLeastOneMatch_1( volumeInfo.fileSystem,"fuse.encfs","fuse.cryfs",
+				     "fuse.gocryptfs","fuse.securefs",NULL ) ){
 
-		if( StringAtLeastOnePrefixMatch( volumeInfo.device,"encfs@","cryfs@",NULL ) ){
+		if( StringAtLeastOnePrefixMatch( volumeInfo.device,"encfs@",
+						 "cryfs@","securefs@",NULL ) ){
 
-			volumeInfo.device = volumeInfo.device + 6 ;
+			volumeInfo.device += StringFirstIndexOfChar_1( volumeInfo.device,'@' ) + 1 ;
+
+		}else if( StringsAreEqual( volumeInfo.fileSystem,"fuse.gocryptfs" ) ){
+
+			;
 		}else{
 			st = StringListStringAt( tmp,*entry_len - 2 ) ;
 

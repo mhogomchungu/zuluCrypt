@@ -442,7 +442,8 @@ void keyDialog::encryptedFolderMount()
 
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-	auto& e = cryfsTask::encryptedFolderMount( { m_path,m,m_key,QString(),QString(),ro,m_success } ) ;
+	auto& e = cryfsTask::encryptedFolderMount( { m_path,m,m_key,QString(),QString(),
+						     QString(),ro,m_success } ) ;
 
 	switch( e.await() ){
 
@@ -460,9 +461,29 @@ void keyDialog::encryptedFolderMount()
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nWrong password entered" ) ) ;
 		break;
 
+	case cryfsTask::status::gocryptfs :
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a gocryptfs volume.\nWrong password entered" ) ) ;
+		break;
+
+	case cryfsTask::status::securefs :
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a securefs volume.\nWrong password entered" ) ) ;
+		break;
+
 	case cryfsTask::status::cryfsNotFound :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\ncryfs executable could not be found" ) ) ;
+		break;
+
+	case cryfsTask::status::securefsNotFound :
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\nsecurefs executable could not be found" ) ) ;
+		break;
+
+	case cryfsTask::status::gocryptfsNotFound :
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\ngocryptfs executable could not be found" ) ) ;
 		break;
 
 	case cryfsTask::status::encfsNotFound :

@@ -311,6 +311,20 @@ namespace utility
 
 		return false ;
 	}
+
+	template< typename E,typename ... F >
+	bool equalsAtleastOne( const E& e,const F& ... f )
+	{
+		for( const auto& it : { f ... } ){
+
+			if( e == it ){
+
+				return true ;
+			}
+		}
+
+		return false ;
+	}
 }
 
 namespace utility

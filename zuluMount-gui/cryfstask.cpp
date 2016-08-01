@@ -25,6 +25,8 @@
 #include <QDebug>
 #include <QFile>
 
+#include <iostream>
+
 using cs = cryfsTask::status ;
 
 static QString _makePath( const QString& e )
@@ -46,6 +48,21 @@ static bool _create_folder( const QString& m )
 {
 	return _m( QString( "%1 -B %2" ).arg( zuluMountPath,_makePath( m ) ) ) ;
 
+}
+
+static QString _configFilePath( const cryfsTask::options& opt )
+{
+	if( opt.configFilePath.startsWith( "/" ) || opt.configFilePath.isEmpty() ){
+
+		return opt.configFilePath ;
+	}else{
+		return utility::homePath() + "/" + opt.configFilePath ;
+	}
+}
+
+bool cryfsTask::deleteMountFolder( const QString& m )
+{
+	return _delete_folder( m ) ;
 }
 
 Task::future< bool >& cryfsTask::encryptedFolderUnMount( const QString& m )
@@ -80,57 +97,92 @@ Task::future< bool >& cryfsTask::encryptedFolderUnMount( const QString& m )
 	} ) ;
 }
 
-static cs _cmd( const QString& app,const cryfsTask::options& opt,const QString& configFilePath )
+static QString _args( const QString& exe,const cryfsTask::options& opt,
+		      const QString& type,const QString& configFilePath,
+		      bool create )
 {
-        auto _args = []( const QString& exe,const cryfsTask::options& opt,
-                        const QString& type,const QString& configFilePath ){
+	auto cipherFolder = _makePath( opt.cipherFolder ) ;
 
-		auto cipherFolder = _makePath( opt.cipherFolder ) ;
+	auto mountPoint   = _makePath( opt.plainFolder ) ;
 
-		auto mountPoint   = _makePath( opt.plainFolder ) ;
+	auto mountOptions = [ & ](){
 
-		auto mountOptions = [ & ](){
-
-			if( !opt.mOpt.isEmpty() ){
-
-				if( type == "cryfs" ){
-
-					return QString( "--unmount-idle %1" ).arg( opt.mOpt ) ;
-
-				}else if( type == "encfs" ){
-
-					return QString( "--idle=%1" ).arg( opt.mOpt ) ;
-				}
-			}
-
-			return QString() ;
-		}() ;
-
-		auto separator = [ & ](){
+		if( !opt.mOpt.isEmpty() ){
 
 			if( type == "cryfs" ){
 
-				return "--" ;
+				return QString( "--unmount-idle %1" ).arg( opt.mOpt ) ;
 
 			}else if( type == "encfs" ){
 
-				return "-S" ;
+				return QString( "--idle=%1" ).arg( opt.mOpt ) ;
+			}
+		}
+
+		return QString() ;
+	}() ;
+
+	auto separator = [ & ](){
+
+		if( type == "cryfs" ){
+
+			return "--" ;
+
+		}else if( type == "encfs" ){
+
+			return "-S" ;
+		}else{
+			return "" ;
+		}
+	}() ;
+
+	auto configPath = [ & ](){
+
+		if( utility::equalsAtleastOne( type,"cryfs","gocryptfs","securefs" )
+				&& !configFilePath.isEmpty() ){
+
+			return "--config " + _makePath( configFilePath ) ;
+		}else{
+			return QString() ;
+		}
+	}() ;
+
+	if( utility::equalsAtleastOne( type,"gocryptfs","securefs" ) ){
+
+		auto mode = [ & ](){
+
+			if( opt.ro ){
+
+				return "-o ro" ;
 			}else{
-				return "" ;
+				return "-o rw" ;
 			}
 		}() ;
 
-                auto configPath = [ & ](){
+		if( type == "gocryptfs" ){
 
-                        if( type == "cryfs" && !configFilePath.isEmpty() ){
+			if( create ){
 
-				return "--config " + _makePath( configFilePath ) ;
-                        }else{
-                                return QString() ;
-                        }
-                }() ;
+				auto e = QString( "%1 --init %2 %3" ) ;
+				return e.arg( exe,configPath,cipherFolder ) ;
+			}else{
+				auto e = QString( "%1 %2 %3 %4 %5" ) ;
 
-		QString e = "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ;
+				return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
+			}
+		}else{
+			if( create ){
+
+				auto e = QString( "%1 create %2 %3" ) ;
+				return e.arg( exe,configPath,cipherFolder ) ;
+			}else{
+				auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
+
+				return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
+			}
+		}
+	}else{
+		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
 		auto opts = e.arg( exe,cipherFolder,mountPoint,mountOptions,configPath,
 				   separator,type,cipherFolder,type ) ;
@@ -141,8 +193,12 @@ static cs _cmd( const QString& app,const cryfsTask::options& opt,const QString& 
 		}else{
 			return opts + " -o rw" ;
 		}
-	} ;
+	}
+}
 
+static cs _cmd( bool create,const QString& app,const cryfsTask::options& opt,
+		const QString& password,const QString& configFilePath )
+{
 	auto exe = utility::executableFullPath( app ) ;
 
 	if( exe.isEmpty() ){
@@ -150,11 +206,19 @@ static cs _cmd( const QString& app,const cryfsTask::options& opt,const QString& 
 		if( app == "cryfs" ){
 
 			return cs::cryfsNotFound ;
-		}else{
+
+		}else if( app == "encfs" ){
+
 			return cs::encfsNotFound ;
+
+		}else if( app == "securefs" ){
+
+			return cs::securefsNotFound ;
+		}else{
+			return cs::gocryptfsNotFound ;
 		}
 	}else{
-		auto e = utility::Task( _args( exe,opt,app,configFilePath ),20000,[](){
+		auto e = utility::Task( _args( exe,opt,app,configFilePath,create ),20000,[](){
 
 			QProcessEnvironment env ;
 
@@ -163,13 +227,11 @@ static cs _cmd( const QString& app,const cryfsTask::options& opt,const QString& 
 
 			return env ;
 
-		}(),opt.key.toLatin1() ) ;
+		}(),password.toLatin1() ) ;
 
-		auto _printOutput = [ & ](){
+		auto _taskOutput = [ & ](){
 
-			qDebug() << e.output() ;
-			qDebug() << "-------------------------------------------------------" ;
-			qDebug() << e.stdError() ;
+			return e.output() + "\n-----\n" + e.stdError() ;
 		} ;
 
 		if( e.finished() ){
@@ -178,44 +240,55 @@ static cs _cmd( const QString& app,const cryfsTask::options& opt,const QString& 
 
 				return cs::success ;
 			}else{
-				auto q = "Could not load config file. Did you enter the correct password?" ;
-				auto p = "Error decoding volume key, password incorrect" ;
+				auto a = "Did you enter the correct password?" ;
+				auto b = "password incorrect" ;
+				auto c = "Password incorrect" ;
+				auto d = "Invalid password" ;
 
-				if( e.stdError().contains( q ) || e.output().contains( p ) ){
+				if( utility::containsAtleastOne( _taskOutput(),a,b,c,d ) ){
 
-					_printOutput() ;
+					std::cout << _taskOutput().constData() << std::endl ;
 
 					if( app == "cryfs" ){
 
 						return cs::cryfs ;
-					}else{
+
+					}else if( app == "encfs" ){
+
 						return cs::encfs ;
+
+					}else if( app == "securefs" ){
+
+						return cs::securefs ;
+					}else{
+						return cs::gocryptfs ;
 					}
 				}
 			}
 		}
 
-		_printOutput() ;
+		std::cout << _taskOutput().constData() << std::endl ;
 
 		return cs::backendFail ;
 	}
 }
 
-Task::future< cs >& cryfsTask::encryptedFolderMount( const options& opt )
+Task::future< cs >& cryfsTask::encryptedFolderMount( const options& opt,bool reUseMountPoint )
 {
-	return Task::run< cs >( [ opt ](){
+	return Task::run< cs >( [ opt,reUseMountPoint ](){
 
-                auto _mount = []( const QString& app,const options& opt,const QString& configFilePath ){
+		auto _mount = [ reUseMountPoint ]( const QString& app,const options& opt,
+				const QString& configFilePath ){
 
-			if( _create_folder( opt.plainFolder ) ){
+			if( _create_folder( opt.plainFolder ) || reUseMountPoint ){
 
-                                auto e = _cmd( app,opt,configFilePath ) ;
+				auto e = _cmd( false,app,opt,opt.key,configFilePath ) ;
 
 				if( e == cs::success ){
 
 					opt.openFolder( opt.plainFolder ) ;
 				}else{
-					_delete_folder( opt.plainFolder ) ;
+					cryfsTask::deleteMountFolder( opt.plainFolder ) ;
 				}
 
 				return e ;
@@ -224,31 +297,50 @@ Task::future< cs >& cryfsTask::encryptedFolderMount( const options& opt )
 			}
 		} ;
 
-                if( opt.configFilePath.isEmpty() ){
+		if( opt.configFilePath.isEmpty() ){
 
-                        if( utility::pathExists( opt.cipherFolder + "/cryfs.config" ) ){
+			if( utility::pathExists( opt.cipherFolder + "/cryfs.config" ) ){
 
-                                return _mount( "cryfs",opt,"" ) ;
-                        }else{
-                                auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
-                                auto encfs5 = opt.cipherFolder + "/.encfs5" ;
-                                auto encfs4 = opt.cipherFolder + "/.encfs4" ;
+				return _mount( "cryfs",opt,QString() ) ;
 
-                                if( utility::atLeastOnePathExists( encfs6,encfs5,encfs4 ) ){
+			}else if( utility::pathExists( opt.cipherFolder + "/gocryptfs.conf" ) ){
 
-                                        return _mount( "encfs",opt,"" ) ;
-                                }else{
-                                        return cs::unknown ;
-                                }
-                        }
-                }else{
-			if( utility::pathExists( opt.configFilePath ) ){
+				return _mount( "gocryptfs",opt,QString() ) ;
 
-				return _mount( "cryfs",opt,opt.configFilePath ) ;
+			}else if( utility::pathExists( opt.cipherFolder + "/.securefs.json" ) ){
+
+				return _mount( "securefs",opt,QString() ) ;
+			}else{
+				auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
+				auto encfs5 = opt.cipherFolder + "/.encfs5" ;
+				auto encfs4 = opt.cipherFolder + "/.encfs4" ;
+
+				if( utility::atLeastOnePathExists( encfs6,encfs5,encfs4 ) ){
+
+					return _mount( "encfs",opt,QString() ) ;
+				}else{
+					return cs::unknown ;
+				}
+			}
+		}else{
+			auto e = _configFilePath( opt ) ;
+
+			if( utility::pathExists( e ) ){
+
+				if( e.endsWith( "gocryptfs.conf" ) ){
+
+					return _mount( "gocryptfs",opt,e ) ;
+
+				}else if( e.endsWith( "securefs.json" ) ){
+
+					return _mount( "securefs",opt,e ) ;
+				}else{
+					return _mount( "cryfs",opt,e ) ;
+				}
 			}else{
 				return cs::unknown ;
 			}
-                }
+		}
 	} ) ;
 }
 
@@ -260,28 +352,42 @@ Task::future< cs >& cryfsTask::encryptedFolderCreate( const options& opt )
 
 			if( _create_folder( opt.plainFolder ) ){
 
-				auto e = _cmd( "cryfs",opt,[ & ](){
+				auto e = _cmd( true,opt.exe,opt,[ & ]()->QString{
 
-					if( opt.configFilePath.startsWith( "/" ) ||
-							opt.configFilePath.isEmpty() ){
+					if( utility::equalsAtleastOne( opt.exe,"cryfs","gocryptfs" ) ){
 
-						return opt.configFilePath ;
+						return opt.key ;
+
+					}else if( opt.exe == "securefs" ){
+
+						return opt.key + "\n" + opt.key ;
 					}else{
-						return utility::homePath() + "/" + opt.configFilePath ;
+						return "p\n" + opt.key ;
 					}
-				}() ) ;
+
+				}(),_configFilePath( opt ) ) ;
 
 				if( e == cs::success ){
 
-					opt.openFolder( opt.plainFolder ) ;
+					if( utility::equalsAtleastOne( opt.exe,"gocryptfs","securefs" ) ){
+
+						e = cryfsTask::encryptedFolderMount( opt,true ).get() ;
+
+						if( e != cs::success ){
+
+							cryfsTask::deleteMountFolder( opt.plainFolder ) ;
+						}
+					}else{
+						opt.openFolder( opt.plainFolder ) ;
+					}
 				}else{
-					_delete_folder( opt.plainFolder ) ;
-					_delete_folder( opt.cipherFolder ) ;
+					cryfsTask::deleteMountFolder( opt.plainFolder ) ;
+					cryfsTask::deleteMountFolder( opt.cipherFolder ) ;
 				}
 
 				return e ;
 			}else{
-				_delete_folder( opt.cipherFolder ) ;
+				cryfsTask::deleteMountFolder( opt.cipherFolder ) ;
 
 				return cs::failedToCreateMountPoint ;
 			}

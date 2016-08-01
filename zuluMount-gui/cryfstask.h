@@ -37,17 +37,30 @@ namespace cryfsTask
 		QString key ;
 		QString mOpt ;
                 QString configFilePath ;
+		QString exe ;
 		bool ro ;
 		std::function< void( const QString& ) > openFolder ;
 	};
 
 	enum class status
 	{
-		success,cryfs,cryfsNotFound,encfs,encfsNotFound,unknown,failedToCreateMountPoint,backendFail
+		success,
+		cryfs,
+		encfs,
+		gocryptfs,
+		securefs,
+		gocryptfsNotFound,
+		cryfsNotFound,
+		encfsNotFound,
+		securefsNotFound,
+		unknown,
+		failedToCreateMountPoint,
+		backendFail
 	};
 
+	bool deleteMountFolder( const QString& ) ;
 	Task::future< bool >& encryptedFolderUnMount( const QString& mountPoint ) ;
-	Task::future< cryfsTask::status >& encryptedFolderMount( const options& ) ;
+	Task::future< cryfsTask::status >& encryptedFolderMount( const options&,bool = false ) ;
 	Task::future< cryfsTask::status >& encryptedFolderCreate( const options& ) ;
 }
 

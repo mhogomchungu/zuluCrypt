@@ -62,6 +62,19 @@
 
 #include <memory>
 
+static bool _encrypted_folder( const QString& e,bool f = true )
+{
+	if( f ){
+
+		return utility::equalsAtleastOne( e,"Nil","cryptfs","cryfs","encfs",
+						  "gocryptfs","securefs" ) ;
+	}else{
+		return utility::equalsAtleastOne( e,"cryptfs","cryfs","encfs",
+						  "gocryptfs","securefs" ) ;
+	}
+
+}
+
 zuluMount::zuluMount( QWidget * parent ) :
 	QWidget( parent ),
 	m_mountInfo( monitor_mountinfo::instance( this,true,[ this ](){ this->quitApplication() ; } ) ),
@@ -738,7 +751,7 @@ void zuluMount::cryfsVolumeProperties()
 
 	struct statfs vfs ;
 
-	if( statfs( mountPath.toLatin1().constData(),&vfs ) != 0 ){
+	if( Task::await< int >( [ & ](){ return statfs( mountPath.toLatin1().constData(),&vfs ) ; } ) ){
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
 
@@ -838,21 +851,23 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	auto _properties_menu = [ & ]( const QString& fs,bool addSeparator ){
 
-		if( fs != "encfs" ){
+		if( _encrypted_folder( fs ) ){
 
 			if( fs == "cryfs" ){
 
 				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
 					 this,SLOT( cryfsVolumeProperties() ) ) ;
 			}else{
-				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
-					 this,SLOT( volumeProperties() ) ) ;
+				m.addAction( tr( "Properties" ) )->setEnabled( false ) ;
 			}
+		}else{
+			connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
+				 this,SLOT( volumeProperties() ) ) ;
+		}
 
-			if( addSeparator ){
+		if( addSeparator ){
 
-				m.addSeparator() ;
-			}
+			m.addSeparator() ;
 		}
 	} ;
 
@@ -867,7 +882,7 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 			connect( m.addAction( tr( "Unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
 
-			if( !m_powerOff.isEmpty() && fs != "encfs" && fs != "cryfs" && ( device.startsWith( "/dev/sd" ) || device.startsWith( "/dev/hd" ) ) ){
+			if( !m_powerOff.isEmpty() && !_encrypted_folder( fs ) && ( device.startsWith( "/dev/sd" ) || device.startsWith( "/dev/hd" ) ) ){
 
 				connect( m.addAction( tr( "Unmount + Power Down" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount_powerDown() ) ) ;
 			}
@@ -1294,14 +1309,14 @@ void zuluMount::unmount( const QString& e )
 	auto path = m_ui->tableWidget->item( row,0 )->text() ;
 	auto type = m_ui->tableWidget->item( row,2 )->text() ;
 
-	if( type == "encfs" || type == "cryfs" ){
+	if( _encrypted_folder( type ) ){
 
 		auto m = m_ui->tableWidget->item( row,1 )->text() ;
 
 		if( !cryfsTask::encryptedFolderUnMount( m ).await() ){
 
 			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount encfs/cryfs volume" ) ) ;
+			m.ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount volume" ) ) ;
 			this->enableAll() ;
 		}
 	}else{
@@ -1382,7 +1397,7 @@ void zuluMount::unMountAll()
 
 				const auto& e = q.at( i ) ;
 
-				if( e == "encfs" || e == "cryfs" ){
+				if( _encrypted_folder( e ) ){
 
 					cryfsTask::encryptedFolderUnMount( n.at( i ) ).get() ;
 				}else{
@@ -1453,7 +1468,7 @@ void zuluMount::removeDisappearedEntries( const QVector< volumeEntryProperties >
 
 			if( it.volumeName() == volume ){
 
-				if( it.fileSystem() == "encfs" || it.fileSystem() == "cryfs" ){
+				if( _encrypted_folder( it.fileSystem(),false ) ){
 
 					return false ;
 				}

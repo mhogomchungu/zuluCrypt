@@ -959,6 +959,15 @@ static __inline__ ssize_t StringLastIndexOfChar_1( const char * str,char s )
 	}
 }
 
+static __inline__ ssize_t StringFirstIndexOfChar_1( const char * str,char s )
+{
+	if( str == NULL ){
+		return -1 ;
+	}else{
+		return strchr( str,s ) - str ;
+	}
+}
+
 static __inline__ const char ** StringPointer( string_t st )
 {
 	return ( const char ** ) st ;

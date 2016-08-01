@@ -108,7 +108,7 @@
         <item>
          <widget class="QPushButton" name="pbunlockcryptfs">
           <property name="text">
-           <string>Mount Encf&amp;s/Cryfs</string>
+           <string>Mount &amp;Folder</string>
           </property>
          </widget>
         </item>
@@ -135,7 +135,7 @@
         <item>
          <widget class="QPushButton" name="pbmenu">
           <property name="text">
-           <string>&amp;Menu</string>
+           <string>Men&amp;u</string>
           </property>
          </widget>
         </item>
