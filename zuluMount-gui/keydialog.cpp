@@ -574,6 +574,13 @@ void keyDialog::openVolume()
 
 			m_key = f.readAll() ;
 
+		}else if( keyType == keyDialog::keyKeyFile ){
+
+			if( utility::pluginKey( m_secrets.parent(),&m_key,"hmac" ) ){
+
+				return this->enableAll() ;
+			}
+
 		}else if( keyType == keyDialog::plugin ){
 
 			/*
