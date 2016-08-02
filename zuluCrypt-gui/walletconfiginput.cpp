@@ -127,6 +127,16 @@ void walletconfiginput::pbImageFilePath()
 
 	if( !x.isEmpty() ){
 
+		while( true ){
+
+			if( x.endsWith( '/' ) ){
+
+				x.truncate( x.length() - 1 ) ;
+			}else{
+				break ;
+			}
+		}
+
 		this->setvolumeID( x ) ;
 	}
 }
