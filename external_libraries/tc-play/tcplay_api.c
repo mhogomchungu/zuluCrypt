@@ -33,6 +33,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include<dirent.h>
 
 #include "tcplay.h"
 #include "tcplay_api.h"
@@ -210,6 +211,53 @@ tc_api_task_uninit(tc_api_task task)
 		opts->k = NULL;					\
 	} while (0)
 
+static int _string_ends_with(const char *e, size_t ee, const char *s, size_t ss)
+{
+	if (ee >= ss)
+		return memcmp(e + ee - ss, s, ss) == 0;
+	else
+		return 0;
+}
+
+static int _string_starts_with(const char *a, const char *b)
+{
+	return strncmp( a, b, strlen(b)) == 0;
+}
+
+static int _string_starts_and_ends_with(const char *a, const char *b, const char *c)
+{
+	if (_string_starts_with(a, b))
+		return _string_ends_with( a, strlen(a), c,strlen(c));
+	else
+		return 0;
+}
+
+void tc_api_get_volume_type(char *buffer, size_t size, const char *map_name)
+{
+	DIR *dir = opendir("/dev/disk/by-id/");
+	struct dirent *e;
+
+	const char *m = strrchr(map_name,'/');
+
+	if (m != NULL)
+		map_name = m + 1;
+
+	snprintf(buffer, size, "Nil");
+
+	if (dir != NULL){
+		while ((e = readdir(dir)) != NULL){
+			if (_string_starts_and_ends_with(e->d_name, "dm-uuid-CRYPT-", map_name)){
+				if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-TCRYPT")){
+					snprintf(buffer, size, "TCRYPT");
+				}else if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-VCRYPT")){
+					snprintf(buffer, size, "VCRYPT");
+				}
+				break;
+			}
+		}
+		closedir(dir);
+	}
+}
 
 static const struct{
 

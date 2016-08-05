@@ -1,5 +1,7 @@
 {
 global:
+	tc_api_get_volume_type;
+	tc_api_close_mapper;
 	tc_api_init;
 	tc_api_uninit;
 	tc_api_has;

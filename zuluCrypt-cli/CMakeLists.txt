@@ -122,7 +122,7 @@
  if( STATIC_TCPLAY )
 	TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} -lgcrypt tcplay-static )
  else()
-	TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${TCPLAY_LIB} -lgcrypt ${TCPLAY_LIBRARIES} )
+	TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${TCPLAY_LIB} -lgcrypt -ltcplay )
  endif()
 
  set_target_properties( zuluCrypt PROPERTIES LINK_FLAGS "-pie -Wl,-z,relro -Wl,-z,now" )

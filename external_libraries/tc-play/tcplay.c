@@ -192,28 +192,13 @@ void tc_set_iteration_count(int iteration_count)
 	}
 }
 
-static int _string_ends_with(const char *e, size_t ee, const char *s, size_t ss)
-{
-	if (ee >= ss)
-		return memcmp(e + ee - ss, s, ss) == 0;
-	else
-		return 0;
-}
+struct tc_cipher_chain *tc_cipher_chains[MAX_CIPHER_CHAINS];
 
 static int _string_starts_with(const char *a, const char *b)
 {
 	return strncmp( a, b, strlen(b)) == 0;
 }
 
-static int _string_starts_and_ends_with(const char *a, const char *b, const char *c)
-{
-	if (_string_starts_with(a, b))
-		return _string_ends_with( a, strlen(a), c,strlen(c));
-	else
-		return 0;
-}
-
-struct tc_cipher_chain *tc_cipher_chains[MAX_CIPHER_CHAINS];
 
 static
 int
@@ -1695,33 +1680,6 @@ error:
 		free_safe_mem(tc_table);
 
 	return NULL;
-}
-
-void tc_api_get_volume_type(char *buffer, size_t size, const char *map_name)
-{
-	DIR *dir = opendir("/dev/disk/by-id/");
-	struct dirent *e;
-
-	const char *m = strrchr(map_name,'/');
-
-	if (m != NULL)
-		map_name = m + 1;
-
-	snprintf(buffer, size, "Nil");
-
-	if (dir != NULL){
-		while ((e = readdir(dir)) != NULL){
-			if (_string_starts_and_ends_with(e->d_name, "dm-uuid-CRYPT-", map_name)){
-				if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-TCRYPT")){
-					snprintf(buffer, size, "TCRYPT");
-				}else if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-VCRYPT")){
-					snprintf(buffer, size, "VCRYPT");
-				}
-				break;
-			}
-		}
-		closedir(dir);
-	}
 }
 
 struct tcplay_info *

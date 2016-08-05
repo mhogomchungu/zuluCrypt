@@ -7,7 +7,7 @@ set (VERSION_MINOR 1)
 find_package (PkgConfig)
 include (CheckLibraryExists)
 
-set (SRCS_COMMON tcplay.c crc32.c safe_mem.c io.c hdr.c humanize.c crypto.c generic_xts.c)
+set (SRCS_COMMON tcplay.c tcplay_api.c crc32.c safe_mem.c io.c hdr.c humanize.c crypto.c generic_xts.c)
 set (SRCS_LINUX  crypto-gcrypt.c)
 
 set (CFLAGS_LINUX  "-D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -D_DEFAULT_SOURCE")
@@ -51,14 +51,10 @@ else()
 	set (PBKDF_BACKEND openssl)
 endif()
 
-add_library(tcplay-static STATIC tcplay_api.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
+add_library(tcplay-static STATIC ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(tcplay-static PROPERTIES OUTPUT_NAME tcplay)
 set_target_properties(tcplay-static PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
 set_target_properties(tcplay-static PROPERTIES COMPILE_FLAGS "${CFLAGS_STATIC_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
-
-if( "false" )
-
-#commenting out this part since we dont need it as we only want the static library
 
 if (NOT LIB_SUFFIX)
 	message(STATUS "")
@@ -76,16 +72,16 @@ endif()
 add_executable(tcplay-bin main.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(tcplay-bin PROPERTIES OUTPUT_NAME tcplay)
 set_target_properties(tcplay-bin PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
-target_link_libraries(tcplay-bin ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
+target_link_libraries(tcplay-bin  ${GCRYPT_LIB} ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
 
 
-add_library(tcplay-so SHARED tcplay_api.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
+add_library(tcplay-so SHARED ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(tcplay-so PROPERTIES OUTPUT_NAME tcplay)
 set_target_properties(tcplay-so PROPERTIES SOVERSION ${VERSION_MAJOR}.${VERSION_MINOR})
 set_target_properties(tcplay-so PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
 set_target_properties(tcplay-so PROPERTIES LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/tcplay.map")
 # XXX: revist linking libraries against so. Seems to be more common practice nowadays
-target_link_libraries(tcplay-so ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
+target_link_libraries(tcplay-so ${GCRYPT_LIB} ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
 
 # Generate pkg-config file tcplay.pc
 file(WRITE ${PROJECT_BINARY_DIR}/tcplay.pc "prefix=${CMAKE_INSTALL_PREFIX}
@@ -138,5 +134,3 @@ include(CPack)
 cpack_add_component(bin DISPLAY_NAME bin REQUIRED INSTALL_TYPES all)
 cpack_add_component(lib DISPLAY_NAME lib REQUIRED INSTALL_TYPES all)
 cpack_add_component(lib-dev DISPLAY_NAME lib-dev REQUIRED INSTALL_TYPES all DEPENDS lib)
-
-endif() #end if( "false" )
