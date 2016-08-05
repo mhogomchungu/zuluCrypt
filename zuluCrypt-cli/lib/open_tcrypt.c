@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "tcplay_support.h"
+#include "zuluplay_support.h"
 #include "check_tcrypt.h"
 
 static void _chown( const char * x,uid_t y,gid_t z )

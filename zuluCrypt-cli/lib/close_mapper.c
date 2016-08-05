@@ -21,7 +21,7 @@
 #include <stddef.h>
 #include <libcryptsetup.h>
 #include "includes.h"
-#include "tcplay_support.h"
+#include "zuluplay_support.h"
 
 static int _close_mapper( const char * mapper,int TrueCryptOrVeraCryptVolume )
 {

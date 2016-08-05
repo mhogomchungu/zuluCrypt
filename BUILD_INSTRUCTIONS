@@ -63,7 +63,7 @@ mkdir build
 cd build
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DSHARE_MOUNT_PREFIX=default -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false
--DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DINTERNAL_TCPLAY=true -DNOKDE=false
+-DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DINTERNAL_ZULUPLAY=false -DNOKDE=false
 -DINTERNAL_LXQT_WALLET=false -DCMAKE_BUILD_TYPE=RELEASE . ..
 
 make
@@ -127,8 +127,9 @@ This project depends on lxqt_wallet project and it ships with an internal copy o
 if you want zuluCrypt to unconditionally use the internal copy of the project or to "false" to make the build process
 use a system installed version if found.
 
--DINTERNAL_TCPLAY=true
-Set this option to "false" if you want to use an external library of this project.
+-DINTERNAL_ZULUPLAY=false
+Set this option to "true" if you want to unconditionally  an external library of this project.
+A value of "false" will cause the build system to to use system wide library if it is found.
 
 Build errors/test fails/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/zuluCrypt/issues
 or using my private email address at: mhogomchungu@gmail.com
