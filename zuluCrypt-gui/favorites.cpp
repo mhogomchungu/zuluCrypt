@@ -238,7 +238,21 @@ void favorites::folderAddress()
 
 	if( !e.isEmpty() ){
 
-		m_ui->lineEditDeviceAddress->setText( e ) ;
+		m_ui->lineEditDeviceAddress->setText( [ & ]{
+
+			while( true ){
+
+				if( e.endsWith( '/' ) ){
+
+					e.truncate( e.length() - 1 ) ;
+				}else{
+					break ;
+				}
+			}
+
+			return e ;
+
+		}() ) ;
 	}
 }
 
