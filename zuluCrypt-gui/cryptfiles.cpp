@@ -389,18 +389,30 @@ void cryptfiles::progressBarUpdate( int i )
 void cryptfiles::pbOpenFolder( void )
 {
 	QString p = tr( "Select Path to put destination file" ) ;
-	QString Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
+	QString x = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
-	if( Z.isEmpty() ){
-		Z = utility::homePath() ;
+	while( true ){
+
+		if( x.endsWith( '/' ) ){
+
+			x.truncate( x.length() - 1 ) ;
+		}else{
+			break ;
+		}
 	}
-	QString path ;
+
+	if( x.isEmpty() ){
+
+		x = utility::homePath() ;
+	}
+	QString
+			path ;
 
 	if( m_operation == "-E" ){
 
-		path = Z + "/" + m_ui->lineEditSourcePath->text().split( "/" ).last() + ".zC" ;
+		path = x + "/" + m_ui->lineEditSourcePath->text().split( "/" ).last() + ".zC" ;
 	}else{
-		path = Z + "/" + m_ui->lineEditSourcePath->text().split( "/" ).last() ;
+		path = x + "/" + m_ui->lineEditSourcePath->text().split( "/" ).last() ;
 		path.chop( 3 ) ;
 	}
 

@@ -292,6 +292,17 @@ void mountPartition::pbOpenMountPath()
 	auto Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( !Z.isEmpty() ){
+
+		while( true ){
+
+			if( Z.endsWith( '/' ) ){
+
+				Z.truncate( Z.length() - 1 ) ;
+			}else{
+				break ;
+			}
+		}
+
 		Z = Z + "/" + m_ui->lineEdit->text().split( "/" ).last() ;
 		m_ui->lineEdit->setText( Z ) ;
 	}

@@ -367,6 +367,16 @@ void passwordDialog::mount_point( void )
 	auto p = tr( "Select Path To Mount Point Folder" ) ;
 	auto Z = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
+	while( true ){
+
+		if( Z.endsWith( '/' ) ){
+
+			Z.truncate( Z.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
 	if( !Z.isEmpty() ){
 
 		Z = Z + "/" + m_ui->OpenVolumePath->text().split( "/" ).last() ;

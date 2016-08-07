@@ -259,6 +259,16 @@ void keyDialog::pbMountPointPath()
 
 	if( !Z.isEmpty() ){
 
+		while( true ){
+
+			if( Z.endsWith( '/' ) ){
+
+				Z.truncate( Z.length() - 1 ) ;
+			}else{
+				break ;
+			}
+		}
+
 		Z = Z + "/" + m_ui->lineEditMountPoint->text().split( "/" ).last() ;
 		m_ui->lineEditMountPoint->setText( Z ) ;
 	}

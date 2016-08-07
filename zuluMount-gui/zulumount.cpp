@@ -1170,12 +1170,22 @@ void zuluMount::unlockCryptFs()
 {
 	this->disableAll() ;
 
-	auto path = QFileDialog::getExistingDirectory( this,tr( "Select An Encfs Volume Directory" ),utility::homePath(),QFileDialog::ShowDirsOnly ) ;
+	auto path = QFileDialog::getExistingDirectory( this,tr( "Select An Encrypted Volume Directory" ),utility::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	if( path.isEmpty() ){
 
 		this->enableAll() ;
 	}else{
+		while( true ){
+
+			if( path.endsWith( '/' ) ){
+
+				path.truncate( path.length() - 1 ) ;
+			}else{
+				break ;
+			}
+		}
+
 		this->showMoungDialog( path ) ;
 	}
 }

@@ -250,6 +250,17 @@ void managevolumeheader::pbOpenLuksHeaderBackUp()
 
 			return ;
 		}
+
+		while( true ){
+
+			if( Z.endsWith( '/' ) ){
+
+				Z.truncate( Z.length() - 1 ) ;
+			}else{
+				break ;
+			}
+		}
+
 		QString p = m_ui->lineEditDevicePath->text().split( "/" ).last() ;
 
 		if( !p.isEmpty() ){

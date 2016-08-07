@@ -304,12 +304,22 @@ void createfile::pbOpenFolder()
 {
 	auto p = tr( "Select Path to where the file will be created" ) ;
 	auto q = utility::homePath() ;
-	auto Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
+	auto x = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
-	if( !Z.isEmpty() ){
+	while( true ){
 
-		Z = Z + "/" + m_ui->lineEditFilePath->text().split( "/" ).last() ;
-		m_ui->lineEditFilePath->setText( Z ) ;
+		if( x.endsWith( '/' ) ){
+
+			x.truncate( x.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
+	if( !x.isEmpty() ){
+
+		x = x + "/" + m_ui->lineEditFilePath->text().split( "/" ).last() ;
+		m_ui->lineEditFilePath->setText( x ) ;
 	}
 }
 

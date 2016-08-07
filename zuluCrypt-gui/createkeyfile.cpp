@@ -227,12 +227,22 @@ void createkeyfile::pbOpenFolder()
 {
 	auto p = tr( "Select A Folder To Create A Key File In" ) ;
 	auto q = utility::homePath() ;
-	auto Z = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
+	auto x = QFileDialog::getExistingDirectory( this,p,q,QFileDialog::ShowDirsOnly ) ;
 
-	if( !Z.isEmpty() ){
+	while( true ){
 
-		Z = Z + "/" + m_ui->lineEditPath->text().split( "/" ).last() ;
-		m_ui->lineEditPath->setText( Z ) ;
+		if( x.endsWith( '/' ) ){
+
+			x.truncate( x.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
+	if( !x.isEmpty() ){
+
+		x = x + "/" + m_ui->lineEditPath->text().split( "/" ).last() ;
+		m_ui->lineEditPath->setText( x ) ;
 	}
 }
 

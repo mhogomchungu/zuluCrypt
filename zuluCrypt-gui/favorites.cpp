@@ -236,6 +236,16 @@ void favorites::folderAddress()
 {
 	auto e = QFileDialog::getExistingDirectory( this,tr( "Path To An Encrypted Volume" ),QDir::homePath(),0 ) ;
 
+	while( true ){
+
+		if( e.endsWith( '/' ) ){
+
+			e.truncate( e.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
 	if( !e.isEmpty() ){
 
 		m_ui->lineEditDeviceAddress->setText( [ & ]{
