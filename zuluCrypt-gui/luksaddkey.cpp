@@ -273,7 +273,7 @@ void luksaddkey::cbNewKey( int e )
 
 void luksaddkey::pbOpenExisitingKeyFile( void )
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "Existing KeyFile" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Existing KeyFile" ),utility::homePath() ) ;
 
 	if( !Z.isEmpty() ){
 
@@ -285,7 +285,7 @@ void luksaddkey::pbOpenExisitingKeyFile( void )
 
 void luksaddkey::pbOpenNewKeyFile( void )
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "New KeyFile" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "New KeyFile" ),utility::homePath() ) ;
 
 	if( !Z.isEmpty() ){
 
@@ -297,7 +297,7 @@ void luksaddkey::pbOpenNewKeyFile( void )
 
 void luksaddkey::pbOpenFile( void )
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "Encrypted Volume Path" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Encrypted Volume Path" ),utility::homePath() ) ;
 
 	if( !Z.isEmpty() ){
 

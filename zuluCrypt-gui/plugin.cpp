@@ -153,7 +153,7 @@ void plugin::pbSetKey()
 
 void plugin::pbSelectKeyFile()
 {
-	m_ui->lineEdit_2->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath(),0 ) ) ;
+	m_ui->lineEdit_2->setText( QFileDialog::getOpenFileName( this,tr( "KeyFile" ),utility::homePath() ) ) ;
 }
 
 void plugin::pbClose()

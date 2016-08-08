@@ -123,7 +123,7 @@ void walletconfiginput::slotCancel()
 
 void walletconfiginput::pbImageFilePath()
 {
-	auto x = QFileDialog::getOpenFileName( this,tr( "Select A Volume" ),utility::homePath(),0 ) ;
+	auto x = QFileDialog::getOpenFileName( this,tr( "Select A Volume" ),utility::homePath() ) ;
 
 	if( !x.isEmpty() ){
 

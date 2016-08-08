@@ -354,7 +354,7 @@ void passwordDialog::clickedPassPhraseFromFileButton()
 		msg = tr( "Select A Key Module" ) ;
 	}
 
-	auto Z = QFileDialog::getOpenFileName( this,msg,utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,msg,utility::homePath() ) ;
 
 	if( !Z.isEmpty() ){
 
@@ -395,7 +395,7 @@ void passwordDialog::mount_point( void )
 
 void passwordDialog::file_path( void )
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "Select Encrypted volume" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Select Encrypted volume" ),utility::homePath() ) ;
 
 	m_ui->OpenVolumePath->setText( Z ) ;
 

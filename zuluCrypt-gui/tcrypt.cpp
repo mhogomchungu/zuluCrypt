@@ -129,7 +129,7 @@ void tcrypt::pbCancel()
 
 void tcrypt::pbAddKeyFIle()
 {
-	auto e = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),utility::homePath(),0 ) ;
+	auto e = QFileDialog::getOpenFileName( this,tr( "Select A KeyFile" ),utility::homePath() ) ;
 
 	if( !e.isEmpty() ){
 

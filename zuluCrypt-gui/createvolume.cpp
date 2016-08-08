@@ -495,7 +495,7 @@ void createvolume::ShowUI( const QString& l,const QString& v )
 
 void createvolume::pbOpenKeyFile()
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),utility::homePath() ) ;
 
 	if( !Z.isEmpty() ){
 
@@ -505,7 +505,7 @@ void createvolume::pbOpenKeyFile()
 
 void createvolume::pbOpenHiddenKeyFile()
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Keyfile Path" ),utility::homePath() ) ;
 
 	if( !Z.isEmpty() ){
 

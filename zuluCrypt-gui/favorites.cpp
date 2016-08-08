@@ -234,7 +234,8 @@ void favorites::add()
 
 void favorites::folderAddress()
 {
-	auto e = QFileDialog::getExistingDirectory( this,tr( "Path To An Encrypted Volume" ),QDir::homePath(),0 ) ;
+	auto e = QFileDialog::getExistingDirectory( this,tr( "Path To An Encrypted Volume" ),
+						    QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
 
 	while( true ){
 
@@ -268,7 +269,7 @@ void favorites::folderAddress()
 
 void favorites::fileAddress()
 {
-	auto e = QFileDialog::getOpenFileName( this,tr( "Path To An Encrypted Volume" ),QDir::homePath(),0 ) ;
+	auto e = QFileDialog::getOpenFileName( this,tr( "Path To An Encrypted Volume" ),QDir::homePath() ) ;
 
 	if( !e.isEmpty() ){
 

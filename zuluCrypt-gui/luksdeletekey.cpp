@@ -125,7 +125,7 @@ void luksdeletekey::Key( int e )
 
 void luksdeletekey::pbOpenKeyFile()
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "Key File With A Passphrase To Delete" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Key File With A Passphrase To Delete" ),utility::homePath() ) ;
 
 	m_ui->lineEditPassphrase->setText( Z ) ;
 
@@ -316,7 +316,7 @@ only root user or members of group zulucrypt can do that" ) ) ;											break 
 
 void luksdeletekey::pbOpenVolume()
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "Volume Path" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Volume Path" ),utility::homePath() ) ;
 
 	m_ui->lineEditVolumePath->setText( Z ) ;
 

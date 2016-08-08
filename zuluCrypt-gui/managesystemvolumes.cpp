@@ -214,7 +214,7 @@ void manageSystemVolumes::pbDone()
 
 void manageSystemVolumes::pbFile()
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "Select Path To System Volume" ),utility::homePath(),0 ) ;
+	auto Z = QFileDialog::getOpenFileName( this,tr( "Select Path To System Volume" ),utility::homePath() ) ;
 
 	this->addItemsToTable( Z ) ;
 }

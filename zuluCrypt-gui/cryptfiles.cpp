@@ -389,7 +389,8 @@ void cryptfiles::progressBarUpdate( int i )
 void cryptfiles::pbOpenFolder( void )
 {
 	QString p = tr( "Select Path to put destination file" ) ;
-	QString x = QFileDialog::getExistingDirectory( this,p,utility::homePath(),QFileDialog::ShowDirsOnly ) ;
+	QString x = QFileDialog::getExistingDirectory( this,p,utility::homePath(),
+						       QFileDialog::ShowDirsOnly ) ;
 
 	while( true ){
 
@@ -493,7 +494,7 @@ void cryptfiles::pbOpenFile()
 
 	if( m_operation == "-E" ){
 
-		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Encrypt" ),utility::homePath(),0 ) ;
+		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Encrypt" ),utility::homePath() ) ;
 	}else{
 		auto x = tr( "zuluCrypt encrypted files ( *.zc ) ;; All Files ( * )" ) ;
 		Z = QFileDialog::getOpenFileName( this,tr( "Select A File You Want To Decrypt" ),utility::homePath(),x ) ;
@@ -506,7 +507,7 @@ void cryptfiles::pbOpenFile()
 
 void cryptfiles::pbKeyFile()
 {
-	auto e = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath(),0 ) ;
+	auto e = QFileDialog::getOpenFileName( this,tr( "Select A Keyfile" ),utility::homePath() ) ;
 
 	m_ui->lineEditPass_1->setText( e ) ;
 
