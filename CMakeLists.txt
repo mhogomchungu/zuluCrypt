@@ -237,6 +237,10 @@ if( INTERNAL_LXQT_WALLET )
 	include_directories( zuluCrypt-gui/lxqt_wallet/frontend )
 	include_directories( zuluCrypt-gui/lxqt_wallet/backend )
 
+	include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet )
+	include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
+	include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/backend )
+
 	add_subdirectory( zuluCrypt-gui/lxqt_wallet )
 else()
 	pkg_check_modules( LXQT_WALLET lxqt-wallet )
@@ -252,9 +256,13 @@ else()
 		include_directories( zuluCrypt-gui/lxqt_wallet/frontend )
 		include_directories( zuluCrypt-gui/lxqt_wallet/backend )
 
+		include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet )
+		include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
+		include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/backend )
+
 		add_subdirectory( zuluCrypt-gui/lxqt_wallet )
 	else()
-		if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" )
+		if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" AND QT5 )
 
 			include_directories( ${LXQT_WALLET_INCLUDEDIR} )
 			link_directories( ${LXQT_WALLET_LIBDIR} )
@@ -265,13 +273,17 @@ else()
 		else()
 			message( STATUS "---------------------------------------------------------------------------" )
 			message( STATUS "lxqt wallet support will be provided by an internal library" )
-			message( STATUS "because external library is too old(<= 2.0.0)" )
-
+			message( STATUS "because external library is too old(<= 2.0.0) or cant build " )
+			message( STATUS "with external lxqt_wallet while building with Qt4" )
 			message( STATUS "---------------------------------------------------------------------------" )
 
 			include_directories( zuluCrypt-gui/lxqt_wallet )
 			include_directories( zuluCrypt-gui/lxqt_wallet/frontend )
 			include_directories( zuluCrypt-gui/lxqt_wallet/backend )
+
+			include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet )
+			include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/frontend )
+			include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/lxqt_wallet/backend )
 
 			add_subdirectory( zuluCrypt-gui/lxqt_wallet )
 		endif()
