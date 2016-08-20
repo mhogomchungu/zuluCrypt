@@ -88,7 +88,7 @@ private slots :
 	void readFavorites( void ) ;
 	void favClicked( QAction * ) ;
 	void favAboutToHide( void ) ;
-	void trayClicked( QSystemTrayIcon::ActivationReason  ) ;
+	void trayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void trayProperty( void ) ;
 	void closeApplication( void ) ;
 	void minimizeToTray( void ) ;
