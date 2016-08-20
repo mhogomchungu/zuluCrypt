@@ -94,30 +94,30 @@ Cflags: -I\${includedir}
 #	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT lib-dev
 #)
 
-install(FILES ${PROJECT_BINARY_DIR}/zuluplay.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT lib-dev)
+#install(FILES ${PROJECT_BINARY_DIR}/zuluplay.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT lib-dev)
 
-install(FILES zuluplay_api.h DESTINATION include        COMPONENT lib-dev)
-install(FILES zuluplay.3     DESTINATION share/man/man3 COMPONENT lib-dev)
+#install(FILES zuluplay_api.h DESTINATION include        COMPONENT lib-dev)
+#install(FILES zuluplay.3     DESTINATION share/man/man3 COMPONENT lib-dev)
 
-install(FILES zuluplay.8     DESTINATION share/man/man8 COMPONENT bin)
+#install(FILES zuluplay.8     DESTINATION share/man/man8 COMPONENT bin)
 
 # Optional CPack magic
-set (CPACK_RPM_COMPONENT_INSTALL 1)
-set (CPACK_DEB_COMPONENT_INSTALL 1)
+#set (CPACK_RPM_COMPONENT_INSTALL 1)
+#set (CPACK_DEB_COMPONENT_INSTALL 1)
 
-set (CPACK_PACKAGE_NAME "zuluplay")
-set (CPACK_PACKAGE_CONTACT "Francis Banyikwa <mhogomchungu@gmail.com>")
-set (CPACK_PACKAGE_VENDOR  "Francis Banyikwa <mhogomchungu@gmail.com>")
-set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "zuluplay is a free (BSD-licensed), pretty much fully featured (including multiple keyfiles, cipher cascades, hidden volumes, etc) and stable TrueCrypt implementation.")
-set (CPACK_PACAKGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
-set (CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
-set (CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
-set (CPACK_PACKAGE_VERSION_PATCH "0")
-set (CPACK_PACKAGE_LICENSE "2-clause BSD")
+#set (CPACK_PACKAGE_NAME "zuluplay")
+#set (CPACK_PACKAGE_CONTACT "Francis Banyikwa <mhogomchungu@gmail.com>")
+#set (CPACK_PACKAGE_VENDOR  "Francis Banyikwa <mhogomchungu@gmail.com>")
+#set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "zuluplay is a free (BSD-licensed), pretty much fully featured (including multiple keyfiles, cipher cascades, hidden volumes, etc) and stable TrueCrypt implementation.")
+#set (CPACK_PACAKGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
+#set (CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
+#set (CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
+#set (CPACK_PACKAGE_VERSION_PATCH "0")
+#set (CPACK_PACKAGE_LICENSE "2-clause BSD")
 
-include(CPack)
-cpack_add_component(bin DISPLAY_NAME bin REQUIRED INSTALL_TYPES all)
-cpack_add_component(lib DISPLAY_NAME lib REQUIRED INSTALL_TYPES all)
-cpack_add_component(lib-dev DISPLAY_NAME lib-dev REQUIRED INSTALL_TYPES all DEPENDS lib)
+#include(CPack)
+#cpack_add_component(bin DISPLAY_NAME bin REQUIRED INSTALL_TYPES all)
+#cpack_add_component(lib DISPLAY_NAME lib REQUIRED INSTALL_TYPES all)
+#cpack_add_component(lib-dev DISPLAY_NAME lib-dev REQUIRED INSTALL_TYPES all DEPENDS lib)
 
 #endif() #end if( "false" )
