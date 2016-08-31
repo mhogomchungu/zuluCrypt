@@ -249,5 +249,7 @@ version 5.0.1
 -- languages can be changed without requiring a restart.
 -- add ability to use custom icons. Icons can be changed in zuluCrypt-gui through "menu->options->select icons" and in
    zuluMount-gui through "menu->select icons". User specific icons can be added by placing them at
-   "$INSTALL_PREFIX//icons/hicolor/48x48/apps". zuluCrypt-gui icons must be in "zuluCrypt.ICON_NAME.png" format and
+   "$INSTALL_PREFIX/icons/hicolor/48x48/apps". zuluCrypt-gui icons must be in "zuluCrypt.ICON_NAME.png" format and
    zuluMount-gui icons must be in "zuluMount.ICON_NAME.png" format.
+-- zuluMount-gui can now unlock cryfs,encfs,gocryptfs and securefs based encrypted volumes.
+-- add full support for German translation.

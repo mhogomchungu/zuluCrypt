@@ -9,7 +9,7 @@ project(zuluCrypt)
 
 INCLUDE(GNUInstallDirs)
 
-set( PGR_VERSION "5.0.0" )
+set( PGR_VERSION "5.0.1" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 
@@ -442,10 +442,10 @@ install ( FILES docs/zuluCrypt.pdf  DESTINATION ${CMAKE_INSTALL_DOCDIR} )
 
 file( WRITE ${PROJECT_BINARY_DIR}/pdf_path.h "\n#define PDF_PATH \"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DOCDIR}/zuluCrypt.pdf\"\n" )
 
-#install ( FILES translations/zuluMount/de_DE.qm DESTINATION share/zuluCrypt/translations/zuluMount-gui )
 install ( FILES translations/zuluCrypt/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluCrypt-gui )
 install ( FILES translations/zuluCrypt/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluCrypt-gui )
 install ( FILES translations/zuluCrypt/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluCrypt-gui )
 
 install ( FILES translations/zuluMount/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluMount-gui )
 install ( FILES translations/zuluMount/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluMount-gui )
+#install ( FILES translations/zuluMount/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluMount-gui )

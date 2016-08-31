@@ -49,6 +49,7 @@ HEADERS  += zulumount.h\
 
 TRANSLATIONS = ../translations/zuluMount/en_US.ts
 TRANSLATIONS = ../translations/zuluMount/fr_FR.ts
+TRANSLATIONS = ../translations/zuluMount/de_DE.ts
 
 FORMS    += zulumount.ui\
 	    ../zuluCrypt-gui/dialogmsg.ui \

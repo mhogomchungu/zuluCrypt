@@ -36,12 +36,12 @@
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.ui" line="109"/>
         <source>cipher</source>
-        <translation>Algorithmus</translation>
+        <translation>Chiffre</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.ui" line="125"/>
         <source>key size</source>
-        <translation>Schlüsselgröße</translation>
+        <translation>Schlüssellänge</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.ui" line="141"/>
@@ -51,7 +51,7 @@
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.ui" line="160"/>
         <source>loop</source>
-        <translation>Loop</translation>
+        <translation>Schleife</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.ui" line="179"/>
@@ -77,17 +77,17 @@
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.ui" line="259"/>
         <source>used</source>
-        <translation>Benutzt</translation>
+        <translation>benutzt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.ui" line="275"/>
         <source>unused</source>
-        <translation>Ungenutzt</translation>
+        <translation>ungenutzt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.ui" line="291"/>
         <source>used %</source>
-        <translation>Benutzt %</translation>
+        <translation>genutzt %</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.ui" line="307"/>
@@ -113,7 +113,7 @@ oder Skripte von diesen auszuführen. Wenn Sie dies vermeiden wollen, erstellen 
 
 Wenn Sie es bevorzugen, dass ein Gerät nicht als Systemgerät erkannt wird, starten Sie das Programm
 
-als root und gehen dann im Menü auf &quot;Optionen -&gt; Nicht-Systemlaufwerke verwalten&quot;.
+als Root und gehen dann im Menü auf &quot;Optionen -&gt; Nicht-Systemlaufwerke verwalten&quot;.
 
 Fügen Sie das Gerät zur Liste hinzu und es wird fortan nicht mehr als &quot;Systemgerät&quot; behandelt.
 
@@ -130,24 +130,24 @@ Alternativ können Sie sich auch zur Gruppe &quot;zulucrypt&quot; hinzufügen, w
         <source>insufficient privilege to access a system device,
 only root user or members of group zulucrypt can do that</source>
         <translation>Sie haben unzureichende Rechte um auf ein Systemlaufwerk zuzugreifen,
-nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</translation>
+nur Root und Mitglieder der Gruppe zulucrypt dürfen das.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="109"/>
         <source>insufficient privilege to access a system device in read/write mode,
 only root user or members of group zulucrypt-write can do that</source>
         <translation>Sie haben unzureichende Rechte um auf ein Systemlaufwerk im Lese-/Schreibmodus zuzugreifen,
-nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</translation>
+nur Root und Mitglieder der Gruppe zulucrypt dürfen das.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="112"/>
         <source>you do not seem to have proper permissions to access the encrypted file in %1 mode,check file permissions and try again</source>
-        <translation>Sie scheinen nicht genügend Rechte für den Zugriff auf die verschlüsselte Datei im %1 zu haben. Überprüfen Sie die Dateirechte und probieren Sie es erneut.</translation>
+        <translation>Sie scheinen nicht genügend Rechte für den Zugriff auf die verschlüsselte Datei im %1 zu haben. Überprüfen Sie die Dateirechte und probieren Sie es erneut</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/dialogmsg.cpp" line="272"/>
         <source>do not show this dialog again</source>
-        <translation>Diesen Dialog nicht erneut zeigen.</translation>
+        <translation>Diesen Dialog nicht erneut anzeigen.</translation>
     </message>
 </context>
 <context>
@@ -165,7 +165,7 @@ nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</
     <message>
         <location filename="../../zuluMount-gui/mainwindow.ui" line="63"/>
         <source>mount point path</source>
-        <translation>Einhängepunkt</translation>
+        <translation>Pfad des Einhängepunkts</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mainwindow.ui" line="71"/>
@@ -175,7 +175,7 @@ nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</
     <message>
         <location filename="../../zuluMount-gui/mainwindow.ui" line="79"/>
         <source>label</source>
-        <translation>Beschriftung</translation>
+        <translation>Label</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mainwindow.ui" line="87"/>
@@ -185,7 +185,7 @@ nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</
     <message>
         <location filename="../../zuluMount-gui/mainwindow.ui" line="95"/>
         <source>%used</source>
-        <translation>% benutzt</translation>
+        <translation>%benutzt</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mainwindow.ui" line="133"/>
@@ -205,7 +205,7 @@ nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</
     <message>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="111"/>
         <source>automount volumes</source>
-        <translation>Laufwerke autmatisch einhängen</translation>
+        <translation>Laufwerke automatisch einhängen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="121"/>
@@ -222,13 +222,13 @@ nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="327"/>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="334"/>
         <source>LABEL=&quot;%1&quot;</source>
-        <translation>Beschriftung=&quot;%1&quot;</translation>
+        <translation>LABEL=&quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="336"/>
         <source>LABEL=&quot;%1&quot;
 %2</source>
-        <translation>Beschriftung=&quot;%1&quot;
+        <translation>LABEL=&quot;%1&quot;
 %2</translation>
     </message>
     <message>
@@ -279,7 +279,7 @@ nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</
     <message>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="470"/>
         <source>could not open mount point because &quot;%1&quot; tool does not appear to be working correctly</source>
-        <translation>Der Einhängepunkt kann nicht geöffnet werden, weil das &quot;%1&quot; Werkzeug nicht richtig zu funktionieren scheint.</translation>
+        <translation>Der Einhängepunkt kann nicht geöffnet werden, weil das &quot;%1&quot; Werkzeug nicht richtig zu funktionieren scheint</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="515"/>
@@ -296,7 +296,7 @@ nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen dies machen.</
         <source>could not get volume properties.
 volume is not open or was opened by a different user</source>
         <translation>Die Laufwerkseigenschaften konnten nicht gelesen werden.
-Das Laufwerk ist nicht geöffnet oder es wurde von einem anderen Benutzer geöffnet.</translation>
+Das Laufwerk ist nicht geöffnet oder es wurde von einem anderen Benutzer geöffnet</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="520"/>
@@ -311,18 +311,18 @@ the volume is not supported
 (LVM/MDRAID signatures found)</source>
         <translation>Sie haben keine Berechtigung zum Zugriff auf das Laufwerk,
 oder das Laufwerk wird nicht unterstützt
-(LVM/MDRAID Signatur gefunden).</translation>
+(LVM/MDRAID Signatur gefunden)</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="669"/>
         <source>select an image file to mount</source>
-        <translation>Wählen Sie eine Abbild-Datei zum Einhängen.</translation>
+        <translation>Wählen Sie eine Abbild-Datei zum Einhängen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mainwindow.cpp" line="809"/>
         <source>reading partition properties took longer than expected and operation was terminated,click refresh to try again</source>
         <translation>Das Lesen der Partitionseigenschaften dauert länger als erwartet, deshalb wurde die Operation abgebrochen.
-Klicken Sie Aktualisieren und versuchen Sie es erneut.</translation>
+Klicken Sie Aktualisieren und versuchen Sie es erneut</translation>
     </message>
 </context>
 <context>
@@ -330,7 +330,7 @@ Klicken Sie Aktualisieren und versuchen Sie es erneut.</translation>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="246"/>
         <source>setting this option will cause the volume to open in read only mode</source>
-        <translation>Durch das Aktivieren dieser Option wird das Laufwerk nur im Lesemodus geöffnet.</translation>
+        <translation>Durch das Aktivieren dieser Option wird das Laufwerk nur im Lesemodus geöffnet</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="259"/>
@@ -353,7 +353,7 @@ options:
         <location filename="../../zuluCrypt-gui/utility.cpp" line="82"/>
         <source>	-e   start the application without showing the GUI
 </source>
-        <translation>	-e   Startet das Programm ohne die grafische Oberfläche anzuzeigen</translation>
+        <translation>	-e   Startet das Programm ohne grafische Oberfläche</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="93"/>
@@ -368,7 +368,7 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="14"/>
         <source>unlock and mount a luks volume</source>
-        <translation>Ein Luks-Laufwerk entsperren und einhängen.</translation>
+        <translation>Ein LUKS-Laufwerk entsperren und einhängen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="26"/>
@@ -394,7 +394,7 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="99"/>
         <source>key &amp;from a key file</source>
-        <translation>Schlüssel aus einer Datei</translation>
+        <translation>&amp;Schlüssel aus einer Datei</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="112"/>
@@ -404,27 +404,27 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="149"/>
         <source>mount name</source>
-        <translation>Name</translation>
+        <translation>Name des Einhängepunkts</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="204"/>
         <source>mount in &amp;read only mode</source>
-        <translation>Nur Lesemodus</translation>
+        <translation>Im &amp;Nur-Lesemodus einhängen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="217"/>
         <source>&amp;share mount point</source>
-        <translation>Gemeinsamer Einhängepunkt</translation>
+        <translation>Einhängepunkt teilen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="60"/>
         <source>unlock and mount a luks volume in &quot;%1&quot;</source>
-        <translation>Ein Luks-Laufwerk entsperren und in &quot;%1&quot; einhängen.</translation>
+        <translation>Ein LUKS-Laufwerk entsperren und in &quot;%1&quot; einhängen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="62"/>
         <source>unlock and mount an encrypted volume in &quot;%1&quot;</source>
-        <translation>Ein verschlüsseltes Laufwerk entsperren und in &quot;%1&quot; einhängen.</translation>
+        <translation>Ein verschlüsseltes Laufwerk entsperren und in &quot;%1&quot; einhängen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="115"/>
@@ -440,12 +440,12 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="124"/>
         <source>select a folder to create a mount point in</source>
-        <translation>Wählen Sie ein Verzeichnis zum Erstellen eines Einhängepunktes.</translation>
+        <translation>Wählen Sie ein Verzeichnis zum Erstellen eines Einhängepunktes</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="171"/>
         <source>select a file to be used as a keyfile</source>
-        <translation>Wählen Sie eine Datei, die als Schlüsseldatei dienen soll.</translation>
+        <translation>Wählen Sie eine Datei, die als Schlüsseldatei dienen soll</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="228"/>
@@ -461,7 +461,7 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="253"/>
         <source>could not open mount point because &quot;%1&quot; tool does not appear to be working correctly</source>
-        <translation>Der Einhängepunkt kann nicht geöffnet werden, weil das &quot;%1&quot; Werkzeug nicht richtig zu funktionieren scheint.</translation>
+        <translation>Der Einhängepunkt kann nicht geöffnet werden, weil das &quot;%1&quot; Werkzeug nicht richtig zu funktionieren scheint</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="279"/>
@@ -476,27 +476,27 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="279"/>
         <source>An error has occured and the volume could not be opened</source>
-        <translation>Ein Fehler ist aufgetreten und das Laufwerk konnte nicht geöffnet werden.</translation>
+        <translation>Ein Fehler ist aufgetreten und das Laufwerk konnte nicht geöffnet werden</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="298"/>
         <source>the volume does not appear to have an entry in the wallet</source>
-        <translation>Das Laufwerk scheint keinen Eintrag in der Brieftasche zu haben.</translation>
+        <translation>Das Laufwerk scheint keinen Eintrag in der Brieftasche zu haben</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="366"/>
         <source>plug in name field is empty</source>
-        <translation>Das Feld mit dem Namen der Erweiterung ist leer.</translation>
+        <translation>Das Feld mit dem Namen der Erweiterung ist leer</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="371"/>
         <source>keyfile field is empty</source>
-        <translation>Das Feld mit der Schlüsseldatei ist leer.</translation>
+        <translation>Das Feld mit der Schlüsseldatei ist leer</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="380"/>
         <source>&quot;/&quot; character is not allowed in the mount name field</source>
-        <translation>Das Zeichen &quot;/&quot; ist im Namensfeld nicht erlaubt.</translation>
+        <translation>Das Zeichen &quot;/&quot; ist im Namensfeld nicht erlaubt</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="457"/>
@@ -524,7 +524,7 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="77"/>
         <source>use la&amp;bel</source>
-        <translation>Beschriftung benutzen</translation>
+        <translation>Label benutzen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="100"/>
@@ -534,12 +534,12 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="116"/>
         <source>mount &amp;read only</source>
-        <translation>Nur Lesemodus</translation>
+        <translation>&amp;Nur Lesemodus</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="129"/>
         <source>&amp;share mount point</source>
-        <translation>Geteilter Einhängepunkt</translation>
+        <translation>Einhängepunkt teilen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="125"/>
@@ -550,12 +550,12 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="125"/>
         <source>&quot;/&quot; character is not allowed in the mount name field</source>
-        <translation>Das Zeichen &quot;/&quot; ist im Namensfeld nicht erlaubt.</translation>
+        <translation>Das Zeichen &quot;/&quot; ist im Namensfeld nicht erlaubt</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="152"/>
         <source>Select Path to mount point folder</source>
-        <translation>Pfad zum Einhängepunkt wählen.</translation>
+        <translation>Pfad zum Einhängepunkt wählen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="205"/>
@@ -565,7 +565,7 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="205"/>
         <source>could not open mount point because &quot;%1&quot; tool does not appear to be working correctly</source>
-        <translation>Der Einhängepunkt kann nicht geöffnet werden, weil das &quot;%1&quot; Werkzeug nicht richtig zu funktionieren scheint.</translation>
+        <translation>Der Einhängepunkt kann nicht geöffnet werden, weil das &quot;%1&quot; Werkzeug nicht richtig zu funktionieren scheint</translation>
     </message>
 </context>
 <context>
@@ -573,12 +573,12 @@ und ein zweiter öffentlich zugänglicher &quot;Spiegel&quot;-Einhängepunkt unt
     <message>
         <location filename="../../zuluMount-gui/oneinstance.cpp" line="43"/>
         <source>There seem to be another instance running,exiting this one</source>
-        <translation>Es scheint eine weiter Instanz ausgeführt zu werden. Diese wird nun beendet.</translation>
+        <translation>Es scheint eine weiter Instanz ausgeführt zu werden. Diese wird nun beendet</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/oneinstance.cpp" line="45"/>
         <source>Previous instance seem to have crashes,trying to clean up before starting</source>
-        <translation>Die letzte Instanz scheint durch eine Crash beendet wurden zu sein, es wird versucht vor dem Start aufzuräumen.</translation>
+        <translation>Die letzte Instanz scheint durch einen Crash beendet worden zu sein, es wird versucht vor dem Neustart aufzuräumen</translation>
     </message>
 </context>
 </TS>
