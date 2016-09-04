@@ -880,17 +880,6 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 		if( mt.startsWith( mp ) || mt.startsWith( mp_1 ) ){
 
-			connect( m.addAction( tr( "Unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
-
-			if( !m_powerOff.isEmpty() && !_encrypted_folder( fs ) && ( device.startsWith( "/dev/sd" ) || device.startsWith( "/dev/hd" ) ) ){
-
-				connect( m.addAction( tr( "Unmount + Power Down" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount_powerDown() ) ) ;
-			}
-
-			m.addSeparator() ;
-
-			_properties_menu( fs,true ) ;
-
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
 
 			if( m_sharedFolderPath.isEmpty() ){
@@ -902,6 +891,17 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 					 this,SLOT( slotOpenFolder() ) ) ;
 				connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenSharedFolder() ) ) ;
+			}			
+
+			m.addSeparator() ;
+
+			_properties_menu( fs,true ) ;
+
+			connect( m.addAction( tr( "Unmount" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount() ) ) ;
+
+			if( !m_powerOff.isEmpty() && !_encrypted_folder( fs ) && ( device.startsWith( "/dev/sd" ) || device.startsWith( "/dev/hd" ) ) ){
+
+				connect( m.addAction( tr( "Unmount + Power Down" ) ),SIGNAL( triggered() ),this,SLOT( pbUmount_powerDown() ) ) ;
 			}
 		}else{
 			m_sharedFolderPath = utility::sharedMountPointPath( mt ) ;
@@ -910,18 +910,22 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 				if( utility::pathIsReadable( mt ) ){
 
-					_properties_menu( fs,true ) ;
-
 					connect( m.addAction( tr( "Open Folder" ) ),SIGNAL( triggered() ),
 						 this,SLOT( slotOpenFolder() ) ) ;
+
+					m.addSeparator() ;
+
+					_properties_menu( fs,false ) ;
 				}else{
 					_properties_menu( fs,false ) ;
 				}
 			}else{
-				_properties_menu( fs,true ) ;
-
 				connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenSharedFolder() ) ) ;
+
+				m.addSeparator() ;
+
+				_properties_menu( fs,true ) ;
 			}
 		}
 	}

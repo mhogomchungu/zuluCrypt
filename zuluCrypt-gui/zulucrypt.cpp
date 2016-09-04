@@ -924,8 +924,18 @@ void zuluCrypt::itemClicked( QTableWidgetItem * it )
 void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 {
 	QMenu m ;
+
 	m.setFont( this->font() ) ;
-	connect( m.addAction( tr( "Close" ) ),SIGNAL( triggered() ),this,SLOT( close() ) ) ;
+
+	if( m_sharedMountPoint.isEmpty() ){
+
+		connect( m.addAction( tr( "Open Folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
+	}else{
+		connect( m.addAction( tr( "Open Private Folder" ) ),SIGNAL( triggered() ),
+			 this,SLOT( openFolder() ) ) ;
+		connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
+			 this,SLOT( openSharedFolder() ) ) ;
+	}
 
 	m.addSeparator() ;
 
@@ -937,15 +947,6 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m_sharedMountPoint = utility::sharedMountPointPath( m_point ) ;
 
-	if( m_sharedMountPoint.isEmpty() ){
-
-		connect( m.addAction( tr( "Open Folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
-	}else{
-		connect( m.addAction( tr( "Open Private Folder" ) ),SIGNAL( triggered() ),
-			 this,SLOT( openFolder() ) ) ;
-		connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
-			 this,SLOT( openSharedFolder() ) ) ;
-	}
 
 	m.addSeparator() ;
 
@@ -983,6 +984,11 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 		ac->setEnabled( true ) ;
 		ac->connect( ac,SIGNAL( triggered() ),this,SLOT( addToFavorite() ) ) ;
 	}
+
+	m.addSeparator() ;
+
+	connect( m.addAction( tr( "Close" ) ),SIGNAL( triggered() ),this,SLOT( close() ) ) ;
+
 	if( clicked ){
 
 		m.exec( QCursor::pos() ) ;
