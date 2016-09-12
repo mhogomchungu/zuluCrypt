@@ -137,13 +137,13 @@ void DialogMsg::setDimentions( const QString& msg )
 
 	}else if( len <= 130 ){
 
-		this->setFixedSize( 372,118 ) ;
+		this->setFixedSize( 372,138 ) ;
 
-		m_ui->label->setGeometry( 10,10,351,61 ) ;
+		m_ui->label->setGeometry( 10,10,351,81 ) ;
 		m_ui->label->setFixedSize( m_ui->label->size() ) ;
-		m_ui->pbOk->setGeometry( 150,80,75,31 ) ;
-		m_ui->pbYes->setGeometry( 120,80,71,31 ) ;
-		m_ui->pbNo->setGeometry( 190,80,75,31 ) ;
+		m_ui->pbOk->setGeometry( 150,100,75,31 ) ;
+		m_ui->pbYes->setGeometry( 120,100,71,31 ) ;
+		m_ui->pbNo->setGeometry( 190,100,75,31 ) ;
 
 	}else if( len > 130 ){
 
