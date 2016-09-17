@@ -260,7 +260,7 @@ static int open_loop_device_1( string_t * loop_device )
 		if( ioctl( fd,LOOP_GET_STATUS64,&l_info ) != 0 ){
 
 			if( errno == ENXIO) {
-				*loop_device = st ;
+				*loop_device = StringCopy( st ) ;
 				close( fd ) ;
 				r = 1 ;
 				break ;
