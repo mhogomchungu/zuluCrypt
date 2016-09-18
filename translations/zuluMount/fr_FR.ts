@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="fr_FR">
+<TS version="2.0" language="fr_FR">
 <context>
     <name>DialogMsg</name>
     <message>
@@ -1076,7 +1076,7 @@ Les droits nécessaires peuvent être obtenus par :
     <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="111"/>
         <source>Mount &amp;Folder</source>
-        <translation>Monter &amp;Folder</translation>
+        <translation>Monter un &amp;Répertoire</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="138"/>
