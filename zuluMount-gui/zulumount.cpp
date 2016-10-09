@@ -450,8 +450,7 @@ void zuluMount::showVisibleVolumeList()
 
 void zuluMount::removeVolumeFromVisibleVolumeList( QAction * ac )
 {
-	auto e = ac->text() ;
-	e.remove( "&" ) ;
+	auto e = ac->text().remove( "&" ) ;
 
 	auto table = m_ui->tableWidget ;
 

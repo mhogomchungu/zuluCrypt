@@ -288,7 +288,7 @@ int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
 
 	tc_api_get_volume_type( buffer,sizeof( buffer ),mapper ) ;
 
-	return StringsAreEqual( buffer,"TCRYPT" ) || StringsAreEqual( buffer,"VCRYPT" ) ;
+	return StringAtLeastOneMatch_1( buffer,"TCRYPT","VCRYPT",NULL ) ;
 }
 
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
