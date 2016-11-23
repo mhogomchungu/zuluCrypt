@@ -133,9 +133,9 @@ A value of "false" will cause the build system to to use system wide library if 
 
 -DUSE_POLKIT=false
 Set this option to "true" if you want GUI components to start elevated and run in "mixed" mode. Good thing about
-this option is that CLI components will not be suid-root. Bad thing about setting this option are:
+this option is that CLI components will not be suid-root. Bad things about setting this option are:
 1. zuluMount-gui will loose its ability to unlock encrypted folders.
-2. lxqt_wallet wallet functionality will be diabled.
+2. lxqt_wallet wallet functionality will be disabled.
 3. GUI components will run from root's account and they will look different.
 
 Build errors/test fails/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/zuluCrypt/issues
