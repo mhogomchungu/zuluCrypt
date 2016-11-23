@@ -68,7 +68,7 @@ static void setFsSize( const QString& path,QString * volumeSize,QString * usedPe
 
 #endif
 
-bool volumeProperty::encryptedFolder(const QString& e, bool f)
+bool volumeProperty::encryptedFolder( const QString& e,bool f )
 {
 	if( f ){
 

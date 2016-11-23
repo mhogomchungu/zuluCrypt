@@ -1360,21 +1360,21 @@ void zuluMount::unMountAll()
 
 	m_removeAllVolumes = true ;
 
-	auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
-	auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
-	auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
+	auto paths       = tablewidget::columnEntries( table,0 ) ;
+	auto mountPoints = tablewidget::columnEntries( table,1 ) ;
+	auto fileSystems = tablewidget::columnEntries( table,2 ) ;
 
 	auto mountPath = utility::mountPath( QString() ) ;
 	auto homeMountPath = utility::homeMountPath( QString() ) ;
 
-	int r = cipherFolders.size() - 1 ;
+	int r = paths.size() - 1 ;
 
 	if( r < 0 ){
 
 		utility::Task::suspendForOneSecond() ;
 	}else{
 		do{
-			const auto& a = cipherFolders.at( r ) ;
+			const auto& a = paths.at( r ) ;
 			const auto& b = mountPoints.at( r ) ;
 			const auto& c = fileSystems.at( r ) ;
 

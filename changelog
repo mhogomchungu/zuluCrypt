@@ -253,3 +253,7 @@ version 5.0.1
    zuluMount-gui icons must be in "zuluMount.ICON_NAME.png" format.
 -- zuluMount-gui can now unlock cryfs,encfs,gocryptfs and securefs based encrypted volumes.
 -- add full support for German translation.
+
+version 5.0.2
+-- add support for unlocking ecryptfs volumes in zuluMount-gui(ecryptfs-simple tol must already be installed)
+-- fix permission related problems in configuration files when running in mixed mode.
