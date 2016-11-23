@@ -64,7 +64,7 @@ cd build
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DSHARE_MOUNT_PREFIX=default -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false
 -DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DINTERNAL_ZULUPLAY=false -DNOKDE=false
--DINTERNAL_LXQT_WALLET=false -DCMAKE_BUILD_TYPE=RELEASE . ..
+-DINTERNAL_LXQT_WALLET=false -DUSE_POLKIT=false -DCMAKE_BUILD_TYPE=RELEASE . ..
 
 make
 
@@ -130,6 +130,13 @@ use a system installed version if found.
 -DINTERNAL_ZULUPLAY=false
 Set this option to "true" if you want to unconditionally  an external library of this project.
 A value of "false" will cause the build system to to use system wide library if it is found.
+
+-DUSE_POLKIT=false
+Set this option to "true" if you want GUI components to start elevated and run in "mixed" mode. Good thing about
+this option is that CLI components will not be suid-root. Bad thing about setting this option are:
+1. zuluMount-gui will loose its ability to unlock encrypted folders.
+2. lxqt_wallet wallet functionality will be diabled.
+3. GUI components will run from root's account and they will look different.
 
 Build errors/test fails/feature requests/recommendations can be reported at: https://github.com/mhogomchungu/zuluCrypt/issues
 or using my private email address at: mhogomchungu@gmail.com

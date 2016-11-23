@@ -136,6 +136,27 @@ install( FILES zuluCrypt.papirus.dark.png DESTINATION ${CMAKE_INSTALL_DATAROOTDI
 #install (FILES zuluCrypt.png DESTINATION share/icons/hicolor/32x32/apps)
 
 # desktop file section
+if( USE_POLKIT )
+
+file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
+
+"[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=pkexec ${CMAKE_INSTALL_FULL_BINDIR}/zuluCrypt-gui -K $UID -d %U
+GenericName[en_US]=Encrypted volumes manager
+GenericName=Encrypted volumes manager
+Icon=zuluCrypt
+Name[en_US]=ZuluCrypt
+Name=ZuluCrypt
+NoDisplay=false
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
+
+else()
+
 file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
 
 "[Desktop Entry]
@@ -152,3 +173,5 @@ StartupNotify=true
 Terminal=false
 Type=Application
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
+
+endif()

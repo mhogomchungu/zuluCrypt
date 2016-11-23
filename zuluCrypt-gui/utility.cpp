@@ -327,32 +327,17 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 
 static bool _execute_process( const QString& m,const QString& exe,const QString& env,int uid )
 {
+	Q_UNUSED( env ) ;
+
 	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
 
 		return utility::Task( exe + " " + utility::Task::makePath( m ),[ & ](){
 
-			QProcessEnvironment e ;
-
-			for( const auto& it : env.split( '\n' ) ){
-
-				auto q = it.split( '=' ) ;
-
-				if( q.size() > 1 ){
-
-					e.insert( q.at( 0 ),q.at( 1 ) ) ;
-				}
-			}
-
-			return e ;
+			return QProcessEnvironment() ;
 
 		}(),[ uid ](){
 
 			if( uid != -1 ){
-
-				Q_UNUSED( setgid( uid ) ) ;
-				Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
-				Q_UNUSED( setegid( uid ) ) ;
-				Q_UNUSED( setuid( uid ) ) ;
 
 				auto id = getpwuid( uid ) ;
 
@@ -362,7 +347,28 @@ static bool _execute_process( const QString& m,const QString& exe,const QString&
 					setenv( "HOME",id->pw_dir,1 ) ;
 					setenv( "USER",id->pw_name,1 ) ;
 				}
+
+				Q_UNUSED( setgid( uid ) ) ;
+				Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
+				Q_UNUSED( setegid( uid ) ) ;
+				Q_UNUSED( setuid( uid ) ) ;
+
 			}
+
+			auto path = [](){
+
+				auto e = getenv( "PATH" ) ;
+
+				QString s = "/usr/local/bin:/usr/bin:/bin:" ;
+
+				if( e ){
+					return e + QString( ":" ) + s ;
+				}else{
+					return s ;
+				}
+			}() ;
+
+			setenv( "PATH",path.toLatin1().constData(),1 ) ;
 
 		} ).success() ;
 	}else{
