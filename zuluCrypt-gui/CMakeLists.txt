@@ -143,7 +143,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
 "[Desktop Entry]
 Comment[en_US]=
 Comment=
-Exec=pkexec ${CMAKE_INSTALL_FULL_BINDIR}/zuluCrypt-gui -K $UID -d %U
+Exec=${CMAKE_INSTALL_FULL_BINDIR}/zuluCrypt-gui.pkexec -d %U
 GenericName[en_US]=Encrypted volumes manager
 GenericName=Encrypted volumes manager
 Icon=zuluCrypt
@@ -155,6 +155,14 @@ Terminal=false
 Type=Application
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
 
+file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt-gui.pkexec
+"#!/bin/bash
+pkexec ${CMAKE_INSTALL_FULL_BINDIR}/zuluCrypt-gui -K $UID $*
+")
+
+install ( FILES ${PROJECT_BINARY_DIR}/zuluCrypt-gui.pkexec
+          DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
 else()
 
 file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt.desktop

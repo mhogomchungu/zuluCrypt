@@ -436,13 +436,13 @@ endif()
 if( USE_POLKIT )
 
 file( WRITE ${PROJECT_BINARY_DIR}/zulumount-gui.policy
-"<?xml version="1.0" encoding="UTF-8"?>
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE policyconfig PUBLIC
- "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
- "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+ \"-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN\"
+ \"http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd\">
 <policyconfig>
 
-  <action id="org.debian.pkexec.zulumount-gui">
+  <action id=\"org.debian.pkexec.zulumount-gui\">
     <message>Authentication is required to run zuluMount</message>
     <icon_name>zuluMount.xpm</icon_name>
     <defaults>
@@ -450,21 +450,21 @@ file( WRITE ${PROJECT_BINARY_DIR}/zulumount-gui.policy
       <allow_inactive>auth_admin</allow_inactive>
       <allow_active>auth_admin</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">${CMAKE_INSTALL_PREFIX}/bin/zuluMount-gui</annotate>
-    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+    <annotate key=\"org.freedesktop.policykit.exec.path\">${CMAKE_INSTALL_PREFIX}/bin/zuluMount-gui</annotate>
+    <annotate key=\"org.freedesktop.policykit.exec.allow_gui\">true</annotate>
   </action>
 
 </policyconfig>
 ")
 
 file( WRITE ${PROJECT_BINARY_DIR}/zulucrypt-gui.policy
-"<?xml version="1.0" encoding="UTF-8"?>
+"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE policyconfig PUBLIC
- "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
- "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+ \"-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN\"
+ \"http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd\">
 <policyconfig>
 
-  <action id="org.debian.pkexec.zulucrypt-gui">
+  <action id=\"org.debian.pkexec.zulucrypt-gui\">
     <message>Authentication is required to run zuluCrypt</message>
     <icon_name>zuluCrypt.xpm</icon_name>
     <defaults>
@@ -472,8 +472,8 @@ file( WRITE ${PROJECT_BINARY_DIR}/zulucrypt-gui.policy
       <allow_inactive>auth_admin</allow_inactive>
       <allow_active>auth_admin</allow_active>
     </defaults>
-    <annotate key="org.freedesktop.policykit.exec.path">${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-gui</annotate>
-    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+    <annotate key=\"org.freedesktop.policykit.exec.path\">${CMAKE_INSTALL_PREFIX}/bin/zuluCrypt-gui</annotate>
+    <annotate key=\"org.freedesktop.policykit.exec.allow_gui\">true</annotate>
   </action>
 
 </policyconfig>
