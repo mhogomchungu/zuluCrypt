@@ -75,6 +75,7 @@ set( SRC
 	../zuluMount-gui/oneinstance.cpp
 	../zuluMount-gui/monitor_mountinfo.cpp
 	../zuluMount-gui/zulumounttask.cpp
+	../zuluMount-gui/volumeproperty.cpp
 	contactinfo.cpp
 )
 

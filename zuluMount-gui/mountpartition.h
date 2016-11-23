@@ -24,7 +24,7 @@
 #include <QWidget>
 #include <QString>
 
-#include "volumeentryproperties.h"
+#include "volumeproperty.h"
 
 #include <functional>
 #include <memory>
@@ -53,9 +53,9 @@ public:
 			QTableWidget * table,
 			std::function< void() >,
 			std::function< void( const QString& ) > ) ;
-	void ShowUI( const volumeEntryProperties& ) ;
+	void ShowUI( const volumeProperty& ) ;
 	void HideUI( void ) ;
-	void AutoMount( const volumeEntryProperties& ) ;
+	void AutoMount( const volumeProperty& ) ;
 	~mountPartition() ;
 signals:
 	void cancel( void ) ;

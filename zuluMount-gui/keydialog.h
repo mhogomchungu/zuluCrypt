@@ -32,7 +32,7 @@ class QTableWidgetItem ;
 class QTableWidget ;
 
 #include "zulumount.h"
-#include "volumeentryproperties.h"
+#include "volumeproperty.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "../zuluCrypt-gui/secrets.h"
 #include <functional>
@@ -49,7 +49,7 @@ public:
 	static keyDialog& instance( QWidget * parent,
 				    QTableWidget * table,
 				    secrets& s,
-				    const volumeEntryProperties& v,
+				    const volumeProperty& v,
 				    std::function< void() > cancel,
 				    std::function< void( const QString& ) > success )
 	{
@@ -58,7 +58,7 @@ public:
 	keyDialog( QWidget * parent,
 		   QTableWidget *,
 		   secrets&,
-		   const volumeEntryProperties&,
+		   const volumeProperty&,
 		   std::function< void() >,
 		   std::function< void( const QString& ) > ) ;
 	~keyDialog() ;

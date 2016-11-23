@@ -39,8 +39,8 @@ set(SRC 	main.cpp
 		monitor_mountinfo.cpp
 		deviceoffset.cpp
 		mountoptions.cpp
-		cryfstask.cpp
-		volumeentryproperties.cpp
+		siritask.cpp
+		volumeproperty.cpp
 		../zuluCrypt-gui/tcrypt.cpp
 		veracryptpimdialog.cpp
 		../zuluCrypt-gui/favorites.cpp

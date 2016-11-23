@@ -78,11 +78,11 @@ void monitor_mountinfo::run()
 
 	if( m_announceChanges ){
 
-		connect( this,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
-			 m_babu,SLOT( volumeMiniProperties( volumeEntryProperties * ) ) ) ;
+		connect( this,SIGNAL( volumeMiniProperties( volumeProperty * ) ),
+			 m_babu,SLOT( volumeMiniProperties( volumeProperty * ) ) ) ;
 
-		connect( this,SIGNAL( volumeMiniProperties_0( volumeEntryProperties * ) ),
-			 m_babu,SLOT( volumeMiniProperties_0( volumeEntryProperties * ) ) ) ;
+		connect( this,SIGNAL( volumeMiniProperties_0( volumeProperty * ) ),
+			 m_babu,SLOT( volumeMiniProperties_0( volumeProperty * ) ) ) ;
 
 		connect( this,SIGNAL( volumeRemoved( QString ) ),
 			 m_babu,SLOT( volumeRemoved( QString ) ) ) ;

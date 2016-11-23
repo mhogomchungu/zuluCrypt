@@ -29,7 +29,7 @@
 #include <memory>
 
 class QObject ;
-class volumeEntryProperties ;
+class volumeProperty ;
 
 class monitor_mountinfo : public QThread
 {
@@ -46,8 +46,8 @@ public:
 signals:
 	void gotEvent( void ) ;
 	void volumeRemoved( QString ) ;
-	void volumeMiniProperties( volumeEntryProperties * ) ;
-	void volumeMiniProperties_0( volumeEntryProperties * ) ;
+	void volumeMiniProperties( volumeProperty * ) ;
+	void volumeMiniProperties_0( volumeProperty * ) ;
 private slots:
 	void threadStopped( void ) ;
 private:

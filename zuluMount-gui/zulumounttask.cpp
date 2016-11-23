@@ -120,7 +120,7 @@ QStringList zuluMountTask::mountedVolumeList( void )
 	return utility::Task( utility::appendUserUID( "%1 -E" ).arg( zuluMountPath ) ).splitOutput( '\n' ) ;
 }
 
-volumeEntryProperties _getVolumeProperties( const QString& e )
+volumeProperty _getVolumeProperties( const QString& e )
 {
 	auto device = _device( e ) ;
 
@@ -128,15 +128,15 @@ volumeEntryProperties _getVolumeProperties( const QString& e )
 
 	if( r.success() ) {
 
-		return volumeEntryProperties( r.splitOutput( '\t' ),_volumeIsSystemVolume( device ) ) ;
+		return volumeProperty( r.splitOutput( '\t' ),_volumeIsSystemVolume( device ) ) ;
 	}else{
-		return volumeEntryProperties() ;
+		return volumeProperty() ;
 	}
 }
 
-Task::future< volumeEntryProperties >& zuluMountTask::getVolumeProperties( const QString& e )
+Task::future< volumeProperty >& zuluMountTask::getVolumeProperties( const QString& e )
 {
-	return Task::run< volumeEntryProperties >( [ e ](){ return _getVolumeProperties( e ) ; } ) ;
+	return Task::run< volumeProperty >( [ e ](){ return _getVolumeProperties( e ) ; } ) ;
 }
 
 Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const QString& volumeType )
@@ -416,9 +416,9 @@ void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 	_update_list( _remove_entry( _get_hidden_volume_list(),e ) ) ;
 }
 
-Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeList()
+Task::future< QVector< volumeProperty > >& zuluMountTask::updateVolumeList()
 {
-	return Task::run< QVector< volumeEntryProperties > >( [](){
+	return Task::run< QVector< volumeProperty > >( [](){
 
 		auto l = zuluMountTask::hiddenVolumeList() ;
 
@@ -445,7 +445,7 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 			return true ;
 		} ;
 
-		QVector< volumeEntryProperties > list ;
+		QVector< volumeProperty > list ;
 
 		auto all = utility::Task( utility::appendUserUID( "%1 -l" ).arg( zuluMountPath ),10000 ) ;
 
@@ -463,7 +463,7 @@ Task::future< QVector< volumeEntryProperties > >& zuluMountTask::updateVolumeLis
 					if( _validEntry( it ) ){
 
 						const auto& e = utility::split( it,'\t' ) ;
-						list.append( volumeEntryProperties( e,s.contains( e.first() ) ) ) ;
+						list.append( volumeProperty( e,s.contains( e.first() ) ) ) ;
 					}
 				}
 			}
@@ -540,7 +540,7 @@ volumeStatus zuluMountTask::volumeMiniProperties( const QString& volume )
 
 	if( r.success() ){
 
-		s.entry = new volumeEntryProperties( r.splitOutput( '\t' ),_volumeIsSystemVolume( volume ) ) ;
+		s.entry = new volumeProperty( r.splitOutput( '\t' ),_volumeIsSystemVolume( volume ) ) ;
 	}
 
 	return s ;
@@ -556,7 +556,7 @@ volumeStatus zuluMountTask::deviceProperties( const zuluMountTask::event& device
 
 		if( deviceProperty.added ){
 
-			s.entry = new volumeEntryProperties( _getVolumeProperties( d ) ) ;
+			s.entry = new volumeProperty( _getVolumeProperties( d ) ) ;
 		}else{
 			s.volumeRemoved = true ;
 		}
@@ -572,7 +572,7 @@ volumeStatus zuluMountTask::deviceProperties( const zuluMountTask::event& device
 
 		if( deviceProperty.added ){
 
-			s.entry = new volumeEntryProperties( _getVolumeProperties( d ) ) ;
+			s.entry = new volumeProperty( _getVolumeProperties( d ) ) ;
 		}else{
 			s.volumeRemoved = true ;
 		}
@@ -597,7 +597,7 @@ volumeStatus zuluMountTask::deviceProperties( const zuluMountTask::event& device
 
 			if( deviceProperty.added ){
 
-				s.entry = new volumeEntryProperties( _getVolumeProperties( device ) ) ;
+				s.entry = new volumeProperty( _getVolumeProperties( device ) ) ;
 			}else{
 				s.volumeRemoved = true ;
 			}

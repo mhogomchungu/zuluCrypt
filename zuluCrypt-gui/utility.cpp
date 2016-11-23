@@ -88,6 +88,11 @@ bool utility::reUseMountPointPath()
 	return REUSE_MOUNT_POINT ;
 }
 
+bool utility::reUseMountPoint()
+{
+	return utility::reUseMountPointPath() ;
+}
+
 void utility::setUID( int uid )
 {
 	if( utility::userIsRoot() ){
@@ -948,8 +953,15 @@ QString utility::resolvePath( const QString& path )
 	}
 }
 
-QString utility::executableFullPath( const QString& e )
+QString utility::executableFullPath( const QString& f )
 {
+	QString e = f ;
+
+	if( e == "ecryptfs" ){
+
+		e = "ecryptfs-simple" ;
+	}
+
 	QString exe ;
 
 	auto q = { "/usr/local/bin/",

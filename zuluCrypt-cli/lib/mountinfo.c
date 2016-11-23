@@ -75,7 +75,7 @@ static void _add_entry( string_t ( *function )( const vInfo * ),stringList_t tmp
 
 			volumeInfo.device += StringFirstIndexOfChar_1( volumeInfo.device,'@' ) + 1 ;
 
-		}else if( StringsAreEqual( volumeInfo.fileSystem,"fuse.gocryptfs" ) ){
+		}else if( StringAtLeastOneMatch_1( volumeInfo.fileSystem,"fuse.gocryptfs","ecryptfs",NULL ) ){
 
 			;
 		}else{

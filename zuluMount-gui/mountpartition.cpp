@@ -308,7 +308,7 @@ void mountPartition::pbOpenMountPath()
 	}
 }
 
-void mountPartition::ShowUI( const volumeEntryProperties& e )
+void mountPartition::ShowUI( const volumeProperty& e )
 {
 	m_path  = e.volumeName() ;
 	m_label = e.label() ;
@@ -332,7 +332,7 @@ void mountPartition::ShowUI( const volumeEntryProperties& e )
 	this->show() ;
 }
 
-void mountPartition::AutoMount( const volumeEntryProperties& e )
+void mountPartition::AutoMount( const volumeProperty& e )
 {
 	m_path = e.volumeName() ;
 

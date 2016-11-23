@@ -17,10 +17,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CRYPTTASK_H
-#define CRYPTTASK_H
+#ifndef SIRITASK_H
+#define SIRITASK_H
 
-#include "volumeentryproperties.h"
+#include "volumeproperty.h"
 #include "../zuluCrypt-gui/task.h"
 #include "../zuluCrypt-gui/utility.h"
 
@@ -28,17 +28,20 @@
 #include <QString>
 #include <QStringList>
 
-namespace cryfsTask
-{	class volumeType
+namespace siritask
+{
+	class volumeType
 	{
 	public:
-		volumeType( const QString& type ) : m_type( type )
+		volumeType()
 		{
 		}
-		volumeType( const char * type ) : m_type( type )
+		template< typename T >
+		volumeType( const T& type ) : m_type( type )
 		{
 		}
-		volumeType& operator=( const char * e )
+		template< typename T >
+		volumeType& operator=( const T& e )
 		{
 			m_type = e ;
 			return *this ;
@@ -47,13 +50,24 @@ namespace cryfsTask
 		{
 			return m_type ;
 		}
+		template< typename T >
+		bool startsWith( const T& e ) const
+		{
+			return m_type.startsWith( e ) ;
+		}
 		QString executableFullPath() const
 		{
 			return utility::executableFullPath( m_type ) ;
 		}
-		bool operator==( const char * type ) const
+		template< typename T >
+		bool operator==( const T& type ) const
 		{
 			return m_type == type ;
+		}
+		template< typename T >
+		bool operator!=( const T& type ) const
+		{
+			return m_type != type ;
 		}
 		template< typename ... T >
 		bool isOneOf( const T& ... t ) const
@@ -63,17 +77,38 @@ namespace cryfsTask
 	private:
 		QString m_type ;
 	};
-
 	struct options
 	{
+		using function_t = std::function< void( const QString& ) > ;
+
+		options( const QString& cipher_folder,
+			 const QString& plain_folder,
+			 const QString& volume_key,
+			 const QString& mount_options,
+			 const QString& config_file_path,
+			 const QString& volume_type,
+			 bool unlock_in_read_only,
+			 function_t folder_opener = []( const QString& e ){ Q_UNUSED( e ) ; } ) :
+
+			cipherFolder( cipher_folder ),
+			plainFolder( plain_folder ),
+			key( volume_key ),
+			mOpt( mount_options ),
+			configFilePath( config_file_path ),
+			type( volume_type ),
+			ro( unlock_in_read_only ),
+			openFolder( folder_opener )
+		{
+		}
+
 		QString cipherFolder ;
 		QString plainFolder ;
 		QString key ;
 		QString mOpt ;
 		QString configFilePath ;
-		cryfsTask::volumeType type ;
+		siritask::volumeType type ;
 		bool ro ;
-		std::function< void( const QString& ) > openFolder ;
+		function_t openFolder ;
 	};
 
 	enum class status
@@ -83,18 +118,23 @@ namespace cryfsTask
 		encfs,
 		gocryptfs,
 		securefs,
+		ecryptfs,
 		gocryptfsNotFound,
 		cryfsNotFound,
 		encfsNotFound,
 		securefsNotFound,
+		ecryptfs_simpleNotFound,
 		unknown,
 		failedToCreateMountPoint,
 		backendFail
 	};
 
 	bool deleteMountFolder( const QString& ) ;
-	Task::future< bool >& encryptedFolderUnMount( const QString& mountPoint ) ;
-	Task::future< cryfsTask::status >& encryptedFolderMount( const options&,bool = false ) ;
+	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
+						      const QString& mountPoint,
+						      const QString& fileSystem ) ;
+	Task::future< siritask::status >& encryptedFolderMount( const options&,bool = false ) ;
+	Task::future< siritask::status >& encryptedFolderCreate( const options& ) ;
 }
 
-#endif // CRYPTTASK_H
+#endif // SIRITASK_H

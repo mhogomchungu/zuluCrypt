@@ -257,7 +257,7 @@ void tablewidget::selectLastRow( QTableWidget * table )
 	tablewidget::selectRow( table,table->rowCount() - 1 ) ;
 }
 
-QStringList tablewidget::tableColumnEntries( QTableWidget * table,int col )
+QStringList tablewidget::columnEntries( QTableWidget * table,int col )
 {
 	QStringList l ;
 
@@ -269,7 +269,7 @@ QStringList tablewidget::tableColumnEntries( QTableWidget * table,int col )
 	return l ;
 }
 
-QStringList tablewidget::tableRowEntries( QTableWidget * table,int row )
+QStringList tablewidget::rowEntries( QTableWidget * table,int row )
 {
 	QStringList l ;
 

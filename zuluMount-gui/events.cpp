@@ -91,8 +91,8 @@ void events::run()
 	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
 	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
 
-	connect( this,SIGNAL( volumeMiniProperties( volumeEntryProperties * ) ),
-		 m_babu,SLOT( autoMountVolume( volumeEntryProperties * ) ) ) ;
+	connect( this,SIGNAL( volumeMiniProperties( volumeProperty * ) ),
+		 m_babu,SLOT( autoMountVolume( volumeProperty * ) ) ) ;
 	connect( this,SIGNAL( volumeRemoved( QString ) ),
 		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
 

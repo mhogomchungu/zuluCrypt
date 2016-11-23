@@ -20,7 +20,7 @@
 #ifndef ZULUMOUNTTASK_H
 #define ZULUMOUNTTASK_H
 
-#include "volumeentryproperties.h"
+#include "volumeproperty.h"
 #include "../zuluCrypt-gui/task.h"
 #include "../zuluCrypt-gui/utility.h"
 
@@ -32,7 +32,7 @@ struct volumeStatus
 {
 	QString volumeName ;
 	bool volumeRemoved ;
-	volumeEntryProperties * entry ;
+	volumeProperty * entry ;
 };
 
 namespace zuluMountTask
@@ -50,11 +50,15 @@ namespace zuluMountTask
 	};
 
 	Task::future< QString >& volumeProperties( const QString& volume,const QString& volumeType ) ;
-	Task::future< QVector< volumeEntryProperties > >& updateVolumeList( void ) ;
-	Task::future< volumeEntryProperties >& getVolumeProperties( const QString& e ) ;
-	Task::future< utility::Task >& unmountVolume( const QString& volumePath,const QString& volumeType,const QString& powerOffCommand ) ;
+	Task::future< QVector< volumeProperty > >& updateVolumeList( void ) ;
+	Task::future< volumeProperty >& getVolumeProperties( const QString& e ) ;
+	Task::future< utility::Task >& unmountVolume( const QString& volumePath,
+						      const QString& volumeType,
+						      const QString& powerOffCommand = QString() ) ;
 
-	utility::Task volumeUnmount( const QString& volumePath,const QString& volumeType,const QString& powerOffCommand = QString() ) ;
+	utility::Task volumeUnmount( const QString& volumePath,
+				     const QString& volumeType,
+				     const QString& powerOffCommand = QString() ) ;
 
 	void checkUnMount( const QString& ) ;
 

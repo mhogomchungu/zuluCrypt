@@ -102,7 +102,7 @@ void tcrypt::dropEvent( QDropEvent * e )
 
 void tcrypt::pbSend()
 {
-	auto l = tablewidget::tableColumnEntries( m_ui->tableWidget ) ;
+	auto l = tablewidget::columnEntries( m_ui->tableWidget ) ;
 
 	if( l.isEmpty() ){
 

@@ -30,6 +30,16 @@
 
 stringList_t zuluCryptPartitionList( void ) ;
 
+static const char * _fs( const char * e )
+{
+	if( StringPrefixEqual( e,"fuse" ) ){
+
+		return e + 5 ;
+	}else{
+		return e ;
+	}
+}
+
 void zuluMountPartitionProperties( const char * dev,const char * UUID,
 				   const char * mapper,const char * m_point,const char * fs )
 {
@@ -54,13 +64,13 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 	char * device_1 = NULL ;
 
 	if( StringAtLeastOneMatch_1( fs,"fuse.encfs","fuse.cryfs",
-				     "fuse.gocryptfs","fuse.securefs",NULL ) ){
+				     "fuse.gocryptfs","fuse.securefs","ecryptfs",NULL ) ){
 
 		if( m_point != NULL ){
 
-			printf( "%s\t%s\t%s\tNil\tNil\tNil\n",dev,m_point,fs + 5 ) ;
+			printf( "%s\t%s\t%s\tNil\tNil\tNil\n",dev,m_point,_fs( fs ) ) ;
 		}else{
-			printf( "%s\tNil\t%s\tNil\tNil\tNil\n",dev,fs + 5 ) ;
+			printf( "%s\tNil\t%s\tNil\tNil\tNil\n",dev,_fs( fs ) ) ;
 		}
 		return ;
 	}

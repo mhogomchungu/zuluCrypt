@@ -25,7 +25,7 @@ SOURCES += main.cpp\
     task.cpp \
     deviceoffset.cpp \
     mountoptions.cpp \
-    volumeentryproperties.cpp \
+    volumepropery.cpp \
     zulumounttask.cpp \
     veracryptpimdialog.cpp
 
@@ -43,7 +43,7 @@ HEADERS  += zulumount.h\
     task.h \
     deviceoffset.h \
     mountoptions.h \
-    volumeentryproperties.h \
+    volumepropery.h \
     zulumounttask.h \
     veracryptpimdialog.h
 

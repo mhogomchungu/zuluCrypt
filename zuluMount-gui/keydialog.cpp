@@ -41,7 +41,7 @@
 #include "zulumounttask.h"
 #include "../zuluCrypt-gui/task.h"
 #include "zulumounttask.h"
-#include "cryfstask.h"
+#include "siritask.h"
 #include "veracrypt_support.h"
 #include "truecrypt_support.h"
 #include "veracryptpimdialog.h"
@@ -53,7 +53,7 @@
 keyDialog::keyDialog( QWidget * parent,
 		      QTableWidget * table,
 		      secrets& s,
-		      const volumeEntryProperties& e,
+		      const volumeProperty& e,
 		      std::function< void() > p,
 		      std::function< void( const QString& ) > q ) :
 	QDialog( parent ),
@@ -452,66 +452,76 @@ void keyDialog::encryptedFolderMount()
 
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-	auto& e = cryfsTask::encryptedFolderMount( { m_path,m,m_key,QString(),QString(),
-						     QString(),ro,m_success } ) ;
+	auto& e = siritask::encryptedFolderMount( { m_path,m,m_key,QString(),QString(),
+						    QString(),ro,m_success } ) ;
 
 	switch( e.await() ){
 
-	case cryfsTask::status::success :
+	case siritask::status::success :
 
 		return this->HideUI() ;
 
-	case cryfsTask::status::cryfs :
+	case siritask::status::cryfs :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\nWrong password entered" ) ) ;
 		break;
 
-	case cryfsTask::status::encfs :
+	case siritask::status::encfs :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nWrong password entered" ) ) ;
 		break;
 
-	case cryfsTask::status::gocryptfs :
+	case siritask::status::gocryptfs :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a gocryptfs volume.\nWrong password entered" ) ) ;
 		break;
 
-	case cryfsTask::status::securefs :
+	case siritask::status::ecryptfs :
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an ecryptfs volume.\nWrong password entered" ) ) ;
+		break;
+
+	case siritask::status::securefs :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a securefs volume.\nWrong password entered" ) ) ;
 		break;
 
-	case cryfsTask::status::cryfsNotFound :
+	case siritask::status::cryfsNotFound :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\ncryfs executable could not be found" ) ) ;
 		break;
 
-	case cryfsTask::status::securefsNotFound :
+	case siritask::status::securefsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\nsecurefs executable could not be found" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a securefs volume.\nsecurefs executable could not be found" ) ) ;
 		break;
 
-	case cryfsTask::status::gocryptfsNotFound :
+	case siritask::status::gocryptfsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\ngocryptfs executable could not be found" ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a gocryptfs volume.\ngocryptfs executable could not be found" ) ) ;
 		break;
 
-	case cryfsTask::status::encfsNotFound :
+	case siritask::status::encfsNotFound :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nencfs executable could not be found" ) ) ;
 		break;
 
-	case cryfsTask::status::failedToCreateMountPoint :
+	case siritask::status::ecryptfs_simpleNotFound :
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an ecryptfs volume.\necryptfs-simple executable could not be found" ) ) ;
+		break;
+
+	case siritask::status::failedToCreateMountPoint :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to create mount point" ) ) ;
 		break;
 
-	case cryfsTask::status::unknown :
+	case siritask::status::unknown :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nNot supported volume encountered" ) ) ;
 		break;
 
-	case cryfsTask::status::backendFail :
+	case siritask::status::backendFail :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nBackend not responding" ) ) ;
 		break;

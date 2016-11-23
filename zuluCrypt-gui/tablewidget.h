@@ -49,8 +49,8 @@ namespace tablewidget
 
 	int columnHasEntry( QTableWidget *,const QString&,int = 0 ) ;
 
-	QStringList tableColumnEntries( QTableWidget * table,int = 0 ) ;
-	QStringList tableRowEntries( QTableWidget * table,int = 0 ) ;
+	QStringList columnEntries( QTableWidget * table,int = 0 ) ;
+	QStringList rowEntries( QTableWidget * table,int = 0 ) ;
 
 	void clearTable( QTableWidget * ) ;
 

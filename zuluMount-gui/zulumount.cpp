@@ -54,7 +54,7 @@
 #include "events.h"
 #include "monitor_mountinfo.h"
 #include "../zuluCrypt-gui/utility.h"
-#include "cryfstask.h"
+#include "siritask.h"
 #include "zulumounttask.h"
 #include "../zuluCrypt-gui/task.h"
 #include "../zuluCrypt-gui/checkforupdates.h"
@@ -64,15 +64,7 @@
 
 static bool _encrypted_folder( const QString& e,bool f = true )
 {
-	if( f ){
-
-		return utility::equalsAtleastOne( e,"Nil","cryptfs","cryfs","encfs",
-						  "gocryptfs","securefs" ) ;
-	}else{
-		return utility::equalsAtleastOne( e,"cryptfs","cryfs","encfs",
-						  "gocryptfs","securefs" ) ;
-	}
-
+	return volumeProperty::encryptedFolder( e,f ) ;
 }
 
 zuluMount::zuluMount( QWidget * parent ) :
@@ -437,7 +429,7 @@ void zuluMount::showHiddenVolumeList()
 void zuluMount::showVisibleVolumeList()
 {
 	_manage_volume_list( m_not_hidden_volume_menu,
-			     tablewidget::tableColumnEntries( m_ui->tableWidget ) ) ;
+			     tablewidget::columnEntries( m_ui->tableWidget ) ) ;
 }
 
 void zuluMount::removeVolumeFromVisibleVolumeList( QAction * ac )
@@ -564,9 +556,9 @@ void zuluMount::quitApplication()
 	QCoreApplication::quit() ;
 }
 
-void zuluMount::autoMountVolume( volumeEntryProperties * q )
+void zuluMount::autoMountVolume( volumeProperty * q )
 {
-	std::unique_ptr< volumeEntryProperties > r( q ) ;
+	std::unique_ptr< volumeProperty > r( q ) ;
 
 	if( r && r->isValid() ){
 
@@ -1085,7 +1077,7 @@ void zuluMount::dropEvent( QDropEvent * e )
 	}
 }
 
-void zuluMount::mount( const volumeEntryProperties& entry )
+void zuluMount::mount( const volumeProperty& entry )
 {
 	this->disableAll() ;
 
@@ -1118,10 +1110,10 @@ void zuluMount::slotMount()
 	auto table = m_ui->tableWidget ;
 	auto row = table->currentRow() ;
 
-	this->mount( tablewidget::tableRowEntries( table,row ) ) ;
+	this->mount( tablewidget::rowEntries( table,row ) ) ;
 }
 
-void zuluMount::showMoungDialog( const volumeEntryProperties& v )
+void zuluMount::showMoungDialog( const volumeProperty& v )
 {
 	if( v.isEmpty() ){
 
@@ -1206,7 +1198,7 @@ void zuluMount::addEntryToTable( bool systemVolume,const QStringList& l )
 	}
 }
 
-void zuluMount::addEntryToTable( bool systemVolume,const volumeEntryProperties& e )
+void zuluMount::addEntryToTable( bool systemVolume,const volumeProperty& e )
 {
 	this->addEntryToTable( systemVolume,e.entryList() ) ;
 }
@@ -1226,9 +1218,9 @@ void zuluMount::removeEntryFromTable( QString volume )
 	}
 }
 
-void zuluMount::volumeMiniProperties( bool valid,volumeEntryProperties * e )
+void zuluMount::volumeMiniProperties( bool valid,volumeProperty * e )
 {
-	std::unique_ptr< volumeEntryProperties > volumeInfo( e ) ;
+	std::unique_ptr< volumeProperty > volumeInfo( e ) ;
 
 	this->disableAll() ;
 
@@ -1241,17 +1233,17 @@ void zuluMount::volumeMiniProperties( bool valid,volumeEntryProperties * e )
 	}
 }
 
-void zuluMount::volumeMiniProperties( volumeEntryProperties * volumeInfo )
+void zuluMount::volumeMiniProperties( volumeProperty * volumeInfo )
 {
 	this->volumeMiniProperties( volumeInfo,volumeInfo ) ;
 }
 
-void zuluMount::volumeMiniProperties_0( volumeEntryProperties * volumeInfo )
+void zuluMount::volumeMiniProperties_0( volumeProperty * volumeInfo )
 {
 	this->volumeMiniProperties( volumeInfo && volumeInfo->mounted(),volumeInfo ) ;
 }
 
-void zuluMount::updateList( const volumeEntryProperties& entry )
+void zuluMount::updateList( const volumeProperty& entry )
 {
 	if( entry.isValid() ){
 
@@ -1314,15 +1306,16 @@ void zuluMount::unmount( const QString& e )
 
 	auto row = m_ui->tableWidget->currentRow() ;
 
-	auto path = m_ui->tableWidget->item( row,0 )->text() ;
-	auto type = m_ui->tableWidget->item( row,2 )->text() ;
+	auto path      = m_ui->tableWidget->item( row,0 )->text() ;
+	auto mountPath = m_ui->tableWidget->item( row,1 )->text() ;
+	auto type      = m_ui->tableWidget->item( row,2 )->text() ;
 
 	if( _encrypted_folder( type ) ){
 
-		auto m = m_ui->tableWidget->item( row,1 )->text() ;
+		if( siritask::encryptedFolderUnMount( path,mountPath,type ).await() ){
 
-		if( !cryfsTask::encryptedFolderUnMount( m ).await() ){
-
+			siritask::deleteMountFolder( mountPath ) ;
+		}else{
 			DialogMsg m( this ) ;
 			m.ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount volume" ) ) ;
 			this->enableAll() ;
@@ -1365,59 +1358,47 @@ void zuluMount::unMountAll()
 
 	auto table = m_ui->tableWidget ;
 
-	using list_t = decltype( tablewidget::tableColumnEntries( table,1 ) ) ;
-
-	list_t x = tablewidget::tableColumnEntries( table,1 ) ;
-	list_t y = tablewidget::tableColumnEntries( table,0 ) ;
-	list_t z = tablewidget::tableColumnEntries( table,2 ) ;
-
-	list_t p ;
-	list_t q ;
-	list_t n ;
-
-	auto a = utility::userName() ;
-	auto b = utility::mountPath( QString() ) ;
-	auto c = utility::homeMountPath( QString() ) ;
-
-	auto k = x.size() ;
-
-	for( decltype( k ) i = 0 ; i < k ; i++ ){
-
-		const auto& e = x.at( i ) ;
-
-		if( e.startsWith( b ) || e.startsWith( c ) ){
-
-			p.append( y.at( i ) ) ;
-			q.append( z.at( i ) ) ;
-			n.append( e ) ;
-		}
-	}
-
 	m_removeAllVolumes = true ;
 
-	Task::await( [ & ](){
+	auto cipherFolders = tablewidget::columnEntries( table,0 ) ;
+	auto mountPoints   = tablewidget::columnEntries( table,1 ) ;
+	auto fileSystems   = tablewidget::columnEntries( table,2 ) ;
 
-		if( p.isEmpty() ){
+	auto mountPath = utility::mountPath( QString() ) ;
+	auto homeMountPath = utility::homeMountPath( QString() ) ;
 
-			utility::Task::waitForOneSecond() ;
-		}else{
-			for( decltype( p.size() ) i = p.size() - 1 ; i >= 0 ; i-- ){
+	int r = cipherFolders.size() - 1 ;
 
-				const auto& e = q.at( i ) ;
+	if( r < 0 ){
 
-				if( _encrypted_folder( e ) ){
+		utility::Task::suspendForOneSecond() ;
+	}else{
+		do{
+			const auto& a = cipherFolders.at( r ) ;
+			const auto& b = mountPoints.at( r ) ;
+			const auto& c = fileSystems.at( r ) ;
 
-					cryfsTask::encryptedFolderUnMount( n.at( i ) ).get() ;
+			if( utility::startsWithAtLeastOne( b,mountPath,homeMountPath ) ){
+
+				if( _encrypted_folder( c ) ){
+
+					if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+
+						siritask::deleteMountFolder( b ) ;
+					}
 				}else{
-					zuluMountTask::volumeUnmount( p.at( i ),e ) ;
+					zuluMountTask::unmountVolume( a,c ).await() ;
 				}
 
-				utility::Task::waitForOneSecond() ;
+				utility::Task::suspendForOneSecond() ;
 			}
 
-			utility::Task::waitForTwoSeconds() ;
-		}
-	} ) ;
+			r-- ;
+
+		}while( r >= 0 ) ;
+
+		utility::Task::suspendForOneSecond() ;
+	}
 
 	this->enableAll_1() ;
 }
@@ -1433,7 +1414,7 @@ void zuluMount::pbUpdate()
 	this->removeDisappearedEntries( r ) ;
 }
 
-void zuluMount::updateVolumeList( const QVector< volumeEntryProperties >& r )
+void zuluMount::updateVolumeList( const QVector< volumeProperty >& r )
 {
 	if( r.isEmpty() ){
 
@@ -1453,7 +1434,7 @@ void zuluMount::updateVolumeList( const QVector< volumeEntryProperties >& r )
 	}
 }
 
-void zuluMount::removeDisappearedEntries( const QVector< volumeEntryProperties >& entries )
+void zuluMount::removeDisappearedEntries( const QVector< volumeProperty >& entries )
 {
 	/*
 	 * Below routine removes an entries from the table if they are found not to be
@@ -1468,7 +1449,7 @@ void zuluMount::removeDisappearedEntries( const QVector< volumeEntryProperties >
 
 	auto table = m_ui->tableWidget ;
 
-	auto l = tablewidget::tableColumnEntries( table,0 ) ;
+	auto l = tablewidget::columnEntries( table,0 ) ;
 
 	auto _hasNoEntry = [ & ]( const QString& volume ){
 
