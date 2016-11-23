@@ -346,7 +346,7 @@ void cryptfiles::cryptFile( const char * s,const char * d,const char * k,unsigne
 
 		if( m_ui->progressBar->value() == 100 ){
 
-			utility::changeFileOwner( d ) ;
+			utility::changePathOwner( d ) ;
 
 			if( encrypt ){
 

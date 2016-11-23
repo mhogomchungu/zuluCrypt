@@ -119,7 +119,7 @@ namespace utility
 	QString homePath() ;
 
 	template< typename T >
-	void changeFileOwner( const T& f )
+	void changePathOwner( const T& f )
 	{
 		int uid = utility::getUID() ;
 		int fd = f.handle() ;
@@ -130,7 +130,7 @@ namespace utility
 		}
 	}
 
-	static inline void changeFileOwner( const char * path )
+	static inline void changePathOwner( const char * path )
 	{
 		int uid = utility::getUID() ;
 
@@ -140,10 +140,20 @@ namespace utility
 		}
 	}
 
+	static inline void changePathOwner( const QString& path )
+	{
+		utility::changePathOwner( path.toLatin1().constData() ) ;
+	}
+
 	template< typename T >
-	void changeFilePermissions( const T& f,int mode = 0777 )
+	void changePathPermissions( const T& f,int mode = 0666 )
 	{
 		if( fchmod( f.handle(),mode ) ){;}
+	}
+
+	static inline void changePathPermissions( const QString& f,int mode = 0666 )
+	{
+		if( chmod( f.toLatin1().constData(),mode ) ){;}
 	}
 }
 
@@ -221,6 +231,8 @@ namespace utility
 	void licenseInfo( QWidget * ) ;
 	void showTrayIcon( QAction *,QSystemTrayIcon *,bool = true ) ;
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
+	void createHomeFolder( void ) ;
+	void createFolderPath( const QString& ) ;
 
 	QString powerOffCommand( void ) ;
 

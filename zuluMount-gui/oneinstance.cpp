@@ -35,9 +35,7 @@ oneinstance::oneinstance( QObject * parent,const char * socketPath,const char * 
 
 	m_methodName = methodName ;
 
-	QDir d ;
-
-	d.mkdir( m_serverPath ) ;
+	utility::createFolderPath( m_serverPath ) ;
 
 	m_serverPath += socketPath ;
 

@@ -196,7 +196,7 @@ void createkeyfile::pbCreate()
 
 				m_stop = true ;
 			}else{
-				utility::changeFileOwner( sink ) ;
+				utility::changePathOwner( sink ) ;
 
 				for( int i = 0 ; i < 64 ; i++ ){
 

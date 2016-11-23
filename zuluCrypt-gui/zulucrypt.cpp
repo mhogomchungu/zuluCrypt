@@ -236,6 +236,8 @@ void zuluCrypt::start()
 
 	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
+	utility::createHomeFolder() ;
+
 	oneinstance::instance( this,"zuluCrypt-gui.socket","raiseWindow",e,[ this,e ]( QObject * instance ){
 
 		this->setUpApp( e ) ;

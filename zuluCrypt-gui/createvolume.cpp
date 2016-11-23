@@ -374,7 +374,7 @@ void createvolume::setOptions( int e )
 				type == createvolume::luks2 ;
 
 		#else
-			return type == createvolume::luks || type == createvolume::luks_external_header;
+			return type == createvolume::luks || type == createvolume::luks_external_header ;
 		#endif
 	} ;
 

@@ -338,6 +338,9 @@ void zuluMountTask::addVolumeToHiddenVolumeList( const QString& e )
 
 			f.write( a.toLatin1() + "\n" ) ;
 		}
+
+		utility::changePathOwner( f ) ;
+		utility::changePathPermissions( f ) ;
 	}
 }
 
@@ -403,6 +406,9 @@ void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 
 					f.write( it.toLatin1() + "\n" ) ;
 				}
+
+				utility::changePathOwner( f ) ;
+				utility::changePathPermissions( f ) ;
 			}
 		}
 	} ;

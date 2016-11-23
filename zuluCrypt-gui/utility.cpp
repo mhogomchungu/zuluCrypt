@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa
@@ -39,7 +39,6 @@
 #include <blkid/blkid.h>
 #include <QByteArray>
 #include <QProcess>
-#include <QFile>
 #include <QFile>
 #include <QDir>
 #include <QTableWidget>
@@ -687,6 +686,9 @@ void utility::setLocalizationLanguage( const QString& program,const QString& lan
 	if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
 		f.write( language.toLatin1() ) ;
+
+		utility::changePathOwner( f ) ;
+		utility::changePathPermissions( f ) ;
 	}
 }
 
@@ -1094,9 +1096,10 @@ void utility::addToFavorite( const QString& dev,const QString& m_point )
 
 		f.open( QIODevice::WriteOnly | QIODevice::Append ) ;
 
-		utility::changeFilePermissions( f ) ;
-
 		f.write( fav.toLatin1() ) ;
+
+		utility::changePathOwner( f ) ;
+		utility::changePathPermissions( f ) ;
 	}
 }
 
@@ -1117,6 +1120,9 @@ QStringList utility::readFavorites()
 				l.append( it ) ;
 			}
 		}
+
+		utility::changePathOwner( f ) ;
+		utility::changePathPermissions( f ) ;
 
 		return l ;
 	}else{
@@ -1143,7 +1149,8 @@ void utility::removeFavoriteEntry( const QString& entry )
 		f.write( q.toLatin1() ) ;
 	}
 
-	utility::changeFilePermissions( f ) ;
+	utility::changePathPermissions( f ) ;
+	utility::changePathOwner( f ) ;
 }
 
 void utility::readFavorites( QMenu * m,bool truncate,bool showFolders )
@@ -1260,9 +1267,12 @@ static utility::array_t _dimensions( const QString& path,const char * defaults,i
 
 		if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
-			utility::changeFilePermissions( f ) ;
+			utility::changePathPermissions( f ) ;
 
 			f.write( defaults ) ;
+
+			utility::changePathPermissions( f ) ;
+			utility::changePathOwner( f ) ;
 
 			f.close() ;
 		}else{
@@ -1329,11 +1339,14 @@ void utility::setWindowDimensions( const QString& application,const std::initial
 
 	if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
-		utility::changeFilePermissions( f ) ;
+		utility::changePathPermissions( f ) ;
 
 		for( const auto& it : e ){
 
 			f.write( QString( QString::number( it ) + " " ).toLatin1() ) ;
+
+			utility::changePathPermissions( f ) ;
+			utility::changePathOwner( f ) ;
 		}
 	}
 }
@@ -1394,8 +1407,8 @@ void utility::saveFont( const QFont& Font )
 
 	if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
-		utility::changeFileOwner( f ) ;
-		utility::changeFilePermissions( f ) ;
+		utility::changePathOwner( f ) ;
+		utility::changePathPermissions( f ) ;
 
 		auto s = QString( "%1\n%2\n" ).arg( Font.family(),QString::number( Font.pointSize() ) ) ;
 
@@ -1418,6 +1431,9 @@ void utility::saveFont( const QFont& Font )
 		}
 
 		f.write( s.toLatin1() ) ;
+
+		utility::changePathPermissions( f ) ;
+		utility::changePathOwner( f ) ;
 	}
 }
 
@@ -1524,14 +1540,6 @@ void utility::showTrayIcon( QAction * ac,QSystemTrayIcon * trayIcon,bool zuluCry
 {
 	Q_UNUSED( zuluCrypt ) ;
 
-	QString home = utility::homePath() + "/.zuluCrypt/" ;
-	QDir d( home ) ;
-
-	if( !d.exists() ){
-
-		d.mkdir( home ) ;
-	}
-
 	QFile f( utility::homePath() + "/.zuluCrypt/tray" ) ;
 
 	if( !f.exists() ){
@@ -1557,6 +1565,9 @@ void utility::showTrayIcon( QAction * ac,QSystemTrayIcon * trayIcon,bool zuluCry
 		ac->setChecked( false ) ;
 		trayIcon->hide() ;
 	}
+
+	utility::changePathPermissions( f ) ;
+	utility::changePathOwner( f ) ;
 }
 
 void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )
@@ -1583,6 +1594,9 @@ void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )
 		f.write( "1" ) ;
 		trayIcon->show() ;
 	}
+
+	utility::changePathPermissions( f ) ;
+	utility::changePathOwner( f ) ;
 }
 
 class translator
@@ -1765,6 +1779,9 @@ void utility::setIcons( const QString& app,const QString& iconName )
 	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
 
 	f.write( iconName.toLatin1() ) ;
+
+	utility::changePathOwner( f ) ;
+	utility::changePathPermissions( f ) ;
 }
 
 QIcon utility::getIcon( const QString& app )
@@ -1828,9 +1845,7 @@ void utility::autoOpenFolderOnMount( const QString& app,bool e )
 
 		QFile::remove( x ) ;
 	}else{
-		QFile f( x ) ;
-		f.open( QIODevice::WriteOnly ) ;
-		f.close() ;
+		QFile( x ).open( QIODevice::WriteOnly ) ;
 	}
 }
 
@@ -1888,4 +1903,17 @@ QString utility::prettyfySpaceUsage( quint64 s )
 		default:
 			return _convert( "TB",1024.0 * 1073741824 ) ;
 	}
+}
+
+void utility::createHomeFolder()
+{
+	utility::createFolderPath( utility::homePath() + "/.zuluCrypt/" ) ;
+}
+
+void utility::createFolderPath( const QString& e )
+{
+	QDir().mkdir( e ) ;
+
+	utility::changePathOwner( e ) ;
+	utility::changePathPermissions( e,0777 ) ;
 }

@@ -106,9 +106,13 @@ void zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 			}
 
 			SocketClose( &client ) ;
+		}else{
+			*key = StringEmpty() ;
 		}
 
 		SocketClose( &server ) ;
+	}else{
+		*key = StringEmpty() ;
 	}
 }
 
@@ -178,9 +182,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		path = String( pass->pw_dir ) ;
 		sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
 
-		mkdir( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+		mkdir( sockpath,0666 ) ;
 		_ignore_result( chown( sockpath,uid,uid ) ) ;
-		_ignore_result( chmod( sockpath,S_IRWXU ) ) ;
+		_ignore_result( chmod( sockpath,0666 ) ) ;
 
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
 

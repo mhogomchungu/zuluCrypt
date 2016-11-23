@@ -346,14 +346,6 @@ void zuluMount::setUpApp( const QString& volume )
 
 	m_trayIcon.show() ;
 
-	auto dirPath = utility::homePath() + "/.zuluCrypt/" ;
-	QDir dir( dirPath ) ;
-
-	if( !dir.exists() ){
-
-		dir.mkdir( dirPath ) ;
-	}
-
 	m_powerOff = utility::powerOffCommand() ;
 
 	this->disableAll() ;
@@ -716,6 +708,8 @@ void zuluMount::Show()
 	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
 
 	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
+
+	utility::createHomeFolder() ;
 
 	auto volume = utility::cmdArgumentValue( l,"-d" ) ;
 
