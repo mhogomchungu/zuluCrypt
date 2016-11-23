@@ -92,6 +92,13 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 		device = device_1 = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( dev ) ;
 	}
 
+	if( device == NULL ){
+
+		zuluCryptSecurityDropElevatedPrivileges() ;
+
+		return ;
+	}
+
 	blkid = blkid_new_probe_from_filename( device ) ;
 
 	if( blkid == NULL ){
