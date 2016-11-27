@@ -255,5 +255,5 @@ version 5.0.1
 -- add full support for German translation.
 
 version 5.0.2
--- add support for unlocking ecryptfs volumes in zuluMount-gui(ecryptfs-simple tol must already be installed)
+-- add support for unlocking ecryptfs volumes in zuluMount-gui(ecryptfs-simple tool must already be installed)
 -- fix permission related problems in configuration files when running in mixed mode.
