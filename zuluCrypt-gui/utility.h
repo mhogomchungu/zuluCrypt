@@ -71,6 +71,31 @@ namespace utility
 		{
 		}
 
+		template< typename T >
+		utility::debug operator<<( const T& e )
+		{
+			if( m_stdout ){
+
+				std::cout << e << std::endl ;
+			}else{
+				std::cerr << e << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
+		}
+
+		utility::debug operator<<( const QByteArray& e )
+		{
+			if( m_stdout ){
+
+				std::cout << e.constData() << std::endl ;
+			}else{
+				std::cerr << e.constData() << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
+		}
+
 		utility::debug operator<<( const QString& e )
 		{
 			if( m_stdout ){

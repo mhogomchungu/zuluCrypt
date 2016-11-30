@@ -24,6 +24,7 @@
 #include <blkid/blkid.h>
 #include <sys/syscall.h>
 #include <stdio.h>
+#include <errno.h>
 
 #include "libzuluCryptPluginManager.h"
 #include "../utility/process/process.h"
@@ -40,7 +41,6 @@
  */
 #include "plugin_path.h"
 
-#if 0
 static void _debug_0( process_t p,ProcessIO std_io )
 {
 	char * e = NULL ;
@@ -69,25 +69,22 @@ static void _debug( process_t p )
 	_debug_0( p,ProcessStdOut ) ;
 	_debug_0( p,ProcessStdError ) ;
 }
-#else
-static void _debug( process_t p )
-{
-	if( p ){;}
-}
-#endif
 
 void zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 {
-	ssize_t dataLength = -1 ;
+	ssize_t e ;
 	char * buffer = NULL ;
 
 	socket_t client ;
 	socket_t server = SocketLocal( sockpath ) ;
 
-	if( SocketBind( server ) ){
+	*key = StringVoid ;
 
-		_ignore_result( chown( sockpath,uid,uid ) ) ;
-		chmod( sockpath,S_IRWXU | S_IRWXG | S_IRWXO ) ;
+	if( uid ){}
+
+	errno = 0 ;
+
+	if( SocketBind( server ) ){
 
 		if( SocketListen( server ) ){
 
@@ -96,23 +93,27 @@ void zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 			/*
 			 * ZULUCRYPT_INT_MAX_KEYSIZE is set in ../constants.h
 			 */
-			dataLength = SocketGetData_1( client,&buffer,ZULUCRYPT_INT_MAX_KEYSIZE ) ;
+			e = SocketGetData_1( client,&buffer,ZULUCRYPT_INT_MAX_KEYSIZE ) ;
 
-			if( dataLength != -1 ){
+			if( e == 0 ){
 
-				*key = StringInheritWithSize( &buffer,dataLength,dataLength + 1 ) ;
-			}else{
 				*key = StringEmpty() ;
+
+			}else if( e == -1 ){
+
+				perror( "Failed to read data from socket" ) ;
+			}else{
+				*key = StringInheritWithSize( &buffer,e,e + 1 ) ;
 			}
 
 			SocketClose( &client ) ;
 		}else{
-			*key = StringEmpty() ;
+			perror( "Socket listen failed" ) ;
 		}
 
 		SocketClose( &server ) ;
 	}else{
-		*key = StringEmpty() ;
+		perror( "Socket bind failed" ) ;
 	}
 }
 
@@ -132,6 +133,10 @@ void * zuluCryptPluginManagerOpenConnection( const char * sockpath )
 			sleep( 1 ) ;
 		}
 	}
+
+	printf( "Client: Failed to open connection at:%s\n",sockpath ) ;
+	perror( "Reason:" ) ;
+
 	return NULL ;
 }
 
@@ -215,9 +220,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 		zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;
 
-		_debug( p ) ;
-
 		*r = ProcessWaitUntilFinished( &p ) ;
+
+		_debug( p ) ;
 	}else{
 		*r = 1 ;
 	}

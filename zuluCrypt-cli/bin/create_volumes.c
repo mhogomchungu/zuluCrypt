@@ -291,6 +291,11 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				case 5 : return zuluExit( 17,stl ) ;
 			}
 
+			if( *pass_1 == StringVoid ){
+
+				return zuluExit( 17,stl ) ;
+			}
+
 			if( StringHasComponent( pass,"/.zuluCrypt-socket" ) ){
 
 				tcrypt_source = TCRYPT_PASSPHRASE ;

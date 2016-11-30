@@ -736,7 +736,11 @@ ssize_t SocketGetData( socket_t s,char ** e )
 					break ;
 				}else{
 					free( f ) ;
-					return -1 ;
+					if( result < 0 ){
+						return -1 ;
+					}else{
+						return 0 ;
+					}
 				}
 			}else{
 				d = __expandBuffer( f,total + result,&buff_size ) ;
@@ -797,11 +801,16 @@ ssize_t SocketGetData_1( socket_t s,char ** e,size_t len )
 			result = read( fd,buffer,BUFFSIZE ) ;
 
 			if( result <= 0 ){
+
 				if( total ){
 					break ;
 				}else{
 					free( f ) ;
-					return -1 ;
+					if( result < 0 ){
+						return -1 ;
+					}else{
+						return 0 ;
+					}
 				}
 			}else{
 				d = __expandBuffer( f,total + result,&buff_size ) ;
