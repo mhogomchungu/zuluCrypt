@@ -495,6 +495,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 
 			case 0  : return zuluExit( 0,fd,opts,fs,loop )  ;
 			case 16 : return zuluExit( 12,fd,opts,fs,loop ) ;
+			case 32 : return zuluExit( -1,fd,opts,fs,loop ) ;
 			default : return zuluExit( 1,fd,opts,fs,loop )  ;
 		}
 	}else{
