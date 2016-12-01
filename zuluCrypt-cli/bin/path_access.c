@@ -148,7 +148,7 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 		 */
 		zuluCryptPrepareSocketPath( uid ) ;
 
-		zuluCryptSecurityGainElevatedPrivileges() ;
+		zuluCryptSecurityDropElevatedPrivileges() ;
 
 		/*
 		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
