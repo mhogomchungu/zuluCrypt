@@ -9,10 +9,9 @@ This tool depends on the following packages installed to build, their precise na
 
 1. libpwquality-devel( optional dependency used to check the quality of passwords when creating volumes )
 2. libblkid-devel
-3. libqt4-devel( required if building GUI components )
-   libqt4-network
-   libqtcore4
-   libqtgui4
+3. For Qt4 build(libqt4-devel or a package that provides libqt4-network-devel,libqtcore4-devel,libqtgui4-devel)
+   For Qt5 build(qt5-base-devel or a packages that provides Qt5Core-devel,Qt5Gui-devel,Qt5Network-devel)
+   Above packages are required if building GUI components.
 4. gcc
 5. gcc-c++
 6. cryptsetup-devel
@@ -62,7 +61,7 @@ mkdir build
 
 cd build
 
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DSHARE_MOUNT_PREFIX=default -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DSHARE_MOUNT_PREFIX=default -DUDEVSUPPORT=true -DNOGUI=false -DQT5=true
 -DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DINTERNAL_ZULUPLAY=false -DNOKDE=false
 -DINTERNAL_LXQT_WALLET=false -DUSE_POLKIT=false -DCMAKE_BUILD_TYPE=RELEASE . ..
 

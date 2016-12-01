@@ -1,3 +1,11 @@
+zulucrypt (5.0.2-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- add support for unlocking ecryptfs volumes in zuluMount-gui through ecryptfs-simple backend.
+     -- fix a hand when creating/unlocking volumes some users where experiencing.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Thu, 1 Dec 2016 16:38:48 +0000
+
 zulucrypt (5.0.1-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features
