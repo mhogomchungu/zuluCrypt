@@ -400,6 +400,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 
 	if( plugin_path != NULL ){
+
+		/*
+		 * zuluCryptPrepareSocketPath() is defined in path_access.c
+		 */
+		zuluCryptPrepareSocketPath( uid ) ;
+
 		/*
 		 * zuluCryptUUIDFromPath() is defined in path_access.c
 		 */

@@ -73,6 +73,11 @@ int zuluCryptSecurityConvertUID( uid_t uid,const char * u_id ) ;
 int zuluCryptVolumeIsInSystemVolumeList( const char * device ) ;
 
 /*
+ * this function is defined in path_access.c
+ */
+void zuluCryptPrepareSocketPath( uid_t uid ) ;
+
+/*
  * this function is defined in open_volume.c
  */
 stringList_t zuluCryptCreateKeyFiles( const char * const * list,int s ) ;

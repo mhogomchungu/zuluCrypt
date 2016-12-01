@@ -105,6 +105,22 @@ int zuluCryptCanOpenPathForWriting( const char * path,uid_t uid )
 	return path_is_accessible( path,uid,ZULUCRYPTwrite ) ;
 }
 
+void zuluCryptPrepareSocketPath( uid_t uid )
+{
+	string_t st = zuluCryptGetUserHomePath( uid ) ;
+	const char * e = StringAppend( st,"/.zuluCrypt-socket" ) ;
+
+	zuluCryptSecurityGainElevatedPrivileges() ;
+
+	mkdir( e,0777 ) ;
+	if( chown( e,uid,uid ) ){}
+	if( chmod( e,0777 ) ){}
+
+	zuluCryptSecurityDropElevatedPrivileges() ;
+
+	StringDelete( &st ) ;
+}
+
 /*
  *  return values:
  *  5 - couldnt get key from the socket
@@ -125,9 +141,15 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 
 	StringDelete( &p ) ;
 
-	zuluCryptSecurityDropElevatedPrivileges() ;
-
 	if( m ){
+
+		/*
+		 * zuluCryptPrepareSocketPath() is defined in path_access.c
+		 */
+		zuluCryptPrepareSocketPath( uid ) ;
+
+		zuluCryptSecurityGainElevatedPrivileges() ;
+
 		/*
 		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
 		 * to a local socket to get a passphrase
@@ -139,6 +161,8 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 
 		return 0 ;
 	}else{
+		zuluCryptSecurityDropElevatedPrivileges() ;
+
 		/*
 		 * 8192000 bytes is the default cryptsetup maximum keyfile size
 		 */
