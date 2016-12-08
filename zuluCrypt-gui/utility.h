@@ -244,6 +244,7 @@ namespace utility
 	void removeFavoriteEntry( const QString& ) ;
 	bool pathExists( const QString& ) ;
 	bool canCreateFile( const QString& ) ;
+	void dropPrivileges( int = -1 ) ;
 	QString prettyfySpaceUsage( quint64 ) ;
 	QString resolvePath( const QString& ) ;
 	QString hashPath( const QByteArray& ) ;

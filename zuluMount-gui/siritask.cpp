@@ -61,6 +61,11 @@ static bool _deleteFolders( const T& ... m )
 	return s ;
 }
 
+static std::function< void() > _drop_privileges()
+{
+	return [](){ utility::dropPrivileges() ; } ;
+}
+
 bool siritask::deleteMountFolder( const QString& m )
 {
 	if( utility::reUseMountPoint() ){
@@ -285,7 +290,7 @@ static cs _cmd( bool create,const siritask::options& opt,
 
 			return env ;
 
-		}(),password.toLatin1() ) ;
+		}(),password.toLatin1(),_drop_privileges() ) ;
 
 		auto _taskOutput = [ & ](){
 

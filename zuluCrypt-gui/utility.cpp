@@ -325,6 +325,31 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 	} ) ;
 }
 
+void utility::dropPrivileges( int uid )
+{
+	if( uid == -1 ){
+
+		uid = utility::getUserID() ;
+	}
+
+	if( uid != -1 ){
+
+		auto id = getpwuid( uid ) ;
+
+		if( id ){
+
+			setenv( "LOGNAME",id->pw_name,1 ) ;
+			setenv( "HOME",id->pw_dir,1 ) ;
+			setenv( "USER",id->pw_name,1 ) ;
+		}
+
+		Q_UNUSED( setgid( uid ) ) ;
+		Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
+		Q_UNUSED( setegid( uid ) ) ;
+		Q_UNUSED( setuid( uid ) ) ;
+	}
+}
+
 static bool _execute_process( const QString& m,const QString& exe,const QString& env,int uid )
 {
 	Q_UNUSED( env ) ;
@@ -337,23 +362,7 @@ static bool _execute_process( const QString& m,const QString& exe,const QString&
 
 		}(),[ uid ](){
 
-			if( uid != -1 ){
-
-				auto id = getpwuid( uid ) ;
-
-				if( id ){
-
-					setenv( "LOGNAME",id->pw_name,1 ) ;
-					setenv( "HOME",id->pw_dir,1 ) ;
-					setenv( "USER",id->pw_name,1 ) ;
-				}
-
-				Q_UNUSED( setgid( uid ) ) ;
-				Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
-				Q_UNUSED( setegid( uid ) ) ;
-				Q_UNUSED( setuid( uid ) ) ;
-
-			}
+			utility::dropPrivileges( uid ) ;
 
 			auto path = [](){
 

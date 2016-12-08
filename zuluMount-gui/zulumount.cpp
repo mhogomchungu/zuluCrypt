@@ -1531,15 +1531,6 @@ void zuluMount::enableAll()
 	m_ui->pbmount->setEnabled( true ) ;
 	m_ui->tableWidget->setFocus() ;
 	m_ui->pbunlockcryptfs->setEnabled( true ) ;
-
-	if( utility::runningInMixedMode() ){
-
-		/*
-		 * FUSE related permission issues prevents us from currently supporting
-		 * unlocking encfs volumes when running in mixed mode.
-		 */
-		m_ui->pbunlockcryptfs->setEnabled( false ) ;
-	}
 }
 
 void zuluMount::enableAll_1()
