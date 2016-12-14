@@ -59,10 +59,11 @@ public slots:
 	void ShowUI( const QString& volumePath,const QString& mount_point ) ;
 	void ShowUI( QString ) ;
 private slots :
-	void cbVeraCryptVolume( int ) ;
+	void cbVolumeType( int ) ;
 	void cbActicated( int ) ;
 	void pbKeyOption( void ) ;
 	void pbPluginEntryClicked( QAction * ) ;
+	void plainDmCryptOption( QAction * ) ;
 	void pbPlugin( void ) ;
 	void buttonOpenClicked( void ) ;
 	void mount_point( void ) ;
@@ -96,6 +97,7 @@ private :
 	QStringList m_keyFiles ;
 	QString m_device ;
 	QString m_point ;
+	QString m_plainDmCryptProperty ;
 	bool m_veraCryptVolume = false ;
 	utility::veraCryptWarning m_veraCryptWarning ;
 	bool m_working = false ;

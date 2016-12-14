@@ -779,9 +779,9 @@ void keyDialog::openVolume()
 
 		if( m_veraCryptPIMValue > 0 ){
 
-			exe += " -t veracrypt." + QString::number( m_veraCryptPIMValue ) + " " + m ;
+			exe += " -t vcrypt." + QString::number( m_veraCryptPIMValue ) + " " + m ;
 		}else{
-			exe += " -t veracrypt " + m ;
+			exe += " -t vcrypt " + m ;
 		}
 	}else{
 		exe += " " + m ;

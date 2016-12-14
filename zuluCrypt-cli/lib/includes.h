@@ -63,7 +63,7 @@ typedef struct{
 
 typedef struct{
 	const char * device ;
-	const char * offset ;
+	const char * plain_dm_properties ;
 	const char * mapper_name ;
 	const char * key ;
 	const char * m_point ;
@@ -81,6 +81,7 @@ typedef struct{
 	int tcrypt_system ;
 	const char * const * tcrypt_keyfiles ;
 	unsigned long m_flags ;
+	void * variables ;
 }open_struct_t ;
 
 typedef struct{

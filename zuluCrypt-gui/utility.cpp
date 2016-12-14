@@ -1944,3 +1944,42 @@ void utility::createFolderPath( const QString& e )
 	utility::changePathOwner( e ) ;
 	utility::changePathPermissions( e,0777 ) ;
 }
+
+QStringList utility::plainDmCryptOptions()
+{
+	const QByteArray _options = R"(aes.cbc-essiv:sha256.256.ripemd160
+aes.cbc-essiv:sha256.256.sha256
+aes.cbc-essiv:sha256.256.sha512
+aes.cbc-essiv:sha256.256.sha1
+aes.cbc-essiv:sha256.512.ripemd160
+aes.cbc-essiv:sha256.512.sha256
+aes.cbc-essiv:sha256.512.sha512
+aes.cbc-essiv:sha256.512.sha1
+aes.xts-plain64.256.ripemd160
+aes.xts-plain64.256.sha256
+aes.xts-plain64.256.sha512
+aes.xts-plain64.256.sha1
+aes.xts-plain64.512.ripemd160
+aes.xts-plain64.512.sha256
+aes.xts-plain64.512.sha512
+aes.xts-plain64.512.sha1)" ;
+
+	QFile f( utility::homePath() + "/.zuluCrypt/plainDmCryptOptions" ) ;
+
+	if( !f.exists() ){
+
+		if( f.open( QIODevice::WriteOnly ) ){
+
+			f.write( _options ) ;
+
+			f.close() ;
+		}
+	}
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		return utility::split( f.readAll() ) ;
+	}
+
+	return QStringList() ;
+}

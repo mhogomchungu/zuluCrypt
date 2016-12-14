@@ -258,7 +258,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	const char * pass        = opts->key ;
 	const char * plugin_path = opts->plugin_path ;
 	const char * fs_opts     = opts->fs_opts ;
-	const char * offset      = opts->offset ;
 	const char * const * tcrypt_keyfiles = opts->tcrypt_multiple_keyfiles ;
 	/*
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
@@ -267,13 +266,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * code deleting blocks to take into account different exit points.
 	 */
 	stringList_t stl ;
-	string_t * stringArray = StringListArray( &stl,6 ) ;
+	string_t * stringArray = StringListArray( &stl,7 ) ;
 	string_t * passphrase  =  &stringArray[ 0 ] ;
 	string_t * m_name      =  &stringArray[ 1 ] ;
 	string_t * data        =  &stringArray[ 2 ] ;
 	string_t * m_point     =  &stringArray[ 3 ] ;
 	string_t * mapper      =  &stringArray[ 4 ] ;
 	string_t * mapper_path =  &stringArray[ 5 ] ;
+	string_t * offset      =  &stringArray[ 6 ] ;
 
 	const char * key = NULL ;
 	const char * mapper_name ;
@@ -501,7 +501,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}
 
 	volume.device      = device ;
-	volume.offset      = offset ;
 	volume.mapper_name = mapper_name ;
 	volume.m_point     = mount_point ;
 	volume.fs_opts     = fs_opts ;
@@ -517,6 +516,17 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.iteration_count = v_info.iteration_count ;
 
 	volume.veraCrypt_volume = StringAtLeastOneMatch( v_info.type,"vcrypt","veracrypt","vera",NULL ) ;
+
+	if( !volume.veraCrypt_volume ){
+
+		if( opts->offset != NULL ){
+
+			*offset = String( "/dev/urandom.aes.cbc-essiv:sha256.256.ripemd160." ) ;
+			volume.plain_dm_properties = StringAppend( *offset,opts->offset ) ;
+		}else{
+			volume.plain_dm_properties = opts->type ;
+		}
+	}
 
 	StringDelete( &v_info.type ) ;
 

@@ -189,7 +189,7 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 
 	const char * keyfile ;
 
-	if( opts->offset != NULL ){
+	if( opts->plain_dm_properties != NULL ){
 		/*
 		 * zuluCryptOpenPlain_1() is defined in open_plain.c
 		 */

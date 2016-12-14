@@ -22,6 +22,16 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+typedef struct{
+
+	const char * rng ;
+	const char * algo ;
+	const char * cipher ;
+	const char * keySize ;
+	const char * hash ;
+	const char * offset ;
+}args ;
+
 static int zuluExit( int st,struct crypt_device * cd )
 {
 	crypt_free( cd ) ;
@@ -83,14 +93,17 @@ static int _open_plain( const char * device,const resolve_path_t * opts )
 	struct crypt_device * cd ;
 	struct crypt_params_plain params ;
 
+	size_t size ;
 	/*
 	 * open_struct_t is defined in includes.h
 	 */
 	const open_struct_t * opt = opts->args ;
 
+	const args * e = opt->variables ;
+
 	memset( &params,'\0',sizeof( struct crypt_params_plain ) ) ;
 
-	params.hash = "ripemd160" ;
+	params.hash = e->hash ;
 
 	if( zuluCryptPathIsNotValid( device ) ){
 
@@ -101,7 +114,7 @@ static int _open_plain( const char * device,const resolve_path_t * opts )
 		return 2 ;
 	}
 
-	params.offset = _offset( opt->offset ) ;
+	params.offset = _offset( e->offset ) ;
 
 	if( opts->open_mode == O_RDONLY ){
 
@@ -109,24 +122,20 @@ static int _open_plain( const char * device,const resolve_path_t * opts )
 	}else{
 		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
 	}
-	if( crypt_format( cd,CRYPT_PLAIN,"aes","cbc-essiv:sha256",NULL,NULL,32,&params ) != 0 ){
+
+	size = ( size_t ) StringConvertToInt( e->keySize ) / 8 ;
+
+	if( crypt_format( cd,CRYPT_PLAIN,e->algo,e->cipher,NULL,NULL,size,&params ) != 0 ){
 
 		return zuluExit( 2,cd ) ;
 	}
 	if( crypt_activate_by_passphrase( cd,opt->mapper_name,CRYPT_ANY_SLOT,
 		opt->key,opt->key_len,flags ) < 0 ){
+
 		return zuluExit( 2,cd ) ;
 	}else{
 		return zuluExit( 0,cd ) ;
 	}
-}
-
-int zuluCryptOpenPlain_1( const open_struct_t * opt )
-{
-	/*
-	 * zuluCryptResolveDevicePath_0() is defined in resolve_path.c
-	 */
-	return zuluCryptResolveDevicePath_0( _open_plain,opt,2 ) ;
 }
 
 int zuluCryptOpenPlain_2( const char * device,const char * mapper,
@@ -139,6 +148,11 @@ int zuluCryptOpenPlain_2( const char * device,const char * mapper,
 
 	int r ;
 
+	char * const * e = NULL ;
+	size_t n = 0 ;
+
+	args s = { "/dev/urandom","aes","cbc-essiv:sha256","256","ripemd160","0" } ;
+
 	memset( &opt,'\0',sizeof( open_struct_t ) ) ;
 
 	opt.device      = device ;
@@ -146,17 +160,32 @@ int zuluCryptOpenPlain_2( const char * device,const char * mapper,
 	opt.key         = key ;
 	opt.key_len     = key_len ;
 	opt.m_opts      = mode ;
+	opt.variables   = &s ;
 
 	stl = StringListSplit( options,'.' ) ;
 
-	if( StringListSize( stl ) >= 6 ){
+	StringListStringArray_1( &e,&n,stl ) ;
 
-		opt.offset = StringListContentAt( stl,5 ) ;
+	if( n >= 6 ){
+
+		s.rng     = *( e + 0 ) ;
+		s.algo    = *( e + 1 ) ;
+		s.cipher  = *( e + 2 ) ;
+		s.keySize = *( e + 3 ) ;
+		s.hash    = *( e + 4 ) ;
+		s.offset  = *( e + 5 ) ;
+	}else{
+		puts( "sss" ) ;
 	}
 
-	r = zuluCryptOpenPlain_1( &opt ) ;
+	/*
+	 * zuluCryptResolveDevicePath_0() is defined in resolve_path.c
+	 */
+	r = zuluCryptResolveDevicePath_0( _open_plain,&opt,2 ) ;
 
 	StringListDelete( &stl ) ;
+
+	StringFree( e ) ;
 
 	return r ;
 }
@@ -170,4 +199,14 @@ int zuluCryptOpenPlain( const char * device,const char * mapper,
 				     key,
 				     key_len,
 				     "/dev/urandom.aes.cbc-essiv:sha256.256.ripemd160.0" ) ;
+}
+
+int zuluCryptOpenPlain_1( const open_struct_t * opt )
+{
+	return zuluCryptOpenPlain_2( opt->device,
+				     opt->mapper_name,
+				     opt->m_opts,
+				     opt->key,
+				     opt->key_len,
+				     opt->plain_dm_properties ) ;
 }

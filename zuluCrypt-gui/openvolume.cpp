@@ -261,10 +261,10 @@ void openvolume::partitionList( const QString& title,const QString& volumeType )
 					}
 				}else if( m_showEncryptedOnly ){
 
-					if( fs.startsWith( "crypto" ) || fs.contains( "Nil" ) ){
+					//if( fs.startsWith( "crypto" ) || fs.contains( "Nil" ) ){
 
 						tablewidget::addRow( m_ui->tableWidget,z,font ) ;
-					}
+					//}
 				}else{
 					tablewidget::addRow( m_ui->tableWidget,z,font ) ;
 				}

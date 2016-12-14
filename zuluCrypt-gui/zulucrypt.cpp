@@ -989,7 +989,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m.addSeparator() ;
 
-	connect( m.addAction( tr( "Close" ) ),SIGNAL( triggered() ),this,SLOT( close() ) ) ;
+	connect( m.addAction( tr( "Unmount" ) ),SIGNAL( triggered() ),this,SLOT( close() ) ) ;
 
 	if( clicked ){
 

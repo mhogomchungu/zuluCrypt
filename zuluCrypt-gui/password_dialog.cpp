@@ -91,9 +91,16 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	m_ui->pushButtonPlugin->setIcon( QIcon( ":/module.png" ) ) ;
 
 	m_veraCryptVolume = utility::autoSetVolumeAsVeraCrypt( "zuluCrypt-gui" ) ;
-	m_ui->cbVeraCryptVolume->setChecked( m_veraCryptVolume ) ;
 
-	connect( m_ui->cbVeraCryptVolume,SIGNAL( stateChanged( int ) ),this,SLOT( cbVeraCryptVolume( int ) ) ) ;
+	if( m_veraCryptVolume ){
+
+		m_ui->cbVolumeType->setCurrentIndex( 1 ) ;
+		this->cbVolumeType( 1 ) ;
+	}else{
+		m_ui->cbVolumeType->setCurrentIndex( 0 ) ;
+		this->cbVolumeType( 0 ) ;
+	}
+
 	connect( m_ui->PushButtonCancel,SIGNAL( clicked() ),this,SLOT( HideUI() ) ) ;
 	connect( m_ui->PushButtonOpen,SIGNAL( clicked() ),this,SLOT( buttonOpenClicked() ) ) ;
 	connect( m_ui->PushButtonMountPointPath,SIGNAL( clicked() ),this,SLOT( mount_point() ) ) ;
@@ -104,6 +111,7 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	connect( m_ui->pushButtonPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
 	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
 	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
+	connect( m_ui->cbVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbVolumeType( int ) ) ) ;
 
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
@@ -115,16 +123,67 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 	m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 
+	m_plainDmCryptProperty = "/dev/urandom.aes.cbc-essiv:sha256.256.ripemd160" ;
+
+	m_ui->pushButtonPlainDmCryptOptions->setMenu( [ this ](){
+
+		auto m =  new QMenu( this ) ;
+
+		connect( m,SIGNAL( triggered( QAction * ) ),
+			 this,SLOT( plainDmCryptOption( QAction * ) ) ) ;
+
+		for( const auto& it : utility::plainDmCryptOptions() ){
+
+			m->addAction( it ) ;
+		}
+
+		return m ;
+	}() ) ;
+
 	this->setWindowTitle( tr( "Unlock Encrypted Volume" ) ) ;
 
 	this->installEventFilter( this ) ;
 }
 
-void passwordDialog::cbVeraCryptVolume( int state )
+void passwordDialog::plainDmCryptOption( QAction * ac )
 {
-	m_veraCryptVolume = state != Qt::Unchecked ;
+	m_plainDmCryptProperty = "/dev/urandom." + ac->text().remove( "&" ) ;
+}
+
+void passwordDialog::cbVolumeType( int e )
+{
+	m_veraCryptVolume = ( e == 1 ) ;
 
 	utility::autoSetVolumeAsVeraCrypt( "zuluCrypt-gui",m_veraCryptVolume ) ;
+
+	m_ui->pushButtonPlainDmCryptOptions->setEnabled( e == 2 ) ;
+
+	m_ui->lineEditVolumeProperty->clear() ;
+
+	if( e == 0 ){
+
+		/*
+		 * LUKS,TrueCrypt
+		 */
+		m_ui->labelVolumeProperty->clear() ;
+		m_ui->lineEditVolumeProperty->setEnabled( false ) ;
+
+	}else if( e == 1 ){
+
+		/*
+		 * VeraCrypt volume
+		 */
+		m_ui->labelVolumeProperty->setText( tr( "PIM Value" ) ) ;
+		m_ui->lineEditVolumeProperty->setEnabled( true ) ;
+
+	}else if( e == 2 ){
+
+		/*
+		 * PLAIN dm-crypt with offset
+		 */
+		m_ui->labelVolumeProperty->setText( tr( "Offset" ) ) ;
+		m_ui->lineEditVolumeProperty->setEnabled( true ) ;
+	}
 }
 
 bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
@@ -485,8 +544,12 @@ void passwordDialog::sendKey( const QString& sockpath )
 
 void passwordDialog::disableAll()
 {
+	m_ui->labelVolumeProperty->setEnabled( false ) ;
+	m_ui->lineEditVolumeProperty->setEnabled( false ) ;
+	m_ui->pushButtonPlainDmCryptOptions->setEnabled( false ) ;
+	m_ui->cbVolumeType->setEnabled( false ) ;
+	m_ui->labelVolumeType->setEnabled( false ) ;
 	m_ui->cbShareMountPoint->setEnabled( false ) ;
-	m_ui->cbVeraCryptVolume->setEnabled( false ) ;
 	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->checkBoxReadOnly->setEnabled( false ) ;
 	m_ui->labelMoutPointPath->setEnabled( false ) ;
@@ -506,8 +569,14 @@ void passwordDialog::disableAll()
 
 void passwordDialog::enableAll()
 {
+	auto index = m_ui->cbVolumeType->currentIndex() ;
+
+	m_ui->labelVolumeProperty->setEnabled( index != 0 ) ;
+	m_ui->lineEditVolumeProperty->setEnabled( index != 0 ) ;
+	m_ui->pushButtonPlainDmCryptOptions->setEnabled( index == 2 ) ;
+	m_ui->cbVolumeType->setEnabled( true ) ;
+	m_ui->labelVolumeType->setEnabled( true ) ;
 	m_ui->cbShareMountPoint->setEnabled( true ) ;
-	m_ui->cbVeraCryptVolume->setEnabled( true ) ;
 	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->checkBoxReadOnly->setEnabled( true ) ;
 	m_ui->labelMoutPointPath->setEnabled( true ) ;
@@ -675,7 +744,26 @@ void passwordDialog::openVolume()
 
 	if( m_veraCryptVolume ){
 
-		exe += " -t vcrypt" ;
+		auto e = m_ui->lineEditVolumeProperty->text() ;
+
+		if( e.isEmpty() ){
+
+			exe += " -t vcrypt" ;
+		}else {
+			exe += " -t vcrypt." + e ;
+		}
+	}else{
+		if( m_ui->cbVolumeType->currentIndex() == 2 ){
+
+			auto e = m_ui->lineEditVolumeProperty->text() ;
+
+			if( e.isEmpty() ){
+
+				exe += " -t " + m_plainDmCryptProperty + ".0" ;
+			}else {
+				exe += " -t " + m_plainDmCryptProperty + "." + e ;
+			}
+		}
 	}
 
 	if( m_ui->cbShareMountPoint->isChecked() ){
