@@ -174,8 +174,6 @@ int zuluCryptOpenPlain_2( const char * device,const char * mapper,
 		s.keySize = *( e + 3 ) ;
 		s.hash    = *( e + 4 ) ;
 		s.offset  = *( e + 5 ) ;
-	}else{
-		puts( "sss" ) ;
 	}
 
 	/*
