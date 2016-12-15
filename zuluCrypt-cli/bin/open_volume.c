@@ -524,7 +524,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			*offset = String( "/dev/urandom.aes.cbc-essiv:sha256.256.ripemd160." ) ;
 			volume.plain_dm_properties = StringAppend( *offset,opts->offset ) ;
 		}else{
-			volume.plain_dm_properties = opts->type ;
+			if( StringsAreNotEqual( opts->type,"luks" ) ){
+
+				volume.plain_dm_properties = opts->type ;
+			}
 		}
 	}
 
