@@ -259,6 +259,8 @@ version 5.0.2
 -- fix permission related problems in configuration files when running in mixed mode.
 
 version 5.0.3
--- add ability in zuluCrypt-gui to unlock VeraCrypt volumes that use PIM value + add ability in zuluCrypt-gui
-   to unlock plain dm-crypt volumes that uses an offset.
 -- make it possible to unlock folder based encrypted volumes when running in mixed mode.
+-- add ability in zuluCrypt-gui to unlock VeraCrypt volumes that use PIM value.
+-- add ability in zuluCrypt-gui to unlock plain dm-crypt volumes that uses an offset.
+-- add ability in zuluCrypt-gui to create plain dm-crypt volumes using user configurable crypto options.
+-- add ability in zuluCrypt-gui to unlock plain dm-crypt volumes using user configurable crypto options.
