@@ -60,6 +60,8 @@ static int zuluExit( int st,const char * dev )
 		case 18: printf( gettext( "ERROR: Insufficient privilege to open device for reading\n" ) )			; break ;
 		case 19: printf( gettext( "ERROR: Insufficient memory to hold your responce\n" ) )	 			; break ;
 		case 20: printf( gettext( "ERROR: Wrong password entered or volume is not a truecrypt volume\n" ) )		; break ;
+		case 21: printf( gettext( "ERROR: Wrong password entered or volume is not a veracrypt volume\n" ) )		; break ;
+
 	}
 
 	StringFree( dev ) ;
@@ -403,10 +405,26 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 	return zuluExit_1( k,st,xt ) ;
 }
 
+static stringList_t _vcrypt( info_t * s,const char * type )
+{
+	const char * e ;
+	const char * f ;
+
+	stringList_t stl = StringListSplit( type,'.' ) ;
+
+	e = StringListContentAtFirstPlace( stl ) ;
+	f = StringListContentAtSecondPlace( stl ) ;
+
+	s->veraCrypt_volume = StringsAreEqual( e,"vcrypt" ) ;
+	s->iteration_count  = StringConvertToInt( f ) ;
+
+	return stl ;
+}
+
 static int _save_truecrypt_header( const struct_opts * opts,const char * temp_path,const char * path,uid_t uid )
 {
 	int r ;
-
+	stringList_t stl ;
 	/*
 	 * info_t structure is declared in ../lib/include.h
 	 */
@@ -422,7 +440,11 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 	info.rng           = opts->rng ;
 	info.opt           = opts->m_opts ;
 
+	stl = _vcrypt( &info,opts->type ) ;
+
 	r = _modify_tcrypt( &info,opts ) ;
+
+	StringListDelete( &stl ) ;
 
 	if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
 
@@ -432,12 +454,19 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 
 		return _secure_copy_file( temp_path,path,uid ) ;
 	}else{
-		return 20 ;
+		if( StringPrefixEqual( opts->type,"vcrypt" ) ){
+
+			return 21 ;
+		}else{
+			return 20 ;
+		}
 	}
 }
 
 static int _restore_truecrypt_header( const struct_opts * opts,const char * temp_path,uid_t uid )
 {
+	stringList_t stl ;
+
 	int r ;
 	/*
 	 * info_t structure is declared in ../lib/include.h
@@ -454,7 +483,11 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 	info.rng           = opts->rng ;
 	info.opt           = opts->m_opts ;
 
+	stl = _vcrypt( &info,opts->type ) ;
+
 	r = _modify_tcrypt( &info,opts ) ;
+
+	StringListDelete( &stl ) ;
 
 	if( opts->key == NULL && StringsAreNotEqual( opts->key_source,"-f" ) ){
 
@@ -464,7 +497,12 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 
 		return 1 ;
 	}else{
-		return 20 ;
+		if( StringPrefixEqual( opts->type,"vcrypt" ) ){
+
+			return 21 ;
+		}else{
+			return 20 ;
+		}
 	}
 }
 

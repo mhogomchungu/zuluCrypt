@@ -49,29 +49,24 @@ managevolumeheader::managevolumeheader( QWidget * parent ) : QDialog( parent ),m
 
 	m_ui->lineEditDevicePath->setFocus() ;
 
+	this->cbVolumeHeader( 0 ) ;
+
+	connect( m_ui->cbVolumeType,SIGNAL( activated( int ) ),this,SLOT( cbVolumeType( int ) ) );
+	connect( m_ui->cbVolumeHeader,SIGNAL( activated( int ) ),this,SLOT( cbVolumeHeader( int ) ) );
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
 	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT( pbOpenLuksHeaderBackUp() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pushButtonFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;
 	connect( m_ui->pushButtonPartition,SIGNAL( clicked() ),this,SLOT( pbOpenPartition() ) ) ;
 	connect( m_ui->lineEditDevicePath,SIGNAL( textChanged( QString ) ),this,SLOT( backUpHeaderNameChange( QString ) ) ) ;
-	connect( m_ui->rbKey,SIGNAL( toggled( bool ) ),this,SLOT( rbKeyToggled( bool ) ) ) ;
+	connect( m_ui->cbKeySource,SIGNAL( activated( int ) ),this,SLOT( cbKeyType( int ) ) ) ;
 	connect( m_ui->pBKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
-	connect( m_ui->rbTrueCryptHeader,SIGNAL( toggled( bool ) ),this,SLOT( rbTrueCryptVolume( bool ) ) ) ;
 
 	m_OperationInProgress = false ;
 
-	m_trueCryptWarning = false ;
-
-	this->enableTrueCrypt( false ) ;
+	m_veraCryptWarning.setWarningLabel( m_ui->labelVeraCryptWarning ) ;
 
 	this->installEventFilter( this ) ;
-
-	m_ui->frame_2->setEnabled( false ) ;
-	m_ui->rbFDETrueCrypt->setEnabled( false ) ;
-	m_ui->rbNormalTrueCrypt->setEnabled( false ) ;
-	m_ui->rbSystemTrueCrypt->setEnabled( false ) ;
-	m_ui->rbTrueCryptHeader->setEnabled( true ) ;
 }
 
 bool managevolumeheader::eventFilter( QObject * watched,QEvent * event )
@@ -79,9 +74,9 @@ bool managevolumeheader::eventFilter( QObject * watched,QEvent * event )
 	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
 }
 
-void managevolumeheader::rbKeyToggled( bool toggled )
+void managevolumeheader::cbKeyType( int e )
 {
-	if( toggled ){
+	if( e == 0 ){
 
 		m_ui->pBKeyFile->setEnabled( false ) ;
 		m_ui->lineEditPassWord->setEchoMode( QLineEdit::Password ) ;
@@ -93,34 +88,36 @@ void managevolumeheader::rbKeyToggled( bool toggled )
 	m_ui->lineEditPassWord->clear() ;
 }
 
-void managevolumeheader::rbTrueCryptVolume( bool toggled )
+void managevolumeheader::cbVolumeHeader( int e )
 {
-	this->enableTrueCrypt( toggled ) ;
-	this->backUpHeaderNameChange( m_ui->lineEditDevicePath->text() ) ;
-}
+	bool enable = ( e != 0 ) ;
 
-void managevolumeheader::enableTrueCrypt( bool enable )
-{
 	m_ui->lineEditPassWord->clear() ;
-	m_ui->frame_2->setEnabled( enable ) ;
-	m_ui->rbFDETrueCrypt->setEnabled( enable ) ;
-	m_ui->rbNormalTrueCrypt->setEnabled( enable ) ;
-	m_ui->rbSystemTrueCrypt->setEnabled( enable ) ;
-	m_ui->rbKey->setChecked( enable ) ;
-	m_ui->rbKeyFile->setEnabled( enable ) ;
-	m_ui->frame->setEnabled( enable ) ;
-	m_ui->label->setEnabled( enable ) ;
 	m_ui->pBKeyFile->setEnabled( enable ) ;
 	m_ui->lineEditPassWord->setEnabled( enable ) ;
 	m_ui->labelBackUpHeader->setEnabled( true ) ;
 	m_ui->labelDevicePath->setEnabled( true ) ;
 	m_ui->lineEditBackUpName->setEnabled( true ) ;
 	m_ui->lineEditDevicePath->setEnabled( true ) ;
+	m_ui->labelVolumeType->setEnabled( enable ) ;
+	m_ui->cbVolumeType->setEnabled( enable ) ;
+	m_ui->labelKeySource->setEnabled( enable ) ;
+	m_ui->cbKeySource->setEnabled( enable ) ;
 
-	if( enable ){
+	auto index = m_ui->cbVolumeHeader->currentIndex() ;
 
-		this->rbKeyToggled( true ) ;
-	}
+	m_ui->labelPIM->setEnabled( index == 2 ) ;
+	m_ui->lineEditPIM->setEnabled( index == 2 ) ;
+
+	m_ui->cbKeySource->setEnabled( e != 0 ) ;
+	m_ui->labelKeySource->setEnabled( e != 0 ) ;
+
+	this->backUpHeaderNameChange( m_ui->lineEditDevicePath->text() ) ;
+}
+
+void managevolumeheader::cbVolumeType( int e )
+{
+	Q_UNUSED( e ) ;
 }
 
 void managevolumeheader::HideUI()
@@ -154,7 +151,7 @@ void managevolumeheader::ShowUI()
 void managevolumeheader::restoreHeader()
 {
 	m_operation = "restore" ;
-	m_ui->label->setText( tr( "Enter an existing key in the back up header file" ) ) ;
+//	m_ui->label->setText( tr( "Enter an existing key in the back up header file" ) ) ;
 
 	this->setWindowTitle( tr( "Restore volume header" ) ) ;
 
@@ -167,7 +164,7 @@ void managevolumeheader::restoreHeader()
 void managevolumeheader::headerBackUp()
 {
 	m_operation = "backup" ;
-	m_ui->label->setText( tr( "Enter an existing key in the volume" ) ) ;
+//	m_ui->label->setText( tr( "Enter an existing key in the volume" ) ) ;
 
 	this->setWindowTitle( tr( "Back up volume header" ) ) ;
 
@@ -219,11 +216,17 @@ void managevolumeheader::backUpHeaderNameChange( QString name )
 				path += q.at( i ) +  "/" ;
 			}
 
-			if( m_ui->rbTrueCryptHeader->isChecked() ){
+			auto index = m_ui->cbVolumeHeader->currentIndex() ;
+
+			if( index == 0 ){
+
+				path += p + ".luksVolumeHeaderBackUp" ;
+
+			}else if( index == 1 ){
 
 				path += p + ".tcryptVolumeHeaderBackUp" ;
 			}else{
-				path += p + ".luksVolumeHeaderBackUp" ;
+				path += p + ".vcryptVolumeHeaderBackUp" ;
 			}
 
 			m_ui->lineEditBackUpName->setText( path ) ;
@@ -312,31 +315,37 @@ void managevolumeheader::enableAll()
 	m_ui->pbOpenFolder->setEnabled( true ) ;
 	m_ui->pushButtonFile->setEnabled( true ) ;
 	m_ui->pushButtonPartition->setEnabled( true ) ;
-	m_ui->rbLuksHeader->setEnabled( true ) ;
-	m_ui->rbTrueCryptHeader->setEnabled( true ) ;
+	m_ui->cbVolumeHeader->setEnabled( true ) ;
+	m_ui->labelVolumeType->setEnabled( true ) ;
+	m_ui->cbVolumeType->setEnabled( true ) ;
 
-	if( m_ui->rbTrueCryptHeader->isChecked() ){
+	auto index = m_ui->cbVolumeHeader->currentIndex() ;
 
-		m_ui->frame_2->setEnabled( true ) ;
-		m_ui->rbFDETrueCrypt->setEnabled( true ) ;
-		m_ui->rbNormalTrueCrypt->setEnabled( true ) ;
-		m_ui->rbSystemTrueCrypt->setEnabled( true ) ;
-		m_ui->rbKey->setChecked( true ) ;
-		m_ui->rbKeyFile->setEnabled( true ) ;
-		m_ui->frame->setEnabled( true ) ;
-		m_ui->label->setEnabled( true ) ;
+	m_ui->labelPIM->setEnabled( index == 2 ) ;
+	m_ui->lineEditPIM->setEnabled( index == 2 ) ;
 
-		if( m_ui->rbKeyFile->isChecked() ){
+	m_ui->labelKeySource->setEnabled( index != 0 ) ;
+	m_ui->cbKeySource->setEnabled( index != 0 ) ;
+	m_ui->lineEditPassWord->setEnabled( index != 0 ) ;
+
+	if( index != 0 ){
+
+		//m_ui->label->setEnabled( true ) ;
+
+		if( m_ui->cbKeySource->currentIndex() == 1 ){
 
 			m_ui->pBKeyFile->setEnabled( true ) ;
 		}
 	}
-
-	m_ui->rbTrueCryptHeader->setEnabled( true ) ;
 }
 
 void managevolumeheader::disableAll()
 {
+	m_ui->labelKeySource->setEnabled( false ) ;
+	m_ui->cbKeySource->setEnabled( false ) ;
+	m_ui->lineEditPassWord->setEnabled( false ) ;
+	m_ui->labelVolumeType->setEnabled( false ) ;
+	m_ui->cbVolumeType->setEnabled( false ) ;
 	m_ui->labelBackUpHeader->setEnabled( false ) ;
 	m_ui->labelDevicePath->setEnabled( false ) ;
 	m_ui->lineEditBackUpName->setEnabled( false ) ;
@@ -346,17 +355,11 @@ void managevolumeheader::disableAll()
 	m_ui->pbOpenFolder->setEnabled( false ) ;
 	m_ui->pushButtonFile->setEnabled( false ) ;
 	m_ui->pushButtonPartition->setEnabled( false ) ;
-	m_ui->rbKey->setChecked( false ) ;
-	m_ui->frame->setEnabled( false ) ;
-	m_ui->label->setEnabled( false ) ;
+	//m_ui->label->setEnabled( false ) ;
 	m_ui->pBKeyFile->setEnabled( false ) ;
-	m_ui->rbTrueCryptHeader->setEnabled( false ) ;
-	m_ui->frame_2->setEnabled( false ) ;
-	m_ui->rbFDETrueCrypt->setEnabled( false ) ;
-	m_ui->rbNormalTrueCrypt->setEnabled( false ) ;
-	m_ui->rbSystemTrueCrypt->setEnabled( false ) ;
-	m_ui->rbLuksHeader->setEnabled( false ) ;
-	m_ui->rbTrueCryptHeader->setEnabled( false ) ;
+	m_ui->cbVolumeHeader->setEnabled( false ) ;
+	m_ui->labelPIM->setEnabled( false ) ;
+	m_ui->lineEditPIM->setEnabled( false ) ;
 }
 
 void managevolumeheader::pbCreate()
@@ -367,7 +370,7 @@ void managevolumeheader::pbCreate()
 
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 	}
-	if( m_ui->lineEditPassWord->text().isEmpty() && m_ui->rbKeyFile->isChecked() && m_ui->rbTrueCryptHeader->isChecked() ){
+	if( m_ui->lineEditPassWord->text().isEmpty() && m_ui->cbVolumeHeader->currentIndex() != 0 ){
 
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 	}
@@ -384,9 +387,9 @@ void managevolumeheader::pbCreate()
 
 		m_saveHeader = 1 ;
 
-		if( m_ui->rbTrueCryptHeader->isChecked() ){
+		if( m_ui->cbVolumeHeader->currentIndex() != 0 ){
 
-			if( m_ui->rbKey->isChecked() ){
+			if( m_ui->cbKeySource->currentIndex() == 0 ){
 
 				auto path = utility::keyPath() ;
 				auto key  = m_ui->lineEditPassWord->text() ;
@@ -398,6 +401,18 @@ void managevolumeheader::pbCreate()
 				auto path = m_ui->lineEditPassWord->text() ;
 
 				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
+			}
+
+			if( m_ui->cbVolumeHeader->currentIndex() == 2 ){
+
+				auto e = m_ui->lineEditPIM->text() ;
+
+				if( e.isEmpty() ){
+
+					exe += " -t vcrypt" ;
+				}else{
+					exe += " -t vcrypt." + e ;
+				}
 			}
 		}else{
 			exe = QString( "%1 -B -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp ) ;
@@ -413,9 +428,9 @@ void managevolumeheader::pbCreate()
 
 			return ;
 		}
-		if( m_ui->rbTrueCryptHeader->isChecked() ){
+		if( m_ui->cbVolumeHeader->currentIndex() != 0 ){
 
-			if( m_ui->rbKey->isChecked() ){
+			if( m_ui->cbKeySource->currentIndex() == 0 ){
 
 				auto path = utility::keyPath() ;
 				auto key  = m_ui->lineEditPassWord->text() ;
@@ -427,6 +442,18 @@ void managevolumeheader::pbCreate()
 				QString path = m_ui->lineEditPassWord->text() ;
 				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f \"%4\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
 			}
+
+			if( m_ui->cbVolumeHeader->currentIndex() == 2 ){
+
+				auto e = m_ui->lineEditPIM->text() ;
+
+				if( e.isEmpty() ){
+
+					exe += " -t vcrypt" ;
+				}else{
+					exe += " -t vcrypt." + e ;
+				}
+			}
 		}else{
 			exe = QString( "%1 -kR -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp ) ;
 		}
@@ -435,17 +462,22 @@ void managevolumeheader::pbCreate()
 	/*
 	 * default to /dev/random as source of random data when managing a truecrypt header
 	 */
-	if( m_ui->rbFDETrueCrypt->isChecked() ){
+	auto index = m_ui->cbVolumeType->currentIndex() ;
 
-		exe += " -g /dev/random -e fde" ;
-	}else if( m_ui->rbSystemTrueCrypt->isChecked() ){
+	if( index == 2 ){
 
-		exe += " -g /dev/random -e sys" ;
+		exe += " -g /dev/urandom -e fde" ;
+
+	}else if( index == 1 ){
+
+		exe += " -g /dev/urandom -e sys" ;
 	}
 
 	this->disableAll() ;
 
 	m_OperationInProgress = true ;
+
+	m_veraCryptWarning.show( m_ui->cbVolumeHeader->currentIndex() == 2 ) ;
 
 	this->taskFinished( utility::exec( exe ).await() ) ;
 }
@@ -497,7 +529,7 @@ void managevolumeheader::success()
 
 		msg.ShowUIOK( tr( "SUCCESS" ),tr( "Header saved successfully.\nIf possible,store it securely." ) ) ;
 	}else{
-		msg.ShowUIOK(  tr( "SUCCESS" ),tr( "Header restored successfully" ) )	;
+		msg.ShowUIOK( tr( "SUCCESS" ),tr( "Header restored successfully" ) )	;
 	}
 
 	return this->HideUI() ;
@@ -505,6 +537,8 @@ void managevolumeheader::success()
 
 void managevolumeheader::taskFinished( int st )
 {
+	m_veraCryptWarning.stopTimer() ;
+
 	m_OperationInProgress = false ;
 
 	DialogMsg msg( this ) ;
@@ -531,16 +565,27 @@ void managevolumeheader::taskFinished( int st )
 		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "Backup file does not appear to contain luks header" ) )			; break ;
 		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open device for reading" ) )			; break ;
 		case 20:{
-				if( m_ui->rbTrueCryptHeader->isChecked() ){
+				if( m_ui->cbVolumeHeader->currentIndex() != 0 ){
 
-					msg.ShowUIOK( tr( "ERROR!" ),tr( "Wrong password entered or volume is not a truecrypt volume" ) )	; break ;
+					msg.ShowUIOK( tr( "ERROR!" ),tr( "Wrong password entered or volume is not a truecrypt volume" ) ) ;
 				}else{
-					msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to perform requested operation on the LUKS volume" ) )		; break ;
+					msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to perform requested operation on the LUKS volume" ) ) ;
 				}
 			}
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
+			break ;
+		case 21:{
+			if( m_ui->cbVolumeHeader->currentIndex() != 0 ){
+
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "Wrong password entered or volume is not a veracrypt volume" ) ) ;
+			}else{
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to perform requested operation on the LUKS volume" ) )	;
+			}
+			break ;
+		}
+	default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
 	}
 
+	m_veraCryptWarning.hide() ;
 	this->enableAll() ;
 }
 

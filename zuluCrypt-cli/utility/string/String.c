@@ -1392,7 +1392,13 @@ const char * StringAppendInt( string_t st,u_int64_t z )
 u_int64_t StringConvertToInt( const char * s )
 {
 	u_int64_t r = 0 ;
+
 	char c ;
+
+	if( s == NULL ){
+		return 0 ;
+	}
+
 	while( 1 ){
 		c = *s ;
 		s++ ;

@@ -24,7 +24,6 @@
 #include <QString>
 
 #include "utility.h"
-
 class QWidget ;
 class QCloseEvent ;
 
@@ -59,9 +58,9 @@ private slots:
 	void pbOpenFile( void ) ;
 	void pbKeyFile( void ) ;
 	void backUpHeaderNameChange( QString ) ;
-	void rbKeyToggled( bool ) ;
-	void rbTrueCryptVolume( bool ) ;
-	void enableTrueCrypt( bool ) ;
+	void cbKeyType( int ) ;
+	void cbVolumeType( int ) ;
+	void cbVolumeHeader( int ) ;
 private:
 	void headerBackUp( void ) ;
 	void closeEvent( QCloseEvent * ) ;
@@ -74,7 +73,7 @@ private:
 	bool m_OperationInProgress ;
 	QString m_operation ;
 	int m_saveHeader ;
-	bool m_trueCryptWarning ;
+	utility::veraCryptWarning m_veraCryptWarning ;
 };
 
 #endif // CREATEKEYFILE_H

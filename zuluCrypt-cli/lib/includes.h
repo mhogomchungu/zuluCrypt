@@ -58,6 +58,8 @@ typedef struct{
 	const char * header_new_key ;
 	const char * header_new_key_source ;
 	uid_t uid ;
+	int veraCrypt_volume ;
+	int iteration_count ;
 	string_t ( *getKey )( int * ) ;
 }info_t ;
 

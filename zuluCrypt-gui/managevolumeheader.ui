@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>561</width>
-    <height>413</height>
+    <height>306</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -64,9 +64,9 @@
   <widget class="QPushButton" name="pbCreate">
    <property name="geometry">
     <rect>
-     <x>200</x>
-     <y>380</y>
-     <width>81</width>
+     <x>170</x>
+     <y>270</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -84,8 +84,8 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>380</y>
-     <width>81</width>
+     <y>270</y>
+     <width>111</width>
      <height>31</height>
     </rect>
    </property>
@@ -154,180 +154,187 @@
     <string/>
    </property>
   </widget>
-  <widget class="QFrame" name="frame">
+  <widget class="QComboBox" name="cbVolumeType">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>250</y>
-     <width>501</width>
-     <height>131</height>
+     <x>120</x>
+     <y>150</y>
+     <width>321</width>
+     <height>31</height>
     </rect>
    </property>
-   <widget class="QLineEdit" name="lineEditPassWord">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>90</y>
-      <width>321</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="echoMode">
-     <enum>QLineEdit::Password</enum>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pBKeyFile">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>90</y>
-      <width>31</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rbKey">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>0</y>
-      <width>401</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Key</string>
-    </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rbKeyFile">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>30</y>
-      <width>401</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Keyfile</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>60</y>
-      <width>481</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Key</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <property name="wordWrap">
-     <bool>true</bool>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QFrame" name="frame_2">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>140</y>
-     <width>501</width>
-     <height>111</height>
-    </rect>
-   </property>
-   <widget class="QRadioButton" name="rbNormalTrueCrypt">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>0</y>
-      <width>401</width>
-      <height>31</height>
-     </rect>
-    </property>
+   <item>
     <property name="text">
      <string>Normal Volume</string>
     </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rbSystemTrueCrypt">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>30</y>
-      <width>401</width>
-      <height>31</height>
-     </rect>
-    </property>
+   </item>
+   <item>
     <property name="text">
-     <string>Windows System Volume</string>
+     <string>Window System Volume</string>
     </property>
-   </widget>
-   <widget class="QRadioButton" name="rbFDETrueCrypt">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>60</y>
-      <width>401</width>
-      <height>31</height>
-     </rect>
-    </property>
+   </item>
+   <item>
     <property name="text">
      <string>Whole Drive Encrypted Volume</string>
     </property>
-   </widget>
+   </item>
   </widget>
-  <widget class="QFrame" name="frame_3">
+  <widget class="QLabel" name="labelVolumeType">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>70</y>
-     <width>501</width>
-     <height>71</height>
+     <x>10</x>
+     <y>150</y>
+     <width>101</width>
+     <height>31</height>
     </rect>
    </property>
-   <widget class="QRadioButton" name="rbLuksHeader">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>0</y>
-      <width>401</width>
-      <height>31</height>
-     </rect>
-    </property>
+   <property name="text">
+    <string>Volume Type</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditPIM">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>110</y>
+     <width>321</width>
+     <height>29</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cbVolumeHeader">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>80</y>
+     <width>321</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <item>
     <property name="text">
      <string>Manage A LUKS Header</string>
     </property>
-    <property name="checked">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QRadioButton" name="rbTrueCryptHeader">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>30</y>
-      <width>401</width>
-      <height>31</height>
-     </rect>
-    </property>
+   </item>
+   <item>
     <property name="text">
      <string>Manage A TrueCrypt Header</string>
     </property>
-   </widget>
+   </item>
+   <item>
+    <property name="text">
+     <string>Manage A VeraCrypt Header</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="labelPIM">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>110</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PIM</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditPassWord">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>230</y>
+     <width>321</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="echoMode">
+    <enum>QLineEdit::Password</enum>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pBKeyFile">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>230</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="cbKeySource">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>190</y>
+     <width>321</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Key</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>KeyFile</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QLabel" name="labelKeySource">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>190</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Key Source</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelVeraCryptWarning">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>541</width>
+     <height>291</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
   </widget>
  </widget>
  <tabstops>
@@ -336,13 +343,6 @@
   <tabstop>pushButtonPartition</tabstop>
   <tabstop>lineEditBackUpName</tabstop>
   <tabstop>pbOpenFolder</tabstop>
-  <tabstop>rbLuksHeader</tabstop>
-  <tabstop>rbTrueCryptHeader</tabstop>
-  <tabstop>rbNormalTrueCrypt</tabstop>
-  <tabstop>rbSystemTrueCrypt</tabstop>
-  <tabstop>rbFDETrueCrypt</tabstop>
-  <tabstop>rbKey</tabstop>
-  <tabstop>rbKeyFile</tabstop>
   <tabstop>lineEditPassWord</tabstop>
   <tabstop>pBKeyFile</tabstop>
   <tabstop>pbCreate</tabstop>

@@ -201,6 +201,13 @@ static int _modify_tcrypt_header( const char * device,const resolve_path_t * opt
 				tc_api_task_set( task,"dev",device ) ;
 			}
 
+			tc_api_task_set( task,"veracrypt_mode",info->veraCrypt_volume ) ;
+			/*
+			 * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
+			 */
+			tc_api_task_set( task,"iteration_count",
+					 zuluCryptVeraCryptPIM( info->iteration_count ) ) ;
+
 			tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
 			tc_api_task_set( task,info->header_source,info->tmp_path ) ;
 			tc_api_task_set( task,info->header_key_source,info->header_key ) ;
