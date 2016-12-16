@@ -83,6 +83,11 @@ void zuluCryptPrepareSocketPath( uid_t uid ) ;
 stringList_t zuluCryptCreateKeyFiles( const char * const * list,int s ) ;
 
 /*
+ * this function is defined in save_and_restore_volume_header.c
+ */
+stringList_t veraCryptVolumePIMValue( info_t * s,const char * type ) ;
+
+/*
  * this function is defined in open_volume.c
  */
 void zuluCryptDeleteKeyFiles( stringList_t stl ) ;

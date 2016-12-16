@@ -343,6 +343,10 @@
   <tabstop>pushButtonPartition</tabstop>
   <tabstop>lineEditBackUpName</tabstop>
   <tabstop>pbOpenFolder</tabstop>
+  <tabstop>cbVolumeHeader</tabstop>
+  <tabstop>lineEditPIM</tabstop>
+  <tabstop>cbVolumeType</tabstop>
+  <tabstop>cbKeySource</tabstop>
   <tabstop>lineEditPassWord</tabstop>
   <tabstop>pBKeyFile</tabstop>
   <tabstop>pbCreate</tabstop>

@@ -53,6 +53,7 @@ public slots:
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 private slots:
+	void cbVolumeType( int ) ;
 	void cbExistingKey( int ) ;
 	void cbNewKey( int ) ;
 	void keyChanged_0( QString ) ;
@@ -75,6 +76,7 @@ private:
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
 	keystrength m_keystrength ;
+	utility::veraCryptWarning m_veraCryptWarning ;
 };
 
 #endif // luksaddkeySUI_H

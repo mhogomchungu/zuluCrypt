@@ -57,6 +57,7 @@ luksaddkey::luksaddkey( QWidget * parent ) : QDialog( parent )
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
+	connect( m_ui->cbVolumeType,SIGNAL( activated( int ) ),this,SLOT( cbVolumeType( int ) ) ) ;
 	connect( m_ui->pushButtonOpenFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;
 	connect( m_ui->pushButtonOpenExistingKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenExisitingKeyFile() ) ) ;
 	connect( m_ui->pushButtonOpenNewKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenNewKeyFile() ) ) ;
@@ -84,6 +85,9 @@ luksaddkey::luksaddkey( QWidget * parent ) : QDialog( parent )
 
 	this->cbExistingKey( 0 ) ;
 	this->cbNewKey( 0 ) ;
+	this->cbVolumeType( 0 ) ;
+
+	m_veraCryptWarning.setWarningLabel( m_ui->label_5 ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -164,6 +168,15 @@ void luksaddkey::HideUI()
 {
 	this->hide() ;
 	this->deleteLater() ;
+}
+
+void luksaddkey::cbVolumeType( int e )
+{
+	bool s = ( e == 2 ) ;
+
+	m_ui->lineEditPIM->setEnabled( s ) ;
+	m_ui->label_4->setEnabled( s ) ;
+	m_ui->lineEditPIM->setEnabled( s ) ;
 }
 
 void luksaddkey::cbExistingKey( int e )
@@ -409,9 +422,23 @@ void luksaddkey::pbAdd( void )
 
 	auto exe = utility::appendUserUID( r ).arg( a,b,c,d,e,f ) ;
 
+	if( m_ui->cbVolumeType->currentIndex() == 2 ){
+
+		exe += " -t vcrypt" ;
+
+		auto e = m_ui->lineEditPIM->text() ;
+
+		if( !e.isEmpty() ){
+
+			exe += "." + e ;
+		}
+	}
+
 	m_isWindowClosable = false ;
 
 	this->disableAll() ;
+
+	m_veraCryptWarning.show( m_ui->cbVolumeType->currentIndex() == 2 ) ;
 
 	this->taskFinished( utility::exec( exe ).await() ) ;
 }
@@ -440,6 +467,8 @@ void luksaddkey::keyAdded()
 
 void luksaddkey::taskFinished( int r )
 {
+	m_veraCryptWarning.stopTimer() ;
+
 	m_isWindowClosable = true ;
 	DialogMsg msg( this ) ;
 
@@ -465,16 +494,20 @@ void luksaddkey::taskFinished( int r )
 		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
 	}
 
+	m_veraCryptWarning.hide() ;
+
 	this->enableAll() ;
 }
 
 void luksaddkey::disableAll()
 {
+	m_ui->lineEditPIM->setEnabled( false ) ;
+	m_ui->label_4->setEnabled( false ) ;
+	m_ui->cbVolumeType->setEnabled( false ) ;
+	m_ui->label_3->setEnabled( false ) ;
 	m_ui->labelExistingPassphrase->setEnabled( false ) ;
 	m_ui->labelLuksVolume->setEnabled( false ) ;
 	m_ui->labelNewPassphrase->setEnabled( false ) ;
-	m_ui->frame->setEnabled( false ) ;
-	m_ui->frame_2->setEnabled( false ) ;
 	m_ui->textEditExistingPassphrase->setEnabled( false ) ;
 	m_ui->textEditPassphraseToAdd->setEnabled( false ) ;
 	m_ui->textEditPathToVolume->setEnabled( false ) ;
@@ -490,16 +523,21 @@ void luksaddkey::disableAll()
 	m_ui->labelReEnterPassphrase->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
+	m_ui->cbNewKey->setEnabled( false ) ;
 }
 
 void luksaddkey::enableAll()
 {
+	auto index = m_ui->cbVolumeType->currentIndex() ;
+
+	m_ui->label_4->setEnabled( index == 2 ) ;
+	m_ui->lineEditPIM->setEnabled( index == 2 ) ;
+	m_ui->cbVolumeType->setEnabled( true ) ;
+	m_ui->label_3->setEnabled( true ) ;
 	m_ui->labelReEnterPassphrase->setEnabled( true ) ;
 	m_ui->labelExistingPassphrase->setEnabled( true ) ;
 	m_ui->labelLuksVolume->setEnabled( true ) ;
 	m_ui->labelNewPassphrase->setEnabled( true ) ;
-	m_ui->frame->setEnabled( true ) ;
-	m_ui->frame_2->setEnabled( true ) ;
 	m_ui->textEditExistingPassphrase->setEnabled( true ) ;
 	m_ui->textEditPassphraseToAdd->setEnabled( true ) ;
 	m_ui->textEditPathToVolume->setEnabled( true ) ;
@@ -510,8 +548,10 @@ void luksaddkey::enableAll()
 	m_ui->pushButtonOpenFile->setEnabled( true ) ;
 	m_ui->pushButtonOpenNewKeyFile->setEnabled( true ) ;
 	m_ui->pushButtonOpenPartition->setEnabled( true ) ;
+	m_ui->lineEditPIM->setEnabled( true ) ;
+	m_ui->cbNewKey->setEnabled( true ) ;
 
-	auto index = m_ui->cbNewKey->currentIndex() ;
+	index = m_ui->cbNewKey->currentIndex() ;
 
 	if( index == 0 ){
 

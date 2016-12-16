@@ -33,6 +33,7 @@ typedef struct{
 	const char * new_key ;
 	size_t 	     new_key_size ;
 	size_t       new_key_is_keyfile ;
+	const char * type ;
 
 }tcrypt_opts ;
 
@@ -100,7 +101,11 @@ static int _replace_truecrypt_key( const tcrypt_opts * opts )
 
 	int r ;
 
+	stringList_t stl ;
+
 	memset( &info,'\0',sizeof( info_t ) ) ;
+
+	stl = veraCryptVolumePIMValue( &info,opts->type ) ;
 
 	info.device = opts->device ;
 
@@ -148,6 +153,8 @@ static int _replace_truecrypt_key( const tcrypt_opts * opts )
 		zuluCryptDeleteFile_1( xt ) ;
 		StringDelete( &xt ) ;
 	}
+
+	StringListDelete( &stl ) ;
 
 	if( r == 0 ){
 
@@ -417,6 +424,8 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 
 		tcrypt.new_key           = key2 ;
 		tcrypt.new_key_size      = len2 ;
+
+		tcrypt.type              = opts->type ;
 
 		status = _replace_truecrypt_key( &tcrypt ) ;
 	}

@@ -405,7 +405,7 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 	return zuluExit_1( k,st,xt ) ;
 }
 
-static stringList_t _vcrypt( info_t * s,const char * type )
+stringList_t veraCryptVolumePIMValue( info_t * s,const char * type )
 {
 	const char * e ;
 	const char * f ;
@@ -440,7 +440,7 @@ static int _save_truecrypt_header( const struct_opts * opts,const char * temp_pa
 	info.rng           = opts->rng ;
 	info.opt           = opts->m_opts ;
 
-	stl = _vcrypt( &info,opts->type ) ;
+	stl = veraCryptVolumePIMValue( &info,opts->type ) ;
 
 	r = _modify_tcrypt( &info,opts ) ;
 
@@ -483,7 +483,7 @@ static int _restore_truecrypt_header( const struct_opts * opts,const char * temp
 	info.rng           = opts->rng ;
 	info.opt           = opts->m_opts ;
 
-	stl = _vcrypt( &info,opts->type ) ;
+	stl = veraCryptVolumePIMValue( &info,opts->type ) ;
 
 	r = _modify_tcrypt( &info,opts ) ;
 
