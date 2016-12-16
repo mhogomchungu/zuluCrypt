@@ -264,3 +264,4 @@ version 5.0.3
 -- add ability in zuluCrypt-gui to unlock plain dm-crypt volumes that uses an offset.
 -- add ability in zuluCrypt-gui to create plain dm-crypt volumes using user configurable crypto options.
 -- add ability in zuluCrypt-gui to unlock plain dm-crypt volumes using user configurable crypto options.
+-- add ability to backyup and restore VeraCrypt headers.
