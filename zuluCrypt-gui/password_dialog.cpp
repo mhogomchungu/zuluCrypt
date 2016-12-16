@@ -123,8 +123,6 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 	m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 
-	m_plainDmCryptProperty = "/dev/urandom.aes.cbc-essiv:sha256.256.ripemd160" ;
-
 	m_ui->pushButtonPlainDmCryptOptions->setMenu( [ this ](){
 
 		auto m =  new QMenu( this ) ;
@@ -132,9 +130,19 @@ passwordDialog::passwordDialog( QTableWidget * table,
 		connect( m,SIGNAL( triggered( QAction * ) ),
 			 this,SLOT( plainDmCryptOption( QAction * ) ) ) ;
 
-		for( const auto& it : utility::plainDmCryptOptions() ){
+		auto s = utility::plainDmCryptOptions() ;
 
-			m->addAction( it ) ;
+		if( s.isEmpty() ){
+
+			m_plainDmCryptProperty = "aes.cbc-essiv:sha256.256.ripemd160" ;
+			m->addAction( "aes.cbc-essiv:sha256.256.ripemd160" ) ;
+		}else{
+			m_plainDmCryptProperty = s.first() ;
+
+			for( const auto& it : s ){
+
+				m->addAction( it ) ;
+			}
 		}
 
 		return m ;
@@ -147,7 +155,7 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 void passwordDialog::plainDmCryptOption( QAction * ac )
 {
-	m_plainDmCryptProperty = "/dev/urandom." + ac->text().remove( "&" ) ;
+	m_plainDmCryptProperty = ac->text().remove( "&" ) ;
 }
 
 void passwordDialog::cbVolumeType( int e )
@@ -717,7 +725,7 @@ void passwordDialog::openVolume()
 
 		this->sendKey( keyPath ) ;
 	}else{
-		qDebug() << "Error: uncaught condition" ;
+		utility::debug() << "Error: uncaught condition" ;
 	}
 
 	QString a = ZULUCRYPTzuluCrypt ;

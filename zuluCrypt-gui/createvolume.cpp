@@ -383,7 +383,15 @@ void createvolume::setOptions( int e )
 		/*
 		 * crypto options for plain dm-crypt volumes
 		 */
-		options->addItem( "aes.cbc-essiv:256.256.ripemd160" ) ;
+
+		auto s = utility::plainDmCryptOptions() ;
+
+		if( s.isEmpty() ){
+
+			options->addItem( "aes.cbc-essiv:256.256.ripemd160" ) ;
+		}else{
+			options->addItems( s ) ;
+		}
 
 	}else if( _luks() ){
 
@@ -994,6 +1002,10 @@ void createvolume::pbCreateClicked()
 			case 2 : g += "m" ; break ;
 			case 3 : g += "g" ; break ;
 		}
+
+	}else if( type == createvolume::plain ){
+
+		g += ".0" ;
 	}
 
 	volumePath.replace( "\"","\"\"\"" ) ;

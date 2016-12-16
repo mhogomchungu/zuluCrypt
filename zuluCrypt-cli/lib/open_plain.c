@@ -166,7 +166,7 @@ int zuluCryptOpenPlain_2( const char * device,const char * mapper,
 
 	StringListStringArray_1( &e,&n,stl ) ;
 
-	if( n >= 6 ){
+	if( n == 6 ){
 
 		s.rng     = *( e + 0 ) ;
 		s.algo    = *( e + 1 ) ;
@@ -174,6 +174,14 @@ int zuluCryptOpenPlain_2( const char * device,const char * mapper,
 		s.keySize = *( e + 3 ) ;
 		s.hash    = *( e + 4 ) ;
 		s.offset  = *( e + 5 ) ;
+
+	}else if( n == 5 ){
+
+		s.algo    = *( e + 0 ) ;
+		s.cipher  = *( e + 1 ) ;
+		s.keySize = *( e + 2 ) ;
+		s.hash    = *( e + 3 ) ;
+		s.offset  = *( e + 4 ) ;
 	}
 
 	/*
