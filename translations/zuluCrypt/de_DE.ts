@@ -347,22 +347,22 @@ nur der Benutzer Root und Mitglieder der Gruppe zulucrypt haben ausreichende Rec
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="321"/>
         <source>LUKS/TrueCrypt</source>
-        <translation type="unfinished"></translation>
+        <translation>LUKS/TrueCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="326"/>
         <source>VeraCrypt</source>
-        <translation type="unfinished"></translation>
+        <translation>VeraCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="331"/>
         <source>PLAIN dm-crypt</source>
-        <translation type="unfinished">PLAIN DM-Crypt</translation>
+        <translation>PLAIN DM-Crypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="345"/>
         <source>Volume Type</source>
-        <translation type="unfinished">Laufwerkstyp</translation>
+        <translation>Laufwerkstyp</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="412"/>
@@ -603,7 +603,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../zuluCrypt-gui/createvolumedialog.ui" line="55"/>
         <source>This operation will lead to permanent destrunction of all present data in /dev/sdc1. Are you sure you want to continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Operation wird zum vollständigen Verlust der Daten in /dev/sdc1 führen. Möchten Sie wirklich fortfahren?</translation>
     </message>
     <message>
         <source>This operation will lead to permanent destruction of all present data in /dev/sdc1. Are you sure you want to continue?</source>
@@ -622,7 +622,9 @@ Möchten Sie wirklich fortfahren?</translation>
         <source>This operation will lead to permanent destrunction of all present data in &quot;%1&quot;.
 
 Are you sure you want to continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Operation wird zum vollständigen Verlust der Daten in &quot;%1&quot; führen.
+
+Möchten Sie wirklich fortfahren?</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolumedialog.cpp" line="86"/>
@@ -1009,7 +1011,7 @@ If you know what you are doing,then continue by all means,if in doubt,my advise 
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="495"/>
         <source>PIM</source>
-        <translation type="unfinished"></translation>
+        <translation>PIM</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="517"/>
@@ -2014,27 +2016,27 @@ Möchten Sie fortfahren?</translation>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="342"/>
         <source>LUKS</source>
-        <translation type="unfinished">LUKS</translation>
+        <translation>LUKS</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="347"/>
         <source>TrueCrypt</source>
-        <translation type="unfinished"></translation>
+        <translation>TrueCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="352"/>
         <source>VeraCrypt</source>
-        <translation type="unfinished"></translation>
+        <translation>VeraCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="366"/>
         <source>Volume Type</source>
-        <translation type="unfinished">Laufwerkstyp</translation>
+        <translation>Laufwerkstyp</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="395"/>
         <source>PIM</source>
-        <translation type="unfinished"></translation>
+        <translation>PIM</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="414"/>
@@ -2410,7 +2412,9 @@ für immer verloren ist</translation>
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="241"/>
         <source>
 Deleting it will make the volume unopenable and lost forever.</source>
-        <translation type="unfinished"></translation>
+        <translation>
+Das Löschen dieses Schlüssels führt dazu, dass das Laufwerk nicht mehr geöffnet werden kann und
+für immer verloren ist</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="242"/>
@@ -2570,7 +2574,9 @@ nur der Root Benutzer und Mitglieder der Gruppe zulucrypt dürfen das</translati
         <source>Are you sure you want to remove 
 &quot;%1&quot;
  from the list?</source>
-        <translation type="unfinished"></translation>
+        <translation>Sind Sie sicher, dass Sie
+&quot;%1&quot;
+aus der Liste entfernen wollen?</translation>
     </message>
     <message>
         <source>Are you sure you want to remove
@@ -2621,22 +2627,22 @@ aus der Liste entfernen wollen?</translation>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="173"/>
         <source>Window System Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Windows Systemlaufwerk</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="192"/>
         <source>Volume Type</source>
-        <translation type="unfinished">Laufwerkstyp</translation>
+        <translation>Laufwerkstyp</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="232"/>
         <source>Manage A VeraCrypt Header</source>
-        <translation type="unfinished"></translation>
+        <translation>Einen VeraCrypt Header verwalten</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="246"/>
         <source>PIM</source>
-        <translation type="unfinished"></translation>
+        <translation>PIM</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="289"/>
@@ -2849,7 +2855,7 @@ aus der Liste entfernen wollen?</translation>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="579"/>
         <source>Wrong password entered or volume is not a veracrypt volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Falsches Passwort eingegeben oder das Laufwerk ist kein VeraCrypt-Laufwerk</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="585"/>
@@ -3048,7 +3054,7 @@ Restart zuluCrypt from root&apos;s account to proceed</source>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="192"/>
         <source>Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Versatz</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="367"/>

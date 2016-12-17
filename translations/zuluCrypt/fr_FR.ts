@@ -326,22 +326,22 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="321"/>
         <source>LUKS/TrueCrypt</source>
-        <translation type="unfinished"></translation>
+        <translation>LUKS/TrueCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="326"/>
         <source>VeraCrypt</source>
-        <translation type="unfinished"></translation>
+        <translation>VeraCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="331"/>
         <source>PLAIN dm-crypt</source>
-        <translation type="unfinished">PLAIN dm-crypt</translation>
+        <translation>PLAIN dm-crypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="345"/>
         <source>Volume Type</source>
-        <translation type="unfinished">Type de Volume</translation>
+        <translation>Type de Volume</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password.ui" line="412"/>
@@ -1005,7 +1005,7 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="495"/>
         <source>PIM</source>
-        <translation type="unfinished"></translation>
+        <translation>PIM</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="517"/>
@@ -2008,32 +2008,32 @@ Are you sure you want to continue? </source>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="342"/>
         <source>LUKS</source>
-        <translation type="unfinished">LUKS</translation>
+        <translation>LUKS</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="347"/>
         <source>TrueCrypt</source>
-        <translation type="unfinished"></translation>
+        <translation>TrueCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="352"/>
         <source>VeraCrypt</source>
-        <translation type="unfinished"></translation>
+        <translation>VeraCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="366"/>
         <source>Volume Type</source>
-        <translation type="unfinished">Type de Volume</translation>
+        <translation>Type de Volume</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="395"/>
         <source>PIM</source>
-        <translation type="unfinished"></translation>
+        <translation>PIM</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="414"/>
         <source>TextLabel</source>
-        <translation type="unfinished">Etiquette de texte</translation>
+        <translation>Etiquette de texte</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="86"/>
@@ -2596,22 +2596,22 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="173"/>
         <source>Window System Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume Système Windows</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="192"/>
         <source>Volume Type</source>
-        <translation type="unfinished">Type de Volume</translation>
+        <translation>Type de Volume</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="232"/>
         <source>Manage A VeraCrypt Header</source>
-        <translation type="unfinished"></translation>
+        <translation>Gérer un VeraCrypt Header</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="246"/>
         <source>PIM</source>
-        <translation type="unfinished"></translation>
+        <translation>PIM</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="289"/>
@@ -2621,7 +2621,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="294"/>
         <source>KeyFile</source>
-        <translation type="unfinished">Fichier de clé</translation>
+        <translation>Fichier de clé</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="308"/>
@@ -2857,7 +2857,7 @@ Si possible, stockez le en toute sécurité.</translation>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="579"/>
         <source>Wrong password entered or volume is not a veracrypt volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Mot de passe erroné ou le volume n&apos;est pas un volume Veracrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="585"/>
@@ -3024,7 +3024,7 @@ Redémarrer zuluCrypt depuis un compte root pour le faire</translation>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="192"/>
         <source>Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Décalage</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="367"/>
@@ -4207,7 +4207,7 @@ Avoir une sauvegarde de l&apos;en-tête de volume est fortement recommandé car 
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="992"/>
         <source>Unmount</source>
-        <translation type="unfinished"></translation>
+        <translation>Démonter</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="1002"/>
