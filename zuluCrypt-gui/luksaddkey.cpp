@@ -524,6 +524,7 @@ void luksaddkey::disableAll()
 	m_ui->label->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
 	m_ui->cbNewKey->setEnabled( false ) ;
+	m_ui->cbExistingKey->setEnabled( false ) ;
 }
 
 void luksaddkey::enableAll()
@@ -550,6 +551,7 @@ void luksaddkey::enableAll()
 	m_ui->pushButtonOpenPartition->setEnabled( true ) ;
 	m_ui->lineEditPIM->setEnabled( true ) ;
 	m_ui->cbNewKey->setEnabled( true ) ;
+	m_ui->cbExistingKey->setEnabled( true ) ;
 
 	index = m_ui->cbNewKey->currentIndex() ;
 
