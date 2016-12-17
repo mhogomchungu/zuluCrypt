@@ -1174,7 +1174,7 @@ void createvolume::taskFinished( int st )
 
 	auto x = tr( "Volume created successfully." ) ;
 
-	if( m_volumeType.contains( "luks" ) || m_volumeType.contains( "truecrypt" ) || m_volumeType.contains( "veracrypt" ) ){
+	if( utility::containsAtleastOne( m_volumeType,"luks","tcrypt","vcrypt" ) ){
 
 		x += tr( "\nCreating a backup of the \"%1\" volume header is strongly advised.\nPlease read documentation on why this is important." ).arg( m_volumeType ) ;
 	}
