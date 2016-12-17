@@ -407,16 +407,13 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 
 stringList_t veraCryptVolumePIMValue( info_t * s,const char * type )
 {
-	const char * e ;
-	const char * f ;
-
 	stringList_t stl = StringListSplit( type,'.' ) ;
 
-	e = StringListContentAtFirstPlace( stl ) ;
-	f = StringListContentAtSecondPlace( stl ) ;
+	const char * e = StringListContentAtFirstPlace( stl ) ;
+	const char * f = StringListContentAtSecondPlace( stl ) ;
 
 	s->veraCrypt_volume = StringsAreEqual( e,"vcrypt" ) ;
-	s->iteration_count  = StringConvertToInt( f ) ;
+	s->iteration_count  = ( int ) StringConvertToInt( f ) ;
 
 	return stl ;
 }
