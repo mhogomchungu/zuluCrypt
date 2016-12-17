@@ -28,6 +28,7 @@
 
 class checkForUpdates : public QObject
 {
+	Q_OBJECT
 public:
 	static bool autoCheck( void ) ;
 	static void autoCheck( bool ) ;
