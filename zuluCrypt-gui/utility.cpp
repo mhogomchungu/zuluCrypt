@@ -1983,3 +1983,25 @@ aes.xts-plain64.512.sha1)" ;
 
 	return QStringList() ;
 }
+
+QStringList utility::supportedFileSystems()
+{
+	QFile f( utility::homePath() + "/.zuluCrypt/supportedFileSystems" ) ;
+
+	if( !f.exists() ){
+
+		if( f.open( QIODevice::WriteOnly ) ){
+
+			f.write( "ext4\nvfat\nntfs\next2\next3\nexfat\nbtrfs" ) ;
+
+			f.close() ;
+		}
+	}
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		return utility::split( f.readAll() ) ;
+	}
+
+	return { "ext4","vfat","ntfs","ext2","ext3","exfat","btrfs" } ;
+}

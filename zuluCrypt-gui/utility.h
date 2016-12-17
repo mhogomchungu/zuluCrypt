@@ -279,6 +279,7 @@ namespace utility
 	QStringList split( const QByteArray&,char token = '\n' ) ;
 	QStringList directoryList( const QString& ) ;
 	QStringList plainDmCryptOptions( void ) ;
+	QStringList supportedFileSystems( void ) ;
 	bool userHasGoodVersionOfWhirlpool( void ) ;
 	void licenseInfo( QWidget * ) ;
 	void showTrayIcon( QAction *,QSystemTrayIcon *,bool = true ) ;

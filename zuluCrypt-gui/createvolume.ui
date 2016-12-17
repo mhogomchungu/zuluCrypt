@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>560</width>
-    <height>402</height>
+    <height>432</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -52,7 +52,7 @@
    <property name="geometry">
     <rect>
      <x>170</x>
-     <y>370</y>
+     <y>400</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -71,7 +71,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>370</y>
+     <y>400</y>
      <width>111</width>
      <height>31</height>
     </rect>
@@ -86,16 +86,16 @@
   <widget class="QFrame" name="frame_3">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>0</x>
      <y>40</y>
-     <width>501</width>
+     <width>561</width>
      <height>91</height>
     </rect>
    </property>
    <widget class="QLineEdit" name="lineEditPassphrase1">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>130</x>
       <y>30</y>
       <width>301</width>
       <height>31</height>
@@ -105,7 +105,7 @@
    <widget class="QPushButton" name="pbOpenKeyFile">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>430</x>
       <y>30</y>
       <width>31</width>
       <height>31</height>
@@ -123,7 +123,7 @@
      <rect>
       <x>0</x>
       <y>30</y>
-      <width>91</width>
+      <width>121</width>
       <height>31</height>
      </rect>
     </property>
@@ -140,7 +140,7 @@
    <widget class="QLineEdit" name="lineEditPassPhrase2">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>130</x>
       <y>60</y>
       <width>301</width>
       <height>31</height>
@@ -152,7 +152,7 @@
      <rect>
       <x>0</x>
       <y>60</y>
-      <width>91</width>
+      <width>121</width>
       <height>31</height>
      </rect>
     </property>
@@ -169,7 +169,7 @@
    <widget class="QComboBox" name="cbNormalVolume">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>130</x>
       <y>0</y>
       <width>301</width>
       <height>31</height>
@@ -181,13 +181,13 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>340</y>
+     <y>370</y>
      <width>151</width>
      <height>31</height>
     </rect>
    </property>
    <property name="editable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QComboBox" name="comboBoxVolumeType">
@@ -217,7 +217,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>340</y>
+     <y>370</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -255,16 +255,16 @@
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>0</x>
      <y>190</y>
-     <width>501</width>
+     <width>551</width>
      <height>121</height>
     </rect>
    </property>
    <widget class="QLineEdit" name="lineEditHiddenKey">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>130</x>
       <y>30</y>
       <width>301</width>
       <height>31</height>
@@ -276,7 +276,7 @@
      <rect>
       <x>0</x>
       <y>30</y>
-      <width>91</width>
+      <width>121</width>
       <height>31</height>
      </rect>
     </property>
@@ -295,7 +295,7 @@
      <rect>
       <x>0</x>
       <y>60</y>
-      <width>91</width>
+      <width>121</width>
       <height>31</height>
      </rect>
     </property>
@@ -312,7 +312,7 @@
    <widget class="QLineEdit" name="lineEditHiddenKey1">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>130</x>
       <y>60</y>
       <width>301</width>
       <height>31</height>
@@ -322,7 +322,7 @@
    <widget class="QPushButton" name="pbHiddenKeyFile">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>430</x>
       <y>30</y>
       <width>31</width>
       <height>31</height>
@@ -337,7 +337,7 @@
      <rect>
       <x>0</x>
       <y>90</y>
-      <width>91</width>
+      <width>121</width>
       <height>31</height>
      </rect>
     </property>
@@ -354,9 +354,9 @@
    <widget class="QLineEdit" name="lineEditHiddenSize">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>130</x>
       <y>90</y>
-      <width>121</width>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
@@ -364,9 +364,9 @@
    <widget class="QComboBox" name="comboBoxHiddenSize">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>280</x>
       <y>90</y>
-      <width>121</width>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
@@ -394,7 +394,7 @@
    <widget class="QComboBox" name="cbHiddenVolume">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>130</x>
       <y>0</y>
       <width>301</width>
       <height>31</height>
@@ -420,7 +420,7 @@
     <rect>
      <x>20</x>
      <y>370</y>
-     <width>121</width>
+     <width>81</width>
      <height>31</height>
     </rect>
    </property>
@@ -438,7 +438,7 @@
    <property name="geometry">
     <rect>
      <x>130</x>
-     <y>310</y>
+     <y>340</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -454,7 +454,7 @@
    <property name="geometry">
     <rect>
      <x>280</x>
-     <y>310</y>
+     <y>340</y>
      <width>151</width>
      <height>31</height>
     </rect>
@@ -469,13 +469,45 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
+  <widget class="QLineEdit" name="lineEditPIM">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>310</y>
+     <width>301</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="echoMode">
+    <enum>QLineEdit::Password</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>310</y>
+     <width>111</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PIM</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
   <widget class="QLabel" name="veraCryptWarning">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>40</y>
-     <width>521</width>
-     <height>331</height>
+     <x>10</x>
+     <y>0</y>
+     <width>541</width>
+     <height>431</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -506,9 +538,10 @@
   <tabstop>lineEditHiddenKey1</tabstop>
   <tabstop>lineEditHiddenSize</tabstop>
   <tabstop>comboBoxHiddenSize</tabstop>
+  <tabstop>lineEditPIM</tabstop>
   <tabstop>comboBoxFS</tabstop>
-  <tabstop>comboBoxRNG</tabstop>
   <tabstop>pbCreate</tabstop>
+  <tabstop>comboBoxRNG</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>
  <resources/>

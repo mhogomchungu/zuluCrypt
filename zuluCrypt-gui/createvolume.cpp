@@ -91,7 +91,7 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	 * for simplicity's sake,lets only show most popular file systems.
 	 */
 
-	m_ui->comboBoxFS->addItems( { "ext4","vfat","ntfs","ext2","ext3","exfat","btrfs" } ) ;
+	m_ui->comboBoxFS->addItems( utility::supportedFileSystems() ) ;
 
 	m_ui->comboBoxVolumeType->clear() ;
 
@@ -227,6 +227,9 @@ void createvolume::volumeType( int s )
 #endif
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 
+		m_ui->label_2->setEnabled( false ) ;
+		m_ui->lineEditPIM->setEnabled( false ) ;
+
 		_disableHidden() ;
 
 		break ;
@@ -234,6 +237,9 @@ void createvolume::volumeType( int s )
 	case createvolume::plain_with_offset :
 
 		m_ui->comboBoxRNG->setEnabled( false ) ;
+
+		m_ui->label_2->setEnabled( false ) ;
+		m_ui->lineEditPIM->setEnabled( false ) ;
 
 		_disableHidden() ;
 
@@ -243,6 +249,9 @@ void createvolume::volumeType( int s )
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt Keys" ) ) ;
 
+		m_ui->label_2->setEnabled( false ) ;
+		m_ui->lineEditPIM->setEnabled( false ) ;
+
 		_disableHidden() ;
 
 		break ;
@@ -250,6 +259,9 @@ void createvolume::volumeType( int s )
 
 		m_ui->comboBoxRNG->setEnabled( true ) ;
 		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt Keys" ) ) ;
+
+		m_ui->label_2->setEnabled( true ) ;
+		m_ui->lineEditPIM->setEnabled( true ) ;
 
 		_disableHidden() ;
 
@@ -260,6 +272,9 @@ void createvolume::volumeType( int s )
 		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
 		m_ui->cbHiddenVolume->addItem( tr( "TrueCrypt Keys" ) ) ;
 		m_ui->cbNormalVolume->addItem( tr( "TrueCrypt Keys" ) ) ;
+
+		m_ui->label_2->setEnabled( false ) ;
+		m_ui->lineEditPIM->setEnabled( false ) ;
 
 		this->cbHiddenVolume( 0 ) ;
 
@@ -272,6 +287,9 @@ void createvolume::volumeType( int s )
 		m_ui->cbHiddenVolume->setCurrentIndex( 0 ) ;
 		m_ui->cbHiddenVolume->addItem( tr( "VeraCrypt Keys" ) ) ;
 		m_ui->cbNormalVolume->addItem( tr( "VeraCrypt Keys" ) ) ;
+
+		m_ui->label_2->setEnabled( true ) ;
+		m_ui->lineEditPIM->setEnabled( true ) ;
 
 		this->cbHiddenVolume( 0 ) ;
 
@@ -755,6 +773,11 @@ void createvolume::HideUI()
 
 void createvolume::enableAll()
 {
+	auto enable = m_ui->comboBoxVolumeType->currentText().contains( "VeraCrypt" ) ;
+
+	m_ui->label_2->setEnabled( enable ) ;
+	m_ui->lineEditPIM->setEnabled( enable ) ;
+
 	m_ui->labelPassPhrase->setEnabled( true ) ;
 	m_ui->labelVolumePath->setEnabled( true ) ;
 	m_ui->labelRepeatPassPhrase->setEnabled( true ) ;
@@ -815,6 +838,8 @@ void createvolume::enableAll()
 
 void createvolume::disableAll()
 {
+	m_ui->label_2->setEnabled( false ) ;
+	m_ui->lineEditPIM->setEnabled( false ) ;
 	m_ui->labelPassPhrase->setEnabled( false ) ;
 	m_ui->labelVolumePath->setEnabled( false ) ;
 	m_ui->labelRepeatPassPhrase->setEnabled( false ) ;
@@ -968,13 +993,13 @@ void createvolume::pbCreateClicked()
 	case createvolume::normal_truecrypt :
 	case createvolume::normal_and_hidden_truecrypt :
 
-		m_volumeType = "truecrypt" ;
+		m_volumeType = "tcrypt" ;
 
 		break ;
 	case createvolume::normal_veracrypt :
 	case createvolume::normal_and_hidden_veracrypt :
 
-		m_volumeType = "veracrypt" ;
+		m_volumeType = "vcrypt" ;
 
 		break ;
 	default: m_volumeType = "luks" ;
@@ -1006,6 +1031,16 @@ void createvolume::pbCreateClicked()
 	}else if( type == createvolume::plain ){
 
 		g += ".0" ;
+
+	}else if( type == createvolume::normal_veracrypt ||
+		  type == createvolume::normal_and_hidden_veracrypt ){
+
+		auto e = m_ui->lineEditPIM->text() ;
+
+		if( !e.isEmpty() ){
+
+			g += "." + e ;
+		}
 	}
 
 	volumePath.replace( "\"","\"\"\"" ) ;
