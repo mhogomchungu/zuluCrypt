@@ -168,6 +168,8 @@ void passwordDialog::cbVolumeType( int e )
 
 	m_ui->lineEditVolumeProperty->clear() ;
 
+	m_ui->lineEditVolumeProperty->setToolTip( QString() ) ;
+
 	if( e == 0 ){
 
 		/*
@@ -191,6 +193,7 @@ void passwordDialog::cbVolumeType( int e )
 		 */
 		m_ui->labelVolumeProperty->setText( tr( "Offset" ) ) ;
 		m_ui->lineEditVolumeProperty->setEnabled( true ) ;
+		m_ui->lineEditVolumeProperty->setToolTip( tr( "Offset Will Be In Sectors If The Entry Is Made Up Of Only Digits\nAnd In Bytes If The Entry Ends With \"b\"\nAnd In Kilobytes If The Entry Ends With \"k\"\nAnd In Megabytes If The Entry Ends With \"m\"\nAnd In Terabytes If The Entry Ends With \"t\"" ) ) ;
 	}
 }
 
