@@ -532,16 +532,11 @@ static int _restore_luks_header( const struct_opts * opts,const char * temp_path
 
 		st = 7 ;
 	}else{
-		if( crypt_load( cd,NULL,NULL ) != 0 ){
+		if( crypt_header_restore( cd,NULL,temp_path ) == 0 ){
 
-			st = 2 ;
+			st = 1 ;
 		}else{
-			if( crypt_header_restore( cd,NULL,temp_path ) == 0 ){
-
-				st = 1 ;
-			}else{
-				st = 7 ;
-			}
+			st = 7 ;
 		}
 
 		crypt_free( cd ) ;

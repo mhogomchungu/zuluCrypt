@@ -316,8 +316,6 @@ void managevolumeheader::enableAll()
 	m_ui->pushButtonFile->setEnabled( true ) ;
 	m_ui->pushButtonPartition->setEnabled( true ) ;
 	m_ui->cbVolumeHeader->setEnabled( true ) ;
-	m_ui->labelVolumeType->setEnabled( true ) ;
-	m_ui->cbVolumeType->setEnabled( true ) ;
 
 	auto index = m_ui->cbVolumeHeader->currentIndex() ;
 
@@ -327,6 +325,9 @@ void managevolumeheader::enableAll()
 	m_ui->labelKeySource->setEnabled( index != 0 ) ;
 	m_ui->cbKeySource->setEnabled( index != 0 ) ;
 	m_ui->lineEditPassWord->setEnabled( index != 0 ) ;
+
+	m_ui->labelVolumeType->setEnabled( index != 0 ) ;
+	m_ui->cbVolumeType->setEnabled( index != 0 ) ;
 
 	if( index != 0 ){
 
@@ -547,7 +548,7 @@ void managevolumeheader::taskFinished( int st )
 
 		case 0 : return this->success() ;
 		case 1 : return this->success() ;
-		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Oresented device is not a LUKS device" ) )					; break ;
+		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented device is not a LUKS device" ) )					; break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to perform requested operation" ) )					; break ;
 		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to perform requested operation" ) )					; break ;
 		case 5 : msg.ShowUIOK( tr( "INFO!"  ),tr( "Operation terminater per user request" ) )					; break ;

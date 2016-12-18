@@ -2766,9 +2766,13 @@ Si possible, stockez le en toute sécurité.</translation>
         <translation>Header restauré avec succès</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="550"/>
         <source>Oresented device is not a LUKS device</source>
-        <translation>Le périphérique n&apos;est pas un périphérique LUKS</translation>
+        <translation type="vanished">Le périphérique n&apos;est pas un périphérique LUKS</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="550"/>
+        <source>Presented device is not a LUKS device</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="551"/>
