@@ -24,12 +24,14 @@
 #include <QCheckBox>
 
 #include "../zuluCrypt-gui/utility.h"
+#include "dialogok.h"
 
-DialogMsg::DialogMsg( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::DialogMsg )
+DialogMsg::DialogMsg( QWidget * parent ) :
+	QDialog( parent ),m_ui( new Ui::DialogMsg ),m_parent( parent )
 {
 	m_ui->setupUi( this ) ;
 
-	if( parent  ){
+	if( parent ){
 
 		this->setFont( parent->font() ) ;
 	}
@@ -290,13 +292,15 @@ void DialogMsg::ShowUIInfo( const QString& title,bool centered,const QString& ms
 
 void DialogMsg::ShowUIOK( const QString& title,const QString& msg )
 {
-	m_ui->pbYes->setHidden( true ) ;
-	m_ui->pbNo->setHidden( true ) ;
-	m_ui->pbOk->setHidden( false ) ;
+	dialogok( m_parent,false,false,title,msg ).Show() ;
 
-	this->HideLabels() ;
-	this->setDimentions( msg ) ;
-	this->ShowUI( title,msg ) ;
+	//m_ui->pbYes->setHidden( true ) ;
+	//m_ui->pbNo->setHidden( true ) ;
+	//m_ui->pbOk->setHidden( false ) ;
+
+	//this->HideLabels() ;
+	//this->setDimentions( msg ) ;
+	//this->ShowUI( title,msg ) ;
 }
 
 void DialogMsg::SetUpButtons()
@@ -310,23 +314,27 @@ void DialogMsg::SetUpButtons()
 
 int DialogMsg::ShowUIYesNo( const QString& title,const QString& msg )
 {
-	this->SetUpButtons() ;
-	this->setDimentions( msg ) ;
-	this->ShowUI( title,msg ) ;
+	return dialogok( m_parent,true,false,title,msg ).Show() ;
 
-	return m_status;
+	//this->SetUpButtons() ;
+	//this->setDimentions( msg ) ;
+	//this->ShowUI( title,msg ) ;
+
+	//return m_status;
 }
 
 int  DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
 {
-	this->SetUpButtons() ;
-	this->setDimentions( msg ) ;
+	return dialogok( m_parent,true,true,title,msg ).Show() ;
 
-	m_ui->pbNo->setFocus() ;
+	//this->SetUpButtons() ;
+	//this->setDimentions( msg ) ;
 
-	this->ShowUI( title,msg ) ;
+	//m_ui->pbNo->setFocus() ;
 
-	return m_status ;
+	//this->ShowUI( title,msg ) ;
+
+	//return m_status ;
 }
 
 bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg )

@@ -23,9 +23,11 @@ set( UI_FILES createfile.ui
 		openvolume.ui
 		tcrypt.ui
 		contactinfo.ui
+		dialogok.ui
 )
 
 set( MOC_FILES
+		dialogok.h
 		utility.h
 		tcrypt.h
 		createfile.h
@@ -51,6 +53,7 @@ set( MOC_FILES
  )
 
 set( SRC
+	dialogok.cpp
 	secrets.cpp
 	tcrypt.cpp
 	createfile.cpp

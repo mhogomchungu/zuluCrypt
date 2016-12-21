@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 cmake_policy(SET CMP0017 OLD)
 
 set( SRC
+	../dialogok.cpp
 	../dialogmsg.cpp
 	../tablewidget.cpp
 	../utility.cpp
@@ -11,6 +12,7 @@ set( SRC
 )
 
 set( MOC_FILES
+	../dialogok.h
 	../checkforupdates.h
 	../task.h
 	../dialogmsg.h
@@ -20,7 +22,7 @@ set( MOC_FILES
 	../networkAccessManager.hpp
 )
 
-set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui )
+set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui ../dialogok.ui )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR})
 

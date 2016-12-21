@@ -59,6 +59,7 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::DialogMsg * m_ui ;
+	QWidget * m_parent ;
 	int m_status ;
 };
 
