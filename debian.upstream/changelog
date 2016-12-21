@@ -1,3 +1,18 @@
+zulucrypt (5.1.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- make it possible to unlock folder based encrypted volumes when running in mixed mode.
+     -- add ability in zuluCrypt-gui to unlock VeraCrypt volumes that use PIM value.
+     -- add ability in zuluCrypt-gui to unlock plain dm-crypt volumes that uses an offset.
+     -- add ability in zuluCrypt-gui to create plain dm-crypt volumes using user configurable crypto options.
+     -- add ability in zuluCrypt-gui to unlock plain dm-crypt volumes using user configurable crypto options.
+     -- add ability in zuluCrypt-gui to backup and restore VeraCrypt headers.
+     -- add ability in zuluCrypt-gui to change VeraCrypt volume key.
+     -- add ability in zuluCrypt-gui to create a VeraCrypt volume that uses a PIM value.
+     -- add ability in zuluMount-gui to unlock folder based encrypted volumes when running in mixed mode.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sun, 1 Jan 2017 16:38:48 +0000
+
 zulucrypt (5.0.2-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

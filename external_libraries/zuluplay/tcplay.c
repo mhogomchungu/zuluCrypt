@@ -624,7 +624,7 @@ process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int 
 				    "crc_keys: %d, sz_vol: %"PRIu64", "
 				    "off_mk_scope: %"PRIu64", sz_mk_scope: %"PRIu64", "
 				    "flags: %d, sec_sz: %d crc_dhdr: %d\n",
-				    dhdr->tc_str, dhdr->tc_ver, dhdr->tc_min_ver >> 8, dhdr->tc_min_ver & 0x00FF
+				    dhdr->tc_str, dhdr->tc_ver, dhdr->tc_min_ver >> 8, dhdr->tc_min_ver & 0x00FF,
 				    dhdr->crc_keys, dhdr->sz_vol, dhdr->off_mk_scope,
 				    dhdr->sz_mk_scope, dhdr->flags, dhdr->sec_sz,
 				    dhdr->crc_dhdr);

@@ -9,7 +9,7 @@ project(zuluCrypt)
 
 INCLUDE(GNUInstallDirs)
 
-set( PGR_VERSION "5.0.2" )
+set( PGR_VERSION "5.1.0" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 
@@ -86,7 +86,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/version_1.h "
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef ZULUCRYPT_VERSION
 #define ZULUCRYPT_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2011-2016 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2011-2017 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
 
@@ -155,8 +155,7 @@ endif()
 if( INTERNAL_ZULUPLAY )
 	message( STATUS "---------------------------------------------------------------------------" )
 	message( STATUS "internal version of zuluplay will be used to create and open TrueCrypt and VeraCrypt volumes." )
-	message( STATUS "internal version of zuluplay will be used to create and restore TrueCrypt volume headers." )
-	message( STATUS "creation and restoration of VeraCrypt volume headers is currently disabled." )
+	message( STATUS "internal version of zuluplay will be used to create and restore TrueCrypt and VeraCrypt volume headers." )
 	message( STATUS "---------------------------------------------------------------------------" )
 
 	set( STATIC_ZULUPLAY "true" )

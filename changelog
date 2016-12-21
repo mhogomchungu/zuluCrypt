@@ -258,7 +258,7 @@ version 5.0.2
 -- add support for unlocking ecryptfs volumes in zuluMount-gui(ecryptfs-simple tool must already be installed)
 -- fix permission related problems in configuration files when running in mixed mode.
 
-version 5.0.3
+version 5.1.0
 -- make it possible to unlock folder based encrypted volumes when running in mixed mode.
 -- add ability in zuluCrypt-gui to unlock VeraCrypt volumes that use PIM value.
 -- add ability in zuluCrypt-gui to unlock plain dm-crypt volumes that uses an offset.
@@ -267,3 +267,4 @@ version 5.0.3
 -- add ability in zuluCrypt-gui to backup and restore VeraCrypt headers.
 -- add ability in zuluCrypt-gui to change VeraCrypt volume key.
 -- add ability in zuluCrypt-gui to create a VeraCrypt volume that uses a PIM value.
+-- add ability in zuluMount-gui to unlock folder based encrypted volumes when running in mixed mode.
