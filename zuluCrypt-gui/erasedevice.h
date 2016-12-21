@@ -21,6 +21,7 @@
 
 #include <QDialog>
 #include <QString>
+#include <atomic>
 
 class QCloseEvent ;
 class EraseTask ;
@@ -61,7 +62,7 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::erasedevice * m_ui ;
 	int m_option ;
-	bool m_exit ;
+	std::atomic_bool m_exit ;
 	bool m_running ;
 };
 

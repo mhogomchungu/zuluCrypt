@@ -530,7 +530,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 	return write( fd,buffer,bufferSize ) != -1 ;
 }
 
-::Task::future< int >& utility::clearVolume( const QString& volume,bool * exit,size_t volumeSize,std::function< void( int ) > function )
+::Task::future< int >& utility::clearVolume( const QString& volume,std::atomic_bool * exit,size_t volumeSize,std::function< void( int ) > function )
 {
 	return ::Task::run<int>( [ volume,exit,volumeSize,function ](){
 

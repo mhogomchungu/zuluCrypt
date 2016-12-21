@@ -1151,7 +1151,7 @@ void createvolume::taskFinished_1( int st )
 
 			msg.ShowUIOK( tr( "WARNING!" ),tr( "Volume created successfully but failed to create an external header" ) ) ;
 		}else{
-			bool exit = false ;
+			std::atomic_bool exit( false ) ;
 
 			if( utility::clearVolume( volumePath,&exit,2 * 1024 * 1024,[]( int r ){ Q_UNUSED( r ) ; } ).await() == 0 ){
 

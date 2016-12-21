@@ -62,7 +62,7 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::createfile * m_ui ;
-	bool m_exit ;
+	std::atomic_bool m_exit ;
 	bool m_running ;
 	std::function< void( const QString& ) > m_function ;
 };
