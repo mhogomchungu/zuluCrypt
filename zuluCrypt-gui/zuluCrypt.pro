@@ -13,6 +13,7 @@ TEMPLATE = app
 SOURCES += main.cpp\
 	zulucrypt.cpp\
 	password_dialog.cpp \
+	dialogok.cpp \
     openvolume.cpp \
     luksaddkey.cpp \
     luksdeletekey.cpp \
@@ -62,6 +63,7 @@ SOURCES += main.cpp\
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
+    dialogok.h \
     openvolume.h \
     luksaddkey.h \
     luksdeletekey.h \
@@ -111,6 +113,7 @@ HEADERS  += zulucrypt.h \
 FORMS    += zulucrypt.ui password.ui \
     openvolume.ui \
     luksaddkey.ui \
+    dialogok.ui \
     luksdeletekey.ui \
     createvolume.ui \
     createfile.ui \

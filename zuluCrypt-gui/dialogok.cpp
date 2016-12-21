@@ -54,12 +54,12 @@ dialogok::dialogok(  QWidget  * parent,bool s,bool q,const QString& e,const QStr
 
 void dialogok::ok()
 {
-	this->done( 0 ) ;
+	this->done( int( QMessageBox::Ok ) ) ;
 }
 
 void dialogok::yes()
 {
-	this->done( int( QMessageBox::Ok ) ) ;
+	this->done( int( QMessageBox::Yes ) ) ;
 }
 
 void dialogok::no()
