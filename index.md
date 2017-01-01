@@ -35,11 +35,11 @@ screenshots are at the end of this page.
 
 ## zuluCrypt download page
 
-latest released version is 5.0.2 and it can be downloaded by clicking any one of the two links below.
+latest released version is 5.1.0 and it can be downloaded by clicking any one of the two links below.
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2.tar.bz2">zuluCrypt-5.0.2.tar.bz2</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0.tar.bz2">zuluCrypt-5.1.0.tar.bz2</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2.tar.xz">zuluCrypt-5.0.2.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0.tar.xz">zuluCrypt-5.1.0.tar.xz</a>
 
 
 ## binary packages
@@ -55,35 +55,35 @@ zuluCrypt packages are in <a href="https://admin.fedoraproject.org/pkgdb/package
 ```Binary packages for debian and ubuntu are below:```
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2-debian-7-Wheezy.tar.xz">zuluCrypt-5.0.2-debian-7-Wheezy.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-debian-7-Wheezy.tar.xz">zuluCrypt-5.1.0-debian-7-Wheezy.tar.xz</a>
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2-debian-8-Jessie.tar.xz">zuluCrypt-5.0.2-debian-8-Jessie.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-debian-8-Jessie.tar.xz">zuluCrypt-5.1.0-debian-8-Jessie.tar.xz</a>
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2-ubuntu-14.04-Trusty_Tahr.tar.xz">zuluCrypt-5.0.2-ubuntu-14.04-Trusty_Tahr.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-ubuntu-14.04-Trusty_Tahr.tar.xz">zuluCrypt-5.1.0-ubuntu-14.04-Trusty_Tahr.tar.xz</a>
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2-ubuntu-14.10-Utopic_Unicorn.tar.xz">zuluCrypt-5.0.2-ubuntu-14.10-Utopic_Unicorn.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-ubuntu-14.10-Utopic_Unicorn.tar.xz">zuluCrypt-5.1.0-ubuntu-14.10-Utopic_Unicorn.tar.xz</a>
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2-ubuntu-15.04-Vivid_Vervet.tar.xz">zuluCrypt-5.0.2-ubuntu-15.04-Vivid_Vervet.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-ubuntu-15.04-Vivid_Vervet.tar.xz">zuluCrypt-5.1.0-ubuntu-15.04-Vivid_Vervet.tar.xz</a>
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2-ubuntu-15.10-Wily_Werewolf.tar.xz">zuluCrypt-5.0.2-ubuntu-15.10-Wily_Werewolf.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-ubuntu-15.10-Wily_Werewolf.tar.xz">zuluCrypt-5.1.0-ubuntu-15.10-Wily_Werewolf.tar.xz</a>
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-5.0.2-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-5.1.0-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.0.2/zuluCrypt-5.0.2-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.0.2-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.1.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
 
 
 
 These archives contains binaries for both 32 bit and 64 bit systems.
 
 
-Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/5.0.2">here.</a>
+Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/5.1.0">here.</a>
 
 Development versions of binary packages together with other generated package files can be obtained from <a href="http://download.opensuse.org/repositories/home:/mhogomchungu/">here.</a>
 
@@ -140,7 +140,7 @@ The list of most frequently asked questions can be found <a href="https://github
 
 <a href="http://tinypic.com?ref=im3t6f" target="_blank"><img src="http://i68.tinypic.com/im3t6f.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
-last update: Mon Dec  5 12:25:07 EAT 2016
+last update: Sun Jan  1 14:30:19 EAT 2017
 ```
 contact info:
 Name: Francis Banyikwa
