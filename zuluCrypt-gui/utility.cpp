@@ -1217,9 +1217,14 @@ void utility::readFavorites( QMenu * m,bool truncate,bool showFolders )
 
 			m->addAction( _add_action( it ) ) ;
 		}else{
-			if( !utility::pathPointsToAFolder( utility::split( it,'\t' ).first() ) ){
+			auto e = utility::split( it,'\t' ).first() ;
 
-				m->addAction( _add_action( it ) ) ;
+			if( utility::pathExists( e ) ){
+
+				if( !utility::pathPointsToAFolder( e ) ){
+
+					m->addAction( _add_action( it ) ) ;
+				}
 			}
 		}
 	}

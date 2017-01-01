@@ -317,13 +317,32 @@
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QLabel" name="labelKeyType">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>220</y>
+     <width>101</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Outer Volume Key ONLY</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
   <widget class="QLabel" name="labelVeraCryptWarning">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>0</y>
      <width>541</width>
-     <height>291</height>
+     <height>301</height>
     </rect>
    </property>
    <property name="autoFillBackground">

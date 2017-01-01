@@ -92,6 +92,7 @@ void managevolumeheader::cbVolumeHeader( int e )
 {
 	bool enable = ( e != 0 ) ;
 
+	m_ui->labelKeyType->setEnabled( enable ) ;
 	m_ui->lineEditPassWord->clear() ;
 	m_ui->pBKeyFile->setEnabled( enable ) ;
 	m_ui->lineEditPassWord->setEnabled( enable ) ;
@@ -321,7 +322,7 @@ void managevolumeheader::enableAll()
 
 	m_ui->labelPIM->setEnabled( index == 2 ) ;
 	m_ui->lineEditPIM->setEnabled( index == 2 ) ;
-
+	m_ui->labelKeyType->setEnabled( index != 0 ) ;
 	m_ui->labelKeySource->setEnabled( index != 0 ) ;
 	m_ui->cbKeySource->setEnabled( index != 0 ) ;
 	m_ui->lineEditPassWord->setEnabled( index != 0 ) ;
@@ -342,6 +343,7 @@ void managevolumeheader::enableAll()
 
 void managevolumeheader::disableAll()
 {
+	m_ui->labelKeyType->setEnabled( false ) ;
 	m_ui->labelKeySource->setEnabled( false ) ;
 	m_ui->cbKeySource->setEnabled( false ) ;
 	m_ui->lineEditPassWord->setEnabled( false ) ;

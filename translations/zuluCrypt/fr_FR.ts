@@ -2657,7 +2657,12 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
         <translation></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="333"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="330"/>
+        <source>Outer Volume Key ONLY</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="352"/>
         <source>TextLabel</source>
         <translation type="unfinished">Etiquette de texte</translation>
     </message>
@@ -2694,12 +2699,12 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
         <translation type="vanished">Entrez une clé existante dans le fichier de sauvegarde d&apos;en-tête</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="156"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="157"/>
         <source>Restore volume header</source>
         <translation>Restaurer Header Volume</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="159"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="160"/>
         <source>&amp;Restore</source>
         <translation>&amp;Restaurer</translation>
     </message>
@@ -2708,33 +2713,31 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
         <translation type="vanished">Entrez une clé existante dans le volume</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="169"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="170"/>
         <source>Back up volume header</source>
         <translation>Backup Header Volume</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="172"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="173"/>
         <source>&amp;Backup</source>
         <translation>&amp;Backup</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="243"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="244"/>
         <source>Select A File With A LUKS Backup Header</source>
         <translation>Sélectionner un fichier avec un LUKS Backup Header</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="250"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="251"/>
         <source>Select A Folder To Store The Header</source>
         <translation>Sélectionner un répertoire pour stocker le Header</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="372"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="376"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="551"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="552"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="374"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="378"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="553"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="554"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="555"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="556"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="557"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="558"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="559"/>
@@ -2746,50 +2749,52 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="565"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="566"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="567"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="571"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="568"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="569"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="573"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="580"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="575"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="582"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="586"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="584"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="588"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="372"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="376"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="374"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="378"/>
         <source>Atleast one required field is empty</source>
         <translation>Au moins un des champs qui est requis est vide</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="426"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="428"/>
         <source>Are you sure you want to replace a header on device &quot;%1&quot; with a backup copy at &quot;%2&quot;?</source>
         <translation>Etes-vous sûr de vouloir remplacer un en-tête sur le périphérique &quot;%1&quot; avec une copie de sauvegarde de &quot;%2&quot;?</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="428"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="430"/>
         <source>WARNING!</source>
         <translation>ATTENTION!</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="503"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="505"/>
         <source>Select luks container you want to backup its header</source>
         <translation>Sélectionner un conteneur LUKS dont vous voulez sauvegarder le header</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="531"/>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="533"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="535"/>
         <source>SUCCESS</source>
         <translation>SUCCES</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="531"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="533"/>
         <source>Header saved successfully.
 If possible,store it securely.</source>
         <translation>Header sauvé avec succès.
 Si possible, stockez le en toute sécurité.</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="533"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="535"/>
         <source>Header restored successfully</source>
         <translation>Header restauré avec succès</translation>
     </message>
@@ -2798,101 +2803,101 @@ Si possible, stockez le en toute sécurité.</translation>
         <translation type="vanished">Le périphérique n&apos;est pas un périphérique LUKS</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="551"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="553"/>
         <source>Presented device is not a LUKS device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="552"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="553"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="556"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="554"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="555"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="558"/>
         <source>Failed to perform requested operation</source>
         <translation>Echec de l&apos;opération demandée</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="554"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="556"/>
         <source>INFO!</source>
         <translation>INFO!</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="554"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="556"/>
         <source>Operation terminater per user request</source>
         <translation>Opération interrompue par l&apos;utilisateur</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="555"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="557"/>
         <source>Path to be used to create a back up file is occupied</source>
         <translation>Chemin d&apos;accès utilisé pour créer le fichier de sauvegarde est occupé</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="557"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="559"/>
         <source>Insufficient privilege to open backup header file for reading</source>
         <translation>Privilège insuffisant pour ouvrir le fichier d&apos;en-tête de sauvegarde pour la lecture</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="558"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="560"/>
         <source>Invalid path to back up header file</source>
         <translation>Chemin invalide pour sauver le fichier header</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="559"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="561"/>
         <source>Insufficient privilege to create a backup header in a destination folder</source>
         <translation>Privilège insuffisant pour sauver un backup dans le répertoire de destination</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="560"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="562"/>
         <source>Invalid path to device</source>
         <translation>Chemin de périphérique invalide</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="561"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="562"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="563"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="564"/>
         <source>Argument for path to a backup  header file is missing</source>
         <translation>Argument pour le chemin de sauvegarde du header est manquant</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="563"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="565"/>
         <source>Only root user and &quot;zulucrypt&quot; members can restore and back up luks headers on system devices</source>
         <translation>Seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent restaurer et sauver les luks headers sur les périphériques systèmes</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="564"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="566"/>
         <source>Insufficient privilege to open device for writing</source>
         <translation>Privilège insuffisant pour ouvrir le périphérique pour l&apos;écriture</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="565"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="567"/>
         <source>Could not resolve path to device</source>
         <translation>Ne peut pas trouver le chemin du périphérique</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="566"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="568"/>
         <source>Backup file does not appear to contain luks header</source>
         <translation>Le fichier sauvegardé ne semble pas contenir de header LUKS</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="567"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="569"/>
         <source>Insufficient privilege to open device for reading</source>
         <translation>Privilège insuffisant pour ouvrir le périphérique pour la lecture</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="571"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="573"/>
         <source>Wrong password entered or volume is not a truecrypt volume</source>
         <translation>Mot de passe erroné ou le volume n&apos;est pas un volume Truecrypt</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="573"/>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="582"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="575"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="584"/>
         <source>Failed to perform requested operation on the LUKS volume</source>
         <translation>Echec de l&apos;opération demandée sur le volume LUKS</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="580"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="582"/>
         <source>Wrong password entered or volume is not a veracrypt volume</source>
         <translation>Mot de passe erroné ou le volume n&apos;est pas un volume Veracrypt</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="586"/>
+        <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="588"/>
         <source>Unrecognized ERROR! with status number %1 encountered</source>
         <translation>Erreur inconnue avec numéro de statut %1 rencontrée</translation>
     </message>
@@ -3532,22 +3537,22 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="715"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="716"/>
         <source>Elapsed time: 0 seconds</source>
         <translation>Temps écoulé: 0 secondes</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="723"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="724"/>
         <source>Elapsed time: %0 minutes</source>
         <translation>Temps écoulé: %0 minutes</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="725"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="726"/>
         <source>Elapsed time: %0 seconds</source>
         <translation>Temps écoulé: %0 secondes</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="736"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="737"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>

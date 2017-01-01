@@ -83,7 +83,7 @@ to easy opening and closing of volumes
 %build
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DREUSEMOUNTPOINT=false -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false -DHOMEMOUNTPREFIX=false -DNOGNOME=false -DNOKDE=false -DCMAKE_BUILD_TYPE=RELEASE ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DREUSEMOUNTPOINT=false -DUDEVSUPPORT=true -DNOGUI=false -DQT5=true -DHOMEMOUNTPREFIX=false -DNOGNOME=false -DNOKDE=false -DCMAKE_BUILD_TYPE=RELEASE ..
 
 %install
 cd build
