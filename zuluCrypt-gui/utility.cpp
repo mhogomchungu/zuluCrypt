@@ -1977,6 +1977,9 @@ aes.xts-plain64.512.sha1)" ;
 
 			f.write( _options ) ;
 
+			utility::changePathOwner( f ) ;
+			utility::changePathPermissions( f,0666 ) ;
+
 			f.close() ;
 		}
 	}
@@ -1998,6 +2001,9 @@ QStringList utility::supportedFileSystems()
 		if( f.open( QIODevice::WriteOnly ) ){
 
 			f.write( "ext4\nvfat\nntfs\next2\next3\nexfat\nbtrfs" ) ;
+
+			utility::changePathOwner( f ) ;
+			utility::changePathPermissions( f,0666 ) ;
 
 			f.close() ;
 		}
