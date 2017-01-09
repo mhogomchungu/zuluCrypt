@@ -71,7 +71,7 @@ make install( or sudo make install )
 
 *****************************************************************************************************
 
-After you have it installed,run "zuluCrypt-test" to make sure everything is working as expected.
+After you have it installed,run "zuluCrypt-cli --test" to make sure everything is working as expected.
 
 The build system now uses GNUInstallDirs (https://cmake.org/cmake/help/v3.5/module/GNUInstallDirs.html), so pretty much all directories can be controlled properly.
 
