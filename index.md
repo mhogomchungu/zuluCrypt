@@ -117,15 +117,15 @@ zuluCrypt has a plugin architecture that allows it to retrieve keys to unlock vo
 
 * a combination of a passphrase and keyfile where key = passphrase + content of keyfile.
 
-* a combination of a passphrase and keyfile where key = gpg_symmetric_decrypt( passphrase,keyfile )
+* a combination of a passphrase and keyfile where key = gpg_symmetric_decrypt(passphrase,keyfile)
 
-* a combination of a passphrase and keyfile where key = hmac-sha256( passphrase,keyfile )
+* a combination of a passphrase and keyfile where key = hmac-sha256(passphrase,keyfile)
 
 ## where did the name come from?
 
 The "crypt" part is there to show core feature of the tool. The "zulu" part come from "zulu time", commonly known as "GMT"( Greenwich Mean Time ). The tv was on as i was thinking of what name to use for the project and somebody on tv kept mentioning "zulu time"( i think it was a military related show ) and the zulu part of the name got stuck.
 
-##various components of the tools
+## various components of the tools
 
 zuluCrypt is made up of two components: The back end,CLI interface is called "zuluCrypt-cli".it is build using C and has required dependencies on libblkid,libcryptsetup and an optional dependency on libtcplay. The front end is Qt GUI application called "zuluCrypt-gui",it is build using C++/Qt
 
