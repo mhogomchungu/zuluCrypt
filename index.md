@@ -11,7 +11,7 @@ zuluCrypt can also encrypt stand alone files(zuluCrypt menu->zC->encrypt a file)
 zuluMount is bundled with zuluCrypt and its meant to be used as a general purpose tool that mount and unmount zuluCrypt supported encrypted volumes as well as unencrypted volumes and it can be used as a substitute to udisks,pmount and related tools.
 
 
-zuluMount-gui can also be used as a frontend to <a href="https://wiki.archlinux.org/index.php/EncFS">encfs</a>,<a href="https://nuetzlich.net/gocryptfs">gocryptfs</a>,<a href="https://github.com/netheril96/securefs">securefs</a>,<a href="http://ecryptfs.org/">ecryptfs</a> and <a href="https://www.cryfs.org/">cryfs.</a> 
+zuluMount-gui can also be used as a frontend to <a href="https://wiki.archlinux.org/index.php/EncFS">encfs</a>,<a href="https://nuetzlich.net/gocryptfs">gocryptfs</a>,<a href="https://github.com/netheril96/securefs">securefs</a>,<a href="http://ecryptfs.org/">ecryptfs</a> and <a href="https://www.cryfs.org/">cryfs.</a>
 
 zuluMount-gui is ideal for use as a desktop environment/file manager independent tool for mounting/unmounting encrypted and unencrypted volumes.
 
@@ -141,8 +141,7 @@ The list of most frequently asked questions can be found <a href="https://github
 <a href="http://tinypic.com?ref=im3t6f" target="_blank"><img src="http://i68.tinypic.com/im3t6f.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
 last update: Sun Jan  1 14:30:19 EAT 2017
-```
-contact info:
+```contact info:
 Name: Francis Banyikwa
 email: mhogomchungu@gmail.com
 
@@ -208,5 +207,4 @@ h/19Gl88Dj49v7SS83DqAtURjtXny2lo37uTAAZYgqMVeMff4Y8UJnYSomNwoBqf
 pEH3RYyz2GwvaLpUvPUZvVr0x+dFSrHr3ze6v/q48OlmOTCkyukjYqsSOFgMIwBR
 i/gJN6mX3AIU7HHEHnP5ty8mwbb8ROc=
 =VDxL
------END PGP PUBLIC KEY BLOCK-----
-```
+-----END PGP PUBLIC KEY BLOCK-----```
