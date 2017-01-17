@@ -106,6 +106,7 @@ Older versions can be downloaded from <a href="https://github.com/mhogomchungu/z
 ## key sources.
 
 zuluCrypt has a plugin architecture that allows it to retrieve keys to unlock volume from difference source:
+```
 * gnome's libsecret(gnome wallet).
 * kde's kwallet.
 * an internal storage system powered by libgcrypt.
@@ -113,7 +114,7 @@ zuluCrypt has a plugin architecture that allows it to retrieve keys to unlock vo
 * a combination of a passphrase and keyfile where key = passphrase + content of keyfile.
 * a combination of a passphrase and keyfile where key = gpg_symmetric_decrypt( passphrase,keyfile )
 * a combination of a passphrase and keyfile where key = hmac-sha256( passphrase,keyfile )
-
+```
 ## where did the name come from?
 
 The "crypt" part is there to show core feature of the tool. The "zulu" part come from "zulu time", commonly known as "GMT"( Greenwich Mean Time ). The tv was on as i was thinking of what name to use for the project and somebody on tv kept mentioning "zulu time"( i think it was a military related show ) and the zulu part of the name got stuck.
@@ -140,8 +141,8 @@ The list of most frequently asked questions can be found <a href="https://github
 
 <a href="http://tinypic.com?ref=im3t6f" target="_blank"><img src="http://i68.tinypic.com/im3t6f.png" border="0" alt="Image and video hosting by TinyPic"></a>
 
-last update: Sun Jan  1 14:30:19 EAT 2017
-```contact info:
+## Contact info:
+```
 Name: Francis Banyikwa
 email: mhogomchungu@gmail.com
 
@@ -207,4 +208,7 @@ h/19Gl88Dj49v7SS83DqAtURjtXny2lo37uTAAZYgqMVeMff4Y8UJnYSomNwoBqf
 pEH3RYyz2GwvaLpUvPUZvVr0x+dFSrHr3ze6v/q48OlmOTCkyukjYqsSOFgMIwBR
 i/gJN6mX3AIU7HHEHnP5ty8mwbb8ROc=
 =VDxL
------END PGP PUBLIC KEY BLOCK-----```
+-----END PGP PUBLIC KEY BLOCK-----
+```
+
+last update: Tue Jan 17 23:06:40 EAT 2017
