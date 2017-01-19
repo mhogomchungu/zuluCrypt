@@ -63,6 +63,8 @@
 #include "plugin.h"
 #include "install_prefix.h"
 
+#include "networkAccessManager.hpp"
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -248,6 +250,8 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 			e.removeOne( "keyring" ) ;
 			e.removeOne( "kwallet" ) ;
 		}
+
+		e.append( "network" ) ;
 	}
 
 	menu->clear() ;
@@ -2015,4 +2019,50 @@ QStringList utility::supportedFileSystems()
 	}
 
 	return { "ext4","vfat","ntfs","ext2","ext3","exfat","btrfs" } ;
+}
+
+std::pair< bool,QByteArray > utility::getKeyFromNetwork( const QString& e )
+{
+	QFile f( utility::homePath() + "/.zuluCrypt/network" ) ;
+
+	if( !f.open( QIODevice::ReadOnly ) ){
+
+		return { false,"" } ;
+	}
+
+	QUrl url ;
+
+	QByteArray data = "device=" + utility::split( e,' ' ).last().toLatin1() ;
+
+	QByteArray host ;
+
+	for( const auto& it : utility::split( f.readAll() ) ){
+
+		if( it.startsWith( "url=" ) ){
+
+			url.setUrl( it.toLatin1().constData() + 4 ) ;
+
+		}else if( it.startsWith( "host=" ) ){
+
+			host = it.toLatin1().constData() + 5 ;
+		}else{
+			data += "&" + it ;
+		}
+	}
+
+	QNetworkRequest n( url ) ;
+
+	n.setRawHeader( "Host",host ) ;
+	n.setRawHeader( "Content-Type","application/x-www-form-urlencoded" ) ;
+
+	NetworkAccessManager m ;
+
+	auto s = m.post( n,data ) ;
+
+	if( s->error() == QNetworkReply::NoError ){
+
+		return { true,s->readAll() } ;
+	}else{
+		return { false,"" } ;
+	}
 }

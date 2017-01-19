@@ -716,6 +716,47 @@ void passwordDialog::openVolume()
 					this->sendKey( keyPath ) ;
 				}
 
+			}else if( r == "network" ){
+
+				auto e = utility::Task::makePath( m_device ) ;
+
+				auto z = QString( "%1 -i -d %2" ).arg( ZULUCRYPTzuluCrypt,e ) ;
+
+				auto& s = utility::Task::run( z ) ;
+
+				auto q = utility::split( s.await().output() ) ;
+
+				if( q.size() < 2 ){
+
+					DialogMsg msg( this ) ;
+
+					msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume is not a LUKS volume" ) ) ;
+
+					m_ui->OpenVolumePath->setFocus() ;
+
+					return this->enableAll() ;
+				}else{
+					this->disableAll() ;
+
+					auto s =  utility::getKeyFromNetwork( q.at( 1 ) ) ;
+
+					if( s.first ){
+
+						m_key = s.second ;
+
+						passtype = "-f" ;
+						keyPath = utility::keyPath() ;
+
+						this->sendKey( keyPath ) ;
+					}else{
+						DialogMsg msg( this ) ;
+
+						msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to get get from the network" ) ) ;
+
+						m_ui->OpenVolumePath->setFocus() ;
+						return this->enableAll() ;
+					}
+				}
 			}else{
 				passtype = "-G" ;
 				keyPath  = r ;

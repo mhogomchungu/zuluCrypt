@@ -73,20 +73,35 @@ static int zuluCryptEXECheckIfLuks( const char * device )
 {
 	int status ;
 
+	char * e ;
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 	/*
 	 * this zuluCryptVolumeIsLuks() is defined in ../lib/is_luks.c
 	 */
 	status = zuluCryptVolumeIsLuks( device ) ;
 
+	/*
+	 * zuluCryptUUIDFromPath_1() is defined in ../lib/blkid_evaluate_tag.c
+	 */
+	e = zuluCryptUUIDFromPath_1( device ) ;
+
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( status ){
 
 		printf( gettext( "Device is a luks volume\n" ) ) ;
+
+		if( e ){
+
+			printf( "%s %s\n",gettext( "Its UUID is:" ),e ) ;
+		}
 	}else{
 		printf( gettext( "Device is not a luks volume\n" ) ) ;
 	}
+
+	StringFree( e ) ;
+
 	return status ;
 }
 

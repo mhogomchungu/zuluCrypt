@@ -28,6 +28,9 @@
  * SUCH DAMAGE.
  */
 
+#ifndef NETWORKACCESSMANAGER_H
+#define NETWORKACCESSMANAGER_H
+
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
@@ -198,3 +201,5 @@ private:
 	QVector< std::pair< QNetworkReply *,function_t > > m_entries ;
 	QNetworkAccessManager m_manager ;
 };
+
+#endif

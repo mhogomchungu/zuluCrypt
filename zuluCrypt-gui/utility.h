@@ -108,6 +108,18 @@ namespace utility
 
 			return utility::debug( m_stdout ) ;
 		}
+
+		utility::debug operator<<( const QStringList& e )
+		{
+			if( m_stdout ){
+
+				std::cout << e.join( '\n' ).toStdString() << std::endl ;
+			}else{
+				std::cerr << e.join( '\n' ).toStdString() << std::endl ;
+			}
+
+			return utility::debug( m_stdout ) ;
+		}
 	private:
 		bool m_stdout ;
 	};
@@ -287,6 +299,8 @@ namespace utility
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
 	void createHomeFolder( void ) ;
 	void createFolderPath( const QString& ) ;
+
+	std::pair< bool,QByteArray > getKeyFromNetwork( const QString& ) ;
 
 	QString powerOffCommand( void ) ;
 
