@@ -751,7 +751,7 @@ void passwordDialog::openVolume()
 					}else{
 						DialogMsg msg( this ) ;
 
-						msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to get get from the network" ) ) ;
+						msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to get a key from the network" ) ) ;
 
 						m_ui->OpenVolumePath->setFocus() ;
 						return this->enableAll() ;

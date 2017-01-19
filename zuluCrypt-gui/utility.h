@@ -68,7 +68,7 @@ namespace utility
 	class debug
 	{
 	public:
-		debug( bool stdout = true ) : m_stdout( stdout )
+		debug( bool s = true ) : m_stdout( s )
 		{
 		}
 
@@ -113,9 +113,15 @@ namespace utility
 		{
 			if( m_stdout ){
 
-				std::cout << e.join( '\n' ).toStdString() << std::endl ;
+				for( const auto& it : e ){
+
+					std::cout << it.toLatin1().constData() << std::endl ;
+				}
 			}else{
-				std::cerr << e.join( '\n' ).toStdString() << std::endl ;
+				for( const auto& it : e ){
+
+					std::cerr << it.toLatin1().constData() << std::endl ;
+				}
 			}
 
 			return utility::debug( m_stdout ) ;
