@@ -289,6 +289,8 @@ void keyDialog::cbVisibleKeyStateChanged( int s )
 		}else{
 			m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 		}
+
+		m_ui->lineEditKey->setFocus() ;
 	}
 }
 

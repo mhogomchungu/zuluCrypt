@@ -326,6 +326,8 @@ void passwordDialog::cbVisibleKeyStateChanged( int s )
 		}else{
 			m_ui->PassPhraseField->setEchoMode( QLineEdit::Password ) ;
 		}
+
+		m_ui->PassPhraseField->setFocus() ;
 	}
 }
 
