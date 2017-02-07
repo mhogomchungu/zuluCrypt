@@ -59,6 +59,7 @@ public slots:
 	void ShowUI( const QString& volumePath,const QString& mount_point ) ;
 	void ShowUI( QString ) ;
 private slots :
+	void cbVisibleKeyStateChanged( int ) ;
 	void cbVolumeType( int ) ;
 	void cbActicated( int ) ;
 	void pbKeyOption( void ) ;

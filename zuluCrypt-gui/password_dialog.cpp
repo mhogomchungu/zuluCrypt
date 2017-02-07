@@ -112,6 +112,7 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
 	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
 	connect( m_ui->cbVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbVolumeType( int ) ) ) ;
+	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
 
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
@@ -147,6 +148,8 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 		return m ;
 	}() ) ;
+
+	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
 	this->setWindowTitle( tr( "Unlock Encrypted Volume" ) ) ;
 
@@ -313,6 +316,19 @@ void passwordDialog::ShowUI( QString dev )
 	this->ShowUI( dev,m_point ) ;
 }
 
+void passwordDialog::cbVisibleKeyStateChanged( int s )
+{
+	if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
+
+		if( s == Qt::Checked ){
+
+			m_ui->PassPhraseField->setEchoMode( QLineEdit::Normal ) ;
+		}else{
+			m_ui->PassPhraseField->setEchoMode( QLineEdit::Password ) ;
+		}
+	}
+}
+
 void passwordDialog::ShowUI()
 {
 	this->passphraseOption() ;
@@ -330,6 +346,14 @@ void passwordDialog::mountPointPath( QString path )
 
 void passwordDialog::cbActicated( int e )
 {
+	if( e == passwordDialog::key ){
+
+		m_ui->checkBoxVisibleKey->setEnabled( true ) ;
+	}else{
+		m_ui->checkBoxVisibleKey->setEnabled( false ) ;
+		m_ui->checkBoxVisibleKey->setChecked( false ) ;
+	}
+
 	switch( e ){
 
 		case passwordDialog::key         : return this->passphraseOption() ;
@@ -576,6 +600,7 @@ void passwordDialog::disableAll()
 	m_ui->PushButtonVolumePath->setEnabled( false ) ;
 	m_ui->pbKeyOption->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
+	m_ui->checkBoxVisibleKey->setEnabled( false ) ;
 }
 
 void passwordDialog::enableAll()
@@ -602,6 +627,7 @@ void passwordDialog::enableAll()
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
 	m_ui->PushButtonVolumePath->setEnabled( true ) ;
 	m_ui->cbKeyType->setEnabled( true ) ;
+	m_ui->checkBoxVisibleKey->setEnabled( m_ui->cbKeyType->currentIndex() == passwordDialog::key ) ;
 
 	if( m_open_with_path ){
 

@@ -191,12 +191,25 @@
     <string>&amp;VeraCrypt Volume</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="checkBoxVisibleKey">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>150</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <widget class="QLabel" name="veraCryptWarning">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>0</x>
      <y>0</y>
-     <width>501</width>
+     <width>521</width>
      <height>211</height>
     </rect>
    </property>

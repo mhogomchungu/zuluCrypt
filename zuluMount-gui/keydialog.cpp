@@ -78,6 +78,8 @@ keyDialog::keyDialog( QWidget * parent,
 		msg = tr( "Mount An Encrypted Volume In \"%1\"").arg( m_path ) ;
 	}
 
+	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
+
 	this->setWindowTitle( msg ) ;
 
 	m_ui->lineEditMountPoint->setText( m_path ) ;
@@ -113,6 +115,7 @@ keyDialog::keyDialog( QWidget * parent,
 	connect( m_ui->pbOpenMountPoint,SIGNAL( clicked() ),this,SLOT( pbMountPointPath() ) ) ;
 	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
 	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
+	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
 
 	m_ui->pbOpenMountPoint->setVisible( false ) ;
 
@@ -170,6 +173,8 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
+	m_ui->pbkeyOption->setVisible( false ) ;
+	m_ui->checkBoxVisibleKey->setVisible( true ) ;
 	this->installEventFilter( this ) ;
 }
 
@@ -274,8 +279,22 @@ void keyDialog::pbMountPointPath()
 	}
 }
 
+void keyDialog::cbVisibleKeyStateChanged( int s )
+{
+	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+
+		if( s == Qt::Checked ){
+
+			m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
+		}else{
+			m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
+		}
+	}
+}
+
 void keyDialog::enableAll()
 {
+	m_ui->checkBoxVisibleKey->setEnabled( m_ui->cbKeyType->currentIndex() == keyDialog::Key ) ;
 	m_ui->checkBoxVeraCryptVolume->setEnabled( true ) ;
 	m_ui->pbOptions->setEnabled( !m_encryptedFolder ) ;
 	m_ui->label_2->setEnabled( true ) ;
@@ -298,6 +317,7 @@ void keyDialog::enableAll()
 
 void keyDialog::disableAll()
 {
+	m_ui->checkBoxVisibleKey->setEnabled( false ) ;
 	m_ui->checkBoxVeraCryptVolume->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
 	m_ui->pbOptions->setEnabled( false ) ;
@@ -849,6 +869,9 @@ void keyDialog::openVolume()
 
 void keyDialog::cbActicated( int e )
 {
+	m_ui->pbkeyOption->setVisible( e != keyDialog::Key ) ;
+	m_ui->checkBoxVisibleKey->setVisible( e == keyDialog::Key ) ;
+
 	switch( e ){
 
 		case keyDialog::Key        : return this->key() ;
