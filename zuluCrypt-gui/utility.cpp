@@ -47,7 +47,7 @@
 #include <QProcessEnvironment>
 #include <unistd.h>
 #include <pwd.h>
-
+#include <QApplication>
 #include <QEvent>
 #include <QKeyEvent>
 
@@ -2065,4 +2065,28 @@ std::pair< bool,QByteArray > utility::getKeyFromNetwork( const QString& e )
 	}else{
 		return { false,"" } ;
 	}
+}
+
+void utility::setHDPI( const QString& e )
+{
+	Q_UNUSED( e ) ;
+
+#if QT_VERSION >= 0x050600
+
+	QApplication::setAttribute( Qt::AA_EnableHighDpiScaling ) ;
+
+	QFile f( utility::homePath() + "/.zuluCrypt/" + e + ".scaleFactor" ) ;
+
+	if( !f.exists() ){
+
+		f.open( QIODevice::WriteOnly ) ;
+		f.write( "1" ) ;
+		f.close() ;
+	}
+
+	if( f.open( QIODevice::ReadOnly ) ){
+
+		qputenv( "QT_SCALE_FACTOR",f.readAll().replace( "\n","" ) ) ;
+	}
+#endif
 }

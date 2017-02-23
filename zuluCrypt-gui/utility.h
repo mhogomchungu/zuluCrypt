@@ -261,6 +261,7 @@ namespace utility
 	QStringList readFavorites( void ) ;
 	void readFavorites( QMenu *,bool = false,bool = true ) ;
 	void removeFavoriteEntry( const QString& ) ;
+	void setHDPI( const QString& ) ;
 	bool pathExists( const QString& ) ;
 	bool canCreateFile( const QString& ) ;
 	void dropPrivileges( int = -1 ) ;

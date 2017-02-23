@@ -23,6 +23,8 @@
 
 int main( int argc,char * argv[] )
 {
+	utility::setHDPI( "zuluMount" ) ;
+
 	QApplication a( argc,argv ) ;
 
 	return utility::startApplication( "zuluMount",[ & ](){
