@@ -88,7 +88,12 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 				return "ecryptfs-simple -k " + _makePath( cipherFolder ) ;
 			}else{
-				return "fusermount -u " + _makePath( mountPoint ) ;
+				if( utility::platformIsLinux() ){
+
+					return "fusermount -u " + _makePath( mountPoint ) ;
+				}else{
+					return "umount " + _makePath( mountPoint ) ;
+				}
 			}
 		}() ;
 
@@ -164,7 +169,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	if( type.isOneOf( "gocryptfs","securefs" ) ){
 
-		auto mode = [ & ](){
+		QString mode = [ & ](){
 
 			if( opt.ro ){
 
@@ -181,6 +186,12 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				auto e = QString( "%1 --init %2 %3" ) ;
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
+
+				if( utility::platformIsOSX() ){
+
+					mode += " -o fsname=gocryptfs@" + cipherFolder ;
+				}
+
 				auto e = QString( "%1 %2 %3 %4 %5" ) ;
 				return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
 			}
@@ -197,13 +208,13 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 	}else if( type.startsWith( "ecryptfs" ) ){
 
-		auto _options = []( const std::initializer_list< QString >& e ){
+		auto _options = []( const std::initializer_list< const char * >& e ){
 
 			QString q = "-o key=passphrase" ;
 
 			for( const auto& it : e ){
 
-				q += "," + it ;
+				q += it ;
 			}
 
 			return q ;
@@ -223,10 +234,10 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		if( create ){
 
-			auto s = _options( { "ecryptfs_passthrough=n",
-					     "ecryptfs_enable_filename_crypto=y",
-					     "ecryptfs_key_bytes=32",
-					     "ecryptfs_cipher=aes" } ) ;
+			auto s = _options( { ",ecryptfs_passthrough=n",
+					     ",ecryptfs_enable_filename_crypto=y",
+					     ",ecryptfs_key_bytes=32",
+					     ",ecryptfs_cipher=aes" } ) ;
 
 			return e.arg( exe,s,mode,configPath,cipherFolder,mountPoint ) ;
 		}else{
@@ -247,14 +258,9 @@ static QString _args( const QString& exe,const siritask::options& opt,
 	}
 }
 
-static cs _cmd( bool create,const siritask::options& opt,
-		const QString& password,const QString& configFilePath )
+static siritask::status _getStatus( const siritask::volumeType& app,bool s )
 {
-	const auto& app = opt.type ;
-
-	auto exe = app.executableFullPath() ;
-
-	if( exe.isEmpty() ){
+	if( s ){
 
 		if( app == "cryfs" ){
 
@@ -275,6 +281,96 @@ static cs _cmd( bool create,const siritask::options& opt,
 			return cs::gocryptfsNotFound ;
 		}
 	}else{
+		if( app == "cryfs" ){
+
+			return cs::cryfs ;
+
+		}else if( app == "encfs" ){
+
+			return cs::encfs ;
+
+		}else if( app == "securefs" ){
+
+			return cs::securefs ;
+
+		}else if( app.startsWith( "ecryptfs" ) ){
+
+			return cs::ecryptfs ;
+		}else{
+			return cs::gocryptfs ;
+		}
+	}
+}
+
+static void _set_status( siritask::cmdStatus * e,siritask::status s )
+{
+	const auto msg = e->msg().toLower() ;
+	const auto exitCode = e->exitCode() ;
+
+	/*
+	 *
+	 * When trying to figure out what error occured,check for status value
+	 * if the backend supports them and fallback to parsing output strings
+	 * if backend does not support error codes.
+	 *
+	 */
+
+	if( s == siritask::status::ecryptfs ){
+
+		if( msg.contains( "error: mount failed" ) ){
+
+			e->setStatus( s ) ;
+		}
+
+	}else if( s == siritask::status::cryfs ){
+
+		if( msg.contains( "password" ) ){
+
+			e->setStatus( s ) ;
+		}
+
+	}else if( s == siritask::status::encfs ){
+
+		if( msg.contains( "password" ) ){
+
+			e->setStatus( s ) ;
+		}
+
+	}else if( s == siritask::status::gocryptfs ){
+
+		/*
+		 * This error code was added in gocryptfs 1.2.1
+		 */
+		if( exitCode == 12 ){
+
+			e->setStatus( s ) ;
+		}else{
+			if( msg.contains( "password" ) ){
+
+				e->setStatus( s ) ;
+			}
+		}
+
+	}else if( s == siritask::status::securefs ){
+
+		if( msg.contains( "password" ) ){
+
+			e->setStatus( s ) ;
+		}
+	}
+}
+
+static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
+		const QString& password,const QString& configFilePath )
+{
+	const auto& app = opt.type ;
+
+	auto exe = app.executableFullPath() ;
+
+	if( exe.isEmpty() ){
+
+		return _getStatus( app,true ) ;
+	}else{
 		auto e = utility::Task( _args( exe,opt,configFilePath,create ),20000,[](){
 
 			auto env = QProcessEnvironment::systemEnvironment() ;
@@ -282,20 +378,25 @@ static cs _cmd( bool create,const siritask::options& opt,
 			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
 			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
 
-			auto path = env.value( "PATH" ) ;
+			env.insert( "LANG","C" ) ;
 
-			path += ":/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin" ;
-
-			env.insert( "PATH",path ) ;
+			env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
 
 			return env ;
 
 		}(),password.toLatin1(),_drop_privileges() ) ;
 
-		auto _taskOutput = [ & ](){
+		auto output = [ & ](){
 
-			return e.output() + "\n-----\n" + e.stdError() ;
-		} ;
+			if( app == "encfs" ){
+
+				return e.output() ;
+			}else{
+				return e.stdError() ;
+			}
+		}() ;
+
+		siritask::cmdStatus status = { e.exitCode(),output } ;
 
 		if( e.finished() ){
 
@@ -303,43 +404,29 @@ static cs _cmd( bool create,const siritask::options& opt,
 
 				return cs::success ;
 			}else{
-				auto a = _taskOutput() ;
-
-				auto b = "password incorrect" ;
-				auto c = "Password incorrect" ;
-				auto d = "Invalid password" ;
-				auto e = "Did you enter the correct password?" ;
-				auto f = "error: mount failed" ;
-
-				if( utility::containsAtleastOne( a,b,c,d,e,f ) ){
-
-					utility::debug() << a ;
-
-					if( app == "cryfs" ){
-
-						return cs::cryfs ;
-
-					}else if( app == "encfs" ){
-
-						return cs::encfs ;
-
-					}else if( app == "securefs" ){
-
-						return cs::securefs ;
-
-					}else if( app.startsWith( "ecryptfs" ) ){
-
-						return cs::ecryptfs ;
-					}else{
-						return cs::gocryptfs ;
-					}
-				}
+				_set_status( &status,_getStatus( app,false ) ) ;
 			}
 		}
 
-		utility::debug() << _taskOutput() ;
+		auto s = QString::number( status.exitCode() ) ;
+		auto m = status.msg() ;
 
-		return cs::backendFail ;
+		while( true ){
+
+			if( m.endsWith( '\n' ) ){
+
+				m.truncate( m.size() - 1 ) ;
+			}else{
+				break ;
+			}
+		}
+
+		utility::debug() << "-------------------------" ;
+		utility::debug() << QString( "Backend Generated Output:\nExit Code: %1" ).arg( s ) ;
+		utility::debug() << QString( "Exit String: \"%1\"" ).arg( m ) ;
+		utility::debug() << "-------------------------" ;
+
+		return status ;
 	}
 }
 
@@ -353,12 +440,12 @@ static QString _configFilePath( const siritask::options& opt )
 	}
 }
 
-Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUseMountPoint )
+Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const options& opt,bool reUseMountPoint )
 {
-	return Task::run< cs >( [ opt,reUseMountPoint ](){
+	return Task::run< siritask::cmdStatus >( [ opt,reUseMountPoint ]()->siritask::cmdStatus{
 
 		auto _mount = [ reUseMountPoint ]( const QString& app,const options& copt,
-				const QString& configFilePath ){
+				const QString& configFilePath )->siritask::cmdStatus{
 
 			auto opt = copt ;
 
@@ -381,9 +468,9 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 			}
 		} ;
 
-                if( opt.configFilePath.isEmpty() ){
+		if( opt.configFilePath.isEmpty() ){
 
-                        if( utility::pathExists( opt.cipherFolder + "/cryfs.config" ) ){
+			if( utility::pathExists( opt.cipherFolder + "/cryfs.config" ) ){
 
 				return _mount( "cryfs",opt,QString() ) ;
 
@@ -399,18 +486,18 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 
 				return _mount( "ecryptfs",opt,opt.cipherFolder + "/.ecryptfs.config" ) ;
 			}else{
-                                auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
-                                auto encfs5 = opt.cipherFolder + "/.encfs5" ;
-                                auto encfs4 = opt.cipherFolder + "/.encfs4" ;
+				auto encfs6 = opt.cipherFolder + "/.encfs6.xml" ;
+				auto encfs5 = opt.cipherFolder + "/.encfs5" ;
+				auto encfs4 = opt.cipherFolder + "/.encfs4" ;
 
-                                if( utility::atLeastOnePathExists( encfs6,encfs5,encfs4 ) ){
+				if( utility::atLeastOnePathExists( encfs6,encfs5,encfs4 ) ){
 
 					return _mount( "encfs",opt,QString() ) ;
-                                }else{
-                                        return cs::unknown ;
-                                }
-                        }
-                }else{
+				}else{
+					return cs::unknown ;
+				}
+			}
+		}else{
 			auto e = _configFilePath( opt ) ;
 
 			if( utility::pathExists( e ) ){
@@ -426,19 +513,23 @@ Task::future< cs >& siritask::encryptedFolderMount( const options& opt,bool reUs
 				}else if( e.endsWith( "ecryptfs.config" ) ){
 
 					return _mount( "ecryptfs",opt,e ) ;
-				}else{
+
+				}else if( e.endsWith( "cryfs.config" ) ){
+
 					return _mount( "cryfs",opt,e ) ;
+				}else{
+					return cs::unknown ;
 				}
 			}else{
 				return cs::unknown ;
 			}
-                }
+		}
 	} ) ;
 }
 
-Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
+Task::future< siritask::cmdStatus >& siritask::encryptedFolderCreate( const options& opt )
 {
-	return Task::run< cs >( [ opt ](){
+	return Task::run< siritask::cmdStatus >( [ opt ]()->siritask::cmdStatus{
 
 		if( _create_folder( opt.cipherFolder ) ){
 
@@ -456,7 +547,7 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 
 					}else if( opt.type == "ecryptfs" ){
 
-						return opt.key + "\n1\n2\nn\ny\n\n" ;
+						return opt.key ;
 					}else{
 						return "p\n" + opt.key ;
 					}
@@ -481,11 +572,7 @@ Task::future< cs >& siritask::encryptedFolderCreate( const options& opt )
 
 						if( e != cs::success ){
 
-							_deleteFolders( opt.cipherFolder ) ;
-							/*
-							 * opt.plainFolder was deleted by
-							 * siritask::encryptedFolderMount above
-							 */
+							_deleteFolders( opt.cipherFolder,opt.plainFolder ) ;
 						}
 					}else{
 						opt.openFolder( opt.plainFolder ) ;

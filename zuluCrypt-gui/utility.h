@@ -306,6 +306,10 @@ namespace utility
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
 	void createHomeFolder( void ) ;
 	void createFolderPath( const QString& ) ;
+	bool platformIsLinux( void ) ;
+	bool platformIsOSX( void ) ;
+	QStringList executableSearchPaths( void ) ;
+	QString executableSearchPaths( const QString& ) ;
 
 	std::pair< bool,QByteArray > getKeyFromNetwork( const QString& ) ;
 

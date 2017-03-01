@@ -474,10 +474,10 @@ void keyDialog::encryptedFolderMount()
 
 	auto ro = m_ui->checkBoxOpenReadOnly->isChecked() ;
 
-	auto& e = siritask::encryptedFolderMount( { m_path,m,m_key,QString(),QString(),
-						    QString(),ro,m_success } ) ;
+	auto e = siritask::encryptedFolderMount( { m_path,m,m_key,QString(),QString(),
+						   QString(),ro,m_success } ).await() ;
 
-	switch( e.await() ){
+	switch( e.status() ){
 
 	case siritask::status::success :
 
@@ -544,11 +544,9 @@ void keyDialog::encryptedFolderMount()
 		break;
 
 	case siritask::status::backendFail :
-
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nBackend not responding" ) ) ;
-		break;
 	default:
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nNot supported volume encountered" ) ) ;
+
+		msg.ShowUIOK( tr( "ERROR" ),e.msg() ) ;
 		break;
 	}
 

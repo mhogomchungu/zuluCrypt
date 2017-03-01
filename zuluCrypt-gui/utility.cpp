@@ -983,14 +983,7 @@ QString utility::executableFullPath( const QString& f )
 
 	QString exe ;
 
-	auto q = { "/usr/local/bin/",
-		   "/usr/local/sbin/",
-		   "/usr/bin/",
-		   "/usr/sbin/",
-		   "/bin/",
-		   "/sbin/" } ;
-
-	for( const auto& it : q ){
+	for( const auto& it : utility::executableSearchPaths() ){
 
 		exe = it + e ;
 
@@ -2089,4 +2082,38 @@ void utility::setHDPI( const QString& e )
 		qputenv( "QT_SCALE_FACTOR",f.readAll().replace( "\n","" ) ) ;
 	}
 #endif
+}
+
+bool utility::platformIsLinux()
+{
+	return true ;
+}
+
+bool utility::platformIsOSX()
+{
+	return false ;
+}
+
+QStringList utility::executableSearchPaths()
+{
+	return { "/usr/local/bin/",
+		"/usr/local/sbin/",
+		"/usr/bin/",
+		"/usr/sbin/",
+		"/bin/",
+		"/sbin/",
+		"/opt/local/bin/",
+		"/opt/local/sbin/",
+		"/opt/bin/",
+		"/opt/sbin/" } ;
+}
+
+QString utility::executableSearchPaths( const QString& e )
+{
+	if( e.isEmpty() ){
+
+		return utility::executableSearchPaths().join( ":" ) ;
+	}else{
+		return e + ":" + utility::executableSearchPaths().join( ":" ) ;
+	}
 }

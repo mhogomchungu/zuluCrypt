@@ -129,12 +129,83 @@ namespace siritask
 		backendFail
 	};
 
+	class cmdStatus
+	{
+	public:
+		cmdStatus()
+		{
+		}
+		template< typename T = QString >
+		cmdStatus( const siritask::cmdStatus& s,const T& e = T() )
+		{
+			m_status = s.status() ;
+			m_exitCode = s.exitCode() ;
+
+			if( e.isEmpty() ){
+
+				m_message = s.msg() ;
+			}else{
+				m_message = e ;
+			}
+		}
+		template< typename T = QString >
+		cmdStatus( siritask::status s,const T& e = T() ) :
+			m_status( s ),m_message( e )
+		{
+		}
+		template< typename T >
+		cmdStatus( int s,const T& e ) :
+			m_exitCode( s ),m_message( e )
+		{
+		}
+		siritask::status status() const
+		{
+			return m_status ;
+		}
+		bool operator==( siritask::status s ) const
+		{
+			return m_status == s ;
+		}
+		bool operator!=( siritask::status s ) const
+		{
+			return m_status != s ;
+		}
+		cmdStatus& setExitCode( int s )
+		{
+			m_exitCode = s ;
+			return *this ;
+		}
+		cmdStatus& setStatus( siritask::status s )
+		{
+			m_status = s ;
+			return *this ;
+		}
+		template< typename T >
+		cmdStatus& setMessage( const T& e )
+		{
+			m_message = e ;
+			return *this ;
+		}
+		const QString& msg() const
+		{
+			return m_message ;
+		}
+		int exitCode() const
+		{
+			return m_exitCode ;
+		}
+	private:
+		int m_exitCode = -1 ;
+		siritask::status m_status = siritask::status::backendFail ;
+		QString m_message ;
+	};
+
 	bool deleteMountFolder( const QString& ) ;
 	Task::future< bool >& encryptedFolderUnMount( const QString& cipherFolder,
 						      const QString& mountPoint,
 						      const QString& fileSystem ) ;
-	Task::future< siritask::status >& encryptedFolderMount( const options&,bool = false ) ;
-	Task::future< siritask::status >& encryptedFolderCreate( const options& ) ;
+	Task::future< siritask::cmdStatus >& encryptedFolderMount( const options&,bool = false ) ;
+	Task::future< siritask::cmdStatus >& encryptedFolderCreate( const options& ) ;
 }
 
 #endif // SIRITASK_H
