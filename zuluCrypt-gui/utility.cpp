@@ -368,20 +368,20 @@ static bool _execute_process( const QString& m,const QString& exe,const QString&
 
 			utility::dropPrivileges( uid ) ;
 
-			auto path = [](){
+			auto path = []()->const char *{
 
 				auto e = getenv( "PATH" ) ;
 
-				QString s = "/usr/local/bin:/usr/bin:/bin:" ;
-
 				if( e ){
-					return e + QString( ":" ) + s ;
+					return e ;
 				}else{
-					return s ;
+					return "" ;
 				}
 			}() ;
 
-			setenv( "PATH",path.toLatin1().constData(),1 ) ;
+			auto s = utility::executableSearchPaths( path ).toLatin1() ;
+
+			setenv( "PATH",s.constData(),1 ) ;
 
 		} ).success() ;
 	}else{

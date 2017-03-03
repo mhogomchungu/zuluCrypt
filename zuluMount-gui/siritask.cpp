@@ -61,9 +61,14 @@ static bool _deleteFolders( const T& ... m )
 	return s ;
 }
 
-static std::function< void() > _drop_privileges()
+static std::function< void() > _drop_privileges( const QString& e )
 {
-	return [](){ utility::dropPrivileges() ; } ;
+	if( e.endsWith( "ecryptfs.config" ) ){
+
+		return [](){} ;
+	}else{
+		return [](){ utility::dropPrivileges() ; } ;
+	}
 }
 
 bool siritask::deleteMountFolder( const QString& m )
@@ -232,16 +237,33 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		auto e = QString( "%1 %2 %3 -a %4 %5 %6" ) ;
 
-		if( create ){
+		auto s = [ & ]{
 
-			auto s = _options( { ",ecryptfs_passthrough=n",
-					     ",ecryptfs_enable_filename_crypto=y",
-					     ",ecryptfs_key_bytes=32",
-					     ",ecryptfs_cipher=aes" } ) ;
+			if( create ){
 
-			return e.arg( exe,s,mode,configPath,cipherFolder,mountPoint ) ;
+				auto s = _options( { ",ecryptfs_passthrough=n",
+						     ",ecryptfs_enable_filename_crypto=y",
+						     ",ecryptfs_key_bytes=32",
+						     ",ecryptfs_cipher=aes" } ) ;
+
+				return e.arg( exe,s,mode,configPath,cipherFolder,mountPoint ) ;
+			}else{
+				return e.arg( exe,_options( {} ),mode,configPath,cipherFolder,mountPoint ) ;
+			}
+		}() ;
+
+		if( utility::runningInMixedMode() ){
+
+			auto su = utility::executableFullPath( "su" ) ;
+
+			if( su.isEmpty() ){
+
+				return s ;
+			}else{
+				return QString( "%1 - -c \"%2\"" ).arg( su,s ) ;
+			}
 		}else{
-			return e.arg( exe,_options( {} ),mode,configPath,cipherFolder,mountPoint ) ;
+			return s ;
 		}
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
@@ -384,7 +406,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			return env ;
 
-		}(),password.toLatin1(),_drop_privileges() ) ;
+		}(),password.toLatin1(),_drop_privileges( configFilePath ) ) ;
 
 		auto output = [ & ](){
 
