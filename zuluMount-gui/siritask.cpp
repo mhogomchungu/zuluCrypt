@@ -61,6 +61,18 @@ static bool _deleteFolders( const T& ... m )
 	return s ;
 }
 
+static QString _wrap_su( const QString& s )
+{
+	auto su = utility::executableFullPath( "su" ) ;
+
+	if( su.isEmpty() ){
+
+		return s ;
+	}else{
+		return QString( "%1 - -c \"%2\"" ).arg( su,QString( s ).replace( "\"","'" ) ) ;
+	}
+}
+
 static std::function< void() > _drop_privileges( const QString& e )
 {
 	if( e.endsWith( "ecryptfs.config" ) ){
@@ -91,7 +103,14 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 			if( fileSystem == "ecryptfs" ){
 
-				return "ecryptfs-simple -k " + _makePath( cipherFolder ) ;
+				auto s = "ecryptfs-simple -k " + _makePath( cipherFolder ) ;
+
+				if( utility::runningInMixedMode() ){
+
+					return _wrap_su( s ) ;
+				}else{
+					return s ;
+				}
 			}else{
 				if( utility::platformIsLinux() ){
 
@@ -254,14 +273,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 
 		if( utility::runningInMixedMode() ){
 
-			auto su = utility::executableFullPath( "su" ) ;
-
-			if( su.isEmpty() ){
-
-				return s ;
-			}else{
-				return QString( "%1 - -c \"%2\"" ).arg( su,s ) ;
-			}
+			return _wrap_su( s ) ;
 		}else{
 			return s ;
 		}
