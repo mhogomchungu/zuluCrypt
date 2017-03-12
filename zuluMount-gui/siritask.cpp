@@ -292,7 +292,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 	}
 }
 
-static siritask::status _getStatus( const siritask::volumeType& app,bool s )
+static siritask::status _status( const siritask::volumeType& app,bool s )
 {
 	if( s ){
 
@@ -336,10 +336,9 @@ static siritask::status _getStatus( const siritask::volumeType& app,bool s )
 	}
 }
 
-static void _set_status( siritask::cmdStatus * e,siritask::status s )
+static siritask::cmdStatus _status( int q,siritask::status s,const QByteArray& msg )
 {
-	const auto msg = e->msg().toLower() ;
-	const auto exitCode = e->exitCode() ;
+	siritask::cmdStatus e = { q,msg } ;
 
 	/*
 	 *
@@ -353,21 +352,21 @@ static void _set_status( siritask::cmdStatus * e,siritask::status s )
 
 		if( msg.contains( "error: mount failed" ) ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}
 
 	}else if( s == siritask::status::cryfs ){
 
 		if( msg.contains( "password" ) ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}
 
 	}else if( s == siritask::status::encfs ){
 
 		if( msg.contains( "password" ) ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}
 
 	}else if( s == siritask::status::gocryptfs ){
@@ -375,13 +374,13 @@ static void _set_status( siritask::cmdStatus * e,siritask::status s )
 		/*
 		 * This error code was added in gocryptfs 1.2.1
 		 */
-		if( exitCode == 12 ){
+		if( e.exitCode() == 12 ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}else{
 			if( msg.contains( "password" ) ){
 
-				e->setStatus( s ) ;
+				e.setStatus( s ) ;
 			}
 		}
 
@@ -389,9 +388,11 @@ static void _set_status( siritask::cmdStatus * e,siritask::status s )
 
 		if( msg.contains( "password" ) ){
 
-			e->setStatus( s ) ;
+			e.setStatus( s ) ;
 		}
 	}
+
+	return e ;
 }
 
 static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
@@ -403,7 +404,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 	if( exe.isEmpty() ){
 
-		return _getStatus( app,true ) ;
+		return _status( app,true ) ;
 	}else{
 		auto e = utility::Task( _args( exe,opt,configFilePath,create ),20000,[](){
 
@@ -420,27 +421,20 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		}(),password.toLatin1(),_drop_privileges( configFilePath ) ) ;
 
-		auto output = [ & ](){
+		if( e.finished() && e.success() ){
+
+			return cs::success ;
+		}
+
+		auto status = _status( e.exitCode(),_status( app,false ),[ & ](){
 
 			if( app == "encfs" ){
 
-				return e.output() ;
+				return e.output().toLower() ;
 			}else{
-				return e.stdError() ;
+				return e.stdError().toLower() ;
 			}
-		}() ;
-
-		siritask::cmdStatus status = { e.exitCode(),output } ;
-
-		if( e.finished() ){
-
-			if( e.success() ){
-
-				return cs::success ;
-			}else{
-				_set_status( &status,_getStatus( app,false ) ) ;
-			}
-		}
+		}() ) ;
 
 		auto s = QString::number( status.exitCode() ) ;
 		auto m = status.msg() ;
