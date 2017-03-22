@@ -45,23 +45,21 @@ class zuluMount : public QWidget
 public:
 	explicit zuluMount( QWidget * parent = 0 ) ;
 	~zuluMount() ;
-	void Show( void ) ;
 signals:
 	void result( int,QString ) ;
 	void unlistVolume( QString ) ;
-public slots:
-	void raiseWindow( void ) ;
-	void raiseWindow( QString ) ;
 private slots:
+	void Show( void ) ;
+	void raiseWindow( const QString& = QString() ) ;
 	void showTrayGUI( void ) ;
 	void cryfsVolumeProperties( void ) ;
 	void closeApplication( void ) ;
+	void closeApplication( int ) ;
 	void unlockCryptFs( void ) ;
 	void showVisibleVolumeList( void ) ;
 	void showHiddenVolumeList( void ) ;
 	void removeVolumeFromHiddenVolumeList( QAction * ) ;
 	void removeVolumeFromVisibleVolumeList( QAction * ) ;
-	void startGUI( void ) ;
 	void volumeMiniProperties( bool,volumeProperty * ) ;
 	void volumeMiniProperties( volumeProperty * ) ;
 	void volumeMiniProperties_0( volumeProperty * ) ;
@@ -90,7 +88,6 @@ private slots:
 	void removeVolume( QString ) ;
 	void addEntryToTable( bool,const QStringList& ) ;
 	void addEntryToTable( bool,const volumeProperty& ) ;
-	void quitApplication( void ) ;
 	void autoMountToggled( bool ) ;
 	void autoOpenFolderOnMount( bool ) ;
 	void removeEntryFromTable( QString ) ;

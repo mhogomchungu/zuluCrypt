@@ -236,6 +236,7 @@ namespace utility
 	};
 
 	int startApplication( const char * appName,std::function<int()> ) ;
+	void startApplication( QObject *,const char * ) ;
 
 	wallet getKey( LXQt::Wallet::Wallet&,const QString& keyID,
 		       const QString& app = QString() ) ;

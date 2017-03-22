@@ -47,9 +47,9 @@ HEADERS  += zulumount.h\
     zulumounttask.h \
     veracryptpimdialog.h
 
-TRANSLATIONS = ../translations/zuluMount/en_US.ts
-TRANSLATIONS = ../translations/zuluMount/fr_FR.ts
-TRANSLATIONS = ../translations/zuluMount/de_DE.ts
+TRANSLATIONS = ../translations/zuluMount/en_US.ts \
+               ../translations/zuluMount/fr_FR.ts \
+               ../translations/zuluMount/de_DE.ts
 
 FORMS    += zulumount.ui\
 	    ../zuluCrypt-gui/dialogmsg.ui \

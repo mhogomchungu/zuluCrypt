@@ -30,7 +30,8 @@ int main( int argc,char * argv[] )
 	return utility::startApplication( "zuluMount",[ & ](){
 
 		zuluMount e ;
-		e.Show() ;
+
+		utility::startApplication( &e,"Show" ) ;
 
 		return a.exec() ;
 	} ) ;

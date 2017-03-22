@@ -60,15 +60,12 @@ class zuluCrypt : public QMainWindow
 	Q_OBJECT
 public:
 	zuluCrypt( QWidget * parent = 0 ) ;
-	void start( void ) ;
 	~zuluCrypt() ;
-public slots:
-	void raiseWindow( void ) ;
-	void raiseWindow( QString ) ;
 signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
 	void updateVolumeListSignal( QString,QString ) ;
 private slots :
+	void start( void ) ;
 	void showTrayGUI( void ) ;
 	void autoOpenMountPoint( bool ) ;
 	void languageMenu( QAction * ) ;
@@ -91,6 +88,7 @@ private slots :
 	void trayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void trayProperty( void ) ;
 	void closeApplication( void ) ;
+	void closeApplication( int ) ;
 	void minimizeToTray( void ) ;
 	void closeAllVolumes( void ) ;
 	void menuKeyPressed( void ) ;
@@ -131,6 +129,7 @@ private slots :
 	void updateVolumeList( const QString& = QString() ) ;
 	void updateVolumeList( QString,QString ) ;
 private:
+	void raiseWindow( const QString& ) ;
 	void setIcons( void ) ;
 	void quitApplication( void ) ;
 	void removeRowFromTable( int ) ;

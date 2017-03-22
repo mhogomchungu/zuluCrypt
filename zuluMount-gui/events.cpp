@@ -55,6 +55,8 @@ events::events( QObject * parent,std::function< void() > f ) : m_function( std::
 	m_baba = this ;
 	m_main = this ;
 	m_babu = parent ;
+	m_mtoto = nullptr ;
+	m_running = false ;
 }
 
 events::~events()
@@ -63,7 +65,7 @@ events::~events()
 
 void events::stop()
 {
-	if( m_running ){
+	if( m_running && m_mtoto ){
 
 		m_mtoto->terminate() ;
 	}else{

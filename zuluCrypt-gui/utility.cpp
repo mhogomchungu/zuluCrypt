@@ -50,6 +50,7 @@
 #include <QApplication>
 #include <QEvent>
 #include <QKeyEvent>
+#include <QMetaObject>
 
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
@@ -184,6 +185,11 @@ int utility::startApplication( const char * appName,std::function<int()> start )
 	}else{
 		return start() ;
 	}
+}
+
+void utility::startApplication( QObject * s,const char * e )
+{
+	QMetaObject::invokeMethod( s,e,Qt::QueuedConnection ) ;
 }
 
 void utility::keySend( const QString& path,const QByteArray& key )

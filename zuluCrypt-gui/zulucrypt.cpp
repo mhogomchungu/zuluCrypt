@@ -114,6 +114,16 @@ void zuluCrypt::setUpApp( const QString& volume )
 	this->updateVolumeList( volume ) ;
 
 	m_mountInfo.start() ;
+
+	if( m_startHidden ){
+
+		m_trayIcon.show() ;
+	}else{
+		this->setVisible( true ) ;
+		this->show() ;
+		this->raise() ;
+		this->setWindowState( Qt::WindowActive ) ;
+	}
 }
 
 void zuluCrypt::updateVolumeList( const QString& volume )
@@ -193,26 +203,17 @@ void zuluCrypt::initFont()
 	this->setUserFont( utility::getFont( this ) ) ;
 }
 
-void zuluCrypt::raiseWindow()
-{
-	if( m_startHidden ){
-
-		m_trayIcon.setVisible( true ) ;
-	}else{
-		this->setVisible( true ) ;
-		this->show() ;
-		this->raise() ;
-		this->setWindowState( Qt::WindowActive ) ;
-	}
-}
-
-void zuluCrypt::raiseWindow( QString device )
+void zuluCrypt::raiseWindow( const QString& device )
 {
 	this->setVisible( true ) ;
 	this->show() ;
 	this->raise() ;
 	this->setWindowState( Qt::WindowActive ) ;
-	this->ShowPasswordDialog( device,device.split( "/" ).last() ) ;
+
+	if( !device.isEmpty() ){
+
+		this->ShowPasswordDialog( device,device.split( "/" ).last() ) ;
+	}
 }
 
 void zuluCrypt::start()
@@ -227,8 +228,6 @@ void zuluCrypt::start()
 
 	auto l         = QCoreApplication::arguments() ;
 
-	auto e         = utility::cmdArgumentValue( l,"-d" ) ;
-
 	m_openPath     = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_startHidden  = l.contains( "-e" ) ;
 
@@ -236,15 +235,16 @@ void zuluCrypt::start()
 
 	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
-	utility::createHomeFolder() ;
+	auto s = utility::homePath() + "/.zuluCrypt-socket" ;
 
-	oneinstance::instance( this,"zuluCrypt-gui.socket","raiseWindow",e,[ this,e ]( QObject * instance ){
+	utility::createFolderPath( s ) ;
 
-		this->setUpApp( e ) ;
-
-		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
-		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
-	} ) ;
+	oneinstance::instance( this,
+			       s + "/zuluCrypt-gui.socket",
+			       utility::cmdArgumentValue( l,"-d" ),
+			       [ this ]( const QString& e ){ this->setUpApp( e ) ; },
+			       [ this ]( int s ){ this->closeApplication( s ) ;	},
+			       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 }
 
 void zuluCrypt::initTray()
@@ -659,6 +659,13 @@ void zuluCrypt::quitApplication()
 void zuluCrypt::closeApplication()
 {
 	m_mountInfo.stop()() ;
+}
+
+void zuluCrypt::closeApplication( int s )
+{
+	Q_UNUSED( s ) ;
+
+	this->closeApplication() ;
 }
 
 void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )
@@ -1197,6 +1204,11 @@ void zuluCrypt::decryptFile( const QString& e )
 
 zuluCrypt::~zuluCrypt()
 {
+	if( !m_ui ){
+
+		return ;
+	}
+
 	auto q = m_ui->tableWidget ;
 
 	const auto& r = this->window()->geometry() ;

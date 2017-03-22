@@ -33,6 +33,8 @@ monitor_mountinfo::monitor_mountinfo( QObject * parent,bool e,std::function< voi
 	m_babu = parent ;
 	m_baba = this ;
 	m_main = this ;
+	m_mtoto = nullptr ;
+	m_running = false ;
 }
 
 monitor_mountinfo::~monitor_mountinfo()
@@ -43,7 +45,7 @@ std::function< void() > monitor_mountinfo::stop()
 {
 	return [ this ](){
 
-		if( m_running ){
+		if( m_running && m_mtoto ){
 
 			m_mtoto->terminate() ;
 		}else{
@@ -54,8 +56,8 @@ std::function< void() > monitor_mountinfo::stop()
 
 void monitor_mountinfo::threadStopped()
 {
-	m_stop() ;
 	m_running = false ;
+	m_stop() ;
 }
 
 void monitor_mountinfo::failedToStart()

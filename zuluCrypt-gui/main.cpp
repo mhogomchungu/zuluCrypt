@@ -30,7 +30,8 @@ int main( int argc,char * argv[] )
 	return utility::startApplication( "zuluCrypt",[ & ](){
 
 		zuluCrypt e ;
-		e.start() ;
+
+		utility::startApplication( &e,"start" ) ;
 
 		return a.exec() ;
 	} ) ;

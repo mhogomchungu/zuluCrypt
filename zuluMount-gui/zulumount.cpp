@@ -69,7 +69,7 @@ static bool _encrypted_folder( const QString& e,bool f = true )
 
 zuluMount::zuluMount( QWidget * parent ) :
 	QWidget( parent ),
-	m_mountInfo( monitor_mountinfo::instance( this,true,[ this ](){ this->quitApplication() ; } ) ),
+	m_mountInfo( monitor_mountinfo::instance( this,true,[ this ](){ QCoreApplication::quit() ; } ) ),
 	m_events( events::instance( this,m_mountInfo.stop() ) )
 {
 }
@@ -354,6 +354,11 @@ void zuluMount::setUpApp( const QString& volume )
 	}
 
 	this->autoUpdateCheck() ;
+
+	if( !m_startHidden ){
+
+		this->raiseWindow() ;
+	}
 }
 
 void zuluMount::showTrayGUI()
@@ -544,16 +549,18 @@ void zuluMount::startAutoMonitor()
 }
 
 /*
- * This should be the only function that closes the application
+ * Below two functions should be the only functions that closes the application
  */
 void zuluMount::closeApplication()
 {
 	m_events.stop() ;
 }
 
-void zuluMount::quitApplication()
+void zuluMount::closeApplication( int s )
 {
-	QCoreApplication::quit() ;
+	Q_UNUSED( s ) ;
+
+	this->closeApplication() ;
 }
 
 void zuluMount::autoMountVolume( volumeProperty * q )
@@ -667,28 +674,17 @@ void zuluMount::itemEntered( QTableWidgetItem * item )
 	item->setToolTip( z ) ;
 }
 
-void zuluMount::startGUI()
+void zuluMount::raiseWindow( const QString& volume )
 {
-	if( !m_startHidden ){
-		this->raiseWindow() ;
+	this->setVisible( true ) ;
+	this->raise() ;
+	this->show() ;
+	this->setWindowState( Qt::WindowActive ) ;
+
+	if( !volume.isEmpty() ){
+
+		this->showMoungDialog( volume ) ;
 	}
-}
-
-void zuluMount::raiseWindow()
-{
-	this->setVisible( true ) ;
-	this->raise() ;
-	this->show() ;
-	this->setWindowState( Qt::WindowActive ) ;
-}
-
-void zuluMount::raiseWindow( QString volume )
-{
-	this->setVisible( true ) ;
-	this->raise() ;
-	this->show() ;
-	this->setWindowState( Qt::WindowActive ) ;
-	this->showMoungDialog( volume ) ;
 }
 
 void zuluMount::Show()
@@ -701,17 +697,16 @@ void zuluMount::Show()
 
 	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
 
-	utility::createHomeFolder() ;
+	auto s = utility::homePath() + "/.zuluCrypt-socket" ;
 
-	auto volume = utility::cmdArgumentValue( l,"-d" ) ;
+	utility::createFolderPath( s ) ;
 
-	oneinstance::instance( this,"zuluMount-gui.socket","startGUI",volume,[ this,volume ]( QObject * instance ){
-
-		connect( instance,SIGNAL( raise() ),this,SLOT( raiseWindow() ) ) ;
-		connect( instance,SIGNAL( raiseWithDevice( QString ) ),this,SLOT( raiseWindow( QString ) ) ) ;
-
-		this->setUpApp( volume ) ;
-	} ) ;
+	oneinstance::instance( this,
+			       s + "/zuluMount-gui.socket",
+			       utility::cmdArgumentValue( l,"-d" ),
+			       [ this ]( const QString& e ){ this->setUpApp( e ) ; },
+			       [ this ]( int s ){ this->closeApplication( s ) ;	},
+			       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 }
 
 void zuluMount::cryfsVolumeProperties()
@@ -1549,6 +1544,11 @@ bool zuluMount::autoMount()
 
 zuluMount::~zuluMount()
 {
+	if( !m_ui ){
+
+		return ;
+	}
+
 	QFile f( utility::homePath() + zuluMOUNT_AUTOPATH ) ;
 
 	if( m_autoMountAction ){
