@@ -752,7 +752,7 @@ void passwordDialog::openVolume()
 
 				auto& s = utility::Task::run( z ) ;
 
-				auto q = utility::split( s.await().output() ) ;
+				auto q = utility::split( s.await().stdOut() ) ;
 
 				if( q.size() < 2 ){
 

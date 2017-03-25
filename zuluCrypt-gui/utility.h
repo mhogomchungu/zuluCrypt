@@ -43,7 +43,7 @@
 #include <memory>
 #include <array>
 #include <utility>
-
+#include <QtNetwork/QLocalSocket>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -265,6 +265,8 @@ namespace utility
 	void setHDPI( const QString& ) ;
 	bool pathExists( const QString& ) ;
 	bool canCreateFile( const QString& ) ;
+	bool useZuluPolkit( void ) ;
+	void startHelperExecutable( QObject *,const QString&,const char * ) ;
 	void dropPrivileges( int = -1 ) ;
 	QString prettyfySpaceUsage( quint64 ) ;
 	QString resolvePath( const QString& ) ;
@@ -288,6 +290,7 @@ namespace utility
 	void setLocalizationLanguage( const QString&,const QString& ) ;
 	QString walletName( void ) ;
 	QString applicationName( void ) ;
+	QString readPassword( bool = true ) ;
 	bool pathIsReadable( const QString& ) ;
 	bool pathIsWritable( const QString& ) ;
 	bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
@@ -311,7 +314,8 @@ namespace utility
 	bool platformIsOSX( void ) ;
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
-
+	QString helperSocketPath( void ) ;
+	void quitHelper( void ) ;
 	std::pair< bool,QByteArray > getKeyFromNetwork( const QString& ) ;
 
 	QString powerOffCommand( void ) ;
@@ -342,9 +346,9 @@ namespace utility
 	::Task::future< int >& exec( const QString& ) ;
 	::Task::future< QStringList >& luksEmptySlots( const QString& volumePath ) ;
 	::Task::future< QString >& getUUIDFromPath( const QString& ) ;
-	::Task::future< bool >& openPath( const QString& path,const QString& opener,const QString& env = QString() ) ;
+	::Task::future< bool >& openPath( const QString& path,const QString& opener ) ;
 
-	void openPath( const QString& path,const QString& opener,const QString& env,QWidget *,const QString&,const QString& ) ;
+	void openPath( const QString& path,const QString& opener,QWidget *,const QString&,const QString& ) ;
 }
 
 namespace utility
@@ -565,6 +569,10 @@ namespace utility
 	class Task
 	{
 	public :
+		static ::Task::future< utility::Task >& run( const QString& exe,bool e ) ;
+
+		static ::Task::future< utility::Task >& run( const QString& exe,int,bool e ) ;
+
 		static ::Task::future< utility::Task >& run( const QString& exe )
 		{
 			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
@@ -607,25 +615,25 @@ namespace utility
 		{
 		}
 		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = QProcessEnvironment(),
-		      const QByteArray& password = QByteArray(),const std::function< void() >& f = [](){} )
+		      const QByteArray& password = QByteArray(),const std::function< void() >& f = [](){},bool e = true )
 		{
-			this->execute( exe,waitTime,env,password,f ) ;
+			this->execute( exe,waitTime,env,password,f,e ) ;
 		}
-		Task( const QString& exe,const QProcessEnvironment& env,const std::function< void() >& f )
+		Task( const QString& exe,const QProcessEnvironment& env,const std::function< void() >& f,bool e = true )
 		{
-			this->execute( exe,-1,env,QByteArray(),f ) ;
+			this->execute( exe,-1,env,QByteArray(),f,e ) ;
 		}
 		QStringList splitOutput( char token ) const
 		{
-			return utility::split( m_data,token ) ;
+			return utility::split( m_stdOut,token ) ;
 		}
-		void output( const QByteArray& r )
+		void stdOut( const QByteArray& r )
 		{
-			m_data = r ;
+			m_stdOut = r ;
 		}
-		const QByteArray& output() const
+		const QByteArray& stdOut() const
 		{
-			return m_data ;
+			return m_stdOut ;
 		}
 		const QByteArray& stdError() const
 		{
@@ -654,46 +662,11 @@ namespace utility
 		bool ok() const
 		{
 			return this->splitOutput( '\n' ).size() > 12 ;
-		}
+		}	
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
-			      const QByteArray& password,const std::function< void() >& f )
-		{
-			class Process : public QProcess{
-			public:
-				Process( const std::function< void() >& f ) : m_function( f )
-				{
-				}
-			protected:
-				void setupChildProcess()
-				{
-					m_function() ;
-				}
-			private:
-				std::function< void() > m_function ;
-			} p( f ) ;
-
-			p.setProcessEnvironment( env ) ;
-
-			p.start( exe ) ;
-
-			if( !password.isEmpty() ){
-
-				p.waitForStarted() ;
-
-				p.write( password + '\n' ) ;
-
-				p.closeWriteChannel() ;
-			}
-
-			m_finished   = p.waitForFinished( waitTime ) ;
-			m_exitCode   = p.exitCode() ;
-			m_exitStatus = p.exitStatus() ;
-			m_data       = p.readAll() ;
-			m_stdError   = p.readAllStandardError() ;
-		}
-
-		QByteArray m_data ;
+			      const QByteArray& password,const std::function< void() >& f,bool ) ;
+		QByteArray m_stdOut ;
 		QByteArray m_stdError ;
 
 		int m_exitCode ;

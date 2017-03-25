@@ -240,7 +240,7 @@ void mountPartition::pbMount()
 
 			if( this->errorNotFound( s.exitCode() ) ){
 
-				QString z = s.output() ;
+				QString z = s.stdOut() ;
 				z.replace( tr( "ERROR: " ),"" ) ;
 
 				DialogMsg m( this ) ;

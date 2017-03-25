@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa
@@ -97,32 +97,37 @@ void zuluCrypt::languageMenu( QAction * ac )
 	m_ui->retranslateUi( this ) ;
 }
 
-void zuluCrypt::setUpApp( const QString& volume )
+void zuluCrypt::helperStarted( bool e,const QString& volume )
 {
-	this->setLocalizationLanguage( true ) ;
+	if( e ){
 
-	m_ui = new Ui::zuluCrypt ;
+		this->setLocalizationLanguage( true ) ;
 
-	this->setupUIElements() ;
-	this->setupConnections() ;
-	this->initFont() ;
-	this->initKeyCombo() ;
-	this->initTray() ;
-	this->info() ;
-	this->autoUpdateCheck() ;
-	this->setLocalizationLanguage( false ) ;
-	this->updateVolumeList( volume ) ;
+		m_ui = new Ui::zuluCrypt ;
 
-	m_mountInfo.start() ;
+		this->setupUIElements() ;
+		this->setupConnections() ;
+		this->initFont() ;
+		this->initKeyCombo() ;
+		this->initTray() ;
+		this->info() ;
+		this->autoUpdateCheck() ;
+		this->setLocalizationLanguage( false ) ;
+		this->updateVolumeList( volume ) ;
 
-	if( m_startHidden ){
+		m_mountInfo.start() ;
 
-		m_trayIcon.show() ;
+		if( m_startHidden ){
+
+			m_trayIcon.show() ;
+		}else{
+			this->setVisible( true ) ;
+			this->show() ;
+			this->raise() ;
+			this->setWindowState( Qt::WindowActive ) ;
+		}
 	}else{
-		this->setVisible( true ) ;
-		this->show() ;
-		this->raise() ;
-		this->setWindowState( Qt::WindowActive ) ;
+		this->closeApplication() ;
 	}
 }
 
@@ -138,7 +143,7 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 
 		if( r.success() ){
 
-			return r.output() ;
+			return r.stdOut() ;
 		}else{
 			return QByteArray() ;
 		}
@@ -231,9 +236,12 @@ void zuluCrypt::start()
 	m_openPath     = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
 	m_startHidden  = l.contains( "-e" ) ;
 
-	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
+	if( utility::useZuluPolkit() ){
 
-	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
+		utility::setUID( getuid() ) ;
+	}else{
+		utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
+	}
 
 	auto s = utility::homePath() + "/.zuluCrypt-socket" ;
 
@@ -242,7 +250,7 @@ void zuluCrypt::start()
 	oneinstance::instance( this,
 			       s + "/zuluCrypt-gui.socket",
 			       utility::cmdArgumentValue( l,"-d" ),
-			       [ this ]( const QString& e ){ this->setUpApp( e ) ; },
+			       [ this ]( const QString& e ){ utility::startHelperExecutable( this,e,"helperStarted" ) ; },
 			       [ this ]( int s ){ this->closeApplication( s ) ;	},
 			       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 }
@@ -377,19 +385,13 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionBackup_header,SIGNAL( triggered() ),this,SLOT( volumeHeaderBackUp() ) ) ;
 	connect( m_ui->actionRestore_header,SIGNAL( triggered() ),this,SLOT( volumeRestoreHeader() ) ) ;
 
-	if( utility::runningInMixedMode() ){
+	using wbe = LXQt::Wallet::BackEnd ;
 
-		m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( false ) ;
-		m_ui->actionManage_volumes_in_kde_wallet->setEnabled( false ) ;
-	}else{
-		using wbe = LXQt::Wallet::BackEnd ;
+	auto a = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
+	auto b = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
 
-		auto a = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
-		auto b = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
-
-		m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( a ) ;
-		m_ui->actionManage_volumes_in_kde_wallet->setEnabled( b ) ;
-	}
+	m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( a ) ;
+	m_ui->actionManage_volumes_in_kde_wallet->setEnabled( b ) ;
 
 	connect( m_ui->menuOptions,SIGNAL( aboutToShow() ),this,SLOT( optionMenuAboutToShow() ) ) ;
 
@@ -794,7 +796,7 @@ void zuluCrypt::volume_property()
 
 		if( r.success() ){
 
-			auto data = r.output() ;
+			auto data = r.stdOut() ;
 
 			return QString( " %1" ).arg( QString( data.mid( data.indexOf( '\n' ) + 2 ) ) ) ;
 		}else{
@@ -900,7 +902,7 @@ void zuluCrypt::openFolder( const QString& path )
 	auto x = tr( "WARNING!" ) ;
 	auto y = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_openPath ) ;
 
-	utility::openPath( path,m_openPath,m_env,this,x,y ) ;
+	utility::openPath( path,m_openPath,this,x,y ) ;
 }
 
 void zuluCrypt::openpdf()
@@ -912,15 +914,15 @@ void zuluCrypt::openpdf()
 
 	if( utility::pathExists( e ) ){
 
-		utility::openPath( e,m_openPath,m_env,this,x,y ) ;
+		utility::openPath( e,m_openPath,this,x,y ) ;
 	}else{
 		e += ".gz" ;
 
 		if( utility::pathExists( e ) ){
 
-			utility::openPath( e,m_openPath,m_env,this,x,y ) ;
+			utility::openPath( e,m_openPath,this,x,y ) ;
 		}else{
-			utility::openPath( PDF_PATH,m_openPath,m_env,this,x,y ) ;
+			utility::openPath( PDF_PATH,m_openPath,this,x,y ) ;
 		}
 	}
 }
@@ -1204,6 +1206,8 @@ void zuluCrypt::decryptFile( const QString& e )
 
 zuluCrypt::~zuluCrypt()
 {
+	utility::quitHelper() ;
+
 	if( !m_ui ){
 
 		return ;

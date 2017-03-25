@@ -17,7 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "utility.h"
 #include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -29,6 +28,7 @@
 #include <QDir>
 #include <pwd.h>
 #include <grp.h>
+#include <termios.h>
 
 #include <memory>
 
@@ -51,9 +51,10 @@
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMetaObject>
-
+#include <QtNetwork/QLocalSocket>
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
+#include "zuluPolkit.h"
 #include "version.h"
 #include "locale_path.h"
 #include "mount_prefix_path.h"
@@ -63,7 +64,8 @@
 #include "../plugins/plugins.h"
 #include "plugin.h"
 #include "install_prefix.h"
-
+#include "utility.h"
+#include "../external_libraries/json/json.hpp"
 #include "networkAccessManager.hpp"
 
 #include <sys/types.h>
@@ -85,6 +87,189 @@
 #include "share_mount_prefix_path.h"
 
 static int staticGlobalUserId = -1 ;
+static QByteArray _cookie ;
+
+::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
+{
+	return utility::Task::run( exe,-1,e ) ;
+}
+
+::Task::future< utility::Task >& utility::Task::run( const QString& exe,int s,bool e )
+{
+	return ::Task::run< utility::Task >( [ = ](){
+
+		auto env = QProcessEnvironment::systemEnvironment() ;
+
+		return utility::Task( exe,s,env,_cookie,[](){ umask( 0 ) ; },e ) ;
+	} ) ;
+}
+
+void utility::Task::execute( const QString& exe,int waitTime,
+			     const QProcessEnvironment& env,
+			     const QByteArray& password,
+			     const std::function< void() >& f,
+			     bool polkit )
+{
+	class Process : public QProcess{
+	public:
+		Process( const std::function< void() >& f ) : m_function( f )
+		{
+		}
+	protected:
+		void setupChildProcess()
+		{
+			m_function() ;
+		}
+	private:
+		std::function< void() > m_function ;
+	} p( f ) ;
+
+	p.setProcessEnvironment( env ) ;
+
+	if( polkit && utility::useZuluPolkit() ){
+
+		QLocalSocket s ;
+
+		s.connectToServer( utility::helperSocketPath() ) ;
+
+		for( int i = 0 ; ; i++ ){
+
+			if( s.waitForConnected() ){
+
+				break ;
+
+			}else if( i == 10 ){
+
+				utility::debug() << "ERROR: Failed To Start Helper Application" ;
+				return ;
+			}else{
+				utility::debug() << s.errorString() ;
+
+				utility::Task::suspendForOneSecond() ;
+			}
+		}
+
+		s.write( [ & ]()->QByteArray{
+
+			nlohmann::json json ;
+
+			json[ "cookie" ]     = _cookie.toStdString() ;
+			json[ "password" ]   = password.toStdString() ;
+			json[ "command" ]    = exe.toStdString() ;
+
+			return json.dump().c_str() ;
+		}() ) ;
+
+		s.waitForBytesWritten() ;
+
+		s.waitForReadyRead() ;
+
+		try{
+			auto json = nlohmann::json::parse( s.readAll().constData() ) ;
+
+			m_finished   = json[ "finished" ].get< bool >() ;
+			m_exitCode   = json[ "exitCode" ].get< int >() ;
+			m_exitStatus = json[ "exitStatus" ].get< int >() ;
+			m_stdError   = QByteArray::fromStdString( json[ "stdError" ].get< std::string >() ) ;
+			m_stdOut     = QByteArray::fromStdString( json[ "stdOut" ].get< std::string >() ) ;
+
+		}catch( ... ){}
+	}else{
+		p.start( exe ) ;
+
+		if( !password.isEmpty() ){
+
+			p.waitForStarted() ;
+
+			p.write( password + '\n' ) ;
+
+			p.closeWriteChannel() ;
+		}
+
+		m_finished   = p.waitForFinished( waitTime ) ;
+		m_exitCode   = p.exitCode() ;
+		m_exitStatus = p.exitStatus() ;
+		m_stdOut     = p.readAllStandardOutput() ;
+		m_stdError   = p.readAllStandardError() ;
+	}
+}
+
+void utility::startHelperExecutable( QObject * obj,const QString& arg,const char * slot )
+{
+	if( !utility::useZuluPolkit() ){
+
+		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,QString() ) ) ;
+
+		return ;
+	}
+
+	QFile f( "/dev/urandom" ) ;
+
+	f.open( QIODevice::ReadOnly ) ;
+
+	_cookie = f.read( 16 ).toHex() ;
+
+	auto exe = utility::executableFullPath( "pkexec" ) ;
+
+	if( !exe.isEmpty() ){
+
+		exe = QString( "%1 %2 %3 fork ").arg( exe,zuluPolkitPath,utility::helperSocketPath() ) ;
+
+		::Task::exec( [ = ](){
+
+			auto e = utility::Task::run( exe,false ).get() ;
+
+			QMetaObject::invokeMethod( obj,
+						   slot,
+						   Q_ARG( bool,e.success() ),
+						   Q_ARG( QString,arg ) ) ;
+		} ) ;
+	}else{
+		DialogMsg().ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable" ) ) ;
+	}
+}
+
+QString utility::helperSocketPath()
+{
+	auto z = utility::homePath() + "/.zuluCrypt-socket/" ;
+
+	z += QCoreApplication::applicationName() + ".polkit.socket" ;
+
+	return z ;
+}
+
+bool utility::useZuluPolkit()
+{
+	return POLKIT_SUPPORT ;
+}
+
+void utility::quitHelper()
+{
+	auto e = utility::helperSocketPath() ;
+
+	if( utility::pathExists( e ) ){
+
+		QLocalSocket s ;
+
+		s.connectToServer( e ) ;
+
+		if( s.waitForConnected() ){
+
+			s.write( [ & ]()->QByteArray{
+
+				nlohmann::json json ;
+
+				json[ "cookie" ]     = _cookie.toStdString() ;
+				json[ "password" ]   = "" ;
+				json[ "command" ]    = "exit" ;
+
+				return json.dump().c_str() ;
+			}() ) ;
+
+			s.waitForBytesWritten() ;
+		}
+	}
+}
 
 bool utility::reUseMountPointPath()
 {
@@ -98,7 +283,7 @@ bool utility::reUseMountPoint()
 
 void utility::setUID( int uid )
 {
-	if( utility::userIsRoot() ){
+	if( utility::userIsRoot() || utility::useZuluPolkit() ){
 
 		staticGlobalUserId = uid ;
 	}
@@ -289,7 +474,7 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 
 		if( r.success() ){
 
-			const auto& s = r.output() ;
+			const auto& s = r.stdOut() ;
 
 			int i = 0 ;
 
@@ -320,7 +505,7 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 
 		if( r.success() ){
 
-			QString uuid = r.output() ;
+			QString uuid = r.stdOut() ;
 			uuid.remove( "\n" ) ;
 
 			if( uuid == "UUID=\"\"" ){
@@ -360,53 +545,20 @@ void utility::dropPrivileges( int uid )
 	}
 }
 
-static bool _execute_process( const QString& m,const QString& exe,const QString& env,int uid )
+::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
 {
-	Q_UNUSED( env ) ;
+	return ::Task::run<bool>( [ = ](){
 
-	if( exe.startsWith( "/" ) && utility::pathExists( exe ) ){
+		auto e = opener + " " + utility::Task::makePath( path ) ;
 
-		return utility::Task( exe + " " + utility::Task::makePath( m ),[ & ](){
-
-			return QProcessEnvironment() ;
-
-		}(),[ uid ](){
-
-			utility::dropPrivileges( uid ) ;
-
-			auto path = []()->const char *{
-
-				auto e = getenv( "PATH" ) ;
-
-				if( e ){
-					return e ;
-				}else{
-					return "" ;
-				}
-			}() ;
-
-			auto s = utility::executableSearchPaths( path ).toLatin1() ;
-
-			setenv( "PATH",s.constData(),1 ) ;
-
-		} ).success() ;
-	}else{
-		return false ;
-	}
-}
-
-::Task::future<bool>& utility::openPath( const QString& path,const QString& opener,const QString& env )
-{
-	return ::Task::run<bool>( [ env,path,opener ](){
-
-		return _execute_process( path,opener,env,utility::getUID() ) == false ;
+		return utility::Task::run( e,false ).get().failed() ;
 	} ) ;
 }
 
 void utility::openPath( const QString& path,const QString& opener,
-			const QString& env,QWidget * obj,const QString& title,const QString& msg )
+			QWidget * obj,const QString& title,const QString& msg )
 {
-	openPath( path,opener,env ).then( [ title,msg,obj ]( bool failed ){
+	openPath( path,opener ).then( [ title,msg,obj ]( bool failed ){
 
 		if( failed && obj ){
 
@@ -1474,7 +1626,7 @@ void utility::saveFont( const QFont& Font )
 
 bool utility::runningInMixedMode()
 {
-	return utility::userIsRoot() && utility::getUID() != -1 ;
+	return utility::useZuluPolkit() ;
 }
 
 bool utility::notRunningInMixedMode()
@@ -2122,4 +2274,58 @@ QString utility::executableSearchPaths( const QString& e )
 	}else{
 		return e + ":" + utility::executableSearchPaths().join( ":" ) ;
 	}
+}
+
+static inline bool _terminalEchoOff( struct termios * old,struct termios * current )
+{
+	if( tcgetattr( 1,old ) != 0 ){
+
+		return false ;
+	}
+
+	*current = *old;
+	current->c_lflag &= ~ECHO;
+
+	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
+
+		return false ;
+	}else{
+		return true ;
+	}
+}
+
+QString utility::readPassword( bool addNewLine )
+{
+	std::cout << "Password: " << std::flush ;
+
+	struct termios old ;
+	struct termios current ;
+
+	_terminalEchoOff( &old,&current ) ;
+
+	QString s ;
+	int e ;
+
+	int m = 1024 ;
+
+	for( int i = 0 ; i < m ; i++ ){
+
+		e = std::getchar() ;
+
+		if( e == '\n' || e == -1 ){
+
+			break ;
+		}else{
+			s += static_cast< char >( e ) ;
+		}
+	}
+
+	tcsetattr( 1,TCSAFLUSH,&old ) ;
+
+	if( addNewLine ){
+
+		std::cout << std::endl ;
+	}
+
+	return s ;
 }

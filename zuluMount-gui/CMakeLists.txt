@@ -101,6 +101,7 @@ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_
 )
 
 install( FILES zuluMount.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluMount.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons )
 install( FILES zuluMount.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 install( FILES zuluMount.nicolas.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
 install( FILES zuluMount.nicolas.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
@@ -111,35 +112,6 @@ install( FILES zuluMount.papirus.dark.png DESTINATION ${CMAKE_INSTALL_DATAROOTDI
 #install ( FILES zuluMount.png DESTINATION share/icons/hicolor/32x32/apps )
 
 # desktop file section
-
-if( USE_POLKIT )
-
-file( WRITE ${PROJECT_BINARY_DIR}/zuluMount.desktop
-
-"[Desktop Entry]
-Comment[en_US]=
-Comment=
-Exec=${CMAKE_INSTALL_FULL_BINDIR}/zuluMount-gui.pkexec -d %U
-GenericName[en_US]=Encrypted volume and Partition mounter
-GenericName=Encrypted volumes and partition mounter
-Icon=zuluMount
-Name[en_US]=ZuluMount
-Name=ZuluMount
-NoDisplay=false
-StartupNotify=true
-Terminal=false
-Type=Application
-Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
-
-file( WRITE ${PROJECT_BINARY_DIR}/zuluMount-gui.pkexec
-"#!/bin/bash
-pkexec ${CMAKE_INSTALL_FULL_BINDIR}/zuluMount-gui -K $UID $*
-")
-
-install ( FILES ${PROJECT_BINARY_DIR}/zuluMount-gui.pkexec
-          DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-else()
 
 file( WRITE ${PROJECT_BINARY_DIR}/zuluMount.desktop
 
@@ -157,4 +129,3 @@ StartupNotify=true
 Terminal=false
 Type=Application
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
-endif()

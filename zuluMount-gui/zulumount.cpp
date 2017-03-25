@@ -74,8 +74,13 @@ zuluMount::zuluMount( QWidget * parent ) :
 {
 }
 
-void zuluMount::setUpApp( const QString& volume )
+void zuluMount::helperStarted( bool start,const QString& volume )
 {
+	if( !start ){
+
+		return this->closeApplication() ;
+	}
+
 	this->setLocalizationLanguage( true ) ;
 
 	m_ui = new Ui::zuluMount ;
@@ -693,9 +698,13 @@ void zuluMount::Show()
 
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
-	m_env          = utility::cmdArgumentValue( l,"-z","" ) ;
 
-	utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
+	if( utility::useZuluPolkit() ){
+
+		utility::setUID( getuid() ) ;
+	}else{
+		utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
+	}
 
 	auto s = utility::homePath() + "/.zuluCrypt-socket" ;
 
@@ -704,7 +713,7 @@ void zuluMount::Show()
 	oneinstance::instance( this,
 			       s + "/zuluMount-gui.socket",
 			       utility::cmdArgumentValue( l,"-d" ),
-			       [ this ]( const QString& e ){ this->setUpApp( e ) ; },
+			       [ this ]( const QString& e ){ utility::startHelperExecutable( this,e,"helperStarted" ) ; },
 			       [ this ]( int s ){ this->closeApplication( s ) ;	},
 			       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 }
@@ -966,7 +975,7 @@ void zuluMount::openMountPoint( const QString& m_point )
 	auto x = tr( "Warning" ) ;
 	auto y = tr( "Could not open mount point because \"%1\" tool does not appear to be working correctly").arg( m_folderOpener ) ;
 
-	utility::openPath( m_point,m_folderOpener,m_env,this,x,y ) ;
+	utility::openPath( m_point,m_folderOpener,this,x,y ) ;
 }
 
 void zuluMount::openMountPointPath( QString m )
@@ -1324,7 +1333,7 @@ void zuluMount::unmount( const QString& e )
 
 				DialogMsg m( this ) ;
 
-				QString z = r.output() ;
+				QString z = r.stdOut() ;
 
 				z.replace( tr( "ERROR: " ),"" ) ;
 				z.replace( "ERROR: ","" ) ;
@@ -1544,6 +1553,8 @@ bool zuluMount::autoMount()
 
 zuluMount::~zuluMount()
 {
+	utility::quitHelper() ;
+
 	if( !m_ui ){
 
 		return ;

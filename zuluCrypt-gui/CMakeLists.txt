@@ -128,45 +128,18 @@ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
 PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
-install( FILES zuluCrypt.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluCrypt.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps )
+install( FILES zuluCrypt.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons )
 install( FILES zuluCrypt.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
-install( FILES zuluCrypt.nicolas.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluCrypt.nicolas.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps )
 install( FILES zuluCrypt.nicolas.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
-install( FILES zuluCrypt.papirus.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluCrypt.papirus.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps )
 install( FILES zuluCrypt.papirus.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
-install( FILES zuluCrypt.papirus.dark.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )
+install( FILES zuluCrypt.papirus.dark.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps )
 install( FILES zuluCrypt.papirus.dark.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/pixmaps )
 #install (FILES zuluCrypt.png DESTINATION share/icons/hicolor/32x32/apps)
 
 # desktop file section
-if( USE_POLKIT )
-
-file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
-
-"[Desktop Entry]
-Comment[en_US]=
-Comment=
-Exec=${CMAKE_INSTALL_FULL_BINDIR}/zuluCrypt-gui.pkexec -d %U
-GenericName[en_US]=Encrypted volumes manager
-GenericName=Encrypted volumes manager
-Icon=zuluCrypt
-Name[en_US]=ZuluCrypt
-Name=ZuluCrypt
-NoDisplay=false
-StartupNotify=true
-Terminal=false
-Type=Application
-Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
-
-file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt-gui.pkexec
-"#!/bin/bash
-pkexec ${CMAKE_INSTALL_FULL_BINDIR}/zuluCrypt-gui -K $UID $*
-")
-
-install ( FILES ${PROJECT_BINARY_DIR}/zuluCrypt-gui.pkexec
-          DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-else()
 
 file( WRITE ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
 
@@ -184,5 +157,3 @@ StartupNotify=true
 Terminal=false
 Type=Application
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")
-
-endif()

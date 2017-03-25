@@ -154,7 +154,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 
 		if( r.ok() ){
 
-			return QString( r.output() ) ;
+			return QString( r.stdOut() ) ;
 		}else{
 			if( volumeType.contains( "crypto_PLAIN\n" ) ){
 
@@ -167,7 +167,7 @@ Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const
 
 				if( r.ok() ){
 
-					return QString( r.output() ) ;
+					return QString( r.stdOut() ) ;
 				}else{
 					return QString() ;
 				}
@@ -184,9 +184,9 @@ utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QStr
 
 		auto e = utility::Task( exe ) ;
 
-		QString output = e.output() ;
+		QString output = e.stdOut() ;
 		int index = output.indexOf( QChar( ':' ) ) ;
-		e.output( output.mid( index + 1 ).toLatin1() ) ;
+		e.stdOut( output.mid( index + 1 ).toLatin1() ) ;
 
 		return e ;
 	} ;

@@ -49,6 +49,7 @@ signals:
 	void result( int,QString ) ;
 	void unlistVolume( QString ) ;
 private slots:
+	void helperStarted( bool,const QString& ) ;
 	void Show( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
 	void showTrayGUI( void ) ;

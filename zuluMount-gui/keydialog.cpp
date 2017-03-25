@@ -839,7 +839,7 @@ void keyDialog::openVolume()
 		}else{
 			if( this->errorNotFound( r ) ){
 
-				QString z = s.output() ;
+				QString z = s.stdOut() ;
 
 				z.replace( tr( "ERROR: " ),"" ) ;
 

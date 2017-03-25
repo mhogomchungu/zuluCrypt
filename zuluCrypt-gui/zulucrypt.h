@@ -65,6 +65,7 @@ signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
 	void updateVolumeListSignal( QString,QString ) ;
 private slots :
+	void helperStarted( bool,const QString& ) ;
 	void start( void ) ;
 	void showTrayGUI( void ) ;
 	void autoOpenMountPoint( bool ) ;
@@ -149,7 +150,6 @@ private:
 	void initFont( void ) ;
 	void initKeyCombo( void ) ;
 	void closeStatusErrorMessage( int ) ;
-	void setUpApp( const QString& ) ;
 	void decryptFile( const QString& ) ;
 
 	secrets m_secrets ;
@@ -165,7 +165,6 @@ private:
 	QString m_openPath ;
 	bool m_startHidden ;
 	int m_userID ;
-	QString m_env ;
 	bool m_autoOpenMountPoint ;
 	monitor_mountinfo& m_mountInfo ;
 };

@@ -73,16 +73,6 @@ static QString _wrap_su( const QString& s )
 	}
 }
 
-static std::function< void() > _drop_privileges( const QString& e )
-{
-	if( e.endsWith( "ecryptfs.config" ) ){
-
-		return [](){} ;
-	}else{
-		return [](){ utility::dropPrivileges() ; } ;
-	}
-}
-
 bool siritask::deleteMountFolder( const QString& m )
 {
 	if( utility::reUseMountPoint() ){
@@ -125,7 +115,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 		for( int i = 0 ; i < 5 ; i++ ){
 
-			if( utility::Task( cmd,10000 ).success() ){
+			if( utility::Task::run( cmd,10000,fileSystem == "ecryptfs" ).get().success() ){
 
 				return true ;
 			}else{
@@ -419,7 +409,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			return env ;
 
-		}(),password.toLatin1(),_drop_privileges( configFilePath ) ) ;
+		}(),password.toLatin1(),[](){},configFilePath.endsWith( "ecryptfs.config" ) ) ;
 
 		if( e.finished() && e.success() ){
 
@@ -430,7 +420,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			if( app == "encfs" ){
 
-				return e.output().toLower() ;
+				return e.stdOut().toLower() ;
 			}else{
 				return e.stdError().toLower() ;
 			}
