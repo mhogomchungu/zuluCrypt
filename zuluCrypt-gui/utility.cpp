@@ -153,9 +153,9 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 			nlohmann::json json ;
 
-			json[ "cookie" ]     = _cookie.toStdString() ;
-			json[ "password" ]   = password.toStdString() ;
-			json[ "command" ]    = exe.toStdString() ;
+			json[ "cookie" ]     = _cookie.constData() ;
+			json[ "password" ]   = password.constData() ;
+			json[ "command" ]    = exe.toLatin1().constData() ;
 
 			return json.dump().c_str() ;
 		}() ) ;
@@ -170,8 +170,8 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_finished   = json[ "finished" ].get< bool >() ;
 			m_exitCode   = json[ "exitCode" ].get< int >() ;
 			m_exitStatus = json[ "exitStatus" ].get< int >() ;
-			m_stdError   = QByteArray::fromStdString( json[ "stdError" ].get< std::string >() ) ;
-			m_stdOut     = QByteArray::fromStdString( json[ "stdOut" ].get< std::string >() ) ;
+			m_stdError   = json[ "stdError" ].get< std::string >().c_str() ;
+			m_stdOut     = json[ "stdOut" ].get< std::string >().c_str() ;
 
 		}catch( ... ){}
 	}else{
@@ -259,7 +259,7 @@ void utility::quitHelper()
 
 				nlohmann::json json ;
 
-				json[ "cookie" ]     = _cookie.toStdString() ;
+				json[ "cookie" ]     = _cookie.constData() ;
 				json[ "password" ]   = "" ;
 				json[ "command" ]    = "exit" ;
 

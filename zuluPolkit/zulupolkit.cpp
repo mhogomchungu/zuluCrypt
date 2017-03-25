@@ -218,8 +218,6 @@ void zuluPolkit::start()
 
 		QDir().remove( m_socketPath ) ;
 
-		m_server.setSocketOptions( QLocalServer::WorldAccessOption ) ;
-
 		m_server.listen( m_socketPath ) ;
 	}
 }
@@ -254,8 +252,8 @@ void zuluPolkit::gotConnection()
 
 			nlohmann::json json ;
 
-			json[ "stdOut" ]     = e.stdOut().toStdString() ;
-			json[ "stdError" ]   = e.stdError().toStdString() ;
+			json[ "stdOut" ]     = e.stdOut().constData() ;
+			json[ "stdError" ]   = e.stdError().constData() ;
 			json[ "exitCode" ]   = e.exitCode() ;
 			json[ "exitStatus" ] = e.exitStatus() ;
 			json[ "finished" ]   = e.finished() ;
