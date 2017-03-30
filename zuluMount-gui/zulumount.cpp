@@ -697,7 +697,7 @@ void zuluMount::Show()
 	auto l = QCoreApplication::arguments() ;
 
 	m_startHidden  = l.contains( "-e" ) ;
-	m_folderOpener = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 
 	if( utility::useZuluPolkit() ){
 
@@ -713,7 +713,10 @@ void zuluMount::Show()
 	oneinstance::instance( this,
 			       s + "/zuluMount-gui.socket",
 			       utility::cmdArgumentValue( l,"-d" ),
-			       [ this ]( const QString& e ){ utility::startHelperExecutable( this,e,"helperStarted" ) ; },
+			       [ this ]( const QString& e ){ utility::startHelperExecutable( this,
+											     e,
+											     "helperStarted",
+											     "closeApplication" ) ; },
 			       [ this ]( int s ){ this->closeApplication( s ) ;	},
 			       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 }

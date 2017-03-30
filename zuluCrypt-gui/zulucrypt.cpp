@@ -231,9 +231,9 @@ void zuluCrypt::start()
 	 * runs.
 	 */
 
-	auto l         = QCoreApplication::arguments() ;
+	const auto l   = QCoreApplication::arguments() ;
 
-	m_openPath     = utility::cmdArgumentValue( l,"-m","xdg-open" ) ;
+	m_openPath     = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 	m_startHidden  = l.contains( "-e" ) ;
 
 	if( utility::useZuluPolkit() ){
@@ -250,7 +250,10 @@ void zuluCrypt::start()
 	oneinstance::instance( this,
 			       s + "/zuluCrypt-gui.socket",
 			       utility::cmdArgumentValue( l,"-d" ),
-			       [ this ]( const QString& e ){ utility::startHelperExecutable( this,e,"helperStarted" ) ; },
+			       [ this ]( const QString& e ){ utility::startHelperExecutable( this,
+											     e,
+											     "helperStarted",
+											     "closeApplication" ) ; },
 			       [ this ]( int s ){ this->closeApplication( s ) ;	},
 			       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 }

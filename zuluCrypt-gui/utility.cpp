@@ -194,7 +194,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-void utility::startHelperExecutable( QObject * obj,const QString& arg,const char * slot )
+void utility::startHelperExecutable( QObject * obj,const QString& arg,const char * slot,const char * slot1 )
 {
 	if( !utility::useZuluPolkit() ){
 
@@ -226,6 +226,7 @@ void utility::startHelperExecutable( QObject * obj,const QString& arg,const char
 		} ) ;
 	}else{
 		DialogMsg().ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable" ) ) ;
+		QMetaObject::invokeMethod( obj,slot1 ) ;
 	}
 }
 
@@ -1134,6 +1135,21 @@ QString utility::executableFullPath( const QString& f )
 {
 	QString e = f ;
 
+	if( e.startsWith( "/" ) ){
+
+		auto s =  QDir( f ).canonicalPath() ;
+
+		for( const auto& it : utility::executableSearchPaths() ){
+
+			if( s.startsWith( it ) ){
+
+				return s ;
+			}
+		}
+
+		return QString() ;
+	}
+
 	if( e == "ecryptfs" ){
 
 		e = "ecryptfs-simple" ;
@@ -1194,12 +1210,7 @@ QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const
 		}
 	}
 
-	if( defaulT == "xdg-open" ){
-
-		return _absolute_exe_path( defaulT ) ;
-	}else{
-		return defaulT ;
-	}
+	return defaulT ;
 }
 
 static QString _device_id_to_partition_id( const QString& id )
@@ -2328,4 +2339,25 @@ QString utility::readPassword( bool addNewLine )
 	}
 
 	return s ;
+}
+
+QString utility::fileManager()
+{
+	QFile f( utility::homePath() + "/.zuluCrypt/FileManager" ) ;
+
+	if( !f.exists() ){
+
+		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+
+		f.write( "xdg-open" ) ;
+
+		f.close() ;
+	}
+
+	if( !f.open( QIODevice::ReadOnly ) ){
+
+		return "xdg-open" ;
+	}else{
+		return utility::split( f.readAll() ).first() ;
+	}
 }
