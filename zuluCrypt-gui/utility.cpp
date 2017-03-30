@@ -54,7 +54,6 @@
 #include <QtNetwork/QLocalSocket>
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
-#include "zuluPolkit.h"
 #include "version.h"
 #include "locale_path.h"
 #include "mount_prefix_path.h"
@@ -65,7 +64,7 @@
 #include "plugin.h"
 #include "install_prefix.h"
 #include "utility.h"
-#include "../external_libraries/json/json.hpp"
+
 #include "networkAccessManager.hpp"
 
 #include <sys/types.h>
@@ -85,6 +84,70 @@
 
 #include "reuse_mount_point.h"
 #include "share_mount_prefix_path.h"
+
+#include "zuluPolkit.h"
+
+struct jsonResult
+{
+	bool finished ;
+	int exitCode ;
+	int exitStatus ;
+	QByteArray stdError ;
+	QByteArray stdOut ;
+};
+
+#if POLKIT_SUPPORT
+
+#include "../external_libraries/json/json.hpp"
+
+static QByteArray _json_command( const QByteArray& cookie,
+				 const QByteArray& password,
+				 const QString& exe )
+{
+	nlohmann::json json ;
+
+	json[ "cookie" ]   = cookie.constData() ;
+	json[ "password" ] = password.constData() ;
+	json[ "command" ]  = exe.toLatin1().constData() ;
+
+	return json.dump().c_str() ;
+}
+
+static jsonResult _json_result( const QByteArray& e )
+{
+	try{
+		auto json = nlohmann::json::parse( e.constData() ) ;
+
+		return { json[ "finished" ].get< bool >(),
+			 json[ "exitCode" ].get< int >(),
+			 json[ "exitStatus" ].get< int >(),
+			 json[ "stdError" ].get< std::string >().c_str(),
+			 json[ "stdOut" ].get< std::string >().c_str() } ;
+	}catch( ... ){
+		return { false,255,255,"","" } ;
+	}
+}
+
+#else
+
+static QByteArray _json_command( const QByteArray& cookie,
+				 const QByteArray& password,
+				 const QString& exe )
+{
+	Q_UNUSED( cookie ) ;
+	Q_UNUSED( password ) ;
+	Q_UNUSED( exe ) ;
+
+	return QByteArray() ;
+}
+
+static jsonResult _json_result( const QByteArray& e )
+{
+	Q_UNUSED( e ) ;
+	return { false,255,255,"","" } ;
+}
+
+#endif
 
 static int staticGlobalUserId = -1 ;
 static QByteArray _cookie ;
@@ -149,31 +212,19 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			}
 		}
 
-		s.write( [ & ]()->QByteArray{
-
-			nlohmann::json json ;
-
-			json[ "cookie" ]     = _cookie.constData() ;
-			json[ "password" ]   = password.constData() ;
-			json[ "command" ]    = exe.toLatin1().constData() ;
-
-			return json.dump().c_str() ;
-		}() ) ;
+		s.write( _json_command( _cookie,password,exe ) ) ;
 
 		s.waitForBytesWritten() ;
 
 		s.waitForReadyRead() ;
 
-		try{
-			auto json = nlohmann::json::parse( s.readAll().constData() ) ;
+		auto e = _json_result( s.readAll() ) ;
 
-			m_finished   = json[ "finished" ].get< bool >() ;
-			m_exitCode   = json[ "exitCode" ].get< int >() ;
-			m_exitStatus = json[ "exitStatus" ].get< int >() ;
-			m_stdError   = json[ "stdError" ].get< std::string >().c_str() ;
-			m_stdOut     = json[ "stdOut" ].get< std::string >().c_str() ;
-
-		}catch( ... ){}
+		m_finished   = e.finished ;
+		m_exitCode   = e.exitCode ;
+		m_exitStatus = e.exitStatus ;
+		m_stdError   = e.stdError ;
+		m_stdOut     = e.stdOut ;
 	}else{
 		p.start( exe ) ;
 
@@ -256,16 +307,7 @@ void utility::quitHelper()
 
 		if( s.waitForConnected() ){
 
-			s.write( [ & ]()->QByteArray{
-
-				nlohmann::json json ;
-
-				json[ "cookie" ]     = _cookie.constData() ;
-				json[ "password" ]   = "" ;
-				json[ "command" ]    = "exit" ;
-
-				return json.dump().c_str() ;
-			}() ) ;
+			s.write( _json_command( _cookie,"","exit" ) ) ;
 
 			s.waitForBytesWritten() ;
 		}
