@@ -65,6 +65,7 @@ signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
 	void updateVolumeListSignal( QString,QString ) ;
 private slots :
+	void setFileManager( void ) ;
 	void helperStarted( bool,const QString& ) ;
 	void start( void ) ;
 	void showTrayGUI( void ) ;

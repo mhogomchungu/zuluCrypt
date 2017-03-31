@@ -94,7 +94,7 @@
      <x>0</x>
      <y>0</y>
      <width>782</width>
-     <height>19</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">
@@ -136,10 +136,11 @@
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
-     <string>O&amp;ptions</string>
+     <string>Optio&amp;ns</string>
     </property>
     <addaction name="actionTray_icon"/>
     <addaction name="actionAuto_Open_Mount_Point"/>
+    <addaction name="actionSet_File_Manager"/>
     <addaction name="actionSelect_Language"/>
     <addaction name="actionSelect_Icons"/>
     <addaction name="actionFonts"/>
@@ -182,7 +183,7 @@
   </widget>
   <action name="actionFileOpen">
    <property name="text">
-    <string>Volume Hosted In A File</string>
+    <string>&amp;Volume Hosted In A File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Z</string>
@@ -190,7 +191,7 @@
   </action>
   <action name="actionPartitionOpen">
    <property name="text">
-    <string>Volume Hosted In A Hard Drive</string>
+    <string>Volume &amp;Hosted In A Hard Drive</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -201,7 +202,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Encrypted Container In A File</string>
+    <string>&amp;Encrypted Container In A File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
@@ -215,7 +216,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Encrypted Container In A Hard Drive</string>
+    <string>Encrypted &amp;Container In A Hard Drive</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -226,7 +227,7 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -234,7 +235,7 @@
   </action>
   <action name="actionAddKey">
    <property name="text">
-    <string>Add A Key To A Volume</string>
+    <string>&amp;Add A Key To A Volume</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+U</string>
@@ -242,7 +243,7 @@
   </action>
   <action name="actionDeleteKey">
    <property name="text">
-    <string>Delete A Key From A Volume</string>
+    <string>&amp;Delete A Key From A Volume</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
@@ -258,7 +259,7 @@
   </action>
   <action name="actionCreatekeyFile">
    <property name="text">
-    <string>KeyFile</string>
+    <string>&amp;KeyFile</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
@@ -266,7 +267,7 @@
   </action>
   <action name="actionTray_icon">
    <property name="text">
-    <string>Tray Icon</string>
+    <string>&amp;Tray Icon</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+K</string>
@@ -274,7 +275,7 @@
   </action>
   <action name="actionFonts">
    <property name="text">
-    <string>Select Font</string>
+    <string>Select &amp;Font</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
@@ -308,7 +309,7 @@
   </action>
   <action name="action_update_volume_list">
    <property name="text">
-    <string>Update Volume List</string>
+    <string>&amp;Update Volume List</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+T</string>
@@ -316,7 +317,7 @@
   </action>
   <action name="actionMinimize_to_tray">
    <property name="text">
-    <string>Minimize To Tray</string>
+    <string>&amp;Minimize To Tray</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Y</string>
@@ -324,7 +325,7 @@
   </action>
   <action name="action_close">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -332,7 +333,7 @@
   </action>
   <action name="actionClose_all_opened_volumes">
    <property name="text">
-    <string>Close All Opened Volumes</string>
+    <string>&amp;Close All Opened Volumes</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
@@ -340,7 +341,7 @@
   </action>
   <action name="actionManage_names">
    <property name="text">
-    <string>Manage Favorites</string>
+    <string>&amp;Manage Favorites</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
@@ -348,7 +349,7 @@
   </action>
   <action name="actionErase_data_on_device">
    <property name="text">
-    <string>Erase Data In A Device</string>
+    <string>&amp;Erase Data In A Device</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -356,7 +357,7 @@
   </action>
   <action name="actionBackup_header">
    <property name="text">
-    <string>Backup Header</string>
+    <string>&amp;Backup Header</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
@@ -364,7 +365,7 @@
   </action>
   <action name="actionRestore_header">
    <property name="text">
-    <string>Restore Header</string>
+    <string>&amp;Restore Header</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -380,7 +381,7 @@
   </action>
   <action name="actionEncrypt_file">
    <property name="text">
-    <string>Encrypt A File</string>
+    <string>Encrypt A &amp;File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -388,7 +389,7 @@
   </action>
   <action name="actionDecrypt_file">
    <property name="text">
-    <string>Decrypt A File</string>
+    <string>&amp;Decrypt A File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+H</string>
@@ -396,7 +397,7 @@
   </action>
   <action name="actionLuks_header_backup">
    <property name="text">
-    <string>Header Backup</string>
+    <string>&amp;Header Backup</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+J</string>
@@ -404,7 +405,7 @@
   </action>
   <action name="actionManage_system_partitions">
    <property name="text">
-    <string>Manage System Volumes</string>
+    <string>Manag&amp;e System Volumes</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -412,7 +413,7 @@
   </action>
   <action name="actionManage_volumes_in_internal_wallet">
    <property name="text">
-    <string>Manage Volumes In Internal Wallet</string>
+    <string>Manage &amp;Volumes In Internal Wallet</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -428,7 +429,7 @@
   </action>
   <action name="actionManage_non_system_partitions">
    <property name="text">
-    <string>Manage Non System Volumes</string>
+    <string>Manage &amp;Non System Volumes</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
@@ -436,7 +437,7 @@
   </action>
   <action name="actionManage_volumes_in_kde_wallet">
    <property name="text">
-    <string>Manage Volumes In KDE Wallet</string>
+    <string>Manage Volumes In &amp;KDE Wallet</string>
    </property>
    <property name="shortcut">
     <string>Shift+V</string>
@@ -444,7 +445,7 @@
   </action>
   <action name="actionManage_volumes_in_gnome_wallet">
    <property name="text">
-    <string>Manage Volumes In GNOME keyring</string>
+    <string>Manage Volumes In &amp;GNOME keyring</string>
    </property>
    <property name="shortcut">
     <string>Alt+V</string>
@@ -452,7 +453,7 @@
   </action>
   <action name="actionChange_internal_wallet_password">
    <property name="text">
-    <string>Change Internal Wallet Password</string>
+    <string>&amp;Change Internal Wallet Password</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -486,7 +487,7 @@
   </action>
   <action name="actionOpen_zuluCrypt_pdf">
    <property name="text">
-    <string>Open ZuluCrypt.pdf</string>
+    <string>&amp;Open ZuluCrypt.pdf</string>
    </property>
    <property name="shortcut">
     <string>Shift+H</string>
@@ -494,7 +495,7 @@
   </action>
   <action name="actionCheck_For_Update">
    <property name="text">
-    <string>Check For Update</string>
+    <string>&amp;Check For Update</string>
    </property>
    <property name="shortcut">
     <string>Shift+U</string>
@@ -502,7 +503,7 @@
   </action>
   <action name="actionContact_Info">
    <property name="text">
-    <string>Contact Info</string>
+    <string>Contact &amp;Info</string>
    </property>
    <property name="shortcut">
     <string>Shift+I</string>
@@ -510,12 +511,12 @@
   </action>
   <action name="actionSelect_Language">
    <property name="text">
-    <string>Select Language</string>
+    <string>&amp;Select Language</string>
    </property>
   </action>
   <action name="actionAuto_Open_Mount_Point">
    <property name="text">
-    <string>Auto Open Mount Point</string>
+    <string>&amp;Auto Open Mount Point</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -523,7 +524,12 @@
   </action>
   <action name="actionSelect_Icons">
    <property name="text">
-    <string>Select Icons</string>
+    <string>Select &amp;Icons</string>
+   </property>
+  </action>
+  <action name="actionSet_File_Manager">
+   <property name="text">
+    <string>Set File Manager</string>
    </property>
   </action>
  </widget>

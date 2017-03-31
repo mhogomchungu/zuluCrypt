@@ -1,4 +1,4 @@
-﻿/*
+/*
  *
  *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa
@@ -2401,5 +2401,19 @@ QString utility::fileManager()
 		return "xdg-open" ;
 	}else{
 		return utility::split( f.readAll() ).first() ;
+	}
+}
+
+void utility::setFileManager( const QString& e )
+{
+	QFile f( utility::homePath() + "/.zuluCrypt/FileManager" ) ;
+
+	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+
+	if( e.isEmpty() ){
+
+		f.write( "xdg-open" ) ;
+	}else{
+		f.write( e.toLatin1() ) ;
 	}
 }

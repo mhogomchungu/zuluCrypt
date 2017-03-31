@@ -269,6 +269,7 @@ namespace utility
 	void startHelperExecutable( QObject *,const QString&,const char *,const char * ) ;
 	void dropPrivileges( int = -1 ) ;
 	QString fileManager( void ) ;
+	void setFileManager( const QString& ) ;
 	QString prettyfySpaceUsage( quint64 ) ;
 	QString resolvePath( const QString& ) ;
 	QString hashPath( const QByteArray& ) ;

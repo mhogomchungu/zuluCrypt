@@ -27,6 +27,7 @@ SOURCES += main.cpp\
     cryptfiles.cpp \
     dialogmsg.cpp \
     managesystemvolumes.cpp \
+    filemanager.cpp \
     keystrength.cpp \
     userfont.cpp \
     tablewidget.cpp \
@@ -64,6 +65,7 @@ SOURCES += main.cpp\
 HEADERS  += zulucrypt.h \
     password_dialog.h \
     dialogok.h \
+    filemanager.h \
     openvolume.h \
     luksaddkey.h \
     luksdeletekey.h \
@@ -114,6 +116,7 @@ FORMS    += zulucrypt.ui password.ui \
     openvolume.ui \
     luksaddkey.ui \
     dialogok.ui \
+    filemanager.ui \
     luksdeletekey.ui \
     createvolume.ui \
     createfile.ui \

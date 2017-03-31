@@ -53,6 +53,7 @@
 #include "luksdeletekey.h"
 #include "createvolume.h"
 #include "createfile.h"
+#include "filemanager.h"
 #include "createkeyfile.h"
 #include "favorites.h"
 #include "cryptoinfo.h"
@@ -372,6 +373,7 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionOpen_zuluCrypt_pdf,SIGNAL( triggered() ),this,SLOT( openpdf() ) ) ;
 	connect( m_ui->actionCheck_For_Update,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
 	connect( m_ui->actionContact_Info,SIGNAL( triggered() ),this,SLOT( cinfo() ) ) ;
+	connect( m_ui->actionSet_File_Manager,SIGNAL( triggered() ),this,SLOT( setFileManager() ) ) ;
 
 	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
 
@@ -1083,6 +1085,11 @@ void zuluCrypt::close()
 	m_ui->tableWidget->setEnabled( true ) ;
 
 	this->closeStatusErrorMessage( r ) ;
+}
+
+void zuluCrypt::setFileManager()
+{
+	fileManager::instance( this ) ;
 }
 
 void zuluCrypt::volumeRestoreHeader()

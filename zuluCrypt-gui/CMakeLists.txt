@@ -24,6 +24,7 @@ set( UI_FILES createfile.ui
 		tcrypt.ui
 		contactinfo.ui
 		dialogok.ui
+		filemanager.ui
 )
 
 set( MOC_FILES
@@ -50,6 +51,7 @@ set( MOC_FILES
 		../zuluMount-gui/oneinstance.h
 		../zuluMount-gui/monitor_mountinfo.h
 		contactinfo.h
+		filemanager.h
  )
 
 set( SRC
@@ -80,6 +82,7 @@ set( SRC
 	../zuluMount-gui/zulumounttask.cpp
 	../zuluMount-gui/volumeproperty.cpp
 	contactinfo.cpp
+	filemanager.cpp
 )
 
 if( QT5 )
