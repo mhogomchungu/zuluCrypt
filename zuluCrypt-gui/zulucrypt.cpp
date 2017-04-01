@@ -665,14 +665,14 @@ void zuluCrypt::quitApplication()
 
 void zuluCrypt::closeApplication()
 {
+	utility::quitHelper() ;
 	m_mountInfo.stop()() ;
 }
 
 void zuluCrypt::closeApplication( int s )
 {
 	Q_UNUSED( s ) ;
-
-	this->closeApplication() ;
+	m_mountInfo.stop()() ;
 }
 
 void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )
@@ -1216,8 +1216,6 @@ void zuluCrypt::decryptFile( const QString& e )
 
 zuluCrypt::~zuluCrypt()
 {
-	utility::quitHelper() ;
-
 	if( !m_ui ){
 
 		return ;

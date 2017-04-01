@@ -282,7 +282,7 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 		auto ac = new QAction( tr( "Check For Update" ),this ) ;
 
 		m_actionPair.append( { ac,"Check For Update" } ) ;
-		
+
 		connect( ac,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
 
 		return ac ;
@@ -558,14 +558,14 @@ void zuluMount::startAutoMonitor()
  */
 void zuluMount::closeApplication()
 {
+	utility::quitHelper() ;
 	m_events.stop() ;
 }
 
 void zuluMount::closeApplication( int s )
 {
 	Q_UNUSED( s ) ;
-
-	this->closeApplication() ;
+	m_events.stop() ;
 }
 
 void zuluMount::autoMountVolume( volumeProperty * q )
@@ -883,7 +883,7 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 					 this,SLOT( slotOpenFolder() ) ) ;
 				connect( m.addAction( tr( "Open Shared Folder" ) ),SIGNAL( triggered() ),
 					 this,SLOT( slotOpenSharedFolder() ) ) ;
-			}			
+			}
 
 			m.addSeparator() ;
 
@@ -1556,8 +1556,6 @@ bool zuluMount::autoMount()
 
 zuluMount::~zuluMount()
 {
-	utility::quitHelper() ;
-
 	if( !m_ui ){
 
 		return ;
