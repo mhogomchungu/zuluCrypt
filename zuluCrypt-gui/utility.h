@@ -287,14 +287,15 @@ namespace utility
 	QString sharedMountPointPath( const QString& ) ;
 	bool pathPointsToAFile( const QString& ) ;
 	bool pathPointsToAFolder( const QString& ) ;
+	bool configDirectoriesAreNotWritable( QWidget * ) ;
 	QString localizationLanguage( const QString& ) ;
 	QString localizationLanguagePath( const QString& ) ;
 	void setLocalizationLanguage( const QString&,const QString& ) ;
 	QString walletName( void ) ;
 	QString applicationName( void ) ;
 	QString readPassword( bool = true ) ;
-	bool pathIsReadable( const QString& ) ;
-	bool pathIsWritable( const QString& ) ;
+	bool pathIsReadable( const QString&,bool isFolder = true ) ;
+	bool pathIsWritable( const QString&,bool isFolder = true ) ;
 	bool setOpenVolumeReadOnly( QWidget * parent,bool check,const QString& app ) ;
 	bool getOpenVolumeReadOnlyOption( const QString& app ) ;
 	QString keyPath( void ) ;

@@ -246,7 +246,13 @@ void zuluCrypt::start()
 
 	auto s = utility::homePath() + "/.zuluCrypt-socket" ;
 
+	utility::createHomeFolder() ;
 	utility::createFolderPath( s ) ;
+
+	if( utility::configDirectoriesAreNotWritable( this ) ){
+
+		return this->closeApplication() ;
+	}
 
 	oneinstance::instance( this,
 			       s + "/zuluCrypt-gui.socket",

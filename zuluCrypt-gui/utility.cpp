@@ -933,24 +933,42 @@ QString utility::applicationName()
 	return "zuluCrypt" ;
 }
 
-bool utility::pathIsReadable( const QString& path )
+bool utility::pathIsReadable( const QString& path,bool isFolder )
 {
-	utility::fileHandle h ;
+	QFileInfo s( path ) ;
 
-	return h.open( path ) ;
+	if( isFolder ){
+
+		return s.isReadable() && s.isDir() ;
+	}else{
+		return s.isReadable() && s.isFile() ;
+	}
 }
 
-bool utility::pathIsWritable( const QString& path )
+bool utility::pathIsWritable( const QString& path,bool isFolder )
 {
-	utility::fileHandle h ;
+	QFileInfo s( path ) ;
 
-	if( h.open( path,false ) ){
+	if( isFolder ){
 
-		h.unlink() ;
-
-		return true ;
+		return s.isWritable() && s.isDir() ;
 	}else{
+		return s.isWritable() && s.isFile() ;
+	}
+}
+
+bool utility::configDirectoriesAreNotWritable( QWidget * w )
+{
+	auto a = utility::homePath() + "/.zuluCrypt" ;
+	auto b = utility::homePath() + "/.zuluCrypt-socket" ;
+
+	if( utility::pathIsWritable( a ) && utility::pathIsWritable( b ) ){
+
 		return false ;
+	}else{
+		auto e = QObject::tr( "\"%1\" Folder Must Be Writable.\n\"%2\" Folder Must Also Be Writable." ).arg( a,b ) ;
+		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),e ) ;
+		return true ;
 	}
 }
 
