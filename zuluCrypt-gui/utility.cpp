@@ -1153,7 +1153,16 @@ bool utility::pathExists( const QString& path )
 
 bool utility::canCreateFile( const QString& path )
 {
-	return utility::pathIsWritable( path ) ;
+	auto s = path ;
+
+	auto e = s.lastIndexOf( '/' ) ;
+
+	if( e != -1 ){
+
+		s.truncate( e ) ;
+	}
+
+	return utility::pathIsWritable( s ) ;
 }
 
 QString utility::resolvePath( const QString& path )
