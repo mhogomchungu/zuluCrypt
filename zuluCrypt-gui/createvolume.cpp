@@ -558,41 +558,24 @@ void createvolume::tcryptGui( bool e )
 {
 	m_normalVolume = e ;
 
-	this->disableAll() ;
+	//this->disableAll() ;
 
 	tcrypt::instance( this,true,[ this ]( const QString& key,const QStringList& keyFiles ){
 
-		this->enableAll() ;
+		//this->enableAll() ;
 
 		if( m_normalVolume ){
 
 			m_key = key ;
 			m_keyFiles = keyFiles ;
-			m_ui->lineEditPassphrase1->setEnabled( false ) ;
-			m_ui->pbOpenKeyFile->setEnabled( false ) ;
-
-			auto type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
-
-			bool e = type == createvolume::normal_and_hidden_truecrypt || type == createvolume::normal_and_hidden_veracrypt ;
-
-			if( !e ){
-
-				m_ui->lineEditHiddenKey->setEnabled( false ) ;
-				m_ui->lineEditHiddenKey1->setEnabled( false ) ;
-				m_ui->lineEditHiddenSize->setEnabled( false ) ;
-				m_ui->pbHiddenKeyFile->setEnabled( false ) ;
-				m_ui->comboBoxHiddenSize->setEnabled( false ) ;
-				m_ui->cbHiddenVolume->setEnabled( false ) ;
-			}
 		}else{
-			m_ui->lineEditPassphrase1->setEnabled( false ) ;
 			m_hiddenKey = key ;
 			m_hiddenKeyFiles = keyFiles ;
 		}
 
 	},[ this ](){
 
-		this->enableAll() ;
+		//this->enableAll() ;
 
 		bool x = m_ui->cbNormalVolume->currentIndex() == createvolume::normal_truecrypt ;
 		bool y = m_ui->cbNormalVolume->currentIndex() == createvolume::normal_veracrypt ;
