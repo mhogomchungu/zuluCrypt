@@ -93,7 +93,9 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 			if( fileSystem == "ecryptfs" ){
 
-				auto s = "ecryptfs-simple -k " + _makePath( cipherFolder ) ;
+				auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
+
+				auto s = exe + " -k " + _makePath( cipherFolder ) ;
 
 				if( utility::runningInMixedMode() ){
 

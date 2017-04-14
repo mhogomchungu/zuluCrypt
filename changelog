@@ -268,3 +268,8 @@ version 5.1.0
 -- add ability in zuluCrypt-gui to change VeraCrypt volume key.
 -- add ability in zuluCrypt-gui to create a VeraCrypt volume that uses a PIM value.
 -- add ability in zuluMount-gui to unlock folder based encrypted volumes when running in mixed mode.
+
+version 5.2.0
+-- add ability to select a file manager to use to open mount points. A file manager can be set through
+   zuluCrypt-gui->menu->options->set file manager.
+-- dont run zuluCrypt-gui and zuluMount-gui from root's account when running in mixed mode.

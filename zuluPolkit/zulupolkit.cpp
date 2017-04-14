@@ -76,6 +76,37 @@ namespace utility
 		int exitStatus = 255 ;
 		bool finished  = false ;
 	};
+
+	QStringList executableSearchPaths()
+	{
+		return { "/usr/local/bin/",
+			"/usr/local/sbin/",
+			"/usr/bin/",
+			"/usr/sbin/",
+			"/bin/",
+			"/sbin/",
+			"/opt/local/bin/",
+			"/opt/local/sbin/",
+			"/opt/bin/",
+			"/opt/sbin/" } ;
+	}
+
+	QString executableFullPath( const QString& e )
+	{
+		QString exe ;
+
+		for( const auto& it : utility::executableSearchPaths() ){
+
+			exe = it + e ;
+
+			if( QFile::exists( exe ) ){
+
+				return exe ;
+			}
+		}
+
+		return QString() ;
+	}
 }
 
 static bool _terminalEchoOff( struct termios * old,struct termios * current )
@@ -110,7 +141,7 @@ void zuluPolkit::start()
 {
 	if( m_arguments.size() > 1 ){
 
-		m_token = this->readStdin() ;
+		m_cookie = this->readStdin() ;
 
 		m_socketPath = m_arguments.at( 1 ) ;
 
@@ -136,6 +167,15 @@ static void _respond( std::unique_ptr< QLocalSocket >& s,
 	s->waitForBytesWritten() ;
 }
 
+static bool _correct_cmd( const QString& cmd )
+{
+	auto a = ZULUCRYPTzuluCrypt" " ;
+	auto b = zuluMountPath" " ;
+	auto c = "/bin/su - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
+
+	return cmd.startsWith( a ) || cmd.startsWith( b ) || cmd.startsWith( c ) ;
+}
+
 void zuluPolkit::gotConnection()
 {
 	std::unique_ptr< QLocalSocket > s( m_server.nextPendingConnection() ) ;
@@ -149,14 +189,13 @@ void zuluPolkit::gotConnection()
 		auto token    = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
 
-		auto e = ZULUCRYPTzuluCrypt" " ;
-		auto f = zuluMountPath" " ;
+
 
 		if( command == "exit" ){
 
 			return QCoreApplication::quit() ;
 
-		}else if( token == m_token && ( command.startsWith( e ) || command.startsWith( f ) ) ){
+		}else if( token == m_cookie && _correct_cmd( command ) ){
 
 			return _respond( s,utility::Task( command,password ) ) ;
 		}
