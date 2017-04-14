@@ -264,7 +264,7 @@ void utility::startHelperExecutable( QObject * obj,const QString& arg,const char
 
 	if( !exe.isEmpty() ){
 
-		exe = QString( "%1 %2 %3 fork ").arg( exe,zuluPolkitPath,utility::helperSocketPath() ) ;
+		exe = QString( "%1 %2 %3 fork" ).arg( exe,zuluPolkitPath,utility::helperSocketPath() ) ;
 
 		::Task::exec( [ = ](){
 
