@@ -79,6 +79,7 @@ zuluCrypt packages are in <a href="https://admin.fedoraproject.org/pkgdb/package
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.1.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
 
 
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-5.1.0-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
 
 These archives contains binaries for both 32 bit and 64 bit systems.
 
@@ -217,4 +218,4 @@ i/gJN6mX3AIU7HHEHnP5ty8mwbb8ROc=
 -----END PGP PUBLIC KEY BLOCK-----
 ```
 
-last update: Tue Jan 17 23:06:40 EAT 2017
+last update: Sat Apr 15 11:48:14 EAT 2017
