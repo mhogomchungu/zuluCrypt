@@ -63,7 +63,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 
 					StringDelete( &path ) ;
 				}else{
-					_chown( m_point,uid,uid ) ;
+					_chown( m_point,uid,( gid_t )-1 ) ;
 				}
 			}else{
 				StringDelete( &path ) ;
@@ -71,7 +71,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 		}else{
 			if( mkdir( m_point,S_IRWXU ) == 0 ){
 
-				_chown( m_point,uid,uid ) ;
+				_chown( m_point,uid,( gid_t )-1 ) ;
 			}else{
 				StringDelete( &path ) ;
 			}
@@ -79,7 +79,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 	}else{
 		if( mkdir( m_point,S_IRWXU ) == 0 ){
 
-			_chown( m_point,uid,uid ) ;
+			_chown( m_point,uid,( gid_t )-1 ) ;
 		}else{
 			StringDelete( &path ) ;
 		}
