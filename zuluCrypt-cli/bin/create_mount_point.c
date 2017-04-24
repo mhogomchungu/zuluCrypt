@@ -26,7 +26,8 @@
 
 static void _chown( const char * x,uid_t y,gid_t z )
 {
-	if( chown( x,y,z ) ){;}
+	if( z ){}
+	if( chown( x,y,( gid_t )-1 ) ){;}
 }
 static void _chmod( const char * x,mode_t y )
 {
@@ -63,7 +64,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 
 					StringDelete( &path ) ;
 				}else{
-					_chown( m_point,uid,( gid_t )-1 ) ;
+					_chown( m_point,uid,uid ) ;
 				}
 			}else{
 				StringDelete( &path ) ;
@@ -71,7 +72,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 		}else{
 			if( mkdir( m_point,S_IRWXU ) == 0 ){
 
-				_chown( m_point,uid,( gid_t )-1 ) ;
+				_chown( m_point,uid,uid ) ;
 			}else{
 				StringDelete( &path ) ;
 			}
@@ -79,7 +80,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 	}else{
 		if( mkdir( m_point,S_IRWXU ) == 0 ){
 
-			_chown( m_point,uid,( gid_t )-1 ) ;
+			_chown( m_point,uid,uid ) ;
 		}else{
 			StringDelete( &path ) ;
 		}
