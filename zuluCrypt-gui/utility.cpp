@@ -347,6 +347,18 @@ int utility::getUserID()
 	}
 }
 
+int utility::getGUID( int uid )
+{
+	auto e = getpwuid( uid ) ;
+
+	if( e ){
+
+		return e->pw_gid ;
+	}else{
+		return uid ;
+	}
+}
+
 QString utility::getStringUserID()
 {
 	return QString::number( utility::getUserID() ) ;

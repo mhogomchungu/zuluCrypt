@@ -48,6 +48,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <pwd.h>
 
 #include <blkid/blkid.h>
 
@@ -182,6 +183,7 @@ namespace utility
 
 	int getUID() ;
 	int getUserID() ;
+	int getGUID( int uid ) ;
 
 	QString getStringUserID() ;
 	QString appendUserUID( const QString& ) ;
@@ -191,21 +193,24 @@ namespace utility
 	void changePathOwner( const T& f )
 	{
 		int uid = utility::getUID() ;
+		int gid = utility::getGUID( uid ) ;
+
 		int fd = f.handle() ;
 
 		if( uid != -1 && fd != -1 ){
 
-			if( fchown( fd,uid,uid ) ){;}
+			if( fchown( fd,uid,gid ) ){;}
 		}
 	}
 
 	static inline void changePathOwner( const char * path )
 	{
 		int uid = utility::getUID() ;
+		int gid = utility::getGUID( uid ) ;
 
 		if( uid != -1 ){
 
-			if( chown( path,uid,uid ) ){;}
+			if( chown( path,uid,gid ) ){;}
 		}
 	}
 
