@@ -63,7 +63,7 @@ static int _unmount( int( *function )( const char * m_dir ),const char * m_dir )
 	return h ;
 }
 
-static int _zuluCryptUnmountVolume_0( string_t st,char ** m_point )
+static int _zuluCryptUnmountVolume_0( string_t st,char ** m_point,char ** m_point_2 )
 {
 	int h ;
 
@@ -89,6 +89,11 @@ static int _zuluCryptUnmountVolume_0( string_t st,char ** m_point )
 	if( h == 0 && m_point != NULL ){
 
 		*m_point = StringCopy_2( mout_point ) ;
+	}
+
+	if( m_point_2 != NULL ){
+
+		*m_point_2 = StringCopy_2( mout_point ) ;
 	}
 
 	StringListDelete( &stl ) ;
@@ -176,7 +181,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 		 * there is only one mount point for the volume,unmount it normally
 		 */
 
-		h = _zuluCryptUnmountVolume_0( StringListStringAtFirstPlace( stl ),m_point ) ;
+		h = _zuluCryptUnmountVolume_0( StringListStringAtFirstPlace( stl ),m_point,NULL ) ;
 	}else{
 		/*
 		 * There are multiple mount points for the same volume.
@@ -209,8 +214,11 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 
 				it++ ;
 
-				if( _zuluCryptUnmountVolume_0( xt,NULL ) != 0 ){
+				if( _zuluCryptUnmountVolume_0( xt,NULL,&e ) != 0 ){
 
+					printf( "Failed to unmount third party mount point: \"%s\"\n",e ) ;
+
+					StringFree( e ) ;
 					/*
 					 * Failed to unmount one of the extra mount points,
 					 * bail out with an error.
@@ -226,7 +234,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 				/*
 				 * Attempt to unmount our mount point last.
 				 */
-				h = _zuluCryptUnmountVolume_0( st,m_point ) ;
+				h = _zuluCryptUnmountVolume_0( st,m_point,NULL ) ;
 			}
 
 			StringDelete( &st ) ;

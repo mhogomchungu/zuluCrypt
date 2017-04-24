@@ -23,11 +23,24 @@
 #include <unistd.h>
 #include "mount_prefix_path.h"
 #include "reuse_mount_point.h"
+#include <grp.h>
+#include <pwd.h>
 
 static void _chown( const char * x,uid_t y,gid_t z )
 {
-	if( z ){}
-	if( chown( x,y,( gid_t )-1 ) ){;}
+	struct passwd * usr ;
+
+	if( z == ( gid_t ) -1 ){
+
+		usr = getpwuid( y ) ;
+
+		if( usr != NULL ){
+
+			z = usr->pw_gid ;
+		}
+	}
+
+	if( chown( x,y,z ) ){;}
 }
 static void _chmod( const char * x,mode_t y )
 {
@@ -64,7 +77,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 
 					StringDelete( &path ) ;
 				}else{
-					_chown( m_point,uid,uid ) ;
+					_chown( m_point,uid,( gid_t )-1 ) ;
 				}
 			}else{
 				StringDelete( &path ) ;
@@ -72,7 +85,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 		}else{
 			if( mkdir( m_point,S_IRWXU ) == 0 ){
 
-				_chown( m_point,uid,uid ) ;
+				_chown( m_point,uid,( gid_t )-1 ) ;
 			}else{
 				StringDelete( &path ) ;
 			}
@@ -80,7 +93,7 @@ static string_t _create_path_0( const char * m_point,uid_t uid,string_t path )
 	}else{
 		if( mkdir( m_point,S_IRWXU ) == 0 ){
 
-			_chown( m_point,uid,uid ) ;
+			_chown( m_point,uid,( gid_t )-1 ) ;
 		}else{
 			StringDelete( &path ) ;
 		}
@@ -324,7 +337,7 @@ static string_t create_mount_point( const char * device,const char * label,uid_t
 	zuluCryptCreateMountPath( e ) ;
 
 	_chmod( e,S_IREAD | S_IXUSR ) ;
-	_chown( e,uid,uid ) ;
+	_chown( e,uid,( gid_t )-1 ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
