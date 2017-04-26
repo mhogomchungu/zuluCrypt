@@ -83,6 +83,7 @@ typedef struct{
 	int tcrypt_system ;
 	const char * const * tcrypt_keyfiles ;
 	unsigned long m_flags ;
+	int use_backup_header ;
 	void * variables ;
 }open_struct_t ;
 

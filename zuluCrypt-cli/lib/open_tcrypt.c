@@ -116,6 +116,7 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 
 		if( tc_api_task_initialize( &task,"map" ) ){
 
+			tc_api_task_set( task,"use_backup_header",opts->use_backup_header ) ;
 			tc_api_task_set( task,"veracrypt_mode",opts->veraCrypt_volume ) ;
 			tc_api_task_set( task,"map_name",opts->mapper_name ) ;
 			tc_api_task_set( task,"read_only",StringHasComponent( opts->m_opts,"ro" ) ) ;
@@ -169,12 +170,30 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 	return r ;
 }
 
+static int _open_tcrypt_volume_1( const char * device,const resolve_path_t * opt )
+{
+	int r = _open_tcrypt_volume( device,opt ) ;
+
+	open_struct_t * opts ;
+
+	if( r == 0 ){
+
+		return r ;
+	}else{
+		opts = ( open_struct_t * ) opt->args ;
+
+		opts->use_backup_header = 1 ;
+
+		return _open_tcrypt_volume( device,opt ) ;
+	}
+}
+
 static int _open_tcrypt_0( const open_struct_t * opt )
 {
 	/*
 	 * zuluCryptResolveDevicePath_0() is defined in resolve_path.c
 	 */
-	return zuluCryptResolveDevicePath_0( _open_tcrypt_volume,opt,1 ) ;
+	return zuluCryptResolveDevicePath_0( _open_tcrypt_volume_1,opt,1 ) ;
 }
 
 int zuluCryptOpenTcrypt( const char * device,const char * mapper,const char * key,size_t key_len,
