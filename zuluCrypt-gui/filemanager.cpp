@@ -22,9 +22,9 @@
 
 #include "utility.h"
 
-fileManager::fileManager( QWidget * parent ) :
+fileManager::fileManager( QWidget * parent,std::function< void( const QString& ) > s ) :
 	QDialog( parent ),
-	m_ui( new Ui::fileManager )
+	m_ui( new Ui::fileManager ),m_function( std::move( s ) )
 {
 	m_ui->setupUi( this ) ;
 
@@ -47,7 +47,14 @@ fileManager::~fileManager()
 
 void fileManager::set()
 {
-	utility::setFileManager( m_ui->lineEdit->text() ) ;
+	auto e = m_ui->lineEdit->text() ;
+
+	utility::setFileManager( e ) ;
+
+	if( !e.isEmpty() ){
+
+		m_function( e ) ;
+	}
 
 	this->hide() ;
 	this->deleteLater() ;

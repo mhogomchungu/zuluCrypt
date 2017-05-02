@@ -126,7 +126,7 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 	m_ui->pushButtonPlainDmCryptOptions->setMenu( [ this ](){
 
-		auto m =  new QMenu( this ) ;
+		auto m = new QMenu( this ) ;
 
 		connect( m,SIGNAL( triggered( QAction * ) ),
 			 this,SLOT( plainDmCryptOption( QAction * ) ) ) ;

@@ -470,16 +470,13 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 
 	l.append( a ) ;
 
-	if( utility::notRunningInMixedMode() ){
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::libsecret ) ){
 
-		if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::libsecret ) ){
+		l.append( b ) ;
+	}
+	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::kwallet ) ){
 
-			l.append( b ) ;
-		}
-		if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::kwallet ) ){
-
-			l.append( c ) ;
-		}
+		l.append( c ) ;
 	}
 
 	if( addPlugIns ){

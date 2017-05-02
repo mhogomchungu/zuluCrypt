@@ -1095,7 +1095,7 @@ void zuluCrypt::close()
 
 void zuluCrypt::setFileManager()
 {
-	fileManager::instance( this ) ;
+	fileManager::instance( this,[ this ]( const QString& e ){ m_openPath = e ; } ) ;
 }
 
 void zuluCrypt::volumeRestoreHeader()

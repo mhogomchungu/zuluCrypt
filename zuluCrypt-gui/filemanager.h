@@ -22,6 +22,9 @@
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <functional>
+#include <utility>
+
 namespace Ui {
 class fileManager;
 }
@@ -30,17 +33,18 @@ class fileManager : public QDialog
 {
 	Q_OBJECT
 public:
-	static void instance( QWidget * w )
+	static void instance( QWidget * w,std::function< void( const QString& ) > s )
 	{
-		new fileManager( w ) ;
+		new fileManager( w,std::move( s ) ) ;
 	}
-	explicit fileManager( QWidget * parent ) ;
+	explicit fileManager( QWidget * parent,std::function< void( const QString& ) > ) ;
 	~fileManager();
 private slots:
 	void set( void ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::fileManager * m_ui ;
+	std::function< void( const QString& ) > m_function ;
 };
 
 #endif // FILEMANAGER_H
