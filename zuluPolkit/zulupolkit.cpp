@@ -21,7 +21,7 @@
 #include "zulupolkit.h"
 #include "../zuluCrypt-gui/task.h"
 #include "bin_path.h"
-
+#include "../zuluCrypt-gui/executablesearchpaths.h"
 #include "3rdParty/json.hpp"
 
 #include <termios.h>
@@ -77,25 +77,11 @@ namespace utility
 		bool finished  = false ;
 	};
 
-	QStringList executableSearchPaths()
-	{
-		return { "/usr/local/bin/",
-			"/usr/local/sbin/",
-			"/usr/bin/",
-			"/usr/sbin/",
-			"/bin/",
-			"/sbin/",
-			"/opt/local/bin/",
-			"/opt/local/sbin/",
-			"/opt/bin/",
-			"/opt/sbin/" } ;
-	}
-
 	QString executableFullPath( const QString& e )
 	{
 		QString exe ;
 
-		for( const auto& it : utility::executableSearchPaths() ){
+		for( const auto& it : executableSearchPaths::values() ){
 
 			exe = it + e ;
 
@@ -186,19 +172,21 @@ void zuluPolkit::gotConnection()
 		auto json = nlohmann::json::parse( s->readAll().constData() ) ;
 
 		auto password = QString::fromStdString( json[ "password" ].get< std::string >() ) ;
-		auto token    = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
+		auto cookie   = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
 
+		if( cookie == m_cookie ){
 
+			if( command == "exit" ){
 
-		if( command == "exit" ){
+				return QCoreApplication::quit() ;
 
-			return QCoreApplication::quit() ;
+			}else if( _correct_cmd( command ) ){
 
-		}else if( token == m_cookie && _correct_cmd( command ) ){
-
-			return _respond( s,utility::Task( command,password ) ) ;
+				return _respond( s,utility::Task( command,password ) ) ;
+			}
 		}
+
 	}catch( ... ){}
 
 	_respond( s ) ;

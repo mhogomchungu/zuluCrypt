@@ -64,7 +64,7 @@
 #include "plugin.h"
 #include "install_prefix.h"
 #include "utility.h"
-
+#include "executablesearchpaths.h"
 #include "networkAccessManager.hpp"
 
 #include <sys/types.h>
@@ -2343,16 +2343,7 @@ bool utility::platformIsOSX()
 
 QStringList utility::executableSearchPaths()
 {
-	return { "/usr/local/bin/",
-		"/usr/local/sbin/",
-		"/usr/bin/",
-		"/usr/sbin/",
-		"/bin/",
-		"/sbin/",
-		"/opt/local/bin/",
-		"/opt/local/sbin/",
-		"/opt/bin/",
-		"/opt/sbin/" } ;
+	return ::executableSearchPaths::values() ;
 }
 
 QString utility::executableSearchPaths( const QString& e )

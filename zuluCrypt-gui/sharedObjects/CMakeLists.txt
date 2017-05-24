@@ -9,6 +9,7 @@ set( SRC
 	../readonlywarning.cpp
 	../checkforupdates.cpp
 	../plugin.cpp
+	../executablesearchpaths.cpp
 )
 
 set( MOC_FILES

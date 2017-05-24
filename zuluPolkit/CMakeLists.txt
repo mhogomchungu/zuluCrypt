@@ -11,6 +11,7 @@ set( MOC_FILES
 set( SRC
 	main.cpp
 	zulupolkit.cpp
+	../zuluCrypt-gui/executablesearchpaths.cpp
 )
 
 if( QT5 )
