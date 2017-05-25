@@ -35,27 +35,26 @@ else()
 	target_link_libraries( zuluPolkit ${QT_LIBRARIES} )
 endif()
 
-file( WRITE ${PROJECT_BINARY_DIR}/zulupolkit.policy
+file( WRITE ${PROJECT_BINARY_DIR}/org.zulucrypt.zulupolkit.policy
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE policyconfig PUBLIC
  \"-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN\"
  \"http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd\">
 <policyconfig>
 
-  <action id=\"org.debian.pkexec.zulupolkit\">
+  <action id=\"org.zulucrypt.zulupolkit.pkexec.run\">
     <message>Authentication is required to run zulupolkit</message>
     <icon_name>zuluCrypt</icon_name>
     <defaults>
-      <allow_any>auth_admin</allow_any>
-      <allow_inactive>auth_admin</allow_inactive>
-      <allow_active>auth_admin</allow_active>
+      <allow_any>yes</allow_any>
+      <allow_inactive>yes</allow_inactive>
+      <allow_active>yes</allow_active>
     </defaults>
-    <annotate key=\"org.freedesktop.policykit.exec.path\">${CMAKE_INSTALL_PREFIX}/bin/zulupolkit</annotate>
-    <annotate key=\"org.freedesktop.policykit.exec.allow_gui\">true</annotate>
+    <annotate key=\"org.freedesktop.policykit.exec.path\">${CMAKE_INSTALL_PREFIX}/bin/zuluPolkit</annotate>
   </action>
 
 </policyconfig>
 ")
 
-install( FILES ${PROJECT_BINARY_DIR}/zulupolkit.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
+install( FILES ${PROJECT_BINARY_DIR}/org.zulucrypt.zulupolkit.policy DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/polkit-1/actions )
 install( TARGETS zuluPolkit RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
