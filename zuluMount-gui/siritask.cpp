@@ -263,12 +263,12 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			}
 		}() ;
 
-		if( utility::runningInMixedMode() ){
+		//if( utility::runningInMixedMode() ){
 
-			return _wrap_su( s ) ;
-		}else{
+		//	return _wrap_su( s ) ;
+		//}else{
 			return s ;
-		}
+		//}
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
@@ -411,9 +411,9 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			return env ;
 
-		}(),password.toLatin1(),[](){},configFilePath.endsWith( "ecryptfs.config" ) ) ;
+		}(),password.toLatin1(),[](){},false ) ;
 
-		if( e.finished() && e.success() ){
+		if( e.success() ){
 
 			return cs::success ;
 		}

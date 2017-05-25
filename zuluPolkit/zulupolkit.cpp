@@ -157,9 +157,9 @@ static bool _correct_cmd( const QString& cmd )
 {
 	auto a = ZULUCRYPTzuluCrypt" " ;
 	auto b = zuluMountPath" " ;
-	auto c = "/bin/su - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
+	//auto c = "/bin/su - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
 
-	return cmd.startsWith( a ) || cmd.startsWith( b ) || cmd.startsWith( c ) ;
+	return cmd.startsWith( a ) || cmd.startsWith( b ) ;
 }
 
 void zuluPolkit::gotConnection()
