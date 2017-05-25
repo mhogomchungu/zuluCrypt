@@ -23,10 +23,7 @@
 
 #include <libcryptsetup.h>
 
-/*
- * disable luks2 support for now
- */
-#undef CRYPT_LUKS2
+#include "luks2_support.h"
 
 typedef struct arguments{
 
@@ -124,6 +121,8 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 
 		return 1 ;
 	}
+
+	zuluCryptDisableMetadataLocking( cd ) ;
 
 	if( StringsAreEqual( args->rng,"/dev/random" ) ){
 
@@ -252,22 +251,26 @@ int zuluCryptCreateLuks( const char * device,const char * key,size_t key_len,con
 
 #ifdef CRYPT_LUKS2
 
+void zuluCryptDisableMetadataLocking( void * cd )
+{
+	crypt_metadata_locking( cd,0 ) ;
+}
+
 static void * _luks2( const arguments * args,size_t data_alignment )
 {
 	struct crypt_params_luks2 * params = args->params ;
 
-	struct crypt_pbkdf_type * pbkdf = ( struct crypt_pbkdf_type * ) &params->pbkdf ;
+	struct crypt_pbkdf_type * pbkdf = &params->pbkdf ;
 
-	/*
-	 * It seems to be necessary to set these and we are going with current cryptsetup default
-	 */
 	pbkdf->type             = "argon2" ;
 	pbkdf->hash             = args->hash ;
 	pbkdf->time_ms          = 800 ;
-	pbkdf->memory_kb        = 1024 ;
+	pbkdf->max_memory_kb    = 1024 ;
 	pbkdf->parallel_threads = 4 ;
 
 	params->data_alignment = data_alignment ;
+
+	params->sector_size = 512 ;
 
 	return params ;
 }
@@ -289,6 +292,11 @@ int zuluCryptCreateLuks2( const char * device,const char * key,size_t key_len,co
 }
 
 #else
+
+void zuluCryptDisableMetadataLocking( void * cd )
+{
+	if( cd ){;}
+}
 
 int zuluCryptCreateLuks2( const char * device,const char * pass,size_t pass_size,const char * options )
 {

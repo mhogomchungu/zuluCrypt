@@ -1508,10 +1508,7 @@ the Free Software Foundation, either version 2 of the License, or \
 This program is distributed in the hope that it will be useful,\
 but WITHOUT ANY WARRANTY; without even the implied warranty of \
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
-GNU General Public License for more details.\n\
-\n\
-You should have received a copy of the GNU General Public License\n\
-along with this program.  If not, see <http://www.gnu.org/licenses/>." ).arg( VERSION_STRING ) ;
+GNU General Public License for more details." ).arg( VERSION_STRING ) ;
 
 	DialogMsg m( parent ) ;
 	m.ShowUIInfo( QObject::tr( "about zuluCrypt" ),false,license ) ;

@@ -67,10 +67,14 @@ static int _open_luks_2( const char * device,const resolve_path_t * opt )
 
 		return 2 ;
 	}
+
+	zuluCryptDisableMetadataLocking( cd ) ;
+
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
 
 		return zuluExit( 2,cd ) ;
 	}
+
 	if( opt->open_mode == O_RDONLY ){
 
 		flags = CRYPT_ACTIVATE_READONLY ;

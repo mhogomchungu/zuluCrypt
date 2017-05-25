@@ -35,6 +35,8 @@ static int _is_luks( const char * dev,const resolve_path_t * opts )
 		return 0 ;
 	}
 
+	zuluCryptDisableMetadataLocking( cd ) ;
+
 	st = crypt_load( cd,NULL,NULL ) ;
 
 	crypt_free( cd ) ;

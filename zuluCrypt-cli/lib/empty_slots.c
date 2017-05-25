@@ -46,6 +46,9 @@ static char * _empty_slots( const char * device,const resolve_path_t * opts )
 
 		return zuluExit( NULL,NULL ) ;
 	}
+
+	zuluCryptDisableMetadataLocking( cd ) ;
+
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
 
 		return zuluExit( NULL,cd ) ;
