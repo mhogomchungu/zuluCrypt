@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdio.h>
 
 static int _unmount_rest( const char * m_dir )
 {
