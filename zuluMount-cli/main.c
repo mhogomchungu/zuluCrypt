@@ -626,6 +626,11 @@ int main( int argc,char * argv[] )
 	_seteuid( uid ) ;
 
 	/*
+	 * zuluCryptDisableMetadataLocking() is defined in ..zuluCrypt-cli/lib/create_luks.c
+	 */
+	zuluCryptDisableMetadataLocking() ;
+
+	/*
 	 * zuluCryptClearDeadMappers() is defined in ../zuluCrypt-cli/bin/clear_dead_mapper.c
 	 */
 	zuluCryptClearDeadMappers( uid ) ;

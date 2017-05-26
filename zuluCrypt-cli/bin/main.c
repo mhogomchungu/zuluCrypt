@@ -379,6 +379,11 @@ int main( int argc,char * argv[] )
 	sa.sa_handler = _forceTerminateOnSeriousError ;
 	sigaction( SIGSEGV,&sa,NULL ) ;
 
+	/*
+	 * zuluCryptDisableMetadataLocking() is defined in ../lib/create_luks.c
+	 */
+	zuluCryptDisableMetadataLocking() ;
+
 	if( argc >= 2 && StringsAreEqual( argv[ 1 ],"--test" ) ){
 
 		/*

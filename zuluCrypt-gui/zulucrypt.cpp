@@ -167,7 +167,9 @@ void zuluCrypt::updateVolumeList( QString volume,QString r )
 
 				if( q.startsWith( "crypto_LUKS" ) ){
 
-					z.replace( 2,"luks" ) ;
+					auto s = q ;
+
+					z.replace( 2,s.replace( "crypto_","" ).toLower()  ) ;
 				}else{
 					auto e = q ;
 
@@ -972,7 +974,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m.addSeparator() ;
 
-	if( m_ui->tableWidget->item( item->row(),2 )->text() == "luks" ){
+	if( m_ui->tableWidget->item( item->row(),2 )->text().startsWith( "luks" ) ){
 
 		m.addSeparator() ;
 

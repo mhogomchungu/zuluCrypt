@@ -51,9 +51,6 @@ static int _remove_key( const char * device,const resolve_path_t * opts )
 
 		return 3 ;
 	}
-
-	zuluCryptDisableMetadataLocking( cd ) ;
-
 	if( crypt_load( cd,NULL,NULL ) != 0 ){
 
 		return zuluExit( 3,cd ) ;

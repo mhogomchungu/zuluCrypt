@@ -122,8 +122,6 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 		return 1 ;
 	}
 
-	zuluCryptDisableMetadataLocking( cd ) ;
-
 	if( StringsAreEqual( args->rng,"/dev/random" ) ){
 
 		crypt_set_rng_type( cd,CRYPT_RNG_RANDOM ) ;
@@ -251,9 +249,9 @@ int zuluCryptCreateLuks( const char * device,const char * key,size_t key_len,con
 
 #ifdef CRYPT_LUKS2
 
-void zuluCryptDisableMetadataLocking( void * cd )
+void zuluCryptDisableMetadataLocking( void )
 {
-	crypt_metadata_locking( cd,0 ) ;
+	crypt_metadata_locking( NULL,0 ) ;
 }
 
 static void * _luks2( const arguments * args,size_t data_alignment )
@@ -293,9 +291,8 @@ int zuluCryptCreateLuks2( const char * device,const char * key,size_t key_len,co
 
 #else
 
-void zuluCryptDisableMetadataLocking( void * cd )
+void zuluCryptDisableMetadataLocking( void )
 {
-	if( cd ){;}
 }
 
 int zuluCryptCreateLuks2( const char * device,const char * pass,size_t pass_size,const char * options )

@@ -326,7 +326,7 @@ char * zuluCryptLoopDeviceAddress_1( const char * device ) ;
 /*
  * this function is defined in ./create_luks.c
  */
-void zuluCryptDisableMetadataLocking( void * ) ;
+void zuluCryptDisableMetadataLocking( void ) ;
 
 /*
  * this function is defined in ./create_loop_device.c
