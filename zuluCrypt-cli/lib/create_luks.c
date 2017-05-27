@@ -45,6 +45,23 @@ typedef struct arguments{
 
 }arguments ;
 
+static void _debug( int a,const char * b,void * c )
+{
+	if( c ){}
+
+	if( b ){
+
+		printf( "log level: %d,log msg: %s",a,b ) ;
+	}else{
+		printf( "log level: %d,log msg: NULL",a ) ;
+	}
+}
+
+void zuluCryptPrintLogOutPut( void * cd )
+{
+	crypt_set_log_callback( cd,_debug,NULL ) ;
+}
+
 static int zuluExit( int st,stringList_t stl,char * const * options )
 {
 	StringFree( options ) ;

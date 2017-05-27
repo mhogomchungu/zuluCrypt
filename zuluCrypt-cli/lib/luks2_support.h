@@ -20,10 +20,10 @@
 #ifndef DISABLE_LUKS2_SUPPORT
 #define DISABLE_LUKS2_SUPPORT
 
-#if 0
+#if 1
 
 /*
- * disabling luks2 support since it isnt released yet.
+ * disabling luks2 support since its API is not fixed yet.
  */
 #undef CRYPT_LUKS2
 
