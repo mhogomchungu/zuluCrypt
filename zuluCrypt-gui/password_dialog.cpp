@@ -498,6 +498,7 @@ void passwordDialog::file_path( void )
 	if( !Z.isEmpty() ){
 
 		m_ui->MountPointPath->setText( utility::mountPathPostFix( Z.split( "/" ).last() ) ) ;
+		m_ui->PassPhraseField->setFocus() ;
 	}
 }
 
