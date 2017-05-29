@@ -97,7 +97,7 @@ Older versions can be downloaded from <a href="https://github.com/mhogomchungu/z
 
 ## zuluplay
 
-<a href="https://github.com/mhogomchungu/zuluplay">tcplay</a> is an independent,BSD licensed full implementation of truecrypt/veracrypt formatted encrypted volumes.
+<a href="https://github.com/mhogomchungu/zuluplay">zuluplay</a> is an independent,BSD licensed full implementation of truecrypt/veracrypt formatted encrypted volumes.
 
 
 ## VeraCrypt
