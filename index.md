@@ -25,24 +25,24 @@ Some options of zuluMount-gui are set through its tray icon,if you are on a GNOM
 
 ```Paypal account: currently none."mhogomchungu@gmail.com" is owned by somebody else and i have so far failed to get it back.```
 
-## screen shots
+## Screen shots
 
-screenshots are at the end of this page.
+Screenshots are at the end of this page.
 
-## video reviews
+## Video reviews
 
 <a href="https://www.youtube.com/watch?v=Tb39XAsnixo">click this link to see a youtube video showing some features of zuluCrypt</a>
 
 ## zuluCrypt download page
 
-latest released version is 5.1.0 and it can be downloaded by clicking any one of the two links below.
+Latest released version is 5.1.0 and it can be downloaded by clicking any one of the two links below.
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0.tar.bz2">zuluCrypt-5.1.0.tar.bz2</a>
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.1.0/zuluCrypt-5.1.0.tar.xz">zuluCrypt-5.1.0.tar.xz</a>
 
 
-## binary packages
+## Binary packages
 
 ```Fedora and opensuse``` users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Amhogomchungu&package=zuluCrypt">this</a> link
 
@@ -95,14 +95,14 @@ Older versions can be downloaded from <a href="https://github.com/mhogomchungu/z
 
 <a href="https://gitlab.com/cryptsetup/cryptsetup/blob/master/README.md">cryptsetup</a> is one of the most popular linux native solutions for block device encryption.
 
-## tcplay
+## zuluplay
 
-<a href="https://github.com/bwalex/tc-play">tcplay</a> is an independent,BSD licensed full implementation of truecrypt formatted encrypted volumes.
+<a href="https://github.com/mhogomchungu/zuluplay">tcplay</a> is an independent,BSD licensed full implementation of truecrypt/veracrypt formatted encrypted volumes.
 
 
 ## VeraCrypt
 
-<a href="https://veracrypt.codeplex.com/">VeraCrypt</a> is a security enhanced fork of TrueCrypt.
+<a href="https://www.veracrypt.fr/en/Home.html">VeraCrypt</a> is a security enhanced fork of TrueCrypt.
 
 ## key sources.
 
@@ -122,11 +122,11 @@ zuluCrypt has a plugin architecture that allows it to retrieve keys to unlock vo
 
 * a combination of a passphrase and keyfile where key = hmac-sha256(passphrase,keyfile)
 
-## where did the name come from?
+## Where did the name come from?
 
 The "crypt" part is there to show core feature of the tool. The "zulu" part come from "zulu time", commonly known as "GMT"( Greenwich Mean Time ). The tv was on as i was thinking of what name to use for the project and somebody on tv kept mentioning "zulu time"( i think it was a military related show ) and the zulu part of the name got stuck.
 
-## various components of the tools
+## Various components of the tools
 
 zuluCrypt is made up of two components: The back end,CLI interface is called "zuluCrypt-cli".it is build using C and has required dependencies on libblkid,libcryptsetup and an optional dependency on libtcplay. The front end is Qt GUI application called "zuluCrypt-gui",it is build using C++/Qt
 
@@ -134,7 +134,7 @@ zuluMount is made up of two components: The back end,CLI interface is called "zu
 
 The GUI components are optional and the project can be build without them.They have a run-time optional dependency on <a href="http://linux.die.net/man/1/xdg-open">"xdg-open"</a>.If present and working properly,a default file manager will open a mount point folder automatically when a volume is opened/mounted.
 
-## frequently asked questions
+## Frequently asked questions
 The list of most frequently asked questions can be found <a href="https://github.com/mhogomchungu/zuluCrypt/wiki/Frequently-Asked-Questions">here</a>.
 
 
