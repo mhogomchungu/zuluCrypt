@@ -42,11 +42,16 @@ std::function< void() > monitor_mountinfo::stop()
 {
 	return [ this ](){
 
-		auto e = m_task->threads()[ 0 ] ;
+		if( m_task ){
 
-		if( e->isRunning() ){
+			auto e = m_task->threads()[ 0 ] ;
 
-			e->terminate() ;
+			if( e->isRunning() ){
+
+				e->terminate() ;
+			}else{
+				m_stop() ;
+			}
 		}else{
 			m_stop() ;
 		}

@@ -61,11 +61,16 @@ events::~events()
 
 void events::stop()
 {
-	auto e = m_task->threads()[ 0 ] ;
+	if( m_task ){
 
-	if( e->isRunning() ){
+		auto e = m_task->threads()[ 0 ] ;
 
-		e->terminate() ;
+		if( e->isRunning() ){
+
+			e->terminate() ;
+		}else{
+			m_function() ;
+		}
 	}else{
 		m_function() ;
 	}

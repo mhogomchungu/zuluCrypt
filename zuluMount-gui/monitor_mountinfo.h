@@ -60,7 +60,7 @@ private:
 	bool m_announceChanges ;
 	bool m_announceEvents ;
 
-	Task::future< void > * m_task ;
+	Task::future< void > * m_task = nullptr ;
 };
 
 #endif // MONITOR_MOUNTINFO_H

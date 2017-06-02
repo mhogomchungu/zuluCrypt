@@ -47,7 +47,7 @@ private:
 	void run() ;
 	QObject * m_parent ;
 	std::function< void() > m_function ;
-	Task::future< void > * m_task ;
+	Task::future< void > * m_task = nullptr ;
 };
 
 #endif // AUTO_MOUNT_H
