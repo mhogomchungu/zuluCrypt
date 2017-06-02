@@ -11,11 +11,11 @@ zuluCrypt can also encrypt stand alone files (zuluCrypt menu -> zC -> encrypt a 
 zuluMount is bundled with zuluCrypt and its meant to be used as a general purpose tool that mount and unmount zuluCrypt supported encrypted volumes as well as unencrypted volumes and it can be used as a substitute to udisks, pmount and related tools.
 
 
-zuluMount-gui can also be used as a frontend to <a href="https://wiki.archlinux.org/index.php/EncFS">encfs</a>, <a href="https://nuetzlich.net/gocryptfs">gocryptfs</a>, <a href="https://github.com/netheril96/securefs">securefs</a>, <a href="http://ecryptfs.org/">ecryptfs</a> and <a href="https://www.cryfs.org/">cryfs.</a>
+zuluMount-gui can also be used as a frontend to <a href="https://wiki.archlinux.org/index.php/EncFS">encfs</a>, <a href="https://nuetzlich.net/gocryptfs">gocryptfs</a>, <a href="https://github.com/netheril96/securefs">securefs</a>, <a href="http://ecryptfs.org/">ecryptfs</a> and <a href="https://www.cryfs.org/">cryfs</a>.
 
 zuluMount-gui is ideal for use as a desktop environment/file manager independent tool for mounting/unmounting encrypted and unencrypted volumes.
 
-Some options of zuluMount-gui are set through its tray icon, if you are on a GNOME3 desktop, you can access those options through GNOME3 extension like <a href="https://extensions.gnome.org/extension/495/topicons/">topicons.</a>
+Some options of zuluMount-gui are set through its tray icon, if you are on a GNOME3 desktop, you can access those options through GNOME3 extension like <a href="https://extensions.gnome.org/extension/495/topicons/">topicons</a>.
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/blob/master/docs/zuluCrypt.pdf">zuluCrypt.pdf</a> has more information about zuluCrypt and its supported encrypted volumes.
 
@@ -31,7 +31,7 @@ Screenshots are at the end of this page.
 
 ## Video reviews
 
-<a href="https://www.youtube.com/watch?v=Tb39XAsnixo">click this link to see a youtube video showing some features of zuluCrypt</a>
+<a href="https://www.youtube.com/watch?v=Tb39XAsnixo">Click this link to see a youtube video showing some features of zuluCrypt.</a>
 
 ## zuluCrypt download page
 
@@ -44,7 +44,7 @@ Latest released version is 5.1.0 and it can be downloaded by clicking any one of
 
 ## Binary packages
 
-```Fedora and opensuse``` users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Amhogomchungu&package=zuluCrypt">this</a> link
+```Fedora and opensuse``` users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Amhogomchungu&package=zuluCrypt">this link</a>
 
 zuluCrypt packages are in <a href="https://admin.fedoraproject.org/pkgdb/package/rpms/zulucrypt/">Fedora repositories</a> and can be installed through normal/standard package installation procedures in Fedora.
 
@@ -104,19 +104,19 @@ Older versions can be downloaded from <a href="https://github.com/mhogomchungu/z
 
 <a href="https://www.veracrypt.fr/en/Home.html">VeraCrypt</a> is a security enhanced fork of TrueCrypt.
 
-## key sources.
+## key sources
 
 zuluCrypt has a plugin architecture that allows it to retrieve keys to unlock volume from difference source:
 
-* gnome's libsecret (gnome wallet).
+* gnome's libsecret (gnome wallet)
 
-* kde's kwallet.
+* kde's kwallet
 
-* an internal storage system powered by libgcrypt.
+* an internal storage system powered by libgcrypt
 
-* a keyfile where key = contents of a keyfile.
+* a keyfile where key = contents of a keyfile
 
-* a combination of a passphrase and keyfile where key = passphrase + content of keyfile.
+* a combination of a passphrase and keyfile where key = passphrase + content of keyfile
 
 * a combination of a passphrase and keyfile where key = gpg_symmetric_decrypt (passphrase, keyfile)
 
@@ -128,9 +128,9 @@ The "crypt" part is there to show core feature of the tool. The "zulu" part come
 
 ## Various components of the tools
 
-zuluCrypt is made up of two components: The back end, CLI interface is called "zuluCrypt-cli". It is build using C, has required dependencies on libblkid, libcryptsetup and an optional dependency on libtcplay. The front end is a Qt GUI application called "zuluCrypt-gui". It is build using C++/Qt.
+zuluCrypt is made up of two components: The back end, CLI is called "zuluCrypt-cli". It is build using C, has required dependencies on libblkid, libcryptsetup and an optional dependency on libtcplay. The front end is a Qt GUI application called "zuluCrypt-gui". It is build using C++/Qt.
 
-zuluMount is made up of two components: The back end, CLI interface is called "zuluMount-cli". It is build using C and has a dependency on zuluCrypt-cli libraries. The front end is a Qt GUI application called "zuluMount-gui". It is build using C++/Qt.
+zuluMount is made up of two components: The back end, CLI is called "zuluMount-cli". It is build using C and has a dependency on zuluCrypt-cli libraries. The front end is a Qt GUI application called "zuluMount-gui". It is build using C++/Qt.
 
 The GUI components are optional and the project can be build without them. They have a run-time optional dependency on <a href="http://linux.die.net/man/1/xdg-open">"xdg-open"</a>. If present and working properly, a default file manager will open a mount point folder automatically when a volume is opened/mounted.
 
