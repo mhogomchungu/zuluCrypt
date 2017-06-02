@@ -44,7 +44,7 @@ Latest released version is 5.1.0 and it can be downloaded by clicking any one of
 
 ## Binary packages
 
-```Fedora and opensuse``` users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Amhogomchungu&package=zuluCrypt">this link</a>
+```Fedora and opensuse``` users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Amhogomchungu&package=zuluCrypt">this link</a>.
 
 zuluCrypt packages are in <a href="https://admin.fedoraproject.org/pkgdb/package/rpms/zulucrypt/">Fedora repositories</a> and can be installed through normal/standard package installation procedures in Fedora.
 
