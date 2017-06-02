@@ -19,15 +19,16 @@
 #ifndef AUTO_MOUNT_H
 #define AUTO_MOUNT_H
 
-#include <QThread>
 #include <functional>
 #include <memory>
+
+#include "../zuluCrypt-gui/task.h"
 
 class QObject ;
 class events ;
 class volumeProperty ;
 
-class events : public QThread
+class events : public QObject
 {
 	Q_OBJECT
 public:
@@ -38,20 +39,15 @@ public:
 	explicit events( QObject * parent,std::function< void() > ) ;
 	~events() ;
 	void stop( void ) ;
+	void start( void ) ;
 signals:
 	void volumeRemoved( QString ) ;
 	void volumeMiniProperties( volumeProperty * ) ;
-private slots:
-	void threadStopped( void ) ;
 private:
 	void run() ;
-	void failedToStart( void ) ;
-	QThread * m_baba ;
-	QThread * m_mtoto ;
-	QObject * m_babu ;
-	events  * m_main ;
-	bool m_running ;
+	QObject * m_parent ;
 	std::function< void() > m_function ;
+	Task::future< void > * m_task ;
 };
 
 #endif // AUTO_MOUNT_H

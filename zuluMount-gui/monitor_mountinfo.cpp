@@ -24,17 +24,14 @@
 #include <QDebug>
 
 #include "../zuluCrypt-gui/utility.h"
-#include "../zuluCrypt-gui/task.h"
 #include "zulumounttask.h"
 
-monitor_mountinfo::monitor_mountinfo( QObject * parent,bool e,std::function< void() > f ) :
-	QThread( parent ),m_stop( std::move( f ) ),m_announceChanges( e ),m_announceEvents( true )
+monitor_mountinfo::monitor_mountinfo( QObject * parent,bool s,std::function< void() > f ) :
+	m_parent( parent ),
+	m_stop( std::move( f ) ),
+	m_announceChanges( s ),
+	m_announceEvents( true )
 {
-	m_babu = parent ;
-	m_baba = this ;
-	m_main = this ;
-	m_mtoto = nullptr ;
-	m_running = false ;
 }
 
 monitor_mountinfo::~monitor_mountinfo()
@@ -45,25 +42,15 @@ std::function< void() > monitor_mountinfo::stop()
 {
 	return [ this ](){
 
-		if( m_running && m_mtoto ){
+		auto e = m_task->threads()[ 0 ] ;
 
-			m_mtoto->terminate() ;
+		if( e->isRunning() ){
+
+			e->terminate() ;
 		}else{
-			this->threadStopped() ;
+			m_stop() ;
 		}
 	} ;
-}
-
-void monitor_mountinfo::threadStopped()
-{
-	m_running = false ;
-	m_stop() ;
-}
-
-void monitor_mountinfo::failedToStart()
-{
-	qDebug() << "failed to monitor /proc/self/mountinfo" ;
-	m_running = false ;
 }
 
 void monitor_mountinfo::announceEvents( bool s )
@@ -71,32 +58,27 @@ void monitor_mountinfo::announceEvents( bool s )
 	m_announceEvents = s ;
 }
 
+void monitor_mountinfo::start()
+{
+	auto& e = Task::run( [ this ](){ this->run() ; } ) ;
+
+	e.then( [ this ](){ m_stop() ; } ) ;
+
+	m_task = std::addressof( e ) ;
+}
+
 void monitor_mountinfo::run()
 {
-	m_mtoto = this ;
-
-	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
-	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
-
 	if( m_announceChanges ){
 
 		connect( this,SIGNAL( volumeMiniProperties( volumeProperty * ) ),
-			 m_babu,SLOT( volumeMiniProperties( volumeProperty * ) ) ) ;
+			 m_parent,SLOT( volumeMiniProperties( volumeProperty * ) ) ) ;
 
 		connect( this,SIGNAL( volumeMiniProperties_0( volumeProperty * ) ),
-			 m_babu,SLOT( volumeMiniProperties_0( volumeProperty * ) ) ) ;
+			 m_parent,SLOT( volumeMiniProperties_0( volumeProperty * ) ) ) ;
 
 		connect( this,SIGNAL( volumeRemoved( QString ) ),
-			 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
-	}
-
-	utility::monitor_mountinfo monitor ;
-
-	if( monitor ){
-
-		m_running = true ;
-	}else{
-		return this->failedToStart() ;
+			 m_parent,SLOT( volumeRemoved( QString ) ) ) ;
 	}
 
 	auto _unmountProperty = [ & ]( const QString& volume ){
@@ -133,6 +115,8 @@ void monitor_mountinfo::run()
 	auto _unmountedVolume    = [ & ]( const QString& e ){ return !newMountList.contains( e ) ; } ;
 
 	auto _mountedVolume      = [ & ]( const QString& e ){ return !oldMountList.contains( e ) ; } ;
+
+	utility::monitor_mountinfo monitor ;
 
 	while( monitor.gotEvent() ){
 

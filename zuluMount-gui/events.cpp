@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2013-2015
  *  name : Francis Banyikwa
@@ -38,7 +38,6 @@
 #include <functional>
 
 #include "../zuluCrypt-gui/utility.h"
-#include "../zuluCrypt-gui/task.h"
 #include "events.h"
 #include "zulumounttask.h"
 #include <sys/select.h>
@@ -50,13 +49,10 @@
 #define _contains( x,y ) strstr( x,y ) != 0
 #define _stringsAreEqual( x,y ) strcmp( x,y ) == 0
 
-events::events( QObject * parent,std::function< void() > f ) : m_function( std::move( f ) )
+events::events( QObject * parent,std::function< void() > f ) :
+	m_parent( parent ),
+	m_function( std::move( f ) )
 {
-	m_baba = this ;
-	m_main = this ;
-	m_babu = parent ;
-	m_mtoto = nullptr ;
-	m_running = false ;
 }
 
 events::~events()
@@ -65,38 +61,31 @@ events::~events()
 
 void events::stop()
 {
-	if( m_running && m_mtoto ){
+	auto e = m_task->threads()[ 0 ] ;
 
-		m_mtoto->terminate() ;
+	if( e->isRunning() ){
+
+		e->terminate() ;
 	}else{
-		this->threadStopped() ;
+		m_function() ;
 	}
 }
 
-void events::threadStopped()
+void events::start()
 {
-	m_function() ;
-	m_running = false ;
-}
+	auto& e = Task::run( [ this ](){ this->run() ; } ) ;
 
-void events::failedToStart()
-{
-	qDebug() << "inotify_init() failed to start,automounting is turned off" ;
-	m_running = false ;
+	e.then( [ this ](){ m_function() ; } ) ;
+
+	m_task = std::addressof( e ) ;
 }
 
 void events::run()
 {
-	m_running = true ;
-	m_mtoto   = this ;
-
-	connect( m_mtoto,SIGNAL( finished() ),m_main,SLOT( threadStopped() ) ) ;
-	connect( m_mtoto,SIGNAL( finished() ),m_mtoto,SLOT( deleteLater() ) ) ;
-
 	connect( this,SIGNAL( volumeMiniProperties( volumeProperty * ) ),
-		 m_babu,SLOT( autoMountVolume( volumeProperty * ) ) ) ;
+		 m_parent,SLOT( autoMountVolume( volumeProperty * ) ) ) ;
 	connect( this,SIGNAL( volumeRemoved( QString ) ),
-		 m_babu,SLOT( volumeRemoved( QString ) ) ) ;
+		 m_parent,SLOT( volumeRemoved( QString ) ) ) ;
 
 	utility::fileHandle f( inotify_init() ) ;
 
@@ -104,7 +93,8 @@ void events::run()
 
 	if( fd == -1 ){
 
-		return this->failedToStart() ;
+		utility::debug() << "Failed to initialize inotify_init(),trouble ahead!!!" ;
+		return ;
 	}
 
 	int dev = inotify_add_watch( fd,"/dev",IN_CREATE|IN_DELETE ) ;

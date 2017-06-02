@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -21,17 +21,18 @@
 #ifndef MONITOR_MOUNTINFO_H
 #define MONITOR_MOUNTINFO_H
 
-#include <QThread>
 #include <QString>
 #include <QStringList>
 
 #include <functional>
 #include <memory>
 
+#include "../zuluCrypt-gui/task.h"
+
 class QObject ;
 class volumeProperty ;
 
-class monitor_mountinfo : public QThread
+class monitor_mountinfo : public QObject
 {
 	Q_OBJECT
 public:
@@ -42,25 +43,24 @@ public:
 	monitor_mountinfo( QObject * parent,bool,std::function< void() > ) ;
 	std::function< void() > stop() ;
 	void announceEvents( bool ) ;
+	void start( void ) ;
 	~monitor_mountinfo() ;
 signals:
 	void gotEvent( void ) ;
 	void volumeRemoved( QString ) ;
 	void volumeMiniProperties( volumeProperty * ) ;
 	void volumeMiniProperties_0( volumeProperty * ) ;
-private slots:
-	void threadStopped( void ) ;
 private:
 	void run( void ) ;
-	void failedToStart( void ) ;
-	QThread * m_baba ;
-	QThread * m_mtoto ;
-	QObject * m_babu ;
-	monitor_mountinfo * m_main ;
-	bool m_running ;
+
+	QObject * m_parent ;
+
 	std::function< void() > m_stop ;
+
 	bool m_announceChanges ;
 	bool m_announceEvents ;
+
+	Task::future< void > * m_task ;
 };
 
 #endif // MONITOR_MOUNTINFO_H
