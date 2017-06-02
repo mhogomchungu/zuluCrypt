@@ -40,22 +40,7 @@ monitor_mountinfo::~monitor_mountinfo()
 
 std::function< void() > monitor_mountinfo::stop()
 {
-	return [ this ](){
-
-		if( m_task ){
-
-			auto e = m_task->first_thread() ;
-
-			if( e->isRunning() ){
-
-				e->terminate() ;
-			}else{
-				m_stop() ;
-			}
-		}else{
-			m_stop() ;
-		}
-	} ;
+	return [ this ](){ utility::stopTask( m_task,m_stop ) ; } ;
 }
 
 void monitor_mountinfo::announceEvents( bool s )
@@ -65,11 +50,7 @@ void monitor_mountinfo::announceEvents( bool s )
 
 void monitor_mountinfo::start()
 {
-	auto& e = Task::run( [ this ](){ this->run() ; } ) ;
-
-	e.then( [ this ](){ m_stop() ; } ) ;
-
-	m_task = std::addressof( e ) ;
+	m_task = utility::startTask( [ this ](){ this->run() ; },m_stop ) ;
 }
 
 void monitor_mountinfo::run()

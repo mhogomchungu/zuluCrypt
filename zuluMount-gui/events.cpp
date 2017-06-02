@@ -61,28 +61,12 @@ events::~events()
 
 void events::stop()
 {
-	if( m_task ){
-
-		auto e = m_task->first_thread() ;
-
-		if( e->isRunning() ){
-
-			e->terminate() ;
-		}else{
-			m_function() ;
-		}
-	}else{
-		m_function() ;
-	}
+	utility::stopTask( m_task,m_function ) ;
 }
 
 void events::start()
 {
-	auto& e = Task::run( [ this ](){ this->run() ; } ) ;
-
-	e.then( [ this ](){ m_function() ; } ) ;
-
-	m_task = std::addressof( e ) ;
+	m_task = utility::startTask( [ this ](){ this->run() ; },m_function ) ;
 }
 
 void events::run()

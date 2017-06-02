@@ -744,4 +744,36 @@ namespace utility
 		QString m_warning = tr( "Please be patient as unlocking a VeraCrypt volume may take a very long time.\n\n" ) ;
 	};
 }
+
+namespace utility
+{
+	static inline ::Task::future< void > * startTask( std::function< void() > task,
+							  std::function< void() > continuation )
+	{
+		auto& e = ::Task::run( std::move( task ) ) ;
+
+		e.then( std::move( continuation ) ) ;
+
+		return std::addressof( e ) ;
+	}
+
+	static inline void stopTask( ::Task::future< void > * task,
+				      std::function< void() >& function )
+	{
+		if( task ){
+
+			auto e = task->first_thread() ;
+
+			if( e->isRunning() ){
+
+				e->terminate() ;
+			}else{
+				function() ;
+			}
+		}else{
+			function() ;
+		}
+	}
+}
+
 #endif // MISCFUNCTIONS_H
