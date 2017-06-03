@@ -264,7 +264,7 @@ else()
 		include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/frontend )
 		include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/backend )
 
-		add_subdirectory( external_libraries/lxqt_wallet//lxqt_wallet )
+		add_subdirectory( external_libraries/lxqt_wallet )
 	else()
 		if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" AND QT5 )
 
@@ -289,7 +289,7 @@ else()
 			include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/frontend )
 			include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/backend )
 
-			add_subdirectory( ../external_libraries/lxqt_wallet )
+			add_subdirectory( external_libraries/lxqt_wallet )
 		endif()
 	endif()
 endif()
