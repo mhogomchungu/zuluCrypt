@@ -19,6 +19,7 @@ set (CFLAGS_OPT    "-O3")
 set (CFLAGS_VER    "-DMAJ_VER=${VERSION_MAJOR} -DMIN_VER=${VERSION_MINOR}")
 set (CFLAGS_COMMON "-std=c99 -fPIE ${CFLAGS_LINUX} ${CFLAGS_WARN} ${CFLAGS_VER}")
 set (CFLAGS_STATIC_COMMON "-std=c99 -fPIC ${CFLAGS_LINUX} ${CFLAGS_WARN} ${CFLAGS_VER}")
+set (CFLAGS_SHARED_COMMON "-std=c99 -fPIC ${CFLAGS_LINUX} ${CFLAGS_WARN} ${CFLAGS_VER}")
 
 if ($ENV{DEBUG})
 	set (CFLAGS_COMMON "${CFLAGS_COMMON} ${CFLAGS_DEBUG}")
@@ -66,7 +67,7 @@ set_target_properties(zuluplay-static PROPERTIES COMPILE_FLAGS "${CFLAGS_STATIC_
 add_library(zuluplay-so SHARED ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(zuluplay-so PROPERTIES OUTPUT_NAME zuluplay)
 set_target_properties(zuluplay-so PROPERTIES SOVERSION ${VERSION_MAJOR}.${VERSION_MINOR})
-set_target_properties(zuluplay-so PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
+set_target_properties(zuluplay-so PROPERTIES COMPILE_FLAGS "${CFLAGS_SHARED_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
 set_target_properties(zuluplay-so PROPERTIES LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/tcplay.map")
 # XXX: revist linking libraries against so. Seems to be more common practice nowadays
 target_link_libraries(zuluplay-so ${GCRYPT_LIB} ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
