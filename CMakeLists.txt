@@ -188,7 +188,7 @@ else()
 endif()
 
 if( STATIC_ZULUPLAY )
-	set( LIB_SUFFIX "blablabla" )
+	set( ZULUPLAY_STATIC_ONLY "true" )
 	ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/zuluplay )
 	include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/zuluplay )
 endif()

@@ -54,6 +54,15 @@ else()
 	set (PBKDF_BACKEND openssl)
 endif()
 
+if(ZULUPLAY_STATIC_ONLY)
+
+add_library(zuluplay-static STATIC tcplay_api.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
+set_target_properties(zuluplay-static PROPERTIES OUTPUT_NAME zuluplay)
+set_target_properties(zuluplay-static PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
+set_target_properties(zuluplay-static PROPERTIES COMPILE_FLAGS "${CFLAGS_STATIC_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
+
+else()
+
 add_executable(zuluplay-bin main.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(zuluplay-bin PROPERTIES OUTPUT_NAME zuluplay)
 set_target_properties(zuluplay-bin PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
@@ -120,3 +129,5 @@ include(CPack)
 cpack_add_component(bin DISPLAY_NAME bin REQUIRED INSTALL_TYPES all)
 cpack_add_component(lib DISPLAY_NAME lib REQUIRED INSTALL_TYPES all)
 cpack_add_component(lib-dev DISPLAY_NAME lib-dev REQUIRED INSTALL_TYPES all DEPENDS lib)
+
+endif()
