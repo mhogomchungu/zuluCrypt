@@ -1,5 +1,5 @@
 zuluCrypt
-=========
+==========
 
 zuluCrypt is a simple,feature rich and powerful solution for hard drives encryption.
 
