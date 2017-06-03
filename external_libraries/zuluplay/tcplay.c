@@ -107,8 +107,8 @@ struct pbkdf_prf_algo pbkdf_prf_algos_standard_tc[] = {
 };
 
 struct pbkdf_prf_algo pbkdf_prf_algos_boot_vc[] = {
-	{ "RIPEMD160",	0 },
-	{ "SHA256",	0 },
+	{ "RIPEMD160",	327661 },
+	{ "SHA256",	200000 },
 	{ NULL,		0 }
 };
 
@@ -119,10 +119,10 @@ static const struct pbkdf_prf_algo _original_pbkdf_prf_algos_boot_vc[] = {
 };
 
 struct pbkdf_prf_algo pbkdf_prf_algos_standard_vc[] = {
-	{ "SHA512",	0 },
-	{ "whirlpool",	0 },
-	{ "SHA256",	0 },
-	{ "RIPEMD160",	0 },
+	{ "SHA512",	500000 },
+	{ "whirlpool",	500000 },
+	{ "SHA256",	500000 },
+	{ "RIPEMD160",	655331 },
 	{ NULL,		0 }
 };
 
@@ -197,7 +197,7 @@ struct tc_cipher_chain *tc_cipher_chains[MAX_CIPHER_CHAINS];
 
 static int _string_starts_with(const char *a, const char *b)
 {
-	return strncmp( a, b, strlen(b)) == 0;
+	return strncmp(a, b, strlen(b)) == 0;
 }
 
 
@@ -1175,9 +1175,13 @@ info_map_common(struct tcplay_opts *opts, char *passphrase_out)
 		/* We need both to protect a hidden volume */
 		if ((opts->protect_hidden && (error || error2)) ||
 		    (error && error2)) {
-			if (!try_empty)
-				tc_log(1, "Incorrect password or not a TrueCrypt volume\n");
-
+			if (!try_empty) {
+				if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE)) {
+					tc_log(1, "Incorrect password or not a VeraCrypt volume\n");
+				}else{
+					tc_log(1, "Incorrect password or not a TrueCrypt volume\n");
+				}
+			}
 			if (info) {
 				free_info(info);
 				info = NULL;

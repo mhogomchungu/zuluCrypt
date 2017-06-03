@@ -56,7 +56,7 @@
 #include "../zuluCrypt-gui/utility.h"
 #include "siritask.h"
 #include "zulumounttask.h"
-#include "../zuluCrypt-gui/task.h"
+#include "task.h"
 #include "../zuluCrypt-gui/checkforupdates.h"
 #include "../zuluCrypt-gui/favorites.h"
 

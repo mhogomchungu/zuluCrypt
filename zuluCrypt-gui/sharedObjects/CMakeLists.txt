@@ -15,7 +15,7 @@ set( SRC
 set( MOC_FILES
 	../dialogok.h
 	../checkforupdates.h
-	../task.h
+	../../external_libraries/tasks/task.h
 	../dialogmsg.h
 	../readonlywarning.h
 	../plugin.h

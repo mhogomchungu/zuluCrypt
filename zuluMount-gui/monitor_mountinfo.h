@@ -27,7 +27,7 @@
 #include <functional>
 #include <memory>
 
-#include "../zuluCrypt-gui/task.h"
+#include "task.h"
 
 class QObject ;
 class volumeProperty ;

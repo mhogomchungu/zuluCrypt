@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Alex Hornung <alex@alexhornung.com>.
  * All rights reserved.
  *
@@ -51,10 +51,24 @@
 #define FLAG_LONG_MOD_NONE	0xff20
 #define FLAG_LONG_MOD_TO_FILE	0xff40
 #define FLAG_LONG_VERACRYPT_MODE	0xff80
+#define FLAG_LONG_VERACRYPT_PIM_VALUE   0xff81
 #define FLAG_LONG_USE_HDR_FILE	0xfe01
 #define FLAG_LONG_USE_HHDR_FILE	0xfe02
 #define FLAG_LONG_NO_RETRIES	0xfabc
 
+static
+int iteration_count(int pim, int sys)
+{
+	if (sys) {
+		return pim * 2048 ;
+	}else{
+		if (pim > 0) {
+			return 15000 + ( pim * 1000 ) ;
+		}else{
+			return 0 ;
+		}
+	}
+}
 
 static
 void
@@ -69,19 +83,19 @@ void
 usage(void)
 {
 	fprintf(stderr,
-	    "usage: tcplay -c -d device [--veracrypt-mode] [-g] [-z] [-w] [-a pbkdf_hash] [-b cipher]\n"
+	    "usage: tcplay -c -d device [--veracrypt-mode] [--pim] [-g] [-z] [-w] [-a pbkdf_hash] [-b cipher]\n"
 	    "              [-f keyfile_hidden] [-k keyfile] [-x pbkdf_hash] [-y cipher]\n"
-	    "       tcplay -i -d device [--veracrypt-mode] [-e] [-f keyfile_hidden] [-k keyfile]\n"
+	    "       tcplay -i -d device [--veracrypt-mode] [--pim] [-e] [-f keyfile_hidden] [-k keyfile]\n"
 	    "              [-s system_device] [--fde] [--use-backup]\n"
 	    "              [--use-hdr-file=hdr_file] [--use-hidden-hdr-file=hdr_file]\n"
-	    "       tcplay -m mapping -d device [--veracrypt-mode] [-e] [-f keyfile_hidden] [-k keyfile]\n"
+	    "       tcplay -m mapping -d device [--veracrypt-mode] [--pim] [-e] [-f keyfile_hidden] [-k keyfile]\n"
 	    "              [-s system_device] [--fde] [--use-backup] [--allow-trim]\n"
 	    "              [--use-hdr-file=hdr_file] [--use-hidden-hdr-file=hdr_file]\n"
-	    "       tcplay --modify -d device [--veracrypt-mode] [-k keyfile] [--new-keyfile=keyfile]\n"
+	    "       tcplay --modify -d device [--veracrypt-mode] [--pim] [-k keyfile] [--new-keyfile=keyfile]\n"
 	    "              [--new-pbkdf-prf=pbkdf_hash] [-s system_device] [--fde]\n"
 	    "              [--use-backup] [--save-hdr-to-file=hdr_file] [-w]\n"
 	    "              [--use-hdr-file=hdr_file] [--use-hidden-hdr-file=hdr_file]\n"
-	    "       tcplay --modify -d device [--veracrypt-mode] [-k keyfile] --restore-from-backup-hdr [-w]\n"
+	    "       tcplay --modify -d device [--veracrypt-mode] [--pim] [-k keyfile] --restore-from-backup-hdr [-w]\n"
 	    "       tcplay -j mapping\n"
 	    "       tcplay -u mapping\n"
 	    "       tcplay -h | -v\n"
@@ -199,6 +213,8 @@ usage(void)
 	    "\t multiple times.\n"
 	    " --veracrypt-mode\n"
 	    "\t Use VeraCrypt support mode instead of TrueCrypt.\n"
+	    " --pim\n"
+	    "\t Use VeraCrypt pim value.\n"
 	    );
 
 	exit(EXIT_FAILURE);
@@ -236,6 +252,7 @@ static struct option longopts[] = {
 	{ "help",		no_argument,		NULL, 'h' },
 	{ "no-retries",         no_argument,            NULL, FLAG_LONG_NO_RETRIES },
 	{ "veracrypt-mode",     no_argument,            NULL, FLAG_LONG_VERACRYPT_MODE },
+	{ "pim",                required_argument,      NULL, FLAG_LONG_VERACRYPT_PIM_VALUE },
 	{ NULL,			0,			NULL, 0   },
 };
 
@@ -427,6 +444,12 @@ main(int argc, char *argv[])
 		case FLAG_LONG_VERACRYPT_MODE:
 			opts->flags |= TC_FLAG_VERACRYPT_MODE;
 			veracrypt_mode = 1;
+			break;
+		case FLAG_LONG_VERACRYPT_PIM_VALUE:
+			opts->flags |= TC_FLAG_VERACRYPT_MODE;
+			veracrypt_mode = 1;
+			tc_set_iteration_count(iteration_count(atoi(optarg),
+							       TC_FLAG_SET(opts->flags, SYS)));
 			break;
 		case 'h':
 		case '?':

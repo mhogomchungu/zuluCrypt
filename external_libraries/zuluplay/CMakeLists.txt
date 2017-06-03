@@ -53,23 +53,23 @@ else()
 	set (PBKDF_BACKEND openssl)
 endif()
 
-#add_executable(zuluplay-bin main.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
-#set_target_properties(zuluplay-bin PROPERTIES OUTPUT_NAME zuluplay)
-#set_target_properties(zuluplay-bin PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
-#target_link_libraries(zuluplay-bin  ${GCRYPT_LIB} ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
+add_executable(zuluplay-bin main.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
+set_target_properties(zuluplay-bin PROPERTIES OUTPUT_NAME zuluplay)
+set_target_properties(zuluplay-bin PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
+target_link_libraries(zuluplay-bin  ${GCRYPT_LIB} ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
 
 add_library(zuluplay-static STATIC tcplay_api.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(zuluplay-static PROPERTIES OUTPUT_NAME zuluplay)
 set_target_properties(zuluplay-static PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
 set_target_properties(zuluplay-static PROPERTIES COMPILE_FLAGS "${CFLAGS_STATIC_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
 
-#add_library(zuluplay-so SHARED ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
-#set_target_properties(zuluplay-so PROPERTIES OUTPUT_NAME zuluplay)
-#set_target_properties(zuluplay-so PROPERTIES SOVERSION ${VERSION_MAJOR}.${VERSION_MINOR})
-#set_target_properties(zuluplay-so PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
-#set_target_properties(zuluplay-so PROPERTIES LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/tcplay.map")
+add_library(zuluplay-so SHARED ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
+set_target_properties(zuluplay-so PROPERTIES OUTPUT_NAME zuluplay)
+set_target_properties(zuluplay-so PROPERTIES SOVERSION ${VERSION_MAJOR}.${VERSION_MINOR})
+set_target_properties(zuluplay-so PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
+set_target_properties(zuluplay-so PROPERTIES LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/tcplay.map")
 # XXX: revist linking libraries against so. Seems to be more common practice nowadays
-#target_link_libraries(zuluplay-so ${GCRYPT_LIB} ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
+target_link_libraries(zuluplay-so ${GCRYPT_LIB} ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
 
 # Generate pkg-config file zuluplay.pc
 file(WRITE ${PROJECT_BINARY_DIR}/zuluplay.pc "prefix=${CMAKE_INSTALL_PREFIX}
@@ -88,36 +88,34 @@ Cflags: -I\${includedir}
 
 
 # Installation targets
-#install(TARGETS zuluplay-bin zuluplay-so
-#	RUNTIME DESTINATION bin                     COMPONENT bin
-#	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT lib
-#	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT lib-dev
-#)
+install(TARGETS zuluplay-bin zuluplay-so
+	RUNTIME DESTINATION bin                     COMPONENT bin
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT lib
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT lib-dev
+)
 
-#install(FILES ${PROJECT_BINARY_DIR}/zuluplay.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT lib-dev)
+install(FILES ${PROJECT_BINARY_DIR}/zuluplay.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT lib-dev)
 
-#install(FILES zuluplay_api.h DESTINATION include        COMPONENT lib-dev)
-#install(FILES zuluplay.3     DESTINATION share/man/man3 COMPONENT lib-dev)
+install(FILES zuluplay_api.h DESTINATION include        COMPONENT lib-dev)
+install(FILES zuluplay.3     DESTINATION share/man/man3 COMPONENT lib-dev)
 
-#install(FILES zuluplay.8     DESTINATION share/man/man8 COMPONENT bin)
+install(FILES zuluplay.8     DESTINATION share/man/man8 COMPONENT bin)
 
 # Optional CPack magic
-#set (CPACK_RPM_COMPONENT_INSTALL 1)
-#set (CPACK_DEB_COMPONENT_INSTALL 1)
+set (CPACK_RPM_COMPONENT_INSTALL 1)
+set (CPACK_DEB_COMPONENT_INSTALL 1)
 
-#set (CPACK_PACKAGE_NAME "zuluplay")
-#set (CPACK_PACKAGE_CONTACT "Francis Banyikwa <mhogomchungu@gmail.com>")
-#set (CPACK_PACKAGE_VENDOR  "Francis Banyikwa <mhogomchungu@gmail.com>")
-#set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "zuluplay is a free (BSD-licensed), pretty much fully featured (including multiple keyfiles, cipher cascades, hidden volumes, etc) and stable TrueCrypt implementation.")
-#set (CPACK_PACAKGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
-#set (CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
-#set (CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
-#set (CPACK_PACKAGE_VERSION_PATCH "0")
-#set (CPACK_PACKAGE_LICENSE "2-clause BSD")
+set (CPACK_PACKAGE_NAME "zuluplay")
+set (CPACK_PACKAGE_CONTACT "Francis Banyikwa <mhogomchungu@gmail.com>")
+set (CPACK_PACKAGE_VENDOR  "Francis Banyikwa <mhogomchungu@gmail.com>")
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "zuluplay is a free (BSD-licensed), pretty much fully featured (including multiple keyfiles, cipher cascades, hidden volumes, etc) and stable TrueCrypt implementation.")
+set (CPACK_PACAKGE_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
+set (CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
+set (CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
+set (CPACK_PACKAGE_VERSION_PATCH "0")
+set (CPACK_PACKAGE_LICENSE "2-clause BSD")
 
-#include(CPack)
-#cpack_add_component(bin DISPLAY_NAME bin REQUIRED INSTALL_TYPES all)
-#cpack_add_component(lib DISPLAY_NAME lib REQUIRED INSTALL_TYPES all)
-#cpack_add_component(lib-dev DISPLAY_NAME lib-dev REQUIRED INSTALL_TYPES all DEPENDS lib)
-
-#endif() #end if( "false" )
+include(CPack)
+cpack_add_component(bin DISPLAY_NAME bin REQUIRED INSTALL_TYPES all)
+cpack_add_component(lib DISPLAY_NAME lib REQUIRED INSTALL_TYPES all)
+cpack_add_component(lib-dev DISPLAY_NAME lib-dev REQUIRED INSTALL_TYPES all DEPENDS lib)

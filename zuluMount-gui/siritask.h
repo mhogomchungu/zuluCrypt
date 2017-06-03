@@ -21,7 +21,7 @@
 #define SIRITASK_H
 
 #include "volumeproperty.h"
-#include "../zuluCrypt-gui/task.h"
+#include "task.h"
 #include "../zuluCrypt-gui/utility.h"
 
 #include <QVector>

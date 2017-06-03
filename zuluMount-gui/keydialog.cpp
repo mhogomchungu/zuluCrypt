@@ -31,7 +31,7 @@
 
 #include "bin_path.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
-#include "../zuluCrypt-gui/task.h"
+#include "task.h"
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/utility.h"
@@ -39,7 +39,6 @@
 #include "mountoptions.h"
 #include "../zuluCrypt-gui/tcrypt.h"
 #include "zulumounttask.h"
-#include "../zuluCrypt-gui/task.h"
 #include "zulumounttask.h"
 #include "siritask.h"
 #include "veracrypt_support.h"
