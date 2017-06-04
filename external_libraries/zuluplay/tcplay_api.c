@@ -169,6 +169,8 @@ tc_api_task_init(const char *op)
 		goto out;
 	}
 
+	tc_set_iteration_count(0);
+
 	fail = 0;
 
 out:
