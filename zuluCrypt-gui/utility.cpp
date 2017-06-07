@@ -212,7 +212,6 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			}
 		}
 
-		utility::debug() << exe ;
 		s.write( _json_command( _cookie,password,exe ) ) ;
 
 		s.waitForBytesWritten() ;
