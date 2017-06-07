@@ -5,7 +5,7 @@ include_directories( ${PROJECT_BINARY_DIR}/zuluPolkit/ )
 
 set( MOC_FILES
 	zulupolkit.h
-	../zuluCrypt-gui/task.h
+	../external_libraries/tasks/task.h
  )
 
 set( SRC

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright (c) 2012-2015
  *  name : Francis Banyikwa
@@ -90,7 +90,15 @@ void monitor_mountinfo::run()
 		} ) ;
 	} ;
 
-	auto oldMountList = zuluMountTask::mountedVolumeList() ;
+	auto oldMountList = [ this ](){
+
+		if( m_announceChanges ){
+
+			return zuluMountTask::mountedVolumeList() ;
+		}else{
+			return decltype( zuluMountTask::mountedVolumeList() )() ;
+		}
+	}() ;
 
 	decltype( oldMountList ) newMountList ;
 

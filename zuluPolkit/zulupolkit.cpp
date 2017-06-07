@@ -19,10 +19,10 @@
 
 
 #include "zulupolkit.h"
-#include "../zuluCrypt-gui/task.h"
+#include "../external_libraries/tasks/task.h"
 #include "bin_path.h"
 #include "../zuluCrypt-gui/executablesearchpaths.h"
-#include "3rdParty/json.hpp"
+#include "../external_libraries/json/json.hpp"
 
 #include <termios.h>
 #include <memory>
