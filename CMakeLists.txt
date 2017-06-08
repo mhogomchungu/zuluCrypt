@@ -229,29 +229,14 @@ if( NOT DEFINED INTERNAL_LXQT_WALLET )
 	set( INTERNAL_LXQT_WALLET "false" )
 endif()
 
-include_directories( external_libraries/tasks )
+add_subdirectory( zuluSafe )
 
-if( INTERNAL_LXQT_WALLET )
+if( NOT NOGUI )
 
-	message( STATUS "---------------------------------------------------------------------------" )
-	message( STATUS "lxqt wallet support will be provided by an internal library" )
-	message( STATUS "---------------------------------------------------------------------------" )
+	include_directories( external_libraries/tasks )
 
-	include_directories( external_libraries/lxqt_wallet )
-	include_directories( external_libraries/lxqt_wallet/frontend )
-	include_directories( external_libraries/lxqt_wallet/backend )
+	if( INTERNAL_LXQT_WALLET )
 
-	include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet )
-	include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet/frontend )
-	include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet/backend )
-
-	add_subdirectory( external_libraries/lxqt_wallet )
-else()
-	pkg_check_modules( LXQT_WALLET lxqt-wallet )
-
-	if( NOT LXQT_WALLET_FOUND )
-
-		message( STATUS "ERROR: could not find lxqt_wallet package" )
 		message( STATUS "---------------------------------------------------------------------------" )
 		message( STATUS "lxqt wallet support will be provided by an internal library" )
 		message( STATUS "---------------------------------------------------------------------------" )
@@ -260,25 +245,19 @@ else()
 		include_directories( external_libraries/lxqt_wallet/frontend )
 		include_directories( external_libraries/lxqt_wallet/backend )
 
-		include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet )
-		include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/frontend )
-		include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/backend )
+		include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet )
+		include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet/frontend )
+		include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet/backend )
 
 		add_subdirectory( external_libraries/lxqt_wallet )
 	else()
-		if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" AND QT5 )
+		pkg_check_modules( LXQT_WALLET lxqt-wallet )
 
-			include_directories( ${LXQT_WALLET_INCLUDEDIR} )
-			link_directories( ${LXQT_WALLET_LIBDIR} )
+		if( NOT LXQT_WALLET_FOUND )
 
-			message( STATUS "---------------------------------------------------------------------------" )
-			message( STATUS "lxqt wallet support will be provided by an external libary" )
-			message( STATUS "---------------------------------------------------------------------------" )
-		else()
+			message( STATUS "ERROR: could not find lxqt_wallet package" )
 			message( STATUS "---------------------------------------------------------------------------" )
 			message( STATUS "lxqt wallet support will be provided by an internal library" )
-			message( STATUS "because external library is too old(<= 2.0.0) or cant build " )
-			message( STATUS "with external lxqt_wallet while building with Qt4" )
 			message( STATUS "---------------------------------------------------------------------------" )
 
 			include_directories( external_libraries/lxqt_wallet )
@@ -290,13 +269,34 @@ else()
 			include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/backend )
 
 			add_subdirectory( external_libraries/lxqt_wallet )
+		else()
+			if( LXQT_WALLET_VERSION VERSION_GREATER "2.0.0" AND QT5 )
+
+				include_directories( ${LXQT_WALLET_INCLUDEDIR} )
+				link_directories( ${LXQT_WALLET_LIBDIR} )
+
+				message( STATUS "---------------------------------------------------------------------------" )
+				message( STATUS "lxqt wallet support will be provided by an external libary" )
+				message( STATUS "---------------------------------------------------------------------------" )
+			else()
+				message( STATUS "---------------------------------------------------------------------------" )
+				message( STATUS "lxqt wallet support will be provided by an internal library" )
+				message( STATUS "because external library is too old(<= 2.0.0) or cant build " )
+				message( STATUS "with external lxqt_wallet while building with Qt4" )
+				message( STATUS "---------------------------------------------------------------------------" )
+
+				include_directories( external_libraries/lxqt_wallet )
+				include_directories( external_libraries/lxqt_wallet/frontend )
+				include_directories( external_libraries/lxqt_wallet/backend )
+
+				include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet )
+				include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/frontend )
+				include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/backend )
+
+				add_subdirectory( external_libraries/lxqt_wallet )
+			endif()
 		endif()
 	endif()
-endif()
-
-add_subdirectory( zuluSafe )
-
-if( NOT NOGUI )
 
 	if( WITH_PWQUALITY AND PWQUALITY_FOUND )
 		find_file ( header_pwquality pwquality.h PATHS ${PWQUALITY_INCLUDE_DIRS} )
