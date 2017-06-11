@@ -140,7 +140,8 @@ FORMS    += zulucrypt.ui password.ui \
 
 TRANSLATIONS = ../translations/zuluCrypt/en_US.ts \
                ../translations/zuluCrypt/de_DE.ts \
-               ../translations/zuluCrypt/fr_FR.ts
+               ../translations/zuluCrypt/fr_FR.ts \
+               ../translations/zuluCrypt/ar_SA.ts
 
 RESOURCES = icon.qrc
 
