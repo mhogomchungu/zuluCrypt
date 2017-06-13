@@ -2,9 +2,9 @@
  cmake_minimum_required(VERSION 2.6)
 
  include_directories( ${PROJECT_BINARY_DIR} )
- include_directories( ../external_libraries/lxqt_wallet/backend )
+ include_directories( ${PROJECT_SRC_DIR}/zuluSafe )
 
- add_executable( zuluSafe-cli zuluSafe.c ../external_libraries/lxqt_wallet/backend/lxqtwallet.c )
+ add_executable( zuluSafe-cli zuluSafe.c zuluwallet.c )
 
  find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
 
