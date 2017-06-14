@@ -61,6 +61,12 @@ static bool _deleteFolders( const T& ... m )
 	return s ;
 }
 
+template< typename T >
+static bool _use_polkit( const T& e )
+{
+	return e == "ecryptfs" ;
+}
+
 static QString _wrap_su( const QString& s )
 {
 	auto su = utility::executableFullPath( "su" ) ;
@@ -117,7 +123,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 		for( int i = 0 ; i < 5 ; i++ ){
 
-			if( utility::Task::run( cmd,10000,fileSystem == "ecryptfs" ).get().success() ){
+			if( utility::Task::run( cmd,10000,_use_polkit( fileSystem ) ).get().success() ){
 
 				return true ;
 			}else{
@@ -263,12 +269,12 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			}
 		}() ;
 
-		//if( utility::runningInMixedMode() ){
+		if( utility::runningInMixedMode() ){
 
-		//	return _wrap_su( s ) ;
-		//}else{
+			return _wrap_su( s ) ;
+		}else{
 			return s ;
-		//}
+		}
 	}else{
 		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
 
@@ -411,7 +417,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 			return env ;
 
-		}(),password.toLatin1(),[](){},false ) ;
+		}(),password.toLatin1(),[](){},_use_polkit( opt.type ) ) ;
 
 		if( e.success() ){
 
