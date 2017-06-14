@@ -146,8 +146,8 @@ private:
 
 	QSystemTrayIcon m_trayIcon ;
 
-	monitor_mountinfo& m_mountInfo ;
-	events& m_events ;
+	std::unique_ptr< monitor_mountinfo > m_mountInfo ;
+	std::unique_ptr< events > m_events ;
 };
 
 #endif // MAINWINDOW_H

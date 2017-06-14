@@ -36,9 +36,13 @@ class monitor_mountinfo : public QObject
 {
 	Q_OBJECT
 public:
-	static monitor_mountinfo& instance( QObject * parent,bool b,std::function< void() > f )
+	static std::unique_ptr< monitor_mountinfo > instance( QObject * parent,
+							     bool b,
+							     std::function< void() > f )
 	{
-		return *( new monitor_mountinfo( parent,b,std::move( f ) ) ) ;
+		return std::unique_ptr< monitor_mountinfo >( new monitor_mountinfo( parent,
+										    b,
+										    std::move( f ) ) ) ;
 	}
 	monitor_mountinfo( QObject * parent,bool,std::function< void() > ) ;
 	std::function< void() > stop() ;
