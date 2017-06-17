@@ -78,6 +78,8 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 {
 	if( !start ){
 
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Start Helper Application.\n\"org.zulucrypt.zulupolkit.policy\" polkit file is either misconfigured or zuluPolkit executable could not be found." ) ) ;
+
 		return this->closeApplication() ;
 	}
 

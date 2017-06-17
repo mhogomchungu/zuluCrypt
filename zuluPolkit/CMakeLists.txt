@@ -46,9 +46,9 @@ file( WRITE ${PROJECT_BINARY_DIR}/org.zulucrypt.zulupolkit.policy
     <message>Authentication is required to run zulupolkit</message>
     <icon_name>zuluCrypt</icon_name>
     <defaults>
-      <allow_any>yes</allow_any>
-      <allow_inactive>yes</allow_inactive>
-      <allow_active>yes</allow_active>
+      <allow_any>admin</allow_any>
+      <allow_inactive>admin</allow_inactive>
+      <allow_active>admin</allow_active>
     </defaults>
     <annotate key=\"org.freedesktop.policykit.exec.path\">${CMAKE_INSTALL_PREFIX}/bin/zuluPolkit</annotate>
   </action>

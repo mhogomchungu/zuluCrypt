@@ -62,9 +62,19 @@ static bool _deleteFolders( const T& ... m )
 }
 
 template< typename T >
-static bool _use_polkit( const T& e )
+static bool _ecryptfs( const T& e )
 {
-	return e == "ecryptfs" ;
+	return utility::equalsAtleastOne( e,"ecryptfs","ecryptfs-simple" ) ;
+}
+
+static bool _ecryptfs_illegal_path( const siritask::options& opts )
+{
+	if( _ecryptfs( opts.type ) && utility::useZuluPolkit() ){
+
+		return opts.cipherFolder.contains( " " ) || opts.plainFolder.contains( " " ) ;
+	}else{
+		return false ;
+	}
 }
 
 static QString _wrap_su( const QString& s )
@@ -97,7 +107,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 		auto cmd = [ & ](){
 
-			if( fileSystem == "ecryptfs" ){
+			if( _ecryptfs( fileSystem ) ){
 
 				auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
 
@@ -123,7 +133,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 		for( int i = 0 ; i < 5 ; i++ ){
 
-			if( utility::Task::run( cmd,10000,_use_polkit( fileSystem ) ).get().success() ){
+			if( utility::Task::run( cmd,10000,_ecryptfs( fileSystem ) ).get().success() ){
 
 				return true ;
 			}else{
@@ -228,7 +238,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			}
 		}
 
-	}else if( type.startsWith( "ecryptfs" ) ){
+	}else if( _ecryptfs( type ) ){
 
 		auto _options = []( const std::initializer_list< const char * >& e ){
 
@@ -325,7 +335,7 @@ static siritask::status _status( const siritask::volumeType& app,bool s )
 
 			return cs::securefs ;
 
-		}else if( app.startsWith( "ecryptfs" ) ){
+		}else if( _ecryptfs( app ) ){
 
 			return cs::ecryptfs ;
 		}else{
@@ -404,20 +414,12 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 		return _status( app,true ) ;
 	}else{
-		auto e = utility::Task( _args( exe,opt,configFilePath,create ),20000,[](){
-
-			auto env = QProcessEnvironment::systemEnvironment() ;
-
-			env.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
-			env.insert( "CRYFS_FRONTEND","noninteractive" ) ;
-
-			env.insert( "LANG","C" ) ;
-
-			env.insert( "PATH",utility::executableSearchPaths( env.value( "PATH" ) ) ) ;
-
-			return env ;
-
-		}(),password.toLatin1(),[](){},_use_polkit( opt.type ) ) ;
+		auto e = utility::Task( _args( exe,opt,configFilePath,create ),
+					20000,
+					utility::systemEnvironment(),
+					password.toLatin1(),
+					[](){},
+					_ecryptfs( opt.type ) ) ;
 
 		if( e.success() ){
 
@@ -476,6 +478,11 @@ Task::future< siritask::cmdStatus >& siritask::encryptedFolderMount( const optio
 			auto opt = copt ;
 
 			opt.type = app ;
+
+			if( _ecryptfs_illegal_path( opt ) ){
+
+				return cs::ecryptfsIllegalPath ;
+			}
 
 			if( _create_folder( opt.plainFolder ) || reUseMountPoint ){
 

@@ -502,6 +502,11 @@ void keyDialog::encryptedFolderMount()
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an ecryptfs volume.\nWrong password entered" ) ) ;
 		break;
 
+	case siritask::status::ecryptfsIllegalPath :
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit" ) ) ;
+		break;
+
 	case siritask::status::securefs :
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a securefs volume.\nWrong password entered" ) ) ;

@@ -260,6 +260,8 @@ namespace utility
 	void autoOpenFolderOnMount( const QString&,bool ) ;
 	bool autoOpenFolderOnMount( const QString& ) ;
 
+	QProcessEnvironment systemEnvironment() ;
+
 	bool userBelongsToGroup( const char * groupname ) ;
 	bool runningInMixedMode( void ) ;
 	bool notRunningInMixedMode( void ) ;

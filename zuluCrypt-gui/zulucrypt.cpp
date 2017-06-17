@@ -128,6 +128,8 @@ void zuluCrypt::helperStarted( bool e,const QString& volume )
 			this->setWindowState( Qt::WindowActive ) ;
 		}
 	}else{
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Start Helper Application.\n\"org.zulucrypt.zulupolkit.policy\" polkit file is either misconfigured or zuluPolkit executable could not be found." ) ) ;
+
 		this->closeApplication() ;
 	}
 }

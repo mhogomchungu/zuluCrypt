@@ -2441,3 +2441,17 @@ void utility::setFileManager( const QString& e )
 		f.write( e.toLatin1() ) ;
 	}
 }
+
+QProcessEnvironment utility::systemEnvironment()
+{
+	auto e = QProcessEnvironment::systemEnvironment() ;
+
+	e.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
+	e.insert( "CRYFS_FRONTEND","noninteractive" ) ;
+
+	e.insert( "LANG","C" ) ;
+
+	e.insert( "PATH",utility::executableSearchPaths( e.value( "PATH" ) ) ) ;
+
+	return e ;
+}
