@@ -66,6 +66,7 @@
 #include "utility.h"
 #include "executablesearchpaths.h"
 #include "networkAccessManager.hpp"
+#include "zuluPolkit.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -1499,6 +1500,12 @@ bool utility::userHasGoodVersionOfWhirlpool()
 
 void utility::licenseInfo( QWidget * parent )
 {
+	QString s ;
+#if POLKIT_SUPPORT
+	s = "\nPolkit Support: YES" ;
+#else
+	s = "\nPolkit Support: NO" ;
+#endif
 	QString license = QString( "%1\n\n\
 This program is free software: you can redistribute it and/or modify \
 it under the terms of the GNU General Public License as published by \
@@ -1508,7 +1515,8 @@ the Free Software Foundation, either version 2 of the License, or \
 This program is distributed in the hope that it will be useful,\
 but WITHOUT ANY WARRANTY; without even the implied warranty of \
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \
-GNU General Public License for more details." ).arg( VERSION_STRING ) ;
+GNU General Public License for more details." ).arg( VERSION_STRING + s ) ;
+
 
 	DialogMsg m( parent ) ;
 	m.ShowUIInfo( QObject::tr( "about zuluCrypt" ),false,license ) ;

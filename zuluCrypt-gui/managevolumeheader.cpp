@@ -386,7 +386,7 @@ void managevolumeheader::pbCreate()
 
 	QString exe ;
 
-	if(  m_operation == "backup" ){
+	if( m_operation == "backup" ){
 
 		m_saveHeader = 1 ;
 
@@ -399,11 +399,11 @@ void managevolumeheader::pbCreate()
 
 				utility::keySend( path,key ) ;
 
-				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
+				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f \"%4\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
 			}else{
 				auto path = m_ui->lineEditPassWord->text() ;
 
-				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
+				exe = QString( "%1 -B -d \"%2\" -z \"%3\" -f \"%4\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
 			}
 
 			if( m_ui->cbVolumeHeader->currentIndex() == 2 ){
@@ -440,7 +440,7 @@ void managevolumeheader::pbCreate()
 
 				utility::keySend( path,key ) ;
 
-				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f %4" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
+				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f \"%4\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
 			}else{
 				QString path = m_ui->lineEditPassWord->text() ;
 				exe = QString( "%1 -kR -d \"%2\" -z \"%3\" -f \"%4\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp,path ) ;
@@ -482,7 +482,7 @@ void managevolumeheader::pbCreate()
 
 	m_veraCryptWarning.show( m_ui->cbVolumeHeader->currentIndex() == 2 ) ;
 
-	this->taskFinished( utility::exec( exe ).await() ) ;
+	this->taskFinished( utility::exec( utility::appendUserUID( exe ) ).await() ) ;
 }
 
 void managevolumeheader::pbOpenPartition()
