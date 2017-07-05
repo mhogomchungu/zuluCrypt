@@ -55,7 +55,7 @@ static u_int64_t _offset( const char * offset )
 	}
 	if( !( f >= '0' && f <= '9' ) ){
 		/*
-		 * The argument ends with a non digit number,assume the argument is not in offsets but
+		 * The argument ends with a non digit number,assume the argument is not in sectors but
 		 * in bytes and convert it to offsets
 		 */
 		e = StringCopy_2( offset ) ;

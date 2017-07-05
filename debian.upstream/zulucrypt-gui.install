@@ -1,6 +1,7 @@
 usr/bin/*-gui
 usr/share/applications/
 usr/share/icons/
+usr/share/pixmaps/
 usr/share/man/man1/*-gui.*
 usr/share/zuluCrypt/*
 usr/share/doc/zuluCrypt/*

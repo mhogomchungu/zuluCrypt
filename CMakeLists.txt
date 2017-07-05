@@ -9,7 +9,7 @@ project(zuluCrypt)
 
 INCLUDE(GNUInstallDirs)
 
-set( PGR_VERSION "5.1.0" )
+set( PGR_VERSION "5.2.0" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 
@@ -130,6 +130,15 @@ if( NOT GCRYPT_LIBRARY )
 else()
 	MESSAGE( STATUS "found gcrypt library: ${GCRYPT_LIBRARY}" )
 endif()
+
+find_file( JSON_HEADER_PATH "nlohmann/json.hpp" )
+
+if( NOT JSON_HEADER_PATH )
+	set( JSON_HEADER_PATH "${PROJECT_SOURCE_DIR}/external_libraries/json/nlohmann/json.hpp" )
+endif()
+
+file( WRITE ${PROJECT_BINARY_DIR}/json.h "\n#include \"${JSON_HEADER_PATH}\"" )
+MESSAGE( STATUS "found json.hpp header file at: ${JSON_HEADER_PATH}" )
 
 if( WITH_PWQUALITY )
 	pkg_check_modules( PWQUALITY pwquality )
@@ -461,4 +470,6 @@ install ( FILES translations/zuluCrypt/ar_SA.qm DESTINATION ${CMAKE_INSTALL_DATA
 
 install ( FILES translations/zuluMount/en_US.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluMount-gui )
 install ( FILES translations/zuluMount/fr_FR.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluMount-gui )
+install ( FILES translations/zuluMount/ar_SA.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluMount-gui )
+
 #install ( FILES translations/zuluMount/de_DE.qm DESTINATION ${CMAKE_INSTALL_DATADIR}/zuluCrypt/translations/zuluMount-gui )

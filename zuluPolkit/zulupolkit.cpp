@@ -22,7 +22,7 @@
 #include "../external_libraries/tasks/task.h"
 #include "bin_path.h"
 #include "../zuluCrypt-gui/executablesearchpaths.h"
-#include "../external_libraries/json/json.hpp"
+#include "json.h"
 
 #include <termios.h>
 #include <memory>

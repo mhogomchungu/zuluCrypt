@@ -1,3 +1,12 @@
+zulucrypt (5.2.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- add ability to select a file manager to use to open mount points. A file manager can be set through
+        zuluCrypt-gui->menu->options->set file manager.
+     -- dont run zuluCrypt-gui and zuluMount-gui from root's account when running in mixed mode.
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Sat, 1 Jul 2017 16:38:48 +0000
+
 zulucrypt (5.1.0-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features

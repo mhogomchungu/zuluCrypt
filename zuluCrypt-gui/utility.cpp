@@ -99,7 +99,7 @@ struct jsonResult
 
 #if POLKIT_SUPPORT
 
-#include "../external_libraries/json/json.hpp"
+#include "json.h"
 
 static QByteArray _json_command( const QByteArray& cookie,
 				 const QByteArray& password,
