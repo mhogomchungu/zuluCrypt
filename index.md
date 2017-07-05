@@ -44,19 +44,20 @@ Latest released version is 5.2.0 and it can be downloaded by clicking any one of
 
 ## Binary packages
 
-```
 Fedora and opensuse users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Amhogomchungu&package=zuluCrypt">this link</a>.
 
 Debian and Ubuntu users can install binary packages from a list given below.
 
 zuluCrypt packages are also in Fedora,Debian and Ubuntu repositories and can be installed through normal/standard package installation procedures in those distributions.
 
-zuluCrypt packages i provide are better than those provided by these distributions because of the following reasons:
+```
+zuluCrypt packages i provide are better than those provided by these distributions
+because of the following reasons:
 
-1. My packages do not generated a polkit prompt that requires a root password when GUI components are started.
+1. My packages do not generated a polkit prompt that requires a root password
+   when GUI components are started.
 
 2. My packages provides CLI components that work from a normal user account.
-
 ```
 
 
