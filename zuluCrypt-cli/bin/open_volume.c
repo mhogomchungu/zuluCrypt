@@ -533,7 +533,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	StringDelete( &v_info.type ) ;
 
-	plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
+	if( plugin_path ){
+
+		plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
+	}
 
 	volume.luks_detached_header = StringHasComponent( plugin_path,"luks" ) ;
 
