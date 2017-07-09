@@ -77,7 +77,7 @@
 
 zuluCrypt::zuluCrypt( QWidget * parent ) :
 	QMainWindow( parent ),
-	m_mountInfo( monitor_mountinfo::instance( this,false,[ this ](){ this->quitApplication() ; } ) )
+	m_mountInfo( this,false,[ this ](){ this->quitApplication() ; } )
 {
 }
 
@@ -116,7 +116,7 @@ void zuluCrypt::helperStarted( bool e,const QString& volume )
 		this->setLocalizationLanguage( false ) ;
 		this->updateVolumeList( volume ) ;
 
-		m_mountInfo->start() ;
+		m_mountInfo.start() ;
 
 		if( m_startHidden ){
 
@@ -410,7 +410,7 @@ void zuluCrypt::setupConnections()
 
 	connect( m_ui->menuOptions,SIGNAL( aboutToShow() ),this,SLOT( optionMenuAboutToShow() ) ) ;
 
-	connect( m_mountInfo.get(),SIGNAL( gotEvent() ),this,SLOT( updateVolumeList() ) ) ;
+	connect( &m_mountInfo,SIGNAL( gotEvent() ),this,SLOT( updateVolumeList() ) ) ;
 
 	m_language_menu = [ this ](){
 
@@ -563,7 +563,7 @@ void zuluCrypt::closeAllVolumes()
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	m_mountInfo->announceEvents( false ) ;
+	m_mountInfo.announceEvents( false ) ;
 
 	Task::await( [ this ](){
 
@@ -602,7 +602,7 @@ void zuluCrypt::closeAllVolumes()
 
 	} ) ;
 
-	m_mountInfo->announceEvents( true ) ;
+	m_mountInfo.announceEvents( true ) ;
 
 	m_ui->tableWidget->setEnabled( true ) ;
 }
@@ -676,13 +676,13 @@ void zuluCrypt::quitApplication()
 void zuluCrypt::closeApplication()
 {
 	utility::quitHelper() ;
-	m_mountInfo->stop()() ;
+	m_mountInfo.stop()() ;
 }
 
 void zuluCrypt::closeApplication( int s )
 {
 	Q_UNUSED( s ) ;
-	m_mountInfo->stop()() ;
+	m_mountInfo.stop()() ;
 }
 
 void zuluCrypt::trayClicked( QSystemTrayIcon::ActivationReason e )

@@ -167,7 +167,7 @@ private:
 	bool m_startHidden ;
 	int m_userID ;
 	bool m_autoOpenMountPoint ;
-	std::unique_ptr< monitor_mountinfo > m_mountInfo ;
+	monitor_mountinfo m_mountInfo ;
 };
 
 #endif // ZULUCRYPT_H

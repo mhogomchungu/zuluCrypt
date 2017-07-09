@@ -32,10 +32,6 @@ class events : public QObject
 {
 	Q_OBJECT
 public:
-	static std::unique_ptr< events > instance( QObject * parent,std::function< void() >f )
-	{
-		return std::unique_ptr< events >( new events( parent,std::move( f ) ) ) ;
-	}
 	explicit events( QObject * parent,std::function< void() > ) ;
 	~events() ;
 	void stop( void ) ;

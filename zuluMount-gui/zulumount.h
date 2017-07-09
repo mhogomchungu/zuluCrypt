@@ -28,6 +28,8 @@
 
 #include "volumeproperty.h"
 #include "../zuluCrypt-gui/secrets.h"
+#include "events.h"
+#include "monitor_mountinfo.h"
 
 class QCloseEvent ;
 class QAction ;
@@ -146,8 +148,8 @@ private:
 
 	QSystemTrayIcon m_trayIcon ;
 
-	std::unique_ptr< monitor_mountinfo > m_mountInfo ;
-	std::unique_ptr< events > m_events ;
+	monitor_mountinfo m_mountInfo ;
+	events m_events ;
 };
 
 #endif // MAINWINDOW_H

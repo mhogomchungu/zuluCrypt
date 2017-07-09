@@ -51,8 +51,6 @@
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "mountpartition.h"
 #include "oneinstance.h"
-#include "events.h"
-#include "monitor_mountinfo.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "siritask.h"
 #include "zulumounttask.h"
@@ -69,8 +67,8 @@ static bool _encrypted_folder( const QString& e,bool f = true )
 
 zuluMount::zuluMount( QWidget * parent ) :
 	QWidget( parent ),
-	m_mountInfo( monitor_mountinfo::instance( this,true,[ this ](){ QCoreApplication::quit() ; } ) ),
-	m_events( events::instance( this,m_mountInfo->stop() ) )
+	m_mountInfo( this,true,[ this ](){ QCoreApplication::quit() ; } ),
+	m_events( this,m_mountInfo.stop() )
 {
 }
 
@@ -551,8 +549,8 @@ bool zuluMount::autoOpenFolderOnMount( void )
 
 void zuluMount::startAutoMonitor()
 {
-	m_mountInfo->start() ;
-	m_events->start() ;
+	m_mountInfo.start() ;
+	m_events.start() ;
 }
 
 /*
@@ -561,13 +559,13 @@ void zuluMount::startAutoMonitor()
 void zuluMount::closeApplication()
 {
 	utility::quitHelper() ;
-	m_events->stop() ;
+	m_events.stop() ;
 }
 
 void zuluMount::closeApplication( int s )
 {
 	Q_UNUSED( s ) ;
-	m_events->stop() ;
+	m_events.stop() ;
 }
 
 void zuluMount::autoMountVolume( volumeProperty * q )
