@@ -274,3 +274,6 @@ version 5.2.0
    zuluCrypt-gui->menu->options->set file manager.
 -- dont run zuluCrypt-gui and zuluMount-gui from root's account when running in mixed mode.
 -- add arabic translation.
+
+version 5.3.0(unreleased)
+-- fix a build time error when build with certain new compilers and a runtime crush when build with other newer compilers.

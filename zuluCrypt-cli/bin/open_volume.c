@@ -533,7 +533,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	StringDelete( &v_info.type ) ;
 
-	if( plugin_path ){
+	if( plugin_path != NULL ){
 
 		plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
 	}
