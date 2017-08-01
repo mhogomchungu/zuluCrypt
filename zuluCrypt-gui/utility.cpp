@@ -250,7 +250,7 @@ void utility::startHelperExecutable( QObject * obj,const QString& arg,const char
 {
 	if( !utility::useZuluPolkit() ){
 
-		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,QString() ) ) ;
+		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,arg ) ) ;
 
 		return ;
 	}
