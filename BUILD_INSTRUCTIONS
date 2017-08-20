@@ -131,7 +131,7 @@ Set this option to "true" if you want to unconditionally  an external library of
 A value of "false" will cause the build system to to use system wide library if it is found.
 
 -DUSE_POLKIT=false
-Set this option to "true" if project's CLI components are to be installed with suid-root bit set. This option will cause GUI
+Set this option to "true" if project's CLI components are to be installed with suid bit NOT set. This option will cause GUI
 components to generate polkit prompt that requires a root's password and CLI components will be unusable from normal user
 account.
 
