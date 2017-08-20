@@ -39,10 +39,11 @@ typedef struct arguments{
 	const char * rng ;
 
 	void * params ;
+	void * pbkdf ;
 
 	u_int64_t iterations ;
 
-	void *( *function )( const struct arguments *,size_t ) ;
+	void *( *function )( const struct arguments * ) ;
 
 }arguments ;
 
@@ -226,7 +227,7 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 	args->key      = key ;
 	args->key_len  = key_len ;
 
-	args->params   = args->function( args,4096 ) ;
+	args->params   = args->function( args ) ;
 
 	opts.args         = args ;
 	opts.device       = device ;
@@ -239,12 +240,12 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 	return zuluExit( zuluCryptResolveDevicePath( _create_luks,&opts ),stl,list ) ;
 }
 
-static void * _luks1( const arguments * args,size_t data_alignment )
+static void * _luks1( const arguments * args )
 {
 	struct crypt_params_luks1 * params = args->params ;
 
 	params->hash           = args->hash ;
-	params->data_alignment = data_alignment ;
+	params->data_alignment = 4096 ;
 
 	return params ;
 }
@@ -272,21 +273,19 @@ void zuluCryptDisableMetadataLocking( void )
 	crypt_metadata_locking( NULL,0 ) ;
 }
 
-static void * _luks2( const arguments * args,size_t data_alignment )
+static void * _luks2( const arguments * args )
 {
 	struct crypt_params_luks2 * params = args->params ;
+	struct crypt_pbkdf_type   * pbkdf  = args->pbkdf ;
 
-	struct crypt_pbkdf_type * pbkdf = &params->pbkdf ;
-
-	pbkdf->type             = "argon2" ;
+	pbkdf->type             = CRYPT_KDF_ARGON2I ;
 	pbkdf->hash             = args->hash ;
 	pbkdf->time_ms          = 800 ;
 	pbkdf->max_memory_kb    = 1024 ;
 	pbkdf->parallel_threads = 4 ;
 
-	params->data_alignment = data_alignment ;
-
-	params->sector_size = 512 ;
+	params->pbkdf           = pbkdf ;
+	params->sector_size     = 512 ;
 
 	return params ;
 }
@@ -294,12 +293,15 @@ static void * _luks2( const arguments * args,size_t data_alignment )
 int zuluCryptCreateLuks2( const char * device,const char * key,size_t key_len,const char * options )
 {
 	struct crypt_params_luks2 params ;
+	struct crypt_pbkdf_type pbkdf ;
 
 	arguments args ;
 
 	memset( &args,'\0',sizeof( args ) ) ;
 	memset( &params,'\0',sizeof( params ) ) ;
+	memset( &pbkdf,'\0',sizeof( pbkdf ) ) ;
 
+	args.pbkdf    = &pbkdf ;
 	args.params   = &params ;
 	args.function = _luks2 ;
 	args.type     = CRYPT_LUKS2 ;
