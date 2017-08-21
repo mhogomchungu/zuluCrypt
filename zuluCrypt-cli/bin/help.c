@@ -132,7 +132,7 @@ void zuluCryptEXEHelp( void )
 	-d         path to a file or partition with encrypted volume\n\
 	-m         path component to be added to mount point prefix(/run/media/private/$USER)\n\
 	-z         file system type installed(ext2,ext3,ext4* etc)\n\
-	-t         type of volume (plain/luks*)\n\
+	-t         type of volume (plain/luks*/tcrypt/vcrypt)\n\
 	-g         options to use when creating a volume,see man page for more info\n\
 	-h         get passphrase interactively\n\
 	-p         passphrase \n" ) ;
