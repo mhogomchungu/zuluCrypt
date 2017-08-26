@@ -44,9 +44,9 @@ checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) :
 
                 return e ;
 
-        }(),[ this ]( NetworkAccessManager::NetworkReply e ){
+	}(),[ this ]( QNetworkReply& e ){
 
-		QString l = e->readAll() ;
+		QString l = e.readAll() ;
 
 		DialogMsg msg( m_widget ) ;
 
@@ -74,8 +74,6 @@ checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) :
 				}
 			}
 		}
-
-		this->deleteLater() ;
 	} ) ;
 }
 

@@ -343,7 +343,13 @@ if( NOT NOGUI )
 		INCLUDE( ${QT_USE_FILE} )
         endif()
 
-        ADD_SUBDIRECTORY( zuluCrypt-gui/sharedObjects )
+        add_definitions( -std=c++14 )
+
+	set( CMAKE_CXX_STANDARD 14 )
+	set( CMAKE_CXX_STANDARD_REQUIRED ON )
+	set( CMAKE_CXX_EXTENSIONS OFF)
+
+	ADD_SUBDIRECTORY( zuluCrypt-gui/sharedObjects )
 	ADD_SUBDIRECTORY( zuluCrypt-gui )
 	ADD_SUBDIRECTORY( plugins )
 	ADD_SUBDIRECTORY( zuluMount-gui )

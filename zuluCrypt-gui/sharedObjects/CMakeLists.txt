@@ -25,7 +25,7 @@ set( MOC_FILES
 
 set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui ../dialogok.ui )
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR})
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++14 -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR})
 
 if( QT5 )
 	Qt5_WRAP_UI( UI ${UI_FILES} )

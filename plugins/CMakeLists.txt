@@ -6,7 +6,7 @@ endif()
 
 add_subdirectory( keydialog-qt )
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/plugins -I${PROJECT_BINARY_DIR} )
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++14 -I${PROJECT_BINARY_DIR}/plugins -I${PROJECT_BINARY_DIR} )
 
 if( QT5 )
 	QT5_WRAP_UI( UI mainwindow.ui )

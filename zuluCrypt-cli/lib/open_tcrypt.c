@@ -25,6 +25,7 @@
 #include <sys/mount.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string.h>
 
 #include "zuluplay_support.h"
 #include "check_tcrypt.h"
@@ -174,15 +175,15 @@ static int _open_tcrypt_volume_1( const char * device,const resolve_path_t * opt
 {
 	int r = _open_tcrypt_volume( device,opt ) ;
 
-	open_struct_t * opts ;
+	open_struct_t opts ;
 
 	if( r == 0 ){
 
 		return r ;
 	}else{
-		opts = ( open_struct_t * ) opt->args ;
+		memcpy( &opts,opt->args,sizeof( opts ) ) ;
 
-		opts->use_backup_header = 1 ;
+		opts.use_backup_header = 1 ;
 
 		return _open_tcrypt_volume( device,opt ) ;
 	}

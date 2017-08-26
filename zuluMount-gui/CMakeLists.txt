@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/zuluMount-gui/ -I${PROJECT_BINARY_DIR})
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++14 -I${PROJECT_BINARY_DIR}/zuluMount-gui/ -I${PROJECT_BINARY_DIR})
+
 include_directories( ${PROJECT_BINARY_DIR}/zuluMount-gui/ )
+
 
 set (UI_FILES 	zulumount.ui
 		keydialog.ui
