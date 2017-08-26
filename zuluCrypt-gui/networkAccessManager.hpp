@@ -28,16 +28,16 @@
  * SUCH DAMAGE.
  */
 
-#ifndef NETWORKACCESSMANAGER_H
-#define NETWORKACCESSMANAGER_H
+#ifndef NetworkAccessManager_H
+#define NetworkAccessManager_H
 
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 
 #include <QEventLoop>
-#include <QVector>
 
+#include <vector>
 #include <functional>
 #include <utility>
 #include <memory>
@@ -46,44 +46,15 @@ class NetworkAccessManager : public QObject
 {
 	Q_OBJECT
 public:
-	class NetworkReply
-	{
-	public:
-		NetworkReply( QNetworkReply * e ) : m_QNetworkReply( e )
-		{
-		}
-		NetworkReply( NetworkReply&& other )
-		{
-			if( m_QNetworkReply ){
+	using NetworkReply = std::unique_ptr< QNetworkReply,void( * )( QNetworkReply * ) > ;
+	using function_t   = std::function< void( QNetworkReply& ) > ;
+private:
+	using entries_t = std::vector< std::tuple< QNetworkReply *,bool,function_t > > ;
+	entries_t m_entries ;
+	QNetworkAccessManager m_manager ;
 
-				m_QNetworkReply->deleteLater() ;
-			}
-
-			m_QNetworkReply = other.m_QNetworkReply ;
-			other.m_QNetworkReply = nullptr ;
-		}
-		QNetworkReply * release()
-		{
-			auto e = m_QNetworkReply ;
-			m_QNetworkReply = nullptr ;
-			return e ;
-		}
-		~NetworkReply()
-		{
-			if( m_QNetworkReply ){
-
-				m_QNetworkReply->deleteLater() ;
-			}
-		}
-		QNetworkReply * operator->()
-		{
-			return m_QNetworkReply ;
-		}
-	private:
-		QNetworkReply * m_QNetworkReply = nullptr ;
-	};
-
-	using function_t = std::function< void( NetworkAccessManager::NetworkReply ) > ;
+	using position_t = decltype( m_entries.size() ) ;
+public:
 #if QT_VERSION < QT_VERSION_CHECK( 5,0,0 )
 	NetworkAccessManager()
 	{
@@ -93,113 +64,147 @@ public:
 #else
 	NetworkAccessManager()
 	{
-		connect( &m_manager,&QNetworkAccessManager::finished,
-		         this,&NetworkAccessManager::networkReply,Qt::QueuedConnection ) ;
+                connect( &m_manager,&QNetworkAccessManager::finished,
+                         this,&NetworkAccessManager::networkReply,Qt::QueuedConnection ) ;
 	}
 #endif
 	QNetworkAccessManager& QtNAM()
 	{
 		return m_manager ;
 	}
-	QNetworkReply * get( const QNetworkRequest& r,function_t&& f )
+	void get( QNetworkReply ** e,const QNetworkRequest& r,function_t f )
 	{
-		auto e = m_manager.get( r ) ;
+		auto s = m_manager.get( r ) ;
 
-		m_entries.append( { e,std::move( f ) } ) ;
+		if( e ){
 
-		return e ;
+			*e = s ;
+		}
+
+		m_entries.emplace_back( s,true,std::move( f ) ) ;
 	}
-	QNetworkReply * get( const QNetworkRequest& r )
+	void get( const QNetworkRequest& r,function_t f )
+	{
+		this->get( nullptr,r,std::move( f ) ) ;
+	}
+	NetworkReply get( const QNetworkRequest& r )
 	{
 		QNetworkReply * q ;
 
-		QEventLoop l ;
+		QEventLoop s ;
 
-		this->get( r,[ & ]( NetworkAccessManager::NetworkReply e ){
+		auto function = [ & ]( QNetworkReply& e ){ q = std::addressof( e ) ; s.quit() ;	} ;
 
-			q = e.release() ;
+		m_entries.emplace_back( std::make_tuple( m_manager.get( r ),false,std::move( function ) ) ) ;
 
-			l.quit() ;
-		} ) ;
+		s.exec() ;
 
-		l.exec() ;
-
-		return q ;
+		return { q,[]( QNetworkReply * e ){ e->deleteLater() ; } } ;
 	}
 	template< typename T >
-	QNetworkReply * post( const QNetworkRequest& r,const T& e,function_t&& f )
+	void post( QNetworkReply ** s,const QNetworkRequest& r,const T& e,function_t f )
 	{
 		auto q = m_manager.post( r,e ) ;
 
-		m_entries.append( { q,std::move( f ) } ) ;
+		if( s ){
 
-		return q ;
+			*s = q ;
+		}
+
+		m_entries.emplace_back( std::make_tuple( q,true,std::move( f ) ) ) ;
 	}
 	template< typename T >
-	QNetworkReply * post( const QNetworkRequest& r,const T& e )
+	void post( const QNetworkRequest& r,const T& e,function_t f )
+	{
+		this->post( nullptr,r,e,std::move( f ) ) ;
+	}
+	template< typename T >
+	NetworkReply post( const QNetworkRequest& r,const T& e )
 	{
 		QNetworkReply * q ;
 
-		QEventLoop l ;
+		QEventLoop s ;
 
-		this->post( r,e,[ & ]( NetworkAccessManager::NetworkReply e ){
+		auto function = [ & ]( QNetworkReply& e ){ q = std::addressof( e ) ; s.quit() ;	} ;
 
-			q = e.release() ;
+		m_entries.emplace_back( std::make_tuple( m_manager.post( r,e ),false,std::move( function ) ) ) ;
 
-			l.quit() ;
-		} ) ;
+		s.exec() ;
 
-		l.exec() ;
-
-		return q ;
+		return { q,[]( QNetworkReply * e ){ e->deleteLater() ; } } ;
 	}
-	QNetworkReply * head( const QNetworkRequest& r,function_t&& f )
+	void head( QNetworkReply ** s,const QNetworkRequest& r,function_t f )
 	{
-		auto e = m_manager.head( r ) ;
+		auto q = m_manager.head( r ) ;
 
-		m_entries.append( { e,std::move( f ) } ) ;
+		if( s ){
 
-		return e ;
+			*s = q ;
+		}
+
+		m_entries.emplace_back( std::make_tuple( q,true,std::move( f ) ) ) ;
 	}
-	QNetworkReply * head( const QNetworkRequest& r )
+	void head( const QNetworkRequest& r,function_t f )
+	{
+		this->head( nullptr,r,std::move( f ) ) ;
+	}
+	NetworkReply head( const QNetworkRequest& r )
 	{
 		QNetworkReply * q ;
 
-		QEventLoop l ;
+		QEventLoop s ;
 
-		this->head( r,[ & ]( NetworkAccessManager::NetworkReply e ){
+		auto function = [ & ]( QNetworkReply& e ){ q = std::addressof( e ) ; s.quit() ;	} ;
 
-			q = e.release() ;
+		m_entries.emplace_back( std::make_tuple( m_manager.head( r ),false,std::move( function ) ) ) ;
 
-			l.quit() ;
-		} ) ;
+		s.exec() ;
 
-		l.exec() ;
-
-		return q ;
+		return { q,[]( QNetworkReply * e ){ e->deleteLater() ; } } ;
 	}
-private slots:
-	void networkReply( QNetworkReply * r )
+	void cancel( QNetworkReply * e )
 	{
-		auto s = m_entries.size() ;
+		this->find_network_reply( e,[]( auto& e,auto& p,auto s ){
 
-		for( decltype( s ) i = 0 ; i < s ; i++ ){
+			if( std::get< bool >( p[ s ] ) ){
 
-			const auto& q = m_entries.at( i ) ;
+				e.deleteLater() ;
+			}
 
-			if( q.first == r ){
+			p.erase( p.begin() + s ) ;
 
-				q.second( r ) ;
+			e.close() ;
+			e.abort() ;
+		} ) ;
+	}
+private:
+	void find_network_reply( QNetworkReply * e,void( *function )( QNetworkReply&,entries_t&,position_t ) )
+	{
+		for( position_t s = 0 ; s < m_entries.size() ; s++ ){
 
-				m_entries.remove( i ) ;
+			if( std::get< QNetworkReply * >( m_entries[ s ] ) == e ){
+
+				function( *e,m_entries,s ) ;
 
 				break ;
 			}
 		}
 	}
-private:
-	QVector< std::pair< QNetworkReply *,function_t > > m_entries ;
-	QNetworkAccessManager m_manager ;
+private slots:
+	void networkReply( QNetworkReply * e )
+	{
+		this->find_network_reply( e,[]( auto& e,auto& p,auto s ){
+
+			std::get< function_t >( p[ s ] )( e ) ;
+
+			if( std::get< bool >( p[ s ] ) ){
+
+				e.deleteLater() ;
+			}
+
+			p.erase( p.begin() + s ) ;
+		} ) ;
+	}
 };
 
 #endif
