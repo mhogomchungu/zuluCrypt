@@ -15,8 +15,8 @@ before_install:
 
 install:
   # g++4.8
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq gcc-4.8; fi
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-7; fi
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq gcc-7; fi
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8";export CC="gcc-4.8"; fi
 
   # clang 3.5
