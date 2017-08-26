@@ -828,6 +828,126 @@ void zuluMount::cryfsVolumeProperties()
 	this->enableAll() ;
 }
 
+static void _volume_properties( const QString& cmd,const QString& arg,
+				QTableWidget * table,QWidget * w )
+{
+	auto exe = utility::executableFullPath( cmd ) ;
+
+	auto path = [ table ](){
+
+		auto row = table->currentRow() ;
+
+		if( row < 0 ){
+
+			return QString() ;
+		}else{
+			return utility::Task::makePath( table->item( row,0 )->text() ) ;
+		}
+	}() ;
+
+	if( exe.isEmpty() ){
+
+		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
+					 QObject::tr( "Failed To Find %1 Executable" ).arg( cmd ) ) ;
+	}else{
+		auto e = utility::Task::run( exe + arg + path ).await() ;
+
+		if( e.success() ){
+
+			auto s = e.stdOut() ;
+
+			if( cmd == "gocryptfs" ){
+
+				s.replace( "Creator:      ","Creator: " ).replace( "\n","\n\n" ) ;
+			}
+
+			DialogMsg( w ).ShowUIInfo( QObject::tr( "INFORMATION" ),true,s ) ;
+		}else{
+			DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
+						 QObject::tr( "Failed To Get Volume Properties" ) ) ;
+		}
+	}
+}
+
+void zuluMount::encfsProperties()
+{
+	this->disableAll() ;
+
+	_volume_properties( "encfsctl"," ",m_ui->tableWidget,this ) ;
+
+	this->enableAll() ;
+}
+
+void zuluMount::securefsProperties()
+{
+	this->disableAll() ;
+
+	_volume_properties( "securefs"," info ",m_ui->tableWidget,this ) ;
+
+	this->enableAll() ;
+}
+
+void zuluMount::gocryptfsProperties()
+{
+	this->disableAll() ;
+
+	_volume_properties( "gocryptfs"," -info ",m_ui->tableWidget,this ) ;
+
+	this->enableAll() ;
+}
+
+static QString _fs_properties( const QString& m )
+{
+	QFile f( "/proc/self/mountinfo" ) ;
+
+	f.open( QIODevice::ReadOnly ) ;
+
+	auto s = " " + m + " " ;
+
+	for( const auto& it : utility::split( f.readAll() ) ){
+
+		if( it.contains( s ) ){
+
+			return utility::split( it,' ' ).last() ;
+		}
+	}
+
+	return QString() ;
+}
+
+void zuluMount::ecryptfsProperties()
+{
+	this->disableAll() ;
+
+	auto s = [ this ](){
+
+		auto table = m_ui->tableWidget ;
+
+		auto item = table->currentItem() ;
+
+		if( item ){
+
+			return table->item( item->row(),1 )->text() ;
+		}else{
+			return QString() ;
+		}
+	}() ;
+
+	DialogMsg( this ).ShowUIInfo( tr( "INFORMATION" ),true,[ & ](){
+
+		auto e = _fs_properties( s ) ;
+
+		e.replace( ",","\n\n" ) ;
+		e.replace( "ro\n\n","mode=read only\n\n" ) ;
+		e.replace( "rw\n\n","mode=read and write\n\n" ) ;
+		e.replace( "="," = " ) ;
+
+		return e ;
+	}() ) ;
+
+	this->enableAll() ;
+}
+
 void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 {
 	QMenu m ;
@@ -855,6 +975,26 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
 					 this,SLOT( cryfsVolumeProperties() ) ) ;
+
+			}else if( fs == "gocryptfs" ){
+
+				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
+					 this,SLOT( gocryptfsProperties() ) ) ;
+
+			}else if( fs == "securefs" ){
+
+				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
+					 this,SLOT( securefsProperties() ) ) ;
+
+			}else if( fs == "encfs" ){
+
+				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
+					 this,SLOT( encfsProperties() ) ) ;
+
+			}else if( fs == "ecryptfs" ){
+
+				connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
+					 this,SLOT( ecryptfsProperties() ) ) ;
 			}else{
 				m.addAction( tr( "Properties" ) )->setEnabled( false ) ;
 			}

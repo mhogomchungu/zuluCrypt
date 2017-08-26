@@ -100,6 +100,10 @@ private slots:
 	void licenseInfo( void ) ;
 	void updateCheck( void ) ;
 	void languageMenu( QAction * ac ) ;
+	void encfsProperties( void ) ;
+	void securefsProperties( void ) ;
+	void gocryptfsProperties( void ) ;
+	void ecryptfsProperties( void ) ;
 private:
 	void setIcons( void ) ;
 	bool errorNotFound( int ) ;
