@@ -219,10 +219,7 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
 
-				if( utility::platformIsOSX() ){
-
-					mode += " -o fsname=gocryptfs@" + cipherFolder ;
-				}
+				mode += " -o fsname=gocryptfs@" + cipherFolder ;
 
 				auto e = QString( "%1 %2 %3 %4 %5" ) ;
 				return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;

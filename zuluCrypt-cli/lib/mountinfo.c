@@ -68,10 +68,10 @@ static void _add_entry( string_t ( *function )( const vInfo * ),stringList_t tmp
 	volumeInfo.rootPath     = *( *entry + 3 ) ;
 
 	if( StringAtLeastOneMatch_1( volumeInfo.fileSystem,"fuse.encfs","fuse.cryfs",
-				     "fuse.securefs",NULL ) ){
+				     "fuse.securefs","fuse.gocryptfs",NULL ) ){
 
 		if( StringAtLeastOnePrefixMatch( volumeInfo.device,"encfs@",
-						 "cryfs@","securefs@",NULL ) ){
+						 "cryfs@","securefs@","gocryptfs@",NULL ) ){
 
 			volumeInfo.device += StringFirstIndexOfChar_1( volumeInfo.device,'@' ) + 1 ;
 		}else{

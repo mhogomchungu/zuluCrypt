@@ -94,7 +94,7 @@ string_t zuluCryptCreateKeyFile_1( string_t st,const char * fileName )
 	return zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),fileName ) ;
 }
 
-static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
+static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 {
 	tc_api_task task ;
 	int r = !TC_OK ;
@@ -105,11 +105,6 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 	const char * const * z ;
 
 	const char * e ;
-
-	/*
-	 * open_struct_t is defined in includes.h
-	 */
-	const open_struct_t * opts = opt->args ;
 
 	string_t st = StringVoid ;
 
@@ -173,7 +168,7 @@ static int _open_tcrypt_volume( const char * device,const resolve_path_t * opt )
 
 static int _open_tcrypt_volume_1( const char * device,const resolve_path_t * opt )
 {
-	int r = _open_tcrypt_volume( device,opt ) ;
+	int r = _open_tcrypt_volume( device,opt->args ) ;
 
 	open_struct_t opts ;
 
@@ -185,7 +180,7 @@ static int _open_tcrypt_volume_1( const char * device,const resolve_path_t * opt
 
 		opts.use_backup_header = 1 ;
 
-		return _open_tcrypt_volume( device,opt ) ;
+		return _open_tcrypt_volume( device,&opts ) ;
 	}
 }
 
