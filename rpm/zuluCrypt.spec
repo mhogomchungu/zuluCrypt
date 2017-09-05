@@ -139,6 +139,7 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 %{_datadir}/doc/zuluCrypt/*
 %{_datadir}/zuluCrypt/*
 %{_datadir}/pixmaps/*
+%{_datadir}/mime/packages/zuluCrypt.xml
 %{_mandir}/man1/*
 %defattr(0644,root,root)
 

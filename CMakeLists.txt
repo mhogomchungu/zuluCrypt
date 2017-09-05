@@ -460,6 +460,8 @@ else()
 	file( WRITE ${PROJECT_BINARY_DIR}/zuluPolkit.h "#define POLKIT_SUPPORT 0" )
 endif()
 
+install ( FILES zuluCrypt.xml  DESTINATION "${CMAKE_INSTALL_PREFIX}/share/mime/packages/" )
+
 install ( FILES zuluCrypt-cli.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
 install ( FILES zuluCrypt-gui.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
 install ( FILES zuluMount-cli.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 )
