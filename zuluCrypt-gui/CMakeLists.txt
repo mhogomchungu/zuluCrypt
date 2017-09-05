@@ -160,5 +160,5 @@ NoDisplay=false
 StartupNotify=true
 Terminal=false
 Type=Application
-MimeType=application/x-zulucrypt-images,application/x-raw-disk-image;
+MimeType=application/x-raw-disk-image;
 Categories=Security;Utility;Qt;X-MandrivaLinux-System-FileTools;\n")

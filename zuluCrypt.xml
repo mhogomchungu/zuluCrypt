@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
-   <mime-type type="application/x-zulucrypt-images">
+   <mime-type type="application/x-raw-disk-image">
      <comment>Raw disk image</comment>
      <glob pattern="*.img"/>
      <glob pattern="*.luks"/>
