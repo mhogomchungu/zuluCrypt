@@ -118,7 +118,7 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 
 	struct crypt_device * cd = NULL ;
 
-	struct crypt_params_plain plain = { NULL,256,256,0 } ;
+	struct crypt_params_plain plain ;
 
 	/*
 	 * open_struct_t is defined in includes.h
@@ -133,6 +133,13 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 	const char * luks_header_file_contents ;
 
 	size_t size ;
+
+	memset( &plain,'\0',sizeof( struct crypt_params_plain ) ) ;
+
+	plain.hash   = NULL ;
+	plain.offset = 256 ;
+	plain.skip   = 256 ;
+	plain.size   = 0 ;
 
 	buffer_size = opts->key_len ;
 

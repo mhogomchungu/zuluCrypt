@@ -1,7 +1,5 @@
 
 cmake_minimum_required(VERSION 2.6)
-cmake_policy(SET CMP0017 OLD)
-cmake_policy(SET CMP0002 OLD)
 
 set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON)
 
