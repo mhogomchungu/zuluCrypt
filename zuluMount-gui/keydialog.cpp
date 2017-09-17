@@ -854,7 +854,10 @@ void keyDialog::openVolume()
 
 			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
 
-				m_ui->lineEditKey->clear() ;
+				if( utility::clearPassword() ){
+
+					m_ui->lineEditKey->clear() ;
+				}
 			}
 
 			this->enableAll() ;

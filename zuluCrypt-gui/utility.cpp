@@ -2463,3 +2463,8 @@ QProcessEnvironment utility::systemEnvironment()
 
 	return e ;
 }
+
+bool utility::clearPassword()
+{
+	return !utility::pathExists( utility::homePath() + "/.zuluCrypt/doNotClearPassword" ) ;
+}

@@ -262,6 +262,7 @@ namespace utility
 
 	QProcessEnvironment systemEnvironment() ;
 
+	bool clearPassword() ;
 	bool userBelongsToGroup( const char * groupname ) ;
 	bool runningInMixedMode( void ) ;
 	bool notRunningInMixedMode( void ) ;
