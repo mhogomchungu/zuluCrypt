@@ -41,6 +41,16 @@ Latest released version is 5.2.0 and it can be downloaded by clicking any one of
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.2.0/zuluCrypt-5.2.0.tar.xz">zuluCrypt-5.2.0.tar.xz</a>
 
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-8347348550354816"
+     data-ad-slot="6481962469"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
 
 ## Binary packages
 
