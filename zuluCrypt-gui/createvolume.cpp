@@ -860,6 +860,18 @@ void createvolume::pbCreateClicked()
 	auto passphrase_1 = m_ui->lineEditPassphrase1->text() ;
 	auto passphrase_2 = m_ui->lineEditPassPhrase2->text() ;
 
+	this->disableAll() ;
+
+	utility::raii raii( [ this ](){ this->enableAll() ; } ) ;
+
+	if( utility::requireSystemPermissions( volumePath ) ){
+
+		if( !utility::enablePolkit() ){
+
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+		}
+	}
+
 	createvolume::createVolumeType type = createvolume::createVolumeType( m_ui->comboBoxVolumeType->currentIndex() ) ;
 
 	if( volumePath.isEmpty() ){
@@ -1091,8 +1103,6 @@ void createvolume::pbCreateClicked()
 		exe += " -V \"" + e + "\"" ;
 	}
 
-	exe = utility::appendUserUID( exe ) ;
-
 	if( type == createvolume::normal_veracrypt || type == createvolume::normal_and_hidden_veracrypt ){
 
 		m_veraCryptWarning.show( tr( "Please be patient as creating a VeraCrypt volume may take a very long time.\n\n" ) ) ;
@@ -1100,16 +1110,16 @@ void createvolume::pbCreateClicked()
 
 	m_isWindowClosable = false ;
 
-	this->disableAll() ;
+	raii.cancel() ;
 
 #ifdef CRYPT_LUKS2
 	if( type == createvolume::luks_external_header || type == createvolume::luks2_external_header ){
 #else
 	if( type == createvolume::luks_external_header ){
 #endif
-		this->taskFinished_1( utility::exec( exe ).await() ) ;
+		this->taskFinished_1( utility::exec( utility::appendUserUID( exe ) ).await() ) ;
 	}else{
-		this->taskFinished( utility::exec( exe ).await() ) ;
+		this->taskFinished( utility::exec( utility::appendUserUID( exe ) ).await() ) ;
 	}
 }
 

@@ -299,6 +299,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	struct stat statstr ;
 
+#if 0
 	/*
 	 * zuluCryptVolumeIsInSystemVolumeList() is defined in volumes.c
 	 */
@@ -311,6 +312,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			return zuluExit( 22,device,mount_point,stl ) ;
 		}
 	}
+#endif
 	if( m_opts == NULL ){
 
 		m_opts = "rw" ;

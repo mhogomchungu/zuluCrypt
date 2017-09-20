@@ -369,6 +369,10 @@ void managevolumeheader::pbCreate()
 {
 	DialogMsg msg( this ) ;
 
+	this->disableAll() ;
+
+	utility::raii raii( [ this ](){ this->enableAll() ; } ) ;
+
 	if( m_ui->lineEditBackUpName->text().isEmpty() || m_ui->lineEditDevicePath->text().isEmpty() ){
 
 		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
@@ -380,13 +384,13 @@ void managevolumeheader::pbCreate()
 
 	auto device = utility::resolvePath( m_ui->lineEditDevicePath->text() ) ;
 
-	device.replace( "\"","\"\"\"" ) ;
-
 	auto backUp = m_ui->lineEditBackUpName->text().replace( "\"","\"\"\"" ) ;
 
 	QString exe ;
 
 	if( m_operation == "backup" ){
+
+		device.replace( "\"","\"\"\"" ) ;
 
 		m_saveHeader = 1 ;
 
@@ -421,6 +425,16 @@ void managevolumeheader::pbCreate()
 			exe = QString( "%1 -B -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp ) ;
 		}
 	}else{
+		if( utility::requireSystemPermissions( device ) ){
+
+			if( !utility::enablePolkit() ){
+
+				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+			}
+		}
+
+		device.replace( "\"","\"\"\"" ) ;
+
 		m_saveHeader = 0 ;
 		auto x = m_ui->lineEditDevicePath->text() ;
 		auto y = m_ui->lineEditBackUpName->text() ;
@@ -476,11 +490,11 @@ void managevolumeheader::pbCreate()
 		exe += " -g /dev/urandom -e sys" ;
 	}
 
-	this->disableAll() ;
-
 	m_OperationInProgress = true ;
 
 	m_veraCryptWarning.show( m_ui->cbVolumeHeader->currentIndex() == 2 ) ;
+
+	raii.cancel() ;
 
 	this->taskFinished( utility::exec( utility::appendUserUID( exe ) ).await() ) ;
 }

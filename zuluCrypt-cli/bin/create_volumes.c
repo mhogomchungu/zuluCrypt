@@ -147,9 +147,12 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
 
-		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+		if( zuluCryptExeOriginalUserIsNotRoot() ){
 
-			return zuluExit( 2,stl ) ;
+			if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+
+				return zuluExit( 2,stl ) ;
+			}
 		}
 	}
 

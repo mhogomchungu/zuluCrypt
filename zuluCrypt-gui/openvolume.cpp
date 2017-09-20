@@ -338,11 +338,9 @@ void openvolume::tableEntryDoubleClicked( QTableWidgetItem * item )
 
 			if( item->font().italic() != this->font().italic() ){
 
-				DialogMsg m( this ) ;
+				//auto e = tr( "Insufficient privileges to operate on a system volume.\nRestart zuluCrypt from root's account to proceed" ) ;
 
-				auto e = tr( "Insufficient privileges to operate on a system volume.\nRestart zuluCrypt from root's account to proceed" ) ;
-
-				return m.ShowUIOK( tr( "ERROR" ),e ) ;
+				//return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),e ) ;
 			}
 		}
 	}

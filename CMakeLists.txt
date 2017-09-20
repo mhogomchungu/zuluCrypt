@@ -450,13 +450,16 @@ else()
 	message( STATUS "---------------------------------------------------------------------------\n\n" )
 endif()
 
+file( WRITE ${PROJECT_BINARY_DIR}/zuluPolkit.h "#define POLKIT_SUPPORT 1" )
+
 if( USE_POLKIT )
 
-	file( WRITE ${PROJECT_BINARY_DIR}/zuluPolkit.h "#define POLKIT_SUPPORT 1" )
-	ADD_SUBDIRECTORY( zuluPolkit )
+        file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 1" )
 else()
-	file( WRITE ${PROJECT_BINARY_DIR}/zuluPolkit.h "#define POLKIT_SUPPORT 0" )
+        file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 0" )
 endif()
+
+ADD_SUBDIRECTORY( zuluPolkit )
 
 install ( FILES zuluCrypt.xml  DESTINATION "${CMAKE_INSTALL_PREFIX}/share/mime/packages/" )
 

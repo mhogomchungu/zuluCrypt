@@ -66,6 +66,30 @@
 
 namespace utility
 {
+	class raii
+	{
+	public:
+		raii( std::function< void() > s ) : m_function( std::move( s ) )
+		{
+		}
+		~raii()
+		{
+			if( m_run ){
+
+				m_function() ;
+			}
+		}
+		void cancel()
+		{
+			m_run = false ;
+		}
+	private:
+		bool m_run = true ;
+		std::function< void() > m_function ;
+	};
+}
+namespace utility
+{
 	class debug
 	{
 	public:
@@ -179,8 +203,6 @@ namespace utility
 
 namespace utility
 {
-	void setUID( int ) ;
-
 	int getUID() ;
 	int getUserID() ;
 	int getGUID( int uid ) ;
@@ -262,6 +284,8 @@ namespace utility
 
 	QProcessEnvironment systemEnvironment() ;
 
+	bool requireSystemPermissions( const QString& ) ;
+	bool enablePolkit() ;
 	bool clearPassword() ;
 	bool userBelongsToGroup( const char * groupname ) ;
 	bool runningInMixedMode( void ) ;
@@ -278,6 +302,7 @@ namespace utility
 	void dropPrivileges( int = -1 ) ;
 	QString fileManager( void ) ;
 	void setFileManager( const QString& ) ;
+	QString failedToStartzuluPolkit() ;
 	QString prettyfySpaceUsage( quint64 ) ;
 	QString resolvePath( const QString& ) ;
 	QString hashPath( const QByteArray& ) ;

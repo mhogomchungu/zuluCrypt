@@ -43,6 +43,18 @@
 
 #define ZULUDEBUG 0
 
+static uid_t _original_UID ;
+
+void zuluCryptExeSetOriginalUID( uid_t s )
+{
+	_original_UID = s ;
+}
+
+int zuluCryptExeOriginalUserIsNotRoot()
+{
+	return _original_UID != 0 ;
+}
+
 int zuluCryptSecurityGainElevatedPrivileges( void )
 {
 	/*

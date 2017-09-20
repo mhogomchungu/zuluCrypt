@@ -280,9 +280,12 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
 
-		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+		if( zuluCryptExeOriginalUserIsNotRoot() ){
 
-			return zuluExit( 4,stl ) ;
+			if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+
+				return zuluExit( 4,stl ) ;
+			}
 		}
 	}
 	/*

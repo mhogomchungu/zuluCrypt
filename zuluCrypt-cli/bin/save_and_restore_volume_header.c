@@ -641,9 +641,12 @@ int zuluCryptEXESaveAndRestoreVolumeHeader( const struct_opts * opts,uid_t uid,i
 
 	if( k == 1 ){
 
-		if( uid != 0 && !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+		if( zuluCryptExeOriginalUserIsNotRoot() ){
 
-			return zuluExit( 14,dev ) ;
+			if( uid != 0 && !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+
+				return zuluExit( 14,dev ) ;
+			}
 		}
 	}
 

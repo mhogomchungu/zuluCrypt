@@ -213,13 +213,25 @@ void luksdeletekey::pbDelete()
 
 	m_volumePath = utility::resolvePath( m_ui->lineEditVolumePath->text() ) ;
 
+	this->disableAll() ;
+
+	utility::raii raii( [ this ](){ this->enableAll() ; } ) ;
+
 	if( m_volumePath.isEmpty() ){
 
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 	}else{
-		this->disableAll() ;
+		if( utility::requireSystemPermissions( m_volumePath ) ){
+
+			if( !utility::enablePolkit() ){
+
+				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+			}
+		}
 
 		m_volumePath.replace( "\"","\"\"\"" ) ;
+
+		raii.cancel() ;
 
 		this->deleteKey( utility::luksEmptySlots( m_volumePath ).await() ) ;
 	}

@@ -76,7 +76,7 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 {
 	if( !start ){
 
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Start Helper Application.\n\"org.zulucrypt.zulupolkit.policy\" polkit file is either misconfigured or zuluPolkit executable could not be found." ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),utility::failedToStartzuluPolkit() ) ;
 
 		return this->closeApplication() ;
 	}
@@ -698,13 +698,6 @@ void zuluMount::Show()
 
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
-
-	if( utility::useZuluPolkit() ){
-
-		utility::setUID( getuid() ) ;
-	}else{
-		utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
-	}
 
 	auto s = utility::homePath() + "/.zuluCrypt-socket" ;
 

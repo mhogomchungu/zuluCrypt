@@ -332,6 +332,11 @@ void luksaddkey::pbOpenPartition( void )
 void luksaddkey::pbAdd( void )
 {
 	DialogMsg msg( this ) ;
+
+	this->disableAll() ;
+
+	utility::raii raii( [ this ](){ this->enableAll() ; } ) ;
+
 	auto ExistingKey = m_ui->textEditExistingPassphrase->text() ;
 
 	auto NewKey = m_ui->textEditPassphraseToAdd->text() ;
@@ -348,6 +353,14 @@ void luksaddkey::pbAdd( void )
 	}
 
 	m_volumePath = utility::resolvePath( m_volumePath ) ;
+
+	if( utility::requireSystemPermissions( m_volumePath ) ){
+
+		if( !utility::enablePolkit() ){
+
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+		}
+	}
 
 	if( existingKeyIsKeyFile ){
 
@@ -436,9 +449,9 @@ void luksaddkey::pbAdd( void )
 
 	m_isWindowClosable = false ;
 
-	this->disableAll() ;
-
 	m_veraCryptWarning.show( m_ui->cbVolumeType->currentIndex() == 2 ) ;
+
+	raii.cancel() ;
 
 	this->taskFinished( utility::exec( exe ).await() ) ;
 }

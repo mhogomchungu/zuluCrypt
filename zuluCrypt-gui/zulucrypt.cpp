@@ -128,7 +128,7 @@ void zuluCrypt::helperStarted( bool e,const QString& volume )
 			this->setWindowState( Qt::WindowActive ) ;
 		}
 	}else{
-		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Start Helper Application.\n\"org.zulucrypt.zulupolkit.policy\" polkit file is either misconfigured or zuluPolkit executable could not be found." ) ) ;
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),utility::failedToStartzuluPolkit() ) ;
 
 		this->closeApplication() ;
 	}
@@ -240,13 +240,6 @@ void zuluCrypt::start()
 
 	m_openPath     = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 	m_startHidden  = l.contains( "-e" ) ;
-
-	if( utility::useZuluPolkit() ){
-
-		utility::setUID( getuid() ) ;
-	}else{
-		utility::setUID( utility::cmdArgumentValue( l,"-K","-1" ).toInt() ) ;
-	}
 
 	auto s = utility::homePath() + "/.zuluCrypt-socket" ;
 

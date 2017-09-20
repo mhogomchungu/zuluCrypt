@@ -66,6 +66,16 @@ typedef struct struct_opts_1{
 }struct_opts;
 
 /*
+ * this function is defined in security.c
+ */
+void zuluCryptExeSetOriginalUID( uid_t s ) ;
+
+/*
+ * this function is defined in security.c
+ */
+int zuluCryptExeOriginalUserIsNotRoot() ;
+
+/*
  * get command line arguments and in struct_opts structure to be used in various calls *
  */
 void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * ) ;

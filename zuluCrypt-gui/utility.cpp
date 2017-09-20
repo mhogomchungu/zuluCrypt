@@ -97,8 +97,6 @@ struct jsonResult
 	QByteArray stdOut ;
 };
 
-#if POLKIT_SUPPORT
-
 #include "json.h"
 
 static QByteArray _json_command( const QByteArray& cookie,
@@ -129,29 +127,8 @@ static jsonResult _json_result( const QByteArray& e )
 	}
 }
 
-#else
-
-static QByteArray _json_command( const QByteArray& cookie,
-				 const QByteArray& password,
-				 const QString& exe )
-{
-	Q_UNUSED( cookie ) ;
-	Q_UNUSED( password ) ;
-	Q_UNUSED( exe ) ;
-
-	return QByteArray() ;
-}
-
-static jsonResult _json_result( const QByteArray& e )
-{
-	Q_UNUSED( e ) ;
-	return { false,255,255,"","" } ;
-}
-
-#endif
-
-static int staticGlobalUserId = -1 ;
 static QByteArray _cookie ;
+static bool _polkit_support = AUTO_ENABLE_POLKIT_SUPPORT ;
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
 {
@@ -174,22 +151,6 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			     const std::function< void() >& f,
 			     bool polkit )
 {
-	class Process : public QProcess{
-	public:
-		Process( const std::function< void() >& f ) : m_function( f )
-		{
-		}
-	protected:
-		void setupChildProcess()
-		{
-			m_function() ;
-		}
-	private:
-		std::function< void() > m_function ;
-	} p( f ) ;
-
-	p.setProcessEnvironment( env ) ;
-
 	if( polkit && utility::useZuluPolkit() ){
 
 		QLocalSocket s ;
@@ -227,6 +188,22 @@ void utility::Task::execute( const QString& exe,int waitTime,
 		m_stdError   = e.stdError ;
 		m_stdOut     = e.stdOut ;
 	}else{
+		class Process : public QProcess{
+		public:
+			Process( const std::function< void() >& f ) : m_function( f )
+			{
+			}
+		protected:
+			void setupChildProcess()
+			{
+				m_function() ;
+			}
+		private:
+			const std::function< void() >& m_function ;
+		} p( f ) ;
+
+		p.setProcessEnvironment( env ) ;
+
 		p.start( exe ) ;
 
 		if( !password.isEmpty() ){
@@ -246,39 +223,62 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-void utility::startHelperExecutable( QObject * obj,const QString& arg,const char * slot,const char * slot1 )
+static QString zuluPolkitExe()
 {
-	if( !utility::useZuluPolkit() ){
+	auto exe = utility::executableFullPath( "pkexec" ) ;
 
-		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,arg ) ) ;
+	if( exe.isEmpty() ){
 
-		return ;
+		return QString() ;
+	}else{
+		return QString( "%1 %2 %3 fork" ).arg( exe,zuluPolkitPath,utility::helperSocketPath() ) ;
 	}
+}
 
+static ::Task::future< utility::Task >& _start_zulupolkit( const QString& e )
+{
 	QFile f( "/dev/urandom" ) ;
 
 	f.open( QIODevice::ReadOnly ) ;
 
 	_cookie = f.read( 16 ).toHex() ;
 
-	auto exe = utility::executableFullPath( "pkexec" ) ;
+	return ::Task::run< utility::Task >( [ = ]{
 
-	if( !exe.isEmpty() ){
+		return utility::Task( e,
+				      -1,
+				      utility::systemEnvironment(),
+				      _cookie,
+				      [](){ umask( 0 ) ; },
+				      false ) ;
+	} ) ;
+}
 
-		exe = QString( "%1 %2 %3 fork" ).arg( exe,zuluPolkitPath,utility::helperSocketPath() ) ;
+void utility::startHelperExecutable( QObject * obj,const QString& arg,const char * slot,const char * slot1 )
+{
+	if( AUTO_ENABLE_POLKIT_SUPPORT ){
 
-		::Task::exec( [ = ](){
+		auto exe = zuluPolkitExe() ;
 
-			auto e = utility::Task::run( exe,false ).get() ;
+		if( !exe.isEmpty() ){
 
-			QMetaObject::invokeMethod( obj,
-						   slot,
-						   Q_ARG( bool,e.success() ),
-						   Q_ARG( QString,arg ) ) ;
-		} ) ;
+			::Task::exec( [ = ](){
+
+				auto e = _start_zulupolkit( exe ).get() ;
+
+				QMetaObject::invokeMethod( obj,
+							   slot,
+							   Q_ARG( bool,e.success() ),
+							   Q_ARG( QString,arg ) ) ;
+			} ) ;
+		}else{
+			DialogMsg().ShowUIOK( QObject::tr( "ERROR" ),
+					      QObject::tr( "Failed to locate pkexec executable" ) ) ;
+
+			QMetaObject::invokeMethod( obj,slot1 ) ;
+		}
 	}else{
-		DialogMsg().ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed to locate pkexec executable" ) ) ;
-		QMetaObject::invokeMethod( obj,slot1 ) ;
+		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,arg ) ) ;
 	}
 }
 
@@ -293,7 +293,39 @@ QString utility::helperSocketPath()
 
 bool utility::useZuluPolkit()
 {
-	return POLKIT_SUPPORT ;
+	return _polkit_support ;
+}
+
+bool utility::requireSystemPermissions( const QString& e )
+{
+	auto s = utility::Task::run( ZULUCRYPTzuluCrypt" -S" ).await().stdOut() ;
+
+	return utility::split( s ).contains( e ) ;
+}
+
+bool utility::enablePolkit()
+{
+	if( _polkit_support ){
+
+		return true ;
+	}
+
+	auto exe = zuluPolkitExe() ;
+
+	if( !exe.isEmpty() ){
+
+		if( _start_zulupolkit( exe ).await().success() ){
+
+			while( !utility::pathExists( utility::helperSocketPath() ) ){
+
+				utility::Task::suspendForOneSecond() ;
+			}
+
+			_polkit_support = true ;
+		}
+	}
+
+	return _polkit_support ;
 }
 
 void utility::quitHelper()
@@ -325,27 +357,14 @@ bool utility::reUseMountPoint()
 	return utility::reUseMountPointPath() ;
 }
 
-void utility::setUID( int uid )
-{
-	if( utility::userIsRoot() || utility::useZuluPolkit() ){
-
-		staticGlobalUserId = uid ;
-	}
-}
-
 int utility::getUID()
 {
-	return staticGlobalUserId ;
+	return getuid() ;
 }
 
 int utility::getUserID()
 {
-	if( staticGlobalUserId == -1 ){
-
-		return getuid() ;
-	}else{
-		return staticGlobalUserId ;
-	}
+	return utility::getUID() ;
 }
 
 int utility::getGUID( int uid )
@@ -367,11 +386,11 @@ QString utility::getStringUserID()
 
 QString utility::appendUserUID( const QString& e )
 {
-	if( staticGlobalUserId == -1 ){
+	if( utility::useZuluPolkit() ){
 
-		return e ;
-	}else{
 		return e + " -K " + utility::getStringUserID() ;
+	}else{
+		return e ;
 	}
 }
 
@@ -1185,7 +1204,7 @@ QString utility::resolvePath( const QString& path )
 
 		return utility::homePath() + "/" + path.mid( 2 ) ;
 
-	}else if( path.startsWith( "UUID=") ){
+	}else if( path.startsWith( "UUID= ") ){
 
 		return path ;
 
@@ -1501,11 +1520,14 @@ bool utility::userHasGoodVersionOfWhirlpool()
 void utility::licenseInfo( QWidget * parent )
 {
 	QString s ;
-#if POLKIT_SUPPORT
-	s = "\nPolkit Support: YES" ;
-#else
-	s = "\nPolkit Support: NO" ;
-#endif
+
+	if( _polkit_support ){
+
+		s = "\nPolkit Support: YES" ;
+	}else{
+		s = "\nPolkit Support: NO" ;
+	}
+
 	QString license = QString( "%1\n\n\
 This program is free software: you can redistribute it and/or modify \
 it under the terms of the GNU General Public License as published by \
@@ -2467,4 +2489,9 @@ QProcessEnvironment utility::systemEnvironment()
 bool utility::clearPassword()
 {
 	return !utility::pathExists( utility::homePath() + "/.zuluCrypt/doNotClearPassword" ) ;
+}
+
+QString utility::failedToStartzuluPolkit()
+{
+	return QObject::tr( "Failed To Start Helper Application.\n\n\"org.zulucrypt.zulupolkit.policy\" polkit file is misconfigured,zuluPolkit executable could not be found or pkexec failed to start zuluPolkit." ) ;
 }

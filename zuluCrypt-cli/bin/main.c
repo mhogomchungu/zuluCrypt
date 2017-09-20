@@ -379,6 +379,8 @@ int main( int argc,char * argv[] )
 	sa.sa_handler = _forceTerminateOnSeriousError ;
 	sigaction( SIGSEGV,&sa,NULL ) ;
 
+	zuluCryptExeSetOriginalUID( uid ) ;
+
 	/*
 	 * zuluCryptDisableMetadataLocking() is defined in ../lib/create_luks.c
 	 */
