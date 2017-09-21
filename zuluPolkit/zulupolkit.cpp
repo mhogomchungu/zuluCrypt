@@ -35,6 +35,7 @@
 #include <QProcess>
 #include <QCoreApplication>
 #include <QFile>
+#include <QFileDevice>
 
 namespace utility
 {
