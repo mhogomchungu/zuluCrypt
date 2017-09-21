@@ -322,7 +322,17 @@ bool utility::requireSystemPermissions( const QString& e )
 {
 	auto s = utility::Task::run( ZULUCRYPTzuluCrypt" -S" ).await().stdOut() ;
 
-	return utility::split( s ).contains( e ) ;
+	if( utility::split( s ).contains( e ) ){
+
+		if( utility::userBelongsToGroup( "zulucrypt" ) ){
+
+			return false ;
+		}else{
+			return true ;
+		}
+	}else{
+		return false ;
+	}
 }
 
 bool utility::enablePolkit()

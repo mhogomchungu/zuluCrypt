@@ -35,7 +35,12 @@
 #include <QProcess>
 #include <QCoreApplication>
 #include <QFile>
+
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
+
 #include <QFileDevice>
+
+#endif
 
 namespace utility
 {
@@ -123,9 +128,13 @@ static utility::Task _sirikali( const QString& cmd,const QString& path,const QSt
 
 	QDir().mkpath( "/etc/zuluCrypt" ) ;
 
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
 	auto q = QFileDevice::ReadOwner | QFileDevice::WriteOwner ;
 	QFile().setPermissions( "/etc/zuluCrypt",q | QFileDevice::ExeOwner ) ;
-
+#else
+	auto q = QFile::ReadOwner | QFile::WriteOwner ;
+	QFile().setPermissions( "/etc/zuluCrypt",q | QFile::ExeOwner ) ;
+#endif
 	if( cmd == "SiriKali:Read" ){
 
 		if( e.open( QIODevice::ReadOnly ) ){
