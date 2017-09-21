@@ -375,6 +375,9 @@ namespace utility
 
 	int pluginKey( QWidget *,QByteArray *,const QString& ) ;
 
+	std::pair< bool,QByteArray > privilegedReadConfigFile( const QString& ) ;
+	void privilegedWriteConfigFile( const QByteArray&,const QString& ) ;
+
 	QFont getFont( QWidget * ) ;
 	void saveFont( const QFont& ) ;
 

@@ -34,6 +34,7 @@
 #include <QDir>
 #include <QProcess>
 #include <QCoreApplication>
+#include <QFile>
 
 namespace utility
 {
@@ -113,6 +114,38 @@ static bool _terminalEchoOff( struct termios * old,struct termios * current )
 	}
 }
 
+static utility::Task _sirikali( const QString& cmd,const QString& path,const QString& data )
+{
+	utility::Task s ;
+
+	QFile e( path ) ;
+
+	QDir().mkpath( "/etc/zuluCrypt" ) ;
+
+	auto q = QFileDevice::ReadOwner | QFileDevice::WriteOwner ;
+	QFile().setPermissions( "/etc/zuluCrypt",q | QFileDevice::ExeOwner ) ;
+
+	if( cmd == "SiriKali:Read" ){
+
+		if( e.open( QIODevice::ReadOnly ) ){
+
+			s.stdOut = e.readAll() ;
+			s.exitCode = 0 ;
+		}
+
+	}else if( cmd == "SiriKali:Write" ){
+
+		if( e.open( QIODevice::WriteOnly ) ){
+
+			e.write( data.toLatin1() ) ;
+		}
+	}
+
+	e.setPermissions( q ) ;
+
+	return s ;
+}
+
 zuluPolkit::zuluPolkit( const QStringList& s ) : m_arguments( s )
 {
 	connect( &m_server,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
@@ -171,6 +204,8 @@ void zuluPolkit::gotConnection()
 
 		auto json = nlohmann::json::parse( s->readAll().constData() ) ;
 
+		auto path     = QString::fromStdString( json[ "path" ].get< std::string >() ) ;
+		auto data     = QString::fromStdString( json[ "data" ].get< std::string >() ) ;
 		auto password = QString::fromStdString( json[ "password" ].get< std::string >() ) ;
 		auto cookie   = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
@@ -180,6 +215,10 @@ void zuluPolkit::gotConnection()
 			if( command == "exit" ){
 
 				return QCoreApplication::quit() ;
+
+			}else if( command.startsWith( "SiriKali:" ) ){
+
+				return _respond( s,_sirikali( command,path,data ) ) ;
 
 			}else if( _correct_cmd( command ) ){
 

@@ -101,13 +101,17 @@ struct jsonResult
 
 static QByteArray _json_command( const QByteArray& cookie,
 				 const QByteArray& password,
-				 const QString& exe )
+				 const QString& exe,
+				 const QString& path = QString(),
+				 const QByteArray& data = QByteArray() )
 {
 	nlohmann::json json ;
 
 	json[ "cookie" ]   = cookie.constData() ;
 	json[ "password" ] = password.constData() ;
 	json[ "command" ]  = exe.toLatin1().constData() ;
+	json[ "path" ]     = path.toLatin1().constData() ;
+	json[ "data" ]     = data.constData() ;
 
 	return json.dump().c_str() ;
 }
@@ -115,16 +119,44 @@ static QByteArray _json_command( const QByteArray& cookie,
 static jsonResult _json_result( const QByteArray& e )
 {
 	try{
-		auto json = nlohmann::json::parse( e.constData() ) ;
+		if( !e.isEmpty() ){
 
-		return { json[ "finished" ].get< bool >(),
-			 json[ "exitCode" ].get< int >(),
-			 json[ "exitStatus" ].get< int >(),
-			 json[ "stdError" ].get< std::string >().c_str(),
-			 json[ "stdOut" ].get< std::string >().c_str() } ;
-	}catch( ... ){
-		return { false,255,255,"","" } ;
+			auto json = nlohmann::json::parse( e.constData() ) ;
+
+			return { json[ "finished" ].get< bool >(),
+				 json[ "exitCode" ].get< int >(),
+				 json[ "exitStatus" ].get< int >(),
+				 json[ "stdError" ].get< std::string >().c_str(),
+				 json[ "stdOut" ].get< std::string >().c_str() } ;
+		}
+
+	}catch( ... ){}
+
+	return { false,255,255,"","" } ;
+}
+
+static bool _connected( QLocalSocket& s )
+{
+	s.connectToServer( utility::helperSocketPath() ) ;
+
+	for( int i = 0 ; ; i++ ){
+
+		if( s.waitForConnected() ){
+
+			return true ;
+
+		}else if( i == 5 ){
+
+			utility::debug() << "ERROR: Failed To Connect To SiriPolkit" ;
+			break ;
+		}else{
+			utility::debug() << s.errorString() ;
+
+			utility::Task::suspendForOneSecond() ;
+		}
 	}
+
+	return false ;
 }
 
 static QByteArray _cookie ;
@@ -155,38 +187,28 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 		QLocalSocket s ;
 
-		s.connectToServer( utility::helperSocketPath() ) ;
+		if( _connected( s ) ){
 
-		for( int i = 0 ; ; i++ ){
+			s.write( _json_command( _cookie,password,exe ) ) ;
 
-			if( s.waitForConnected() ){
+			s.waitForBytesWritten() ;
 
-				break ;
+			s.waitForReadyRead() ;
 
-			}else if( i == 10 ){
+			auto e = _json_result( s.readAll() ) ;
 
-				utility::debug() << "ERROR: Failed To Start Helper Application" ;
-				return ;
-			}else{
-				utility::debug() << s.errorString() ;
-
-				utility::Task::suspendForOneSecond() ;
-			}
+			m_finished   = e.finished ;
+			m_exitCode   = e.exitCode ;
+			m_exitStatus = e.exitStatus ;
+			m_stdError   = e.stdError ;
+			m_stdOut     = e.stdOut ;
+		}else{
+			m_finished   = false ;
+			m_exitCode   = -1 ;
+			m_exitStatus = -1 ;
+			m_stdError   = "" ;
+			m_stdOut     = QObject::tr( "SiriKali: Failed To Establish Connection With SiriPolkit" ).toLatin1() ;
 		}
-
-		s.write( _json_command( _cookie,password,exe ) ) ;
-
-		s.waitForBytesWritten() ;
-
-		s.waitForReadyRead() ;
-
-		auto e = _json_result( s.readAll() ) ;
-
-		m_finished   = e.finished ;
-		m_exitCode   = e.exitCode ;
-		m_exitStatus = e.exitStatus ;
-		m_stdError   = e.stdError ;
-		m_stdOut     = e.stdOut ;
 	}else{
 		class Process : public QProcess{
 		public:
@@ -341,6 +363,42 @@ void utility::quitHelper()
 		if( s.waitForConnected() ){
 
 			s.write( _json_command( _cookie,"","exit" ) ) ;
+
+			s.waitForBytesWritten() ;
+		}
+	}
+}
+
+std::pair< bool,QByteArray > utility::privilegedReadConfigFile( const QString& path )
+{
+	if( utility::enablePolkit() ){
+
+		QLocalSocket s ;
+
+		if( _connected( s ) ){
+
+			s.write( _json_command( _cookie,QByteArray(),"SiriKali:Read",path ) ) ;
+
+			s.waitForBytesWritten() ;
+
+			s.waitForReadyRead() ;
+
+			return { true,_json_result( s.readAll() ).stdOut } ;
+		}
+	}
+
+	return { false,QByteArray() } ;
+}
+
+void utility::privilegedWriteConfigFile( const QByteArray& data,const QString& path )
+{
+	if( utility::enablePolkit() ){
+
+		QLocalSocket s ;
+
+		if( _connected( s ) ){
+
+			s.write( _json_command( _cookie,QByteArray(),"SiriKali:Write",path,data ) ) ;
 
 			s.waitForBytesWritten() ;
 		}

@@ -38,14 +38,13 @@ class manageSystemVolumes : public QDialog
 {
 	Q_OBJECT
 public:
-	static manageSystemVolumes& instance( QWidget * parent )
+	static void instance( QWidget * parent,const char * s )
 	{
-		return *( new manageSystemVolumes( parent ) ) ;
+		new manageSystemVolumes( parent,s ) ;
 	}
 
-	explicit manageSystemVolumes( QWidget * parent ) ;
+	explicit manageSystemVolumes( QWidget * parent,const char * s ) ;
 	~manageSystemVolumes() ;
-	void ShowUI( const QString& ) ;
 	void HideUI( void ) ;
 signals:
 	void HideUISignal( void ) ;
@@ -63,12 +62,12 @@ private:
 	void readSystemPartitions( void ) ;
 	void writeSystemPartitions( void ) ;
 
-	void addItemsToTable( QStringList ) ;
-	void addItemsToTable( QString ) ;
+	void addItemsToTable( const QStringList& ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::manageSystemVolumes * m_ui ;
 	QString m_path ;
+	bool m_read ;
 };
 
 #endif // MANAGESYSTEMVOLUMES_H

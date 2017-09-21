@@ -36,9 +36,12 @@
 #include "dialogmsg.h"
 #include "tablewidget.h"
 
-manageSystemVolumes::manageSystemVolumes( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::manageSystemVolumes )
+manageSystemVolumes::manageSystemVolumes( QWidget * parent,const char * s ) :
+	QDialog( parent ),m_ui( new Ui::manageSystemVolumes ),m_path( s )
 {
 	m_ui->setupUi( this ) ;
+
+	m_ui->tableWidget->setColumnWidth( 0,580 ) ;
 
 	this->setFont( parent->font() ) ;
 	this->setFixedSize( this->size() ) ;
@@ -69,6 +72,8 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent ) : QDialog( parent )
 	}() ) ;
 
 	this->installEventFilter( this ) ;
+
+	this->readSystemPartitions() ;
 }
 
 bool manageSystemVolumes::eventFilter( QObject * watched,QEvent * event )
@@ -101,47 +106,45 @@ void manageSystemVolumes::currentItemChanged( QTableWidgetItem * current,QTableW
 
 void manageSystemVolumes::readSystemPartitions()
 {
-	QFile file( m_path ) ;
+	auto e = utility::privilegedReadConfigFile( m_path ) ;
 
-	if( file.open( QIODevice::ReadOnly ) ){
+	m_read = e.first ;
 
-		auto l = utility::split( file.readAll() ) ;
+	if( m_read ){
 
-		l.removeDuplicates() ;
+		auto s = utility::split( e.second ) ;
 
-		for( const auto& it : l ){
+		s.removeDuplicates() ;
 
-			this->addItemsToTable( it ) ;
+		for( const auto& it : s ){
+
+			this->addItemsToTable( { it } ) ;
 		}
+
+		this->show() ;
+	}else{
+		m_ui->pbFile->setEnabled( false ) ;
+		m_ui->pbPartition->setEnabled( false ) ;
+		m_ui->tableWidget->setEnabled( false ) ;
 	}
 }
 
 void manageSystemVolumes::writeSystemPartitions()
 {
-	QFile file( m_path ) ;
+	if( m_read ){
 
-	if( !file.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
-
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Could not open \"%1\" for writing" ).arg( m_path ) ) ;
-	}else{
 		auto table = m_ui->tableWidget ;
 
 		int j = m_ui->tableWidget->rowCount() ;
 
-		if( j > 0 ){
+		QByteArray s ;
 
-			for( int i = 0 ; i < j ; i++ ){
+		for( int i = 0 ; i < j ; i++ ){
 
-				auto it = table->item( i,0 ) ;
-
-				file.write( it->text().toLatin1() ) ;
-
-				file.putChar( '\n' ) ;
-			}
+			s += table->item( i,0 )->text().toLatin1() + "\n" ;
 		}
 
-		file.setPermissions( QFile::ReadOwner|QFile::WriteOwner ) ;		
+		utility::privilegedWriteConfigFile( s,m_path ) ;
 	}
 }
 
@@ -158,6 +161,8 @@ void manageSystemVolumes::contextMenu()
 void manageSystemVolumes::itemClicked( QTableWidgetItem * current,bool clicked )
 {
 	if( current ){
+
+		tablewidget::selectRow( m_ui->tableWidget,current->row() ) ;
 
 		QMenu m ;
 		m.setFont( this->font() ) ;
@@ -191,19 +196,14 @@ void manageSystemVolumes::removeCurrentRow()
 	}
 }
 
-void manageSystemVolumes::addItemsToTable( QString path )
+void manageSystemVolumes::addItemsToTable( const QStringList& paths )
 {
-	if( path.isEmpty() ){
+	if( !paths.isEmpty() ){
 
-		m_ui->tableWidget->setFocus() ;
-	}else{		 
-		this->addItemsToTable( QStringList( path ) ) ;
+		tablewidget::addRow( m_ui->tableWidget,paths ) ;
 	}
-}
 
-void manageSystemVolumes::addItemsToTable( QStringList paths )
-{
-	tablewidget::addRow( m_ui->tableWidget,paths ) ;
+	m_ui->tableWidget->setFocus() ;
 }
 
 void manageSystemVolumes::pbDone()
@@ -214,9 +214,9 @@ void manageSystemVolumes::pbDone()
 
 void manageSystemVolumes::pbFile()
 {
-	auto Z = QFileDialog::getOpenFileName( this,tr( "Select Path To System Volume" ),utility::homePath() ) ;
+	auto e = QFileDialog::getOpenFileName( this,tr( "Select Path To System Volume" ),utility::homePath() ) ;
 
-	this->addItemsToTable( Z ) ;
+	this->addItemsToTable( { e } ) ;
 }
 
 void manageSystemVolumes::pbPartition()
@@ -225,7 +225,7 @@ void manageSystemVolumes::pbPartition()
 
 		m_ui->tableWidget->setFocus() ;
 
-		this->addItemsToTable( e ) ;
+		this->addItemsToTable( { e } ) ;
 	} ) ;
 }
 
@@ -239,14 +239,6 @@ void manageSystemVolumes::HideUI()
 {
 	this->hide() ;
 	this->deleteLater() ;
-}
-
-void manageSystemVolumes::ShowUI( const QString& path )
-{
-	m_path = path ;
-	this->readSystemPartitions() ;
-	m_ui->tableWidget->setColumnWidth( 0,580 ) ;
-	this->show() ;
 }
 
 manageSystemVolumes::~manageSystemVolumes()

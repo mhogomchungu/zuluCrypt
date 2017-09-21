@@ -417,9 +417,6 @@ void zuluCrypt::setupConnections()
 		return m ;
 	}() ;
 
-	m_ui->actionManage_system_partitions->setEnabled( utility::userIsRoot() ) ;
-	m_ui->actionManage_non_system_partitions->setEnabled( utility::userIsRoot() ) ;
-
 	m_ui->actionVeracrypt_container_in_a_file->setEnabled( true ) ;
 	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( true ) ;
 
@@ -509,35 +506,12 @@ void zuluCrypt::permissionExplanation()
 
 void zuluCrypt::ShowManageSystemPartitions()
 {
-	QDir d ;
-	QFile f ;
-
-	/*
-	 * move config files to /etc/zuluCrypt/
-	 */
-	d.mkdir( "/etc/zuluCrypt" ) ;
-	f.rename( "/etc/zuluCrypt-system","/etc/zuluCrypt/system_volumes.list" ) ;
-
-	f.rename( "/etc/zuluCrypt-nonsystem","/etc/zuluCrypt/nonsystem_volumes.list" ) ;
-
-	manageSystemVolumes::instance( this ).ShowUI( "/etc/zuluCrypt/system_volumes.list" ) ;
+	manageSystemVolumes::instance( this,"/etc/zuluCrypt/system_volumes.list" ) ;
 }
 
 void zuluCrypt::ShowManageNonSystemPartitions()
 {
-	QDir d ;
-	QFile f ;
-
-	/*
-	 * move config files to /etc/zuluCrypt/
-	 */
-
-	d.mkdir( "/etc/zuluCrypt" ) ;
-	f.rename( "/etc/zuluCrypt-system","/etc/zuluCrypt/system_volumes.list" ) ;
-
-	f.rename( "/etc/zuluCrypt-nonsystem","/etc/zuluCrypt/nonsystem_volumes.list" ) ;
-
-	manageSystemVolumes::instance( this ).ShowUI( "/etc/zuluCrypt/nonsystem_volumes.list" ) ;
+	manageSystemVolumes::instance( this,"/etc/zuluCrypt/nonsystem_volumes.list" ) ;
 }
 
 void zuluCrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous )
