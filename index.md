@@ -22,9 +22,9 @@ Some options of zuluMount-gui are set through its tray icon, if you are on a GNO
 
 ```My public key and contact info are at the end of this page.```
 
+## DONATIONS
 
 ```
-DONATIONS
 Paypal does not work where i live(United Republic of Tanzani)
 and i accept donations only through Western Union and bank transfers.
 
