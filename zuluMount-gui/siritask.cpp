@@ -105,39 +105,74 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 {
 	return Task::run< bool >( [ = ](){
 
+		auto ecryptfs = _ecryptfs( fileSystem ) ;
+
 		auto cmd = [ & ](){
 
-			if( _ecryptfs( fileSystem ) ){
+			if( ecryptfs ){
 
 				auto exe = utility::executableFullPath( "ecryptfs-simple" ) ;
 
 				auto s = exe + " -k " + _makePath( cipherFolder ) ;
 
-				if( utility::runningInMixedMode() ){
+				if( utility::useZuluPolkit() ){
 
 					return _wrap_su( s ) ;
 				}else{
 					return s ;
 				}
 			}else{
-				if( utility::platformIsLinux() ){
+				if( utility::platformIsOSX() ){
 
-					return "fusermount -u " + _makePath( mountPoint ) ;
-				}else{
 					return "umount " + _makePath( mountPoint ) ;
+				}else{
+					return "fusermount -u " + _makePath( mountPoint ) ;
 				}
 			}
-		}() ;
+		} ;
 
-		utility::Task::waitForOneSecond() ;
+		const int max_count = 5 ;
 
-		for( int i = 0 ; i < 5 ; i++ ){
+		if( ecryptfs ){
 
-			if( utility::Task::run( cmd,10000,_ecryptfs( fileSystem ) ).get().success() ){
+			bool not_set = true ;
 
-				return true ;
-			}else{
-				utility::Task::waitForOneSecond() ;
+			auto exe = cmd() ;
+
+			for( int i = 0 ; i < max_count ; i++ ){
+
+				auto s = utility::Task::run( exe,10000,true ).get() ;
+
+				if( s.success() ){
+
+					return true ;
+				}else{
+					if( not_set && s.stdError().contains( "error: failed to set gid" ) ){
+
+						if( utility::enablePolkit( utility::background_thread::True ) ){
+
+							not_set = false ;
+
+							exe = cmd() ;
+						}else{
+							return false ;
+						}
+					}else{
+						utility::Task::waitForOneSecond() ;
+					}
+				}
+			}
+		}else{
+			for( int i = 0 ; i < max_count ; i++ ){
+
+				auto s = utility::Task::run( cmd(),10000,false ).get() ;
+
+				if( s.success() ){
+
+					return true ;
+				}else{
+					utility::Task::waitForOneSecond() ;
+				}
 			}
 		}
 
@@ -297,9 +332,10 @@ static QString _args( const QString& exe,const siritask::options& opt,
 	}
 }
 
-static siritask::status _status( const siritask::volumeType& app,bool s )
+enum class status_type{ exeName,exeNotFound } ;
+static siritask::status _status( const siritask::volumeType& app,status_type s )
 {
-	if( s ){
+	if( s == status_type::exeNotFound ){
 
 		if( app == "cryfs" ){
 
@@ -313,7 +349,7 @@ static siritask::status _status( const siritask::volumeType& app,bool s )
 
 			return cs::securefsNotFound ;
 
-		}else if( app.startsWith( "ecryptfs" ) ){
+		}else if( _ecryptfs( app ) ){
 
 			return cs::ecryptfs_simpleNotFound ;
 		}else{
@@ -341,9 +377,16 @@ static siritask::status _status( const siritask::volumeType& app,bool s )
 	}
 }
 
-static siritask::cmdStatus _status( int q,siritask::status s,const QByteArray& msg )
+static siritask::cmdStatus _status( const utility::Task& r,siritask::status s,bool stdOut )
 {
-	siritask::cmdStatus e = { q,msg } ;
+	if( r.success() ){
+
+		return siritask::status::success ;
+	}
+
+	siritask::cmdStatus e = { r.exitCode(),stdOut ? r.stdOut() : r.stdError() } ;
+
+	const auto msg = e.msg().toLower() ;
 
 	/*
 	 *
@@ -355,23 +398,34 @@ static siritask::cmdStatus _status( int q,siritask::status s,const QByteArray& m
 
 	if( s == siritask::status::ecryptfs ){
 
-		if( msg.contains( "error: mount failed" ) ){
+		if( msg.contains( "operation not permitted" ) ){
 
-			e.setStatus( s ) ;
+			e = siritask::status::ecrypfsBadExePermissions ;
+
+		}else if( msg.contains( "error: mount failed" ) ){
+
+			e = s ;
 		}
 
 	}else if( s == siritask::status::cryfs ){
 
+		const auto& m = e.msg() ;
+
 		if( msg.contains( "password" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
+
+		}else if( m.contains( "This filesystem is for CryFS" ) &&
+			  m.contains( "It has to be migrated" ) ){
+
+			e = siritask::status::cryfsMigrateFileSystem ;
 		}
 
 	}else if( s == siritask::status::encfs ){
 
 		if( msg.contains( "password" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}
 
 	}else if( s == siritask::status::gocryptfs ){
@@ -381,11 +435,11 @@ static siritask::cmdStatus _status( int q,siritask::status s,const QByteArray& m
 		 */
 		if( e.exitCode() == 12 ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}else{
 			if( msg.contains( "password" ) ){
 
-				e.setStatus( s ) ;
+				e = s ;
 			}
 		}
 
@@ -393,7 +447,7 @@ static siritask::cmdStatus _status( int q,siritask::status s,const QByteArray& m
 
 		if( msg.contains( "password" ) ){
 
-			e.setStatus( s ) ;
+			e = s ;
 		}
 	}
 
@@ -409,49 +463,52 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 
 	if( exe.isEmpty() ){
 
-		return _status( app,true ) ;
+		return _status( app,status_type::exeNotFound ) ;
 	}else{
-		auto e = utility::Task( _args( exe,opt,configFilePath,create ),
-					20000,
-					utility::systemEnvironment(),
-					password.toLatin1(),
-					[](){},
-					_ecryptfs( opt.type ) ) ;
+		auto _run = [ & ](){
 
-		if( e.success() ){
+			auto s = utility::Task( _args( exe,opt,configFilePath,create ),
+						20000,
+						utility::systemEnvironment(),
+						password.toLatin1(),
+						[](){},
+						_ecryptfs( app ) ) ;
 
-			return cs::success ;
-		}
+			return _status( s,_status( app,status_type::exeName ),app == "encfs" ) ;
+		} ;
 
-		auto status = _status( e.exitCode(),_status( app,false ),[ & ](){
+		auto e = _run() ;
 
-			if( app == "encfs" ){
+		if( e == siritask::status::ecrypfsBadExePermissions ){
 
-				return e.stdOut().toLower() ;
-			}else{
-				return e.stdError().toLower() ;
-			}
-		}() ) ;
+			if( utility::enablePolkit( utility::background_thread::True ) ){
 
-		auto s = QString::number( status.exitCode() ) ;
-		auto m = status.msg() ;
-
-		while( true ){
-
-			if( m.endsWith( '\n' ) ){
-
-				m.truncate( m.size() - 1 ) ;
-			}else{
-				break ;
+				e = _run() ;
 			}
 		}
 
-		utility::debug() << "-------------------------" ;
-		utility::debug() << QString( "Backend Generated Output:\nExit Code: %1" ).arg( s ) ;
-		utility::debug() << QString( "Exit String: \"%1\"" ).arg( m ) ;
-		utility::debug() << "-------------------------" ;
+		if( e != siritask::status::success ){
 
-		return status ;
+			auto s = QString::number( e.exitCode() ) ;
+			auto m = e.msg() ;
+
+			while( true ){
+
+				if( m.endsWith( '\n' ) ){
+
+					m.truncate( m.size() - 1 ) ;
+				}else{
+					break ;
+				}
+			}
+
+			utility::debug() << "-------------------------" ;
+			utility::debug() << QString( "Backend Generated Output:\nExit Code: %1" ).arg( s ) ;
+			utility::debug() << QString( "Exit String: \"%1\"" ).arg( m ) ;
+			utility::debug() << "-------------------------" ;
+		}
+
+		return e ;
 	}
 }
 

@@ -120,6 +120,7 @@ namespace siritask
 		securefs,
 		ecryptfs,
 		ecryptfsIllegalPath,
+		ecrypfsBadExePermissions,
 		gocryptfsNotFound,
 		cryfsNotFound,
 		encfsNotFound,
@@ -127,7 +128,8 @@ namespace siritask
 		ecryptfs_simpleNotFound,
 		unknown,
 		failedToCreateMountPoint,
-		backendFail
+		backendFail,
+		cryfsMigrateFileSystem
 	};
 
 	class cmdStatus

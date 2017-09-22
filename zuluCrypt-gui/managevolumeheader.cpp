@@ -390,7 +390,7 @@ void managevolumeheader::pbCreate()
 
 	if( utility::requireSystemPermissions( device ) ){
 
-		if( !utility::enablePolkit() ){
+		if( !utility::enablePolkit( utility::background_thread::False ) ){
 
 			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
 		}

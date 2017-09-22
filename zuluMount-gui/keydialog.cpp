@@ -547,6 +547,16 @@ void keyDialog::encryptedFolderMount()
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nNot supported volume encountered" ) ) ;
 		break;
 
+	case siritask::status::ecrypfsBadExePermissions :
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "This backend Requires Root's Privileges And An attempt To Acquire Them Has Failed." ) ) ;
+		break;
+
+	case siritask::status::cryfsMigrateFileSystem :
+
+		msg.ShowUIOK( tr( "ERROR" ),tr( "SiriKali Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs That Is Currently In Use.\n\nRun Cryfs With This Volume To Manually Update This Volume's FileSystem." ) ) ;
+		break;
+
 	case siritask::status::backendFail :
 	default:
 

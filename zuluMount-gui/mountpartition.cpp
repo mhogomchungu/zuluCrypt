@@ -238,7 +238,7 @@ void mountPartition::pbMount()
 	}else{
 		if( s.exitCode() == 103 ){
 
-			if( utility::enablePolkit() ){
+			if( utility::enablePolkit( utility::background_thread::False ) ){
 
 				s = utility::Task::run( utility::appendUserUID( exe ) ).await() ;
 			}

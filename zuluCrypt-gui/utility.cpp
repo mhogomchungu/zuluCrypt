@@ -347,7 +347,7 @@ bool utility::requireSystemPermissions( const QString& e )
 	}
 }
 
-bool utility::enablePolkit()
+bool utility::enablePolkit( utility::background_thread thread )
 {
 	if( _polkit_support ){
 
@@ -358,14 +358,29 @@ bool utility::enablePolkit()
 
 	if( !exe.isEmpty() ){
 
-		if( _start_zulupolkit( exe ).await().success() ){
+		auto socketPath = utility::helperSocketPath() ;
 
-			while( !utility::pathExists( utility::helperSocketPath() ) ){
+		if( thread == utility::background_thread::True ){
 
-				utility::Task::suspendForOneSecond() ;
+			if( _start_zulupolkit( exe ).get().success() ){
+
+				_polkit_support = true ;
+
+				while( !utility::pathExists( socketPath ) ){
+
+					utility::Task::waitForOneSecond() ;
+				}
 			}
+		}else{
+			if( _start_zulupolkit( exe ).await().success() ){
 
-			_polkit_support = true ;
+				_polkit_support = true ;
+
+				while( !utility::pathExists( socketPath ) ){
+
+					utility::Task::suspendForOneSecond() ;
+				}
+			}
 		}
 	}
 
@@ -393,7 +408,7 @@ void utility::quitHelper()
 
 std::pair< bool,QByteArray > utility::privilegedReadConfigFile( const QString& path )
 {
-	if( utility::enablePolkit() ){
+	if( utility::enablePolkit( utility::background_thread::False ) ){
 
 		QLocalSocket s ;
 
@@ -414,7 +429,7 @@ std::pair< bool,QByteArray > utility::privilegedReadConfigFile( const QString& p
 
 void utility::privilegedWriteConfigFile( const QByteArray& data,const QString& path )
 {
-	if( utility::enablePolkit() ){
+	if( utility::enablePolkit( utility::background_thread::False ) ){
 
 		QLocalSocket s ;
 

@@ -42,13 +42,13 @@ file( WRITE ${PROJECT_BINARY_DIR}/org.zulucrypt.zulupolkit.policy
  \"http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd\">
 <policyconfig>
 
-  <action id=\"org.zulucrypt.zulupolkit.pkexec.run\">
-    <message>Authentication is required to run zulupolkit</message>
+  <action id=\"org.zulucrypt.zulupolkit\">
+    <message>Authentication is required to complete requested operation.</message>
     <icon_name>zuluCrypt</icon_name>
     <defaults>
-      <allow_any>admin</allow_any>
-      <allow_inactive>admin</allow_inactive>
-      <allow_active>admin</allow_active>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin</allow_active>
     </defaults>
     <annotate key=\"org.freedesktop.policykit.exec.path\">${CMAKE_INSTALL_PREFIX}/bin/zuluPolkit</annotate>
   </action>

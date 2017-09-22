@@ -223,7 +223,7 @@ void luksdeletekey::pbDelete()
 	}else{
 		if( utility::requireSystemPermissions( m_volumePath ) ){
 
-			if( !utility::enablePolkit() ){
+			if( !utility::enablePolkit( utility::background_thread::False ) ){
 
 				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
 			}
