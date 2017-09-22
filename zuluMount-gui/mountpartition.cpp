@@ -236,20 +236,34 @@ void mountPartition::pbMount()
 
 		this->HideUI() ;
 	}else{
-		if( this->isVisible() ){
+		if( s.exitCode() == 103 ){
 
-			if( this->errorNotFound( s.exitCode() ) ){
+			if( utility::enablePolkit() ){
 
-				QString z = s.stdOut() ;
-				z.replace( tr( "ERROR: " ),"" ) ;
-
-				DialogMsg m( this ) ;
-				m.ShowUIOK( tr( "ERROR" ),z ) ;
+				s = utility::Task::run( utility::appendUserUID( exe ) ).await() ;
 			}
+		}
 
-			this->enableAll() ;
+		if( s.success() ){
+
+			m_success( utility::mountPath( m_ui->lineEdit->text() ) ) ;
+
+			this->HideUI() ;
 		}else{
-			this->deleteLater() ;
+			if( this->isVisible() ){
+
+				if( this->errorNotFound( s.exitCode() ) ){
+
+					QString z = s.stdOut() ;
+					z.replace( tr( "ERROR: " ),"" ) ;
+
+					DialogMsg( this ).ShowUIOK( tr( "ERROR" ),z ) ;
+				}
+
+				this->enableAll() ;
+			}else{
+				this->deleteLater() ;
+			}
 		}
 	}
 }

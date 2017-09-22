@@ -570,6 +570,8 @@ int main( int argc,char * argv[] )
 	bindtextdomain( "zuluMount-cli",TRANSLATION_PATH ) ;
 	textdomain( "zuluMount-cli" );
 
+	zuluCryptExeSetOriginalUID( uid ) ;
+
 	if( argc < 2 ){
 
 		return _mount_help() ;

@@ -67,11 +67,20 @@ static int _zuluMountPartitionAccess( const char * device,const char * m_opts,ui
 	system_partition = zuluCryptPartitionIsSystemPartition( device,uid ) ;
 
 	if( system_partition ){
-		/*
-		 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt/bin/security.c
-		 */
-		if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
 
+		/*
+		 * zuluCryptExeOriginalUserIsNotRoot() is defined in ../zuluCrypt/bin/security.c
+		 */
+		if( zuluCryptExeOriginalUserIsNotRoot() ){
+
+			/*
+			 * zuluCryptUserIsAMemberOfAGroup() is defined in ../zuluCrypt/bin/security.c
+			 */
+			if( zuluCryptUserIsAMemberOfAGroup( uid,"zulumount" ) ){
+
+				system_partition = 0 ;
+			}
+		}else{
 			system_partition = 0 ;
 		}
 	}

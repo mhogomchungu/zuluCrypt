@@ -320,11 +320,23 @@ bool utility::useZuluPolkit()
 
 bool utility::requireSystemPermissions( const QString& e )
 {
-	auto s = utility::Task::run( ZULUCRYPTzuluCrypt" -S" ).await().stdOut() ;
+	const char * exe ;
+	const char * group ;
+
+	if( QCoreApplication::applicationName() == "zuluCryp" ){
+
+		exe = ZULUCRYPTzuluCrypt" -S" ;
+		group = "zulucrypt" ;
+	}else{
+		exe = zuluMountPath" -S" ;
+		group = "zulumount" ;
+	}
+
+	auto s = utility::Task::run( exe ).await().stdOut() ;
 
 	if( utility::split( s ).contains( e ) ){
 
-		if( utility::userBelongsToGroup( "zulucrypt" ) ){
+		if( utility::userBelongsToGroup( group ) ){
 
 			return false ;
 		}else{
