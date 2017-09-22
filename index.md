@@ -34,8 +34,7 @@ Email: banyikwafb@gmail.com
 
 The email address should be used to send tracking number(MTCN)
 
-2 Bank information for donating through bank tranfer:
-
+2. Bank information for donating through bank tranfer:
 Name:		Francis Nkulu Banyikwa
 Bank Name:	CRDB BANK PLC
 Bank Location:	Tegeta Kibo complex,
