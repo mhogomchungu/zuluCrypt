@@ -549,7 +549,7 @@ void keyDialog::encryptedFolderMount()
 
 	case siritask::status::ecrypfsBadExePermissions :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "This backend Requires Root's Privileges And An attempt To Acquire Them Has Failed." ) ) ;
+		msg.ShowUIOK( tr( "ERROR" ),tr( "This backend requires root's privileges and an attempt to acquire them has failed." ) ) ;
 		break;
 
 	case siritask::status::cryfsMigrateFileSystem :
