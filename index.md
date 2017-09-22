@@ -23,7 +23,25 @@ Some options of zuluMount-gui are set through its tray icon, if you are on a GNO
 ```My public key and contact info are at the end of this page.```
 
 
-```Paypal account: currently none. "mhogomchungu@gmail.com" is owned by somebody else and i have so far failed to get it back.```
+```DONATIONS
+Paypal does not work where i live(United Republic of Tanzani) and i accept donations only through Western Union and bank transfers.
+
+1. Western Union information for donating through Western Union
+Name:  Francis Nkulu Banyikwa
+Email: banyikwafb@gmail.com
+
+The email address should be used to send tracking number(MTCN)
+
+2 Bank information for donating through bank tranfer:
+
+Name:           Francis Nkulu Banyikwa
+Bank Name:      CRDB BANK PLC
+Bank Location:  Tegeta Kibo complex,
+		Dar Es Salaam,
+		United Republic of Tanzania
+Swift Code:     CORUTZTZ
+Account Number: 0152454497500
+```
 
 ## Screen shots
 
