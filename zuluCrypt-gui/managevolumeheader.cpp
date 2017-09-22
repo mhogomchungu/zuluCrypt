@@ -388,9 +388,18 @@ void managevolumeheader::pbCreate()
 
 	QString exe ;
 
+	if( utility::requireSystemPermissions( device ) ){
+
+		if( !utility::enablePolkit() ){
+
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+		}
+	}
+
+	device.replace( "\"","\"\"\"" ) ;
+
 	if( m_operation == "backup" ){
 
-		device.replace( "\"","\"\"\"" ) ;
 
 		m_saveHeader = 1 ;
 
@@ -425,16 +434,6 @@ void managevolumeheader::pbCreate()
 			exe = QString( "%1 -B -d \"%2\" -z \"%3\"" ).arg( ZULUCRYPTzuluCrypt,device,backUp ) ;
 		}
 	}else{
-		if( utility::requireSystemPermissions( device ) ){
-
-			if( !utility::enablePolkit() ){
-
-				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
-			}
-		}
-
-		device.replace( "\"","\"\"\"" ) ;
-
 		m_saveHeader = 0 ;
 		auto x = m_ui->lineEditDevicePath->text() ;
 		auto y = m_ui->lineEditBackUpName->text() ;

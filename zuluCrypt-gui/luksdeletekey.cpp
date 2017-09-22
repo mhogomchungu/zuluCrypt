@@ -225,7 +225,7 @@ void luksdeletekey::pbDelete()
 
 			if( !utility::enablePolkit() ){
 
-				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
 			}
 		}
 
