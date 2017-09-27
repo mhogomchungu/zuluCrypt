@@ -179,9 +179,12 @@ The list of most frequently asked questions can be found <a href="https://github
 
 ## Contact info:
 
-There are two keys below. The top one is the one i currently use and can use to decrypt ecrypted messages.
-The bottom one i no longer use and have lost the ability to decrypt messages encrypted with it but its used to
-signed currently released packages. Version 5.3.0(unreleased) will be signed with the new key.
+There are two keys below. The top one is the one i currently
+use and can use to decrypt ecrypted messages.
+The bottom one i no longer use and have lost the ability to
+decrypt messages encrypted with it but its used to
+signed currently released packages. Version 5.3.0(unreleased)
+will be signed with the new key.
 
 ```
 Name: Francis Banyikwa
@@ -189,7 +192,7 @@ email: banyikwafb@gmail.com
 
 gpg key finderpring: E3AF84691424AD00E099003502FC64E8DEBF43A8
 
-The key can be retrieved with command: gpg --recv-keys 0x02FC64E8DEBF43A8
+Get the key with command: gpg --recv-keys 0x02FC64E8DEBF43A8
 
 The key is below:
 
@@ -245,15 +248,15 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 =L6yQ
 -----END PGP PUBLIC KEY BLOCK-----
 
+```
+
 OLD CONTACT BELOW.
 I still use the email address but i no longer have the ability
 to decrypt messages encrypted with below key.
 
 ## Contact info:
-```
-Name: Francis Banyikwa
-email: mhogomchungu@gmail.com
 
+```
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1
 
