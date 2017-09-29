@@ -323,7 +323,7 @@ bool utility::requireSystemPermissions( const QString& e )
 	const char * exe ;
 	const char * group ;
 
-	if( QCoreApplication::applicationName() == "zuluCryp" ){
+	if( QCoreApplication::applicationName() == "zuluCrypt" ){
 
 		exe = ZULUCRYPTzuluCrypt" -S" ;
 		group = "zulucrypt" ;
