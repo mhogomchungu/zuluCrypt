@@ -20,7 +20,7 @@
 #ifndef DISABLE_LUKS2_SUPPORT
 #define DISABLE_LUKS2_SUPPORT
 
-#if 1
+#if 0
 
 /*
  * disabling luks2 support since its API is not fixed yet.
