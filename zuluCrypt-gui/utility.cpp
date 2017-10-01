@@ -147,7 +147,7 @@ static bool _connected( QLocalSocket& s )
 
 		}else if( i == 5 ){
 
-			utility::debug() << "ERROR: Failed To Connect To SiriPolkit" ;
+			utility::debug() << "ERROR: Failed To Connect To zuluPolkit" ;
 			break ;
 		}else{
 			utility::debug() << s.errorString() ;
@@ -207,7 +207,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_exitCode   = -1 ;
 			m_exitStatus = -1 ;
 			m_stdError   = "" ;
-			m_stdOut     = QObject::tr( "SiriKali: Failed To Establish Connection With SiriPolkit" ).toLatin1() ;
+			m_stdOut     = QObject::tr( "zuluCrypt: Failed To Establish Connection With zuluPolkit" ).toLatin1() ;
 		}
 	}else{
 		class Process : public QProcess{
@@ -284,9 +284,7 @@ void utility::startHelperExecutable( QObject * obj,const QString& arg,const char
 
 		if( !exe.isEmpty() ){
 
-			::Task::exec( [ = ](){
-
-				auto e = _start_zulupolkit( exe ).get() ;
+			_start_zulupolkit( exe ).then( [ = ]( const utility::Task& e ){
 
 				QMetaObject::invokeMethod( obj,
 							   slot,
@@ -414,7 +412,7 @@ std::pair< bool,QByteArray > utility::privilegedReadConfigFile( const QString& p
 
 		if( _connected( s ) ){
 
-			s.write( _json_command( _cookie,QByteArray(),"SiriKali:Read",path ) ) ;
+			s.write( _json_command( _cookie,QByteArray(),"Read",path ) ) ;
 
 			s.waitForBytesWritten() ;
 
@@ -435,7 +433,7 @@ void utility::privilegedWriteConfigFile( const QByteArray& data,const QString& p
 
 		if( _connected( s ) ){
 
-			s.write( _json_command( _cookie,QByteArray(),"SiriKali:Write",path,data ) ) ;
+			s.write( _json_command( _cookie,QByteArray(),"Write",path,data ) ) ;
 
 			s.waitForBytesWritten() ;
 		}
@@ -2588,5 +2586,5 @@ bool utility::clearPassword()
 
 QString utility::failedToStartzuluPolkit()
 {
-	return QObject::tr( "Failed To Start Helper Application.\n\n\"org.zulucrypt.zulupolkit.policy\" polkit file is misconfigured,zuluPolkit executable could not be found or pkexec failed to start zuluPolkit." ) ;
+	return QObject::tr( "Failed To Start Helper Application.\n\n\"org.zulucrypt.zulupolkit.policy\" polkit file is misconfigured,\nzuluPolkit executable could not be found\n or pkexec failed to start zuluPolkit." ) ;
 }

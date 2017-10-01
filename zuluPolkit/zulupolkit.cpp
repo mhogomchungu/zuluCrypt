@@ -120,7 +120,7 @@ static bool _terminalEchoOff( struct termios * old,struct termios * current )
 	}
 }
 
-static utility::Task _sirikali( const QString& cmd,const QString& path,const QString& data )
+static utility::Task _zulupolkit( const QString& cmd,const QString& path,const QString& data )
 {
 	utility::Task s ;
 
@@ -135,7 +135,7 @@ static utility::Task _sirikali( const QString& cmd,const QString& path,const QSt
 	auto q = QFile::ReadOwner | QFile::WriteOwner ;
 	QFile().setPermissions( "/etc/zuluCrypt",q | QFile::ExeOwner ) ;
 #endif
-	if( cmd == "SiriKali:Read" ){
+	if( cmd == "Read" ){
 
 		if( e.open( QIODevice::ReadOnly ) ){
 
@@ -143,11 +143,12 @@ static utility::Task _sirikali( const QString& cmd,const QString& path,const QSt
 			s.exitCode = 0 ;
 		}
 
-	}else if( cmd == "SiriKali:Write" ){
+	}else if( cmd == "Write" ){
 
-		if( e.open( QIODevice::WriteOnly ) ){
+		if( e.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
 			e.write( data.toLatin1() ) ;
+			s.exitCode = 0 ;
 		}
 	}
 
@@ -226,9 +227,9 @@ void zuluPolkit::gotConnection()
 
 				return QCoreApplication::quit() ;
 
-			}else if( command.startsWith( "SiriKali:" ) ){
+			}else if( command == "Read" || command == "Write" ){
 
-				return _respond( s,_sirikali( command,path,data ) ) ;
+				return _respond( s,_zulupolkit( command,path,data ) ) ;
 
 			}else if( _correct_cmd( command ) ){
 
