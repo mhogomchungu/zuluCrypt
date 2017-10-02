@@ -88,6 +88,8 @@
 
 #include "zuluPolkit.h"
 
+#include "json.h"
+
 struct jsonResult
 {
 	bool finished ;
@@ -96,8 +98,6 @@ struct jsonResult
 	QByteArray stdError ;
 	QByteArray stdOut ;
 };
-
-#include "json.h"
 
 static QByteArray _json_command( const QByteArray& cookie,
 				 const QByteArray& password,
@@ -316,7 +316,7 @@ bool utility::useZuluPolkit()
 	return _polkit_support ;
 }
 
-bool utility::requireSystemPermissions( const QString& e )
+bool utility::requireSystemPermissions( const QString& e,utility::background_thread thread )
 {
 	const char * exe ;
 	const char * group ;
@@ -330,7 +330,15 @@ bool utility::requireSystemPermissions( const QString& e )
 		group = "zulumount" ;
 	}
 
-	auto s = utility::Task::run( exe ).await().stdOut() ;
+	auto s = [ & ](){
+
+		if( thread == utility::background_thread::True ){
+
+			return utility::Task::run( exe ).get().stdOut() ;
+		}else{
+			return utility::Task::run( exe ).await().stdOut() ;
+		}
+	}() ;
 
 	if( utility::split( s ).contains( e ) ){
 

@@ -284,9 +284,9 @@ namespace utility
 
 	QProcessEnvironment systemEnvironment() ;
 
-	bool requireSystemPermissions( const QString& ) ;
-
 	enum class background_thread{ True,False } ;
+
+	bool requireSystemPermissions( const QString&,utility::background_thread = utility::background_thread::False ) ;
 	bool enablePolkit( utility::background_thread ) ;
 
 	bool clearPassword() ;
