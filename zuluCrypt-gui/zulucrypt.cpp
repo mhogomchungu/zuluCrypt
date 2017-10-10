@@ -77,7 +77,8 @@
 
 zuluCrypt::zuluCrypt( QWidget * parent ) :
 	QMainWindow( parent ),
-	m_mountInfo( this,false,[ this ](){ this->quitApplication() ; } )
+	m_mountInfo( this,false,[ this ](){ this->quitApplication() ; } ),
+	m_checkForUpdates( this )
 {
 }
 
@@ -446,7 +447,7 @@ void zuluCrypt::optionMenuAboutToShow()
 
 void zuluCrypt::updateCheck()
 {
-	checkForUpdates::instance( this ) ;
+	m_checkForUpdates.run() ;
 }
 
 void zuluCrypt::cinfo()
@@ -456,7 +457,7 @@ void zuluCrypt::cinfo()
 
 void zuluCrypt::autoUpdateCheck()
 {
-	checkForUpdates::instance( this,"zuluCrypt" ) ;
+	m_checkForUpdates.run( "zuluCrypt" ) ;
 }
 
 void zuluCrypt::info()

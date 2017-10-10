@@ -68,7 +68,8 @@ static bool _encrypted_folder( const QString& e,bool f = true )
 zuluMount::zuluMount( QWidget * parent ) :
 	QWidget( parent ),
 	m_mountInfo( this,true,[ this ](){ QCoreApplication::quit() ; } ),
-	m_events( this,m_mountInfo.stop() )
+	m_events( this,m_mountInfo.stop() ),
+	m_checkForUpdates( this )
 {
 }
 
@@ -387,12 +388,12 @@ void zuluMount::licenseInfo()
 
 void zuluMount::updateCheck()
 {
-	checkForUpdates::instance( this ) ;
+	m_checkForUpdates.run() ;
 }
 
 void zuluMount::autoUpdateCheck()
 {
-	checkForUpdates::instance( this,"zuluMount" ) ;
+	m_checkForUpdates.run( "zuluMount" ) ;
 }
 
 void zuluMount::removeVolumeFromHiddenVolumeList( QAction * ac )

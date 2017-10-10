@@ -30,6 +30,7 @@
 #include "../zuluCrypt-gui/secrets.h"
 #include "events.h"
 #include "monitor_mountinfo.h"
+#include "../zuluCrypt-gui/checkforupdates.h"
 
 class QCloseEvent ;
 class QAction ;
@@ -154,6 +155,8 @@ private:
 
 	monitor_mountinfo m_mountInfo ;
 	events m_events ;
+
+	checkForUpdates m_checkForUpdates ;
 };
 
 #endif // MAINWINDOW_H

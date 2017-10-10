@@ -26,32 +26,43 @@
 
 static const int _timeOut = 10 ;
 
-checkForUpdates::checkForUpdates( QWidget * widget,bool autocheck ) :
-		m_widget( widget ),m_autocheck( autocheck )
+checkForUpdates::checkForUpdates( QWidget * widget ) :
+	m_widget( widget ),
+	m_networkRequest( QUrl( "https://api.github.com/repos/mhogomchungu/zuluCrypt/releases" ) )
 {
-	QUrl url( "https://api.github.com/repos/mhogomchungu/zuluCrypt/releases" ) ;
-
-	QNetworkRequest e ;
-
-	e.setRawHeader( "Host","api.github.com" ) ;
-	e.setRawHeader( "Accept-Encoding","text/plain" ) ;
-
-	e.setUrl( url ) ;
-
 	m_timer.setInterval( 1000 * _timeOut ) ;
 
 	connect( &m_timer,SIGNAL( timeout() ),this,SLOT( timeOut() ),Qt::QueuedConnection ) ;
 
+	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
+	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
+}
+
+void checkForUpdates::check( bool s )
+{
+	m_autocheck = s ;
+
 	m_timer.start() ;
 
-	m_network.get( &m_networkReply,e,[ this ]( QNetworkReply& e ){
+	m_network.get( &m_networkReply,m_networkRequest,[ this ]( QNetworkReply& e ){
 
 		m_timer.stop() ;
 
 		this->showResult( this->parseResult( e.readAll() ) ) ;
-
-		this->deleteLater() ;
 	} ) ;
+}
+
+void checkForUpdates::run( const QString& e )
+{
+	if( utility::pathExists( utility::homePath() + "/.zuluCrypt/autoCheckUpdates." + e ) ){
+
+		this->check( true ) ;
+	}
+}
+
+void checkForUpdates::run()
+{
+	this->check( false ) ;
 }
 
 void checkForUpdates::timeOut()
@@ -64,8 +75,6 @@ void checkForUpdates::timeOut()
 		auto e = tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
 
 		DialogMsg( m_widget ).ShowUIOK( tr( "ERROR" ),e ) ;
-
-		this->deleteLater() ;
 	}
 }
 
@@ -141,17 +150,4 @@ void checkForUpdates::showResult( const QString& l )
 			msg.ShowUIOK( tr( "Version Info" ),_tr( THIS_VERSION,l ) ) ;
 		}
 	}
-}
-
-void checkForUpdates::instance( QWidget * widget,const QString& e )
-{
-	if( utility::pathExists( utility::homePath() + "/.zuluCrypt/autoCheckUpdates." + e ) ){
-
-		new checkForUpdates( widget,true ) ;
-	}
-}
-
-void checkForUpdates::instance( QWidget * widget )
-{
-	new checkForUpdates( widget,false ) ;
 }

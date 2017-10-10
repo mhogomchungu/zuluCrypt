@@ -29,6 +29,7 @@
 #include "lxqt_wallet.h"
 #include "utility.h"
 #include "secrets.h"
+#include "checkforupdates.h"
 
 class QWidget ;
 class QTableWidgetItem ;
@@ -168,6 +169,7 @@ private:
 	int m_userID ;
 	bool m_autoOpenMountPoint ;
 	monitor_mountinfo m_mountInfo ;
+	checkForUpdates m_checkForUpdates ;
 };
 
 #endif // ZULUCRYPT_H
