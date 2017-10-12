@@ -23,6 +23,8 @@
 
 int main( int argc,char * argv[] )
 {
+	utility::createHomeFolder() ;
+
 	utility::setHDPI( "zuluCrypt" ) ;
 
 	QApplication a( argc,argv ) ;
