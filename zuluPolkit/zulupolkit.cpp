@@ -201,7 +201,11 @@ void zuluPolkit::start()
 
 		m_socketPath = m_arguments.at( 1 ) ;
 
+		auto s = umask( 0 ) ;
+
 		_set_path_writable_by_others( m_socketPath ) ;
+
+		umask( s ) ;
 
 		QDir().remove( m_socketPath ) ;
 
