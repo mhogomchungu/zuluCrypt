@@ -175,7 +175,7 @@ static void _set_path_writable_by_others( const QString& e )
 {
 	QFile f( e ) ;
 
-	for( int i = 0 ; i < 1000 ; i++ ){
+	for( decltype( umask( 0 ) ) i = 0 ; i < 1000 ; i++ ){
 
 		umask( i ) ;
 
