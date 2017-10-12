@@ -42,9 +42,12 @@
 #define ALL_PARTITIONS 1
 #define NON_SYSTEM_PARTITIONS 3
 
-openvolume::openvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::openvolume() )
+openvolume::openvolume( QWidget * parent,bool e ) :
+	QDialog( parent ),m_ui( new Ui::openvolume() ),m_enableUUID( e )
 {
 	m_ui->setupUi( this ) ;
+
+	m_ui->pbUUID->setEnabled( m_enableUUID ) ;
 
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
@@ -284,7 +287,7 @@ void openvolume::enableAll()
 	m_ui->tableWidget->setEnabled( true ) ;
 	m_ui->pbCancel->setEnabled( true ) ;
 	m_ui->pbOpen->setEnabled( true ) ;
-	m_ui->pbUUID->setEnabled( true ) ;
+	m_ui->pbUUID->setEnabled( m_enableUUID ) ;
 	m_ui->pbHelp->setEnabled( true ) ;
 }
 

@@ -1132,7 +1132,7 @@ void zuluCrypt::ShowCreateFile()
 
 void zuluCrypt::ShowNonSystemPartitions()
 {
-	openvolume::instance( this ).ShowNonSystemPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this,false ).ShowNonSystemPartitions( [ this ]( const QString& e ){
 
 		createvolume::instance( this ).ShowPartition( e ) ;
 	} ) ;
@@ -1140,7 +1140,7 @@ void zuluCrypt::ShowNonSystemPartitions()
 
 void zuluCrypt::ShowOpenPartition()
 {
-	openvolume::instance( this ).showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this,true ).showEncryptedOnly().ShowAllPartitions( [ this ]( const QString& e ){
 
 		this->setUpPasswordDialog().ShowUI( e ) ;
 	} ) ;

@@ -249,7 +249,7 @@ void erasedevice::pbPartition()
 {
 	auto e = tr( "Select A Non System Partition To Erase Its Contents" ) ;
 
-	openvolume::instance( this ).partitionList( e," -N",[ this ]( const QString& e ){
+	openvolume::instance( this,false ).partitionList( e," -N",[ this ]( const QString& e ){
 
 		this->setPath( e ) ;
 	} ) ;

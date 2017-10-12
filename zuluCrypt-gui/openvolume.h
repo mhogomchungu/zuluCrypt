@@ -39,11 +39,11 @@ class openvolume :  public QDialog
 {
 	Q_OBJECT
 public:
-	static openvolume& instance( QWidget * parent )
+	static openvolume& instance( QWidget * parent,bool e )
 	{
-		return *( new openvolume( parent ) ) ;
+		return *( new openvolume( parent,e ) ) ;
 	}
-	openvolume( QWidget * parent ) ;
+	openvolume( QWidget * parent,bool ) ;
 	virtual ~openvolume() ;
 	openvolume& showEncryptedOnly( void ) ;
 	openvolume& showLuksOnly( void ) ;
@@ -72,6 +72,7 @@ private:
 	bool m_disableNonLUKS = false ;
 	bool m_showEncryptedOnly = false ;
 	bool m_showLuksOnly = false ;
+	bool m_enableUUID ;
 	std::function< void( const QString& ) > m_function ;
 };
 

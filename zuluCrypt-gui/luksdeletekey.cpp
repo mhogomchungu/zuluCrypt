@@ -201,7 +201,7 @@ void luksdeletekey::pbCancel()
 
 void luksdeletekey::pbOpenPartition()
 {
-	openvolume::instance( this ).showLuksOnly().ShowAllPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this,false ).showLuksOnly().ShowAllPartitions( [ this ]( const QString& e ){
 
 		this->ShowUI( e ) ;
 	} ) ;

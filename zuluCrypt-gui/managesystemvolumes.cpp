@@ -221,7 +221,7 @@ void manageSystemVolumes::pbFile()
 
 void manageSystemVolumes::pbPartition()
 {
-	openvolume::instance( this ).ShowAllPartitions( [ this ]( const QString& e ){
+	openvolume::instance( this,true ).ShowAllPartitions( [ this ]( const QString& e ){
 
 		m_ui->tableWidget->setFocus() ;
 
