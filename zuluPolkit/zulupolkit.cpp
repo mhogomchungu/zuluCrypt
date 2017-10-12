@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include <iostream>
+
 #include <QTimer>
 #include <QDir>
 #include <QProcess>
@@ -120,6 +122,12 @@ static bool _terminalEchoOff( struct termios * old,struct termios * current )
 	}
 }
 
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
+	#define zuluPermission QFileDevice
+#else
+	#define zuluPermission QFile
+#endif
+
 static utility::Task _zulupolkit( const QString& cmd,const QString& path,const QString& data )
 {
 	utility::Task s ;
@@ -128,13 +136,9 @@ static utility::Task _zulupolkit( const QString& cmd,const QString& path,const Q
 
 	QDir().mkpath( "/etc/zuluCrypt" ) ;
 
-#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
-	auto q = QFileDevice::ReadOwner | QFileDevice::WriteOwner ;
-	QFile().setPermissions( "/etc/zuluCrypt",q | QFileDevice::ExeOwner ) ;
-#else
-	auto q = QFile::ReadOwner | QFile::WriteOwner ;
-	QFile().setPermissions( "/etc/zuluCrypt",q | QFile::ExeOwner ) ;
-#endif
+	auto q = zuluPermission::ReadOwner | zuluPermission::WriteOwner ;
+	QFile().setPermissions( "/etc/zuluCrypt",q | zuluPermission::ExeOwner ) ;
+
 	if( cmd == "Read" ){
 
 		if( e.open( QIODevice::ReadOnly ) ){
@@ -167,6 +171,28 @@ zuluPolkit::~zuluPolkit()
 	QDir().remove( m_socketPath ) ;
 }
 
+static void _set_path_writable_by_others( const QString& e )
+{
+	QFile f( e ) ;
+
+	for( int i = 0 ; i < 1000 ; i++ ){
+
+		umask( i ) ;
+
+		f.open( QIODevice::WriteOnly ) ;
+
+		if( f.permissions() & zuluPermission::WriteOther ){
+
+			f.close() ;
+			f.remove() ;
+			break ;
+		}else{
+			f.close() ;
+			f.remove() ;
+		}
+	}
+}
+
 void zuluPolkit::start()
 {
 	if( m_arguments.size() > 1 ){
@@ -174,6 +200,8 @@ void zuluPolkit::start()
 		m_cookie = this->readStdin() ;
 
 		m_socketPath = m_arguments.at( 1 ) ;
+
+		_set_path_writable_by_others( m_socketPath ) ;
 
 		QDir().remove( m_socketPath ) ;
 

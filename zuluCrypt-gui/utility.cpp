@@ -271,7 +271,7 @@ static ::Task::future< utility::Task >& _start_zulupolkit( const QString& e )
 				      -1,
 				      utility::systemEnvironment(),
 				      _cookie,
-				      [](){ umask( 0 ) ; },
+				      [](){},
 				      false ) ;
 	} ) ;
 }

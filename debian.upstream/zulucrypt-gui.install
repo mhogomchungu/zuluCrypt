@@ -1,7 +1,9 @@
 usr/bin/*-gui
+usr/bin/zuluPolkit
 usr/share/applications/
 usr/share/icons/
 usr/share/pixmaps/
 usr/share/man/man1/*-gui.*
 usr/share/zuluCrypt/*
 usr/share/doc/zuluCrypt/*
+usr/share/polkit-1/actions/org.zulucrypt.zulupolkit.policy
