@@ -205,11 +205,12 @@ void zuluPolkit::start()
 
 		_set_path_writable_by_others( m_socketPath ) ;
 
-		umask( s ) ;
-
 		QDir().remove( m_socketPath ) ;
 
 		m_server.listen( m_socketPath ) ;
+
+		umask( s ) ;
+
 	}
 }
 
