@@ -844,7 +844,7 @@ static void _volume_properties( const QString& cmd,const QString& arg,
 		DialogMsg( w ).ShowUIOK( QObject::tr( "ERROR" ),
 					 QObject::tr( "Failed To Find %1 Executable" ).arg( cmd ) ) ;
 	}else{
-		auto e = utility::Task::run( exe + arg + path ).await() ;
+		auto e = utility::Task::run( exe + arg + path,utility::Task::USEPOLKIT::False ).await() ;
 
 		if( e.success() ){
 

@@ -611,9 +611,10 @@ namespace utility
 	class Task
 	{
 	public :
-		static ::Task::future< utility::Task >& run( const QString& exe,bool e ) ;
+		enum class USEPOLKIT{ True,False } ;
+		static ::Task::future< utility::Task >& run( const QString& exe,USEPOLKIT e ) ;
 
-		static ::Task::future< utility::Task >& run( const QString& exe,int,bool e ) ;
+		static ::Task::future< utility::Task >& run( const QString& exe,int,USEPOLKIT e ) ;
 
 		static ::Task::future< utility::Task >& run( const QString& exe )
 		{
@@ -657,11 +658,11 @@ namespace utility
 		{
 		}
 		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = QProcessEnvironment(),
-		      const QByteArray& password = QByteArray(),const std::function< void() >& f = [](){},bool e = true )
+		      const QByteArray& password = QByteArray(),const std::function< void() >& f = [](){},USEPOLKIT e = USEPOLKIT::True )
 		{
 			this->execute( exe,waitTime,env,password,f,e ) ;
 		}
-		Task( const QString& exe,const QProcessEnvironment& env,const std::function< void() >& f,bool e = true )
+		Task( const QString& exe,const QProcessEnvironment& env,const std::function< void() >& f,USEPOLKIT e = USEPOLKIT::True )
 		{
 			this->execute( exe,-1,env,QByteArray(),f,e ) ;
 		}
@@ -707,7 +708,7 @@ namespace utility
 		}	
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
-			      const QByteArray& password,const std::function< void() >& f,bool ) ;
+			      const QByteArray& password,const std::function< void() >& f,USEPOLKIT ) ;
 		QByteArray m_stdOut ;
 		QByteArray m_stdError ;
 

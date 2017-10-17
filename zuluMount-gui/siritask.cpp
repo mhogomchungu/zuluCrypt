@@ -45,7 +45,6 @@ static bool _delete_folder( const QString& m )
 static bool _create_folder( const QString& m )
 {
 	return _m( QString( "%1 -B %2" ).arg( zuluMountPath,m ) ) ;
-
 }
 
 template< typename ... T >
@@ -65,6 +64,17 @@ template< typename T >
 static bool _ecryptfs( const T& e )
 {
 	return utility::equalsAtleastOne( e,"ecryptfs","ecryptfs-simple" ) ;
+}
+
+template< typename T >
+static utility::Task::USEPOLKIT _ecryptfs_1( const T& e )
+{
+	if( _ecryptfs( e ) ){
+
+		return utility::Task::USEPOLKIT::True ;
+	}else{
+		return utility::Task::USEPOLKIT::False ;
+	}
 }
 
 static bool _ecryptfs_illegal_path( const siritask::options& opts )
@@ -141,7 +151,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 
 			for( int i = 0 ; i < max_count ; i++ ){
 
-				auto s = utility::Task::run( exe,10000,true ).get() ;
+				auto s = utility::Task::run( exe,10000,utility::Task::USEPOLKIT::True ).get() ;
 
 				if( s.success() ){
 
@@ -165,7 +175,7 @@ Task::future< bool >& siritask::encryptedFolderUnMount( const QString& cipherFol
 		}else{
 			for( int i = 0 ; i < max_count ; i++ ){
 
-				auto s = utility::Task::run( cmd(),10000,false ).get() ;
+				auto s = utility::Task::run( cmd(),10000,utility::Task::USEPOLKIT::False ).get() ;
 
 				if( s.success() ){
 
@@ -472,7 +482,7 @@ static siritask::cmdStatus _cmd( bool create,const siritask::options& opt,
 						utility::systemEnvironment(),
 						password.toLatin1(),
 						[](){},
-						_ecryptfs( app ) ) ;
+						_ecryptfs_1( app ) ) ;
 
 			return _status( s,_status( app,status_type::exeName ),app == "encfs" ) ;
 		} ;

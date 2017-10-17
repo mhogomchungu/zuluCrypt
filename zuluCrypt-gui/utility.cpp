@@ -162,12 +162,12 @@ static bool _connected( QLocalSocket& s )
 static QByteArray _cookie ;
 static bool _polkit_support = AUTO_ENABLE_POLKIT_SUPPORT ;
 
-::Task::future< utility::Task >& utility::Task::run( const QString& exe,bool e )
+::Task::future< utility::Task >& utility::Task::run( const QString& exe,USEPOLKIT e )
 {
 	return utility::Task::run( exe,-1,e ) ;
 }
 
-::Task::future< utility::Task >& utility::Task::run( const QString& exe,int s,bool e )
+::Task::future< utility::Task >& utility::Task::run( const QString& exe,int s,USEPOLKIT e )
 {
 	return ::Task::run< utility::Task >( [ = ](){
 
@@ -181,9 +181,9 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
 			     const std::function< void() >& f,
-			     bool polkit )
+			     USEPOLKIT polkit )
 {
-	if( polkit && utility::useZuluPolkit() ){
+	if( polkit == USEPOLKIT::True && utility::useZuluPolkit() ){
 
 		QLocalSocket s ;
 
@@ -272,7 +272,7 @@ static ::Task::future< utility::Task >& _start_zulupolkit( const QString& e )
 				      utility::systemEnvironment(),
 				      _cookie,
 				      [](){},
-				      false ) ;
+				      utility::Task::USEPOLKIT::False ) ;
 	} ) ;
 }
 
@@ -724,7 +724,7 @@ void utility::dropPrivileges( int uid )
 
 		auto e = opener + " " + utility::Task::makePath( path ) ;
 
-		return utility::Task::run( e,false ).get().failed() ;
+		return utility::Task::run( e,utility::Task::USEPOLKIT::False ).get().failed() ;
 	} ) ;
 }
 
