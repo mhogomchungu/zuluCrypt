@@ -7,3 +7,4 @@ usr/share/man/man1/*-gui.*
 usr/share/zuluCrypt/*
 usr/share/doc/zuluCrypt/*
 usr/share/polkit-1/actions/org.zulucrypt.zulupolkit.policy
+usr/share/mime/packages/zuluCrypt.xml
