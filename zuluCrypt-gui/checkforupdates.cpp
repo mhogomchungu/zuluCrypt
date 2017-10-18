@@ -30,10 +30,6 @@ checkForUpdates::checkForUpdates( QWidget * widget ) :
 	m_widget( widget ),
 	m_networkRequest( QUrl( "https://api.github.com/repos/mhogomchungu/zuluCrypt/releases" ) )
 {
-	m_timer.setInterval( 1000 * _timeOut ) ;
-
-	connect( &m_timer,SIGNAL( timeout() ),this,SLOT( timeOut() ),Qt::QueuedConnection ) ;
-
 	m_networkRequest.setRawHeader( "Host","api.github.com" ) ;
 	m_networkRequest.setRawHeader( "Accept-Encoding","text/plain" ) ;
 }
@@ -42,13 +38,19 @@ void checkForUpdates::check( bool s )
 {
 	m_autocheck = s ;
 
-	m_timer.start() ;
+	QNetworkReply * e ;
 
-	m_network.get( &m_networkReply,m_networkRequest,[ this ]( QNetworkReply& e ){
-
-		m_timer.stop() ;
+	m_network.get( &e,m_networkRequest,[ this ]( QNetworkReply& e ){
 
 		this->showResult( this->parseResult( e.readAll() ) ) ;
+	} ) ;
+
+	m_network.timeOutManager( _timeOut,e,[ this ](){
+
+		auto s = QString::number( _timeOut ) ;
+		auto e = tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
+
+		DialogMsg( m_widget ).ShowUIOK( tr( "ERROR" ),e ) ;
 	} ) ;
 }
 
@@ -63,19 +65,6 @@ void checkForUpdates::run( const QString& e )
 void checkForUpdates::run()
 {
 	this->check( false ) ;
-}
-
-void checkForUpdates::timeOut()
-{
-	m_timer.stop() ;
-
-	if( m_network.cancel( m_networkReply ) ){
-
-		auto s = QString::number( _timeOut ) ;
-		auto e = tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
-
-		DialogMsg( m_widget ).ShowUIOK( tr( "ERROR" ),e ) ;
-	}
 }
 
 QString checkForUpdates::parseResult( const QByteArray& data )

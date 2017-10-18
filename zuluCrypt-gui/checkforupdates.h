@@ -33,15 +33,11 @@
 
 class checkForUpdates : public QObject
 {
-	Q_OBJECT
 public:
 	void run( const QString& ) ;
 	void run() ;
 
 	checkForUpdates( QWidget * widget ) ;
-
-private slots:
-	void timeOut() ;
 private:
 	void check( bool ) ;
 	void showResult( const QString& ) ;
@@ -49,12 +45,9 @@ private:
 
 	QWidget * m_widget ;
 
-	QNetworkReply * m_networkReply ;
 	NetworkAccessManager m_network ;
 
 	QNetworkRequest m_networkRequest ;
-
-	QTimer m_timer ;
 
 	bool m_autocheck ;
 } ;
