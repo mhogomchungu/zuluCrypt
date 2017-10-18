@@ -50,7 +50,9 @@ public:
 	NetworkAccessManagerTimeOutManager( std::function< bool( QNetworkReply * ) > e,
 					    std::function< void() > s,
 					    QNetworkReply * m,
-					    int w ) :
+					    int w,
+					    QObject * n ) :
+		m_object( n ),
 		m_reply( m ),
 		m_cancel( std::move( e ) ),
 		m_timeout( std::move( s ) )
@@ -65,7 +67,7 @@ private slots:
 	{
 		m_timer.stop() ;
 
-		disconnect( m_reply->parent(),SIGNAL( finished( QNetworkReply * ) ),
+		disconnect( m_object,SIGNAL( finished( QNetworkReply * ) ),
 			    this,SLOT( networkReply( QNetworkReply * ) ) ) ;
 
 		m_cancel( m_reply ) ;
@@ -83,6 +85,7 @@ private slots:
 		}
 	}
 private:
+	QObject * m_object ;
 	QNetworkReply * m_reply ;
 	QTimer m_timer ;
 	std::function< bool( QNetworkReply * ) > m_cancel ;
@@ -221,7 +224,7 @@ public:
 	{
 		auto a = [ this ]( QNetworkReply * e ){	return this->cancel( e ) ; } ;
 
-		auto u = new NetworkAccessManagerTimeOutManager( std::move( a ),std::move( m ),e,s ) ;
+		auto u = new NetworkAccessManagerTimeOutManager( std::move( a ),std::move( m ),e,s,&m_manager ) ;
 
 		connect( &m_manager,SIGNAL( finished( QNetworkReply * ) ),
 			 u,SLOT( networkReply( QNetworkReply * ) ),Qt::QueuedConnection ) ;
