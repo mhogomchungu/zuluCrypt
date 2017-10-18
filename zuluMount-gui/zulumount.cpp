@@ -695,7 +695,7 @@ void zuluMount::raiseWindow( const QString& volume )
 
 void zuluMount::polkitFailedWarning()
 {
-	DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "zuluMount Failed To Connect To zuluPolit.\nPlease Report This Serious Bug." ) ) ;
+	DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "zuluMount Failed To Connect To zuluPolkit.\nPlease Report This Serious Bug." ) ) ;
 }
 
 void zuluMount::Show()
