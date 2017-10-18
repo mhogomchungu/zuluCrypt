@@ -85,7 +85,6 @@ void cryptoinfo::checkBoxChecked( bool checked )
 	if( checked ){
 
 		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-
 	}else{
 		f.remove() ;
 	}

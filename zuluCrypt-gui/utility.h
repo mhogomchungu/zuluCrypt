@@ -366,6 +366,8 @@ namespace utility
 	bool reUseMountPointPath( void ) ;
 	bool reUseMountPoint( void ) ;
 
+	void polkitFailedWarning( std::function< void() > ) ;
+
 	void setLocalizationLanguage( bool translate,QMenu * ac,const QString& ) ;
 	void languageMenu( QWidget *,QMenu *,QAction *,const char * ) ;
 

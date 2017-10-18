@@ -227,6 +227,11 @@ void zuluCrypt::raiseWindow( const QString& device )
 	}
 }
 
+void zuluCrypt::polkitFailedWarning()
+{
+	DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "zuluCrypt Failed To Connect To zuluPolkit.\nPlease Report This Serious Bug." ) ) ;
+}
+
 void zuluCrypt::start()
 {
 	/*
@@ -251,6 +256,11 @@ void zuluCrypt::start()
 
 		return this->closeApplication() ;
 	}
+
+	utility::polkitFailedWarning( [ this ](){
+
+		QMetaObject::invokeMethod( this,"polkitFailedWarning",Qt::QueuedConnection ) ;
+	} ) ;
 
 	oneinstance::instance( this,
 			       s + "/zuluCrypt-gui.socket",
@@ -462,7 +472,7 @@ void zuluCrypt::autoUpdateCheck()
 
 void zuluCrypt::info()
 {
-	cryptoinfo::instance( this,utility::homePath() + "/.zuluCrypt/doNotshowWarning.option",QString() ) ;
+	//cryptoinfo::instance( this,utility::homePath() + "/.zuluCrypt/doNotshowWarning.option",QString() ) ;
 }
 
 static void _walletconfig( QWidget * widget,secrets& s,LXQt::Wallet::BackEnd e )

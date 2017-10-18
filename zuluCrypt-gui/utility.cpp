@@ -99,6 +99,8 @@ struct jsonResult
 	QByteArray stdOut ;
 };
 
+static std::function< void() > _failed_to_connect_to_zulupolkit ;
+
 static QByteArray _json_command( const QByteArray& cookie,
 				 const QByteArray& password,
 				 const QString& exe,
@@ -145,7 +147,7 @@ static bool _connected( QLocalSocket& s )
 
 			return true ;
 
-		}else if( i == 5 ){
+		}else if( i == 2 ){
 
 			utility::debug() << "ERROR: Failed To Connect To zuluPolkit" ;
 			break ;
@@ -177,6 +179,11 @@ static bool _polkit_support = AUTO_ENABLE_POLKIT_SUPPORT ;
 	} ) ;
 }
 
+void utility::polkitFailedWarning( std::function< void() > e )
+{
+	_failed_to_connect_to_zulupolkit = std::move( e ) ;
+}
+
 void utility::Task::execute( const QString& exe,int waitTime,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
@@ -203,6 +210,8 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_stdError   = e.stdError ;
 			m_stdOut     = e.stdOut ;
 		}else{
+			_failed_to_connect_to_zulupolkit() ;
+
 			m_finished   = false ;
 			m_exitCode   = -1 ;
 			m_exitStatus = -1 ;
