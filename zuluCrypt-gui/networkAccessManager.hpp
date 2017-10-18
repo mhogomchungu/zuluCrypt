@@ -53,25 +53,30 @@ public:
 					    int w ) :
 		m_reply( m ),
 		m_cancel( std::move( e ) ),
-		m_timeout( std::move( s ) ),
-		m_waiting( true )
+		m_timeout( std::move( s ) )
 	{
-		connect( &m_timer,SIGNAL( timeout() ),this,SLOT( timeout() ),Qt::QueuedConnection ) ;
+		connect( &m_timer,SIGNAL( timeout() ),
+			 this,SLOT( timeout() ),Qt::QueuedConnection ) ;
 
 		m_timer.start( 1000 * w ) ;
 	}
 private slots:
 	void timeout()
 	{
-		m_waiting = false ;
-		m_cancel( m_reply ) ;
 		m_timer.stop() ;
+
+		disconnect( m_reply->parent(),SIGNAL( finished( QNetworkReply * ) ),
+			    this,SLOT( networkReply( QNetworkReply * ) ) ) ;
+
+		m_cancel( m_reply ) ;
+
 		m_timeout() ;
+
 		this->deleteLater() ;
 	}
 	void networkReply( QNetworkReply * e )
 	{
-		if( e == m_reply && m_waiting ){
+		if( e == m_reply ){
 
 			m_timer.stop() ;
 			this->deleteLater() ;
@@ -82,7 +87,6 @@ private:
 	QTimer m_timer ;
 	std::function< bool( QNetworkReply * ) > m_cancel ;
 	std::function< void() > m_timeout ;
-	bool m_waiting ;
 } ;
 
 class NetworkAccessManager : public QObject
