@@ -38,9 +38,7 @@ void checkForUpdates::check( bool s )
 {
 	m_autocheck = s ;
 
-	QNetworkReply * e ;
-
-	m_network.get( &e,m_networkRequest,[ this ]( QNetworkReply& e ){
+	auto e = m_network.get( m_networkRequest,[ this ]( QNetworkReply& e ){
 
 		this->showResult( this->parseResult( e.readAll() ) ) ;
 	} ) ;
