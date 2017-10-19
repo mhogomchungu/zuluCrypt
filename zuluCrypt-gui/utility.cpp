@@ -1987,17 +1987,27 @@ void utility::showTrayIcon( QAction * ac,QObject * obj,bool show )
 
 	::Task::exec( [ = ](){
 
+		auto _show_tray = [ & ]{
+
+			QMetaObject::invokeMethod( obj,"showTrayIcon",Qt::QueuedConnection,
+						   Q_ARG( bool,show ? show : opt_show ) ) ;
+		} ;
+
 		for( int i = 0 ; i < 10 ; i++ ){
 
 			if( QSystemTrayIcon::isSystemTrayAvailable() ){
 
-				QMetaObject::invokeMethod( obj,"showTrayIcon",Qt::QueuedConnection,
-							   Q_ARG( bool,show ? show : opt_show ) ) ;
-				break ;
+				return _show_tray() ;
 			}else{
 				utility::Task::waitForOneSecond() ;
 			}
 		}
+
+		/*
+		 * The tray doesnt seem to be ready yet but we cant wait any longer,just display it and
+		 * hope for the best.
+		 */
+		_show_tray() ;
 	} ) ;
 }
 
