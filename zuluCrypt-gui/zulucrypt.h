@@ -66,6 +66,7 @@ signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
 	void updateVolumeListSignal( QString,QString ) ;
 private slots :
+	void showTrayIcon( bool ) ;
 	void polkitFailedWarning( void ) ;
 	void setFileManager( void ) ;
 	void helperStarted( bool,const QString& ) ;
@@ -149,7 +150,7 @@ private:
 	void setupUIElements( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	void setUserFont( QFont ) ;
-	void initTray( void ) ;
+	void initTray( bool ) ;
 	void initFont( void ) ;
 	void initKeyCombo( void ) ;
 	void closeStatusErrorMessage( int ) ;

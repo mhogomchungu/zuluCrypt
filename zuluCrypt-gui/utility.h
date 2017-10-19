@@ -345,7 +345,7 @@ namespace utility
 	QStringList supportedFileSystems( void ) ;
 	bool userHasGoodVersionOfWhirlpool( void ) ;
 	void licenseInfo( QWidget * ) ;
-	void showTrayIcon( QAction *,QSystemTrayIcon *,bool = true ) ;
+	void showTrayIcon( QAction *,QObject * obj,bool = true ) ;
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
 	void createHomeFolder( void ) ;
 	void createFolderPath( const QString& ) ;

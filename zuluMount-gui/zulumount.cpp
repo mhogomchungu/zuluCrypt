@@ -342,7 +342,7 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 	this->setLocalizationLanguage( false ) ;
 
-	m_trayIcon.show() ;
+	utility::showTrayIcon( nullptr,this,true ) ;
 
 	m_powerOff = utility::powerOffCommand() ;
 
@@ -365,6 +365,12 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 		this->raiseWindow() ;
 	}
+}
+
+void zuluMount::showTrayIcon( bool e )
+{
+	Q_UNUSED( e ) ;
+	m_trayIcon.show() ;
 }
 
 void zuluMount::showTrayGUI()

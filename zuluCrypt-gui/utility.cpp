@@ -1949,38 +1949,56 @@ int utility::pluginKey( QWidget * w,QByteArray * key,const QString& p )
 	return l.exec() ;
 }
 
-void utility::showTrayIcon( QAction * ac,QSystemTrayIcon * trayIcon,bool zuluCrypt )
+void utility::showTrayIcon( QAction * ac,QObject * obj,bool show )
 {
-	Q_UNUSED( zuluCrypt ) ;
+	bool opt_show = true ;
 
-	QFile f( utility::homePath() + "/.zuluCrypt/tray" ) ;
+	if( ac ){
 
-	if( !f.exists() ){
+		QFile f( utility::homePath() + "/.zuluCrypt/tray" ) ;
 
-		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-		f.write( "1" ) ;
-		f.close() ;
+		if( !f.exists() ){
+
+			f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
+			f.write( "1" ) ;
+			f.close() ;
+		}
+
+		f.open( QIODevice::ReadOnly ) ;
+
+		char c ;
+
+		f.read( &c,1 ) ;
+
+		ac->setCheckable( true ) ;
+
+		if( c == '1' ){
+
+			ac->setChecked( true ) ;
+			opt_show = true ;
+		}else{
+			ac->setChecked( false ) ;
+			opt_show = false ;
+		}
+
+		utility::changePathPermissions( f ) ;
+		utility::changePathOwner( f ) ;
 	}
 
-	f.open( QIODevice::ReadOnly ) ;
+	::Task::exec( [ = ](){
 
-	char c ;
+		for( int i = 0 ; i < 10 ; i++ ){
 
-	f.read( &c,1 ) ;
+			if( QSystemTrayIcon::isSystemTrayAvailable() ){
 
-	ac->setCheckable( true ) ;
-
-	if( c == '1' ){
-
-		ac->setChecked( true ) ;
-		trayIcon->show() ;
-	}else{
-		ac->setChecked( false ) ;
-		trayIcon->hide() ;
-	}
-
-	utility::changePathPermissions( f ) ;
-	utility::changePathOwner( f ) ;
+				QMetaObject::invokeMethod( obj,"showTrayIcon",Qt::QueuedConnection,
+							   Q_ARG( bool,show ? show : opt_show ) ) ;
+				break ;
+			}else{
+				utility::Task::waitForOneSecond() ;
+			}
+		}
+	} ) ;
 }
 
 void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )

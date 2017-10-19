@@ -52,6 +52,7 @@ signals:
 	void result( int,QString ) ;
 	void unlistVolume( QString ) ;
 private slots:
+	void showTrayIcon( bool ) ;
 	void polkitFailedWarning( void ) ;
 	void helperStarted( bool,const QString& ) ;
 	void Show( void ) ;

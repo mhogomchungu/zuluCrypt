@@ -111,7 +111,7 @@ void zuluCrypt::helperStarted( bool e,const QString& volume )
 		this->setupConnections() ;
 		this->initFont() ;
 		this->initKeyCombo() ;
-		this->initTray() ;
+		this->initTray( m_startHidden ) ;
 		this->info() ;
 		this->autoUpdateCheck() ;
 		this->setLocalizationLanguage( false ) ;
@@ -119,10 +119,8 @@ void zuluCrypt::helperStarted( bool e,const QString& volume )
 
 		m_mountInfo.start() ;
 
-		if( m_startHidden ){
+		if( !m_startHidden ){
 
-			m_trayIcon.show() ;
-		}else{
 			this->setVisible( true ) ;
 			this->show() ;
 			this->raise() ;
@@ -273,7 +271,7 @@ void zuluCrypt::start()
 			       [ this ]( const QString& e ){ this->raiseWindow( e ) ; } ) ;
 }
 
-void zuluCrypt::initTray()
+void zuluCrypt::initTray( bool e )
 {
 	utility::setIconMenu( "zuluCrypt",m_ui->actionSelect_Icons,this,[ this ]( const QString& e ){
 
@@ -284,7 +282,16 @@ void zuluCrypt::initTray()
 
 	this->setIcons() ;
 
-	utility::showTrayIcon( m_ui->actionTray_icon,&m_trayIcon ) ;
+	utility::showTrayIcon( m_ui->actionTray_icon,this,e ) ;
+}
+
+void zuluCrypt::showTrayIcon( bool e )
+{
+	if( e ){
+		m_trayIcon.show() ;
+	}else{
+		m_trayIcon.hide() ;
+	}
 }
 
 void zuluCrypt::trayProperty()
