@@ -113,6 +113,7 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 %defattr(0755,root,root)
 %{_bindir}/zuluMount-gui
 %{_bindir}/zuluMount-cli
+%{_bindir}/zuluPolkit
 %{_bindir}/zuluCrypt-gui
 %{_bindir}/zuluCrypt-cli
 %{_bindir}/zuluSafe-cli
@@ -140,6 +141,7 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 %{_datadir}/zuluCrypt/*
 %{_datadir}/pixmaps/*
 %{_datadir}/mime/packages/zuluCrypt.xml
+%{_datadir}/polkit-1/actions/org.zulucrypt.zulupolkit.policy
 %{_mandir}/man1/*
 %defattr(0644,root,root)
 
