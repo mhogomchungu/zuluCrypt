@@ -108,7 +108,7 @@ because of the following reasons:
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.2.0/zuluCrypt-5.2.0-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-5.2.0-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.2.0/zuluCrypt-5.2.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-5.2.0-ubuntu-17.10-Artful_Aardvark.tar.xzz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.2.0/zuluCrypt-5.2.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-5.2.0-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
 
 These archives contains binaries for both 32 bit and 64 bit systems.
 
