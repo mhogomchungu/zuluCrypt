@@ -518,8 +518,9 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.iteration_count = v_info.iteration_count ;
 
 	volume.veraCrypt_volume = StringAtLeastOneMatch( v_info.type,"vcrypt","veracrypt","vera",NULL ) ;
+	volume.trueCrypt_volume = StringAtLeastOneMatch( v_info.type,"tcrypt","truecrypt",NULL ) ;
 
-	if( !volume.veraCrypt_volume ){
+	if( !volume.veraCrypt_volume && !volume.trueCrypt_volume ){
 
 		if( opts->offset != NULL ){
 

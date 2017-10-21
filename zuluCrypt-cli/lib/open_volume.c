@@ -195,7 +195,12 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 		 */
 		r = zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,opts ) ;
 	}else{
-		r = zuluCryptOpenVolume_1( opts ) ;
+		if( opts->veraCrypt_volume || opts->trueCrypt_volume ){
+
+			r = 4 ;
+		}else{
+			r = zuluCryptOpenVolume_1( opts ) ;
+		}
 
 		if( r == 4 && zuluCryptVolumeIsNotLuks( opts->device ) ){
 

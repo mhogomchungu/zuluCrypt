@@ -80,6 +80,7 @@ typedef struct{
 	int general_detached_header ;
 	int tcrypt_keyfiles_count ;
 	int veraCrypt_volume ;
+	int trueCrypt_volume ;
 	int tcrypt_system ;
 	const char * const * tcrypt_keyfiles ;
 	unsigned long m_flags ;
