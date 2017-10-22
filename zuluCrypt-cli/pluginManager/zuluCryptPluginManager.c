@@ -152,9 +152,13 @@ void zuluCryptPluginManagerCloseConnection( void * e )
 	SocketClose( &client ) ;
 }
 
-static void _create_path( const char * path )
+static void _create_path( const char * path,uid_t uid )
 {
-	if( mkdir( path,0700 ) ){} ;
+	if( mkdir( path,0700 ) == 0 ){
+
+		_ignore_result( chmod( path,0700 ) ) ;
+		_ignore_result( chown( path,uid,uid ) ) ;
+	}
 }
 
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * plugin,
@@ -194,7 +198,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 	if( stat( plugin,&st ) == 0 && S_ISREG( st.st_mode ) ) {
 
-		_create_path( run_path ) ;
+		_create_path( run_path,uid ) ;
 
 		path = String( run_path ) ;
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;

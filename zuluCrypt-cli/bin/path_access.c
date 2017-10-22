@@ -107,6 +107,8 @@ int zuluCryptCanOpenPathForWriting( const char * path,uid_t uid )
 
 void zuluCryptPrepareSocketPath( uid_t uid )
 {
+	return ;
+
 	string_t st = zuluCryptGetUserHomePath( uid ) ;
 	const char * e = StringAppend( st,"/.zuluCrypt-socket" ) ;
 
