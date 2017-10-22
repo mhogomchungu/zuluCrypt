@@ -25,6 +25,10 @@ int main( int argc,char * argv[] )
 {
 	utility::createHomeFolder() ;
 
+	QSettings m( "zuluCrypt","zuluCrypt" ) ;
+
+	utility::setSettingsObject( &m ) ;
+
 	utility::setHDPI( "zuluCrypt" ) ;
 
 	QApplication a( argc,argv ) ;

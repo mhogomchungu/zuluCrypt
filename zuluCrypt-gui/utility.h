@@ -20,6 +20,7 @@
 #ifndef MISCFUNCTIONS_H
 #define MISCFUNCTIONS_H
 
+#include <QSettings>
 #include <QString>
 #include <QStringList>
 #include <QEvent>
@@ -289,6 +290,11 @@ namespace utility
 	bool requireSystemPermissions( const QString&,utility::background_thread = utility::background_thread::False ) ;
 	bool enablePolkit( utility::background_thread ) ;
 
+	void setSettingsObject( QSettings * ) ;
+
+	void createHomeFolder() ;
+	QString passwordSocketPath() ;
+	QString socketPath() ;
 	bool clearPassword() ;
 	bool userBelongsToGroup( const char * groupname ) ;
 	bool runningInMixedMode( void ) ;
@@ -347,8 +353,6 @@ namespace utility
 	void licenseInfo( QWidget * ) ;
 	void showTrayIcon( QAction *,QObject * obj,bool = true ) ;
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
-	void createHomeFolder( void ) ;
-	void createFolderPath( const QString& ) ;
 	bool platformIsLinux( void ) ;
 	bool platformIsOSX( void ) ;
 	QStringList executableSearchPaths( void ) ;

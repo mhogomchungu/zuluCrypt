@@ -924,7 +924,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 
 		if( index == passwordDialog::key ){
 
-			if( utility::clearPassword() ){
+			if( utility:: clearPassword() ){
 
 				m_ui->PassPhraseField->clear() ;
 			}

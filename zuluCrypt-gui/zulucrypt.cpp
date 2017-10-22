@@ -245,10 +245,7 @@ void zuluCrypt::start()
 	m_openPath     = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 	m_startHidden  = l.contains( "-e" ) ;
 
-	auto s = utility::homePath() + "/.zuluCrypt-socket" ;
-
-	utility::createHomeFolder() ;
-	utility::createFolderPath( s ) ;
+	auto s = utility::socketPath() ;
 
 	if( utility::configDirectoriesAreNotWritable( this ) ){
 

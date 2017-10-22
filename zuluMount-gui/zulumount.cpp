@@ -711,10 +711,7 @@ void zuluMount::Show()
 	m_startHidden  = l.contains( "-e" ) ;
 	m_folderOpener = utility::cmdArgumentValue( l,"-m",utility::fileManager() ) ;
 
-	auto s = utility::homePath() + "/.zuluCrypt-socket" ;
-
-	utility::createHomeFolder() ;
-	utility::createFolderPath( s ) ;
+	auto s = utility::socketPath() ;
 
 	if( utility::configDirectoriesAreNotWritable( this ) ){
 
