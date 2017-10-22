@@ -288,6 +288,11 @@ void utility::setSettingsObject( QSettings * e )
 	_settings = e ;
 }
 
+QSettings& utility::settingsObject()
+{
+	return *_settings ;
+}
+
 static QString zuluPolkitExe()
 {
 	auto exe = utility::executableFullPath( "pkexec" ) ;

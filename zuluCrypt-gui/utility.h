@@ -291,6 +291,7 @@ namespace utility
 	bool enablePolkit( utility::background_thread ) ;
 
 	void setSettingsObject( QSettings * ) ;
+	QSettings& settingsObject() ;
 
 	void setDefaultEnvironment() ;
 	QString passwordSocketPath() ;

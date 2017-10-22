@@ -228,11 +228,6 @@ Task::future< utility::Task >& zuluMountTask::unmountVolume( const QString& volu
 	return Task::run< utility::Task >( [ = ](){ return zuluMountTask::volumeUnmount( volumePath,volumeType,powerOffCommand ) ; } ) ;
 }
 
-static QString _excludeVolumePath()
-{
-	return utility::homePath() + "/.zuluCrypt/zuluMount-gui-excludeVolumes" ;
-}
-
 struct deviceList
 {
 	QString deviceName ;
@@ -321,40 +316,37 @@ static QString _getUniqueName( const QString& device )
 	return QString() ;
 }
 
-static QStringList _split( QFile& f )
-{
-	return utility::split( f.readAll() ) ;
-}
-
 void zuluMountTask::addVolumeToHiddenVolumeList( const QString& e )
 {
-	QFile f( _excludeVolumePath() ) ;
+	auto& settings = utility::settingsObject() ;
 
-	if( f.open( QIODevice::WriteOnly | QIODevice::Append ) ){
+	QStringList s ;
 
-		auto a = _getUniqueName( e ) ;
+	if( settings.contains( "ListOfHiddenVolumes" ) ){
 
-		if( !a.isEmpty() ){
+		s = settings.value( "ListOfHiddenVolumes" ).toStringList() ;
+	}
 
-			f.write( a.toLatin1() + "\n" ) ;
-		}
+	auto a = _getUniqueName( e ) ;
 
-		utility::changePathOwner( f ) ;
-		utility::changePathPermissions( f ) ;
+	if( !a.isEmpty() ){
+
+		s.append( a ) ;
+		settings.setValue( "ListOfHiddenVolumes",s ) ;
 	}
 }
 
 QStringList zuluMountTask::hiddenVolumeList()
 {
-	QFile f( _excludeVolumePath() ) ;
+	auto& settings = utility::settingsObject() ;
 
-	if( f.open( QIODevice::ReadOnly ) ){
+	if( settings.contains( "ListOfHiddenVolumes" ) ){
 
 		auto l = _getDevices() ;
 
-		decltype( _split( f ) ) e ;
+		QStringList e ;
 
-		auto g = _split( f ) ;
+		auto g = settings.value( "ListOfHiddenVolumes" ).toStringList() ;
 
 		for( const auto& it : l ){
 
@@ -372,13 +364,13 @@ QStringList zuluMountTask::hiddenVolumeList()
 
 void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 {
-	auto _get_hidden_volume_list = [](){
+	auto& settings = utility::settingsObject() ;
 
-		QFile f( _excludeVolumePath() ) ;
+	auto _get_hidden_volume_list = [ & ](){
 
-		if( f.open( QIODevice::ReadOnly ) ){
+		if( settings.contains( "ListOfHiddenVolumes" ) ){
 
-			return _split( f ) ;
+			return settings.value( "ListOfHiddenVolumes" ).toStringList() ;
 		}else{
 			return QStringList() ;
 		}
@@ -394,23 +386,9 @@ void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 		return l ;
 	} ;
 
-	auto _update_list = []( const QStringList& l ){
+	auto _update_list = [ & ]( const QStringList& l ){
 
-		if( !l.isEmpty() ){
-
-			QFile f( _excludeVolumePath() ) ;
-
-			if( f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
-
-				for( const auto& it : l ){
-
-					f.write( it.toLatin1() + "\n" ) ;
-				}
-
-				utility::changePathOwner( f ) ;
-				utility::changePathPermissions( f ) ;
-			}
-		}
+		settings.setValue( "ListOfHiddenVolumes",l ) ;
 	} ;
 
 	_update_list( _remove_entry( _get_hidden_volume_list(),e ) ) ;
