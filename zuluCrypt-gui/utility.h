@@ -292,7 +292,7 @@ namespace utility
 
 	void setSettingsObject( QSettings * ) ;
 
-	void createHomeFolder() ;
+	void setDefaultEnvironment() ;
 	QString passwordSocketPath() ;
 	QString socketPath() ;
 	bool clearPassword() ;
@@ -669,7 +669,7 @@ namespace utility
 		Task()
 		{
 		}
-		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = QProcessEnvironment(),
+		Task( const QString& exe,int waitTime = -1,const QProcessEnvironment& env = utility::systemEnvironment(),
 		      const QByteArray& password = QByteArray(),const std::function< void() >& f = [](){},USEPOLKIT e = USEPOLKIT::True )
 		{
 			this->execute( exe,waitTime,env,password,f,e ) ;

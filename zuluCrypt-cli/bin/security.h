@@ -55,6 +55,8 @@ void zuluCryptSecurityLockMemory_1( string_t st ) ;
 
 void zuluCryptSecurityUnlockMemory_1( string_t st ) ;
 
+const char * zuluCryptRunTimePath() ;
+
 #ifdef __cplusplus
 }
 #endif

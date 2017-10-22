@@ -32,7 +32,12 @@
 
 #include <memory>
 
-#include <QStandardPaths>
+#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
+	#include <QStandardPaths>
+#else
+	#include <QDesktopServices>
+#endif
+
 #include <QTranslator>
 #include <QEventLoop>
 #include <QDebug>
@@ -117,6 +122,8 @@ static QByteArray _json_command( const QByteArray& cookie,
 	json[ "command" ]  = exe.toLatin1().constData() ;
 	json[ "path" ]     = path.toLatin1().constData() ;
 	json[ "data" ]     = data.constData() ;
+	json[ "run_path_key" ]   = "zuluCryptRuntimePath" ;
+	json[ "run_path_value" ] = utility::passwordSocketPath().toStdString() + "/" ;
 
 	return json.dump().c_str() ;
 }
@@ -257,14 +264,13 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}
 }
 
-void utility::createHomeFolder()
+void utility::setDefaultEnvironment()
 {
-	QDir().mkpath( utility::passwordSocketPath() ) ;
 }
 
 QString utility::passwordSocketPath()
 {
-	return utility::homePath() + "/.zuluCrypt-socket/" ;
+	return utility::socketPath() ;
 }
 
 QString utility::socketPath()
@@ -2466,6 +2472,8 @@ void utility::setFileManager( const QString& e )
 QProcessEnvironment utility::systemEnvironment()
 {
 	auto e = QProcessEnvironment::systemEnvironment() ;
+
+	e.insert( "zuluCryptRuntimePath",utility::passwordSocketPath() + "/" ) ;
 
 	e.insert( "CRYFS_NO_UPDATE_CHECK","TRUE" ) ;
 	e.insert( "CRYFS_FRONTEND","noninteractive" ) ;

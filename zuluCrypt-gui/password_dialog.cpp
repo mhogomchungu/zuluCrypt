@@ -918,16 +918,17 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 
 	this->enableAll() ;
 
+	auto index = m_ui->cbKeyType->currentIndex() ;
+
+	if( utility:: clearPassword() && index == passwordDialog::key ){
+
+		m_ui->PassPhraseField->clear() ;
+		m_ui->PassPhraseField->setFocus() ;
+	}
+
 	if( r == 4 ){
 
-		auto index = m_ui->cbKeyType->currentIndex() ;
-
 		if( index == passwordDialog::key ){
-
-			if( utility:: clearPassword() ){
-
-				m_ui->PassPhraseField->clear() ;
-			}
 
 			m_ui->PassPhraseField->setFocus() ;
 

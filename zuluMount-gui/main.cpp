@@ -23,8 +23,6 @@
 
 int main( int argc,char * argv[] )
 {
-	utility::createHomeFolder() ;
-
 	QSettings m( "zuluCrypt","zuluMount" ) ;
 
 	utility::setSettingsObject( &m ) ;

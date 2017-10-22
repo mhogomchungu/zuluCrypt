@@ -25,6 +25,7 @@
 #include <sys/syscall.h>
 #include <stdio.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include "libzuluCryptPluginManager.h"
 #include "../utility/process/process.h"
@@ -151,8 +152,17 @@ void zuluCryptPluginManagerCloseConnection( void * e )
 	SocketClose( &client ) ;
 }
 
+static void _create_path( const char * path )
+{
+	if( mkdir( path,0700 ) ){} ;
+}
+
 string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * plugin,
-						 const char * uuid,uid_t uid,const struct_opts * opts,int * r )
+						 const char * uuid,
+						 uid_t uid,
+						 const struct_opts * opts,
+						 const char * run_path,
+						 int * r )
 {
 	process_t p ;
 	struct stat st ;
@@ -184,8 +194,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 	if( stat( plugin,&st ) == 0 && S_ISREG( st.st_mode ) ) {
 
-		path = String( pass->pw_dir ) ;
-		sockpath = StringAppend( path,"/.zuluCrypt-socket/" ) ;
+		_create_path( run_path ) ;
+
+		path = String( run_path ) ;
 		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
 
 		*( args + 0 ) = plugin ;

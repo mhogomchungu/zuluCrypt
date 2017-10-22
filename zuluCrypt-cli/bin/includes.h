@@ -211,8 +211,13 @@ int zuluCryptBindSharedMountPointPathTaken( string_t path ) ;
 /*
  * this function is defined in ../pluginManager/zuluCryptPluginManager.c
  */
-string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char * name,
-						 const char * uuid,uid_t uid,const struct_opts * opts,int * r ) ;
+string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,
+						 const char * name,
+						 const char * uuid,
+						 uid_t uid,
+						 const struct_opts * opts,
+						 const char * run_path,
+						 int * r ) ;
 
 /*
  * this function is defined in volumes.c

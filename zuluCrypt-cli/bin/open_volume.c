@@ -298,7 +298,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	open_struct_t volume ;
 
 	struct stat statstr ;
-
 #if 0
 	/*
 	 * zuluCryptVolumeIsInSystemVolumeList() is defined in volumes.c
@@ -417,7 +416,13 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * zuluCryptPluginManagerGetKeyFromModule is defined in ../pluginManager/zuluCryptPluginManager.c
 		 */
-		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device_path,plugin_path,uuid,uid,opts,&st ) ;
+		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device_path,
+								      plugin_path,
+								      uuid,
+								      uid,
+								      opts,
+								      zuluCryptRunTimePath(),
+								      &st ) ;
 
 		StringFree( device_path ) ;
 		StringFree( uuid ) ;
@@ -464,7 +469,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 		}else if( StringsAreEqual( source,"-f" ) ){
 
-			if( StringHasNoComponent( pass,"/.zuluCrypt-socket" ) ){
+			if( StringHasNoComponent( pass,zuluCryptRunTimePath() ) ){
 
 				tcrypt_keyfile = 1 ;
 			}

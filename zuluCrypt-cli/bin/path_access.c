@@ -114,7 +114,7 @@ void zuluCryptPrepareSocketPath( uid_t uid )
 
 	mkdir( e,0777 ) ;
 	if( chown( e,uid,uid ) ){}
-	if( chmod( e,0777 ) ){}
+	if( chmod( e,0700 ) ){}
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
@@ -131,11 +131,8 @@ void zuluCryptPrepareSocketPath( uid_t uid )
  */
 int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 {
-	/*
-	 * zuluCryptGetUserHomePath() is defined in ../lib/user_home_path.c
-	 */
-	string_t p     = zuluCryptGetUserHomePath( uid ) ;
-	const char * z = StringAppend( p,".zuluCrypt-socket" ) ;
+	string_t p     = String( zuluCryptRunTimePath() ) ;
+	const char * z = StringContent( p ) ;
 	size_t s       = StringLength( p ) ;
 	int m          = StringPrefixMatch( path,z,s ) ;
 
