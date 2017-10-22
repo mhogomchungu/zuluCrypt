@@ -27,31 +27,10 @@
 #include <QCloseEvent>
 #include <QEvent>
 
-static QString _configPathReadOnly( const QString& app )
-{
-	return utility::homePath() + "/.zuluCrypt/" + app + "-readOnlyOption" ;
-}
-
-static QString _configPathShowUI( const QString& app )
-{
-	return utility::homePath() + "/.zuluCrypt/" + app + "-readOnlyUIWarningOption" ;
-}
-
 bool readOnlyWarning::getOpenVolumeReadOnlyOption( const QString& app )
 {
-	QFile f( _configPathReadOnly( app ) ) ;
-
-	if( f.exists() ){
-
-		f.open( QIODevice::ReadOnly ) ;
-
-		char e = '0' ;
-		f.getChar( &e ) ;
-
-		return e == '1' ;
-	}else{
-		return false ;
-	}
+	Q_UNUSED( app ) ;
+	return utility::readOnlyOption() ;
 }
 
 readOnlyWarning::readOnlyWarning( QWidget * parent,bool checked,const QString& app ) :
@@ -67,8 +46,7 @@ readOnlyWarning::readOnlyWarning( QWidget * parent,bool checked,const QString& a
 
 	this->installEventFilter( this ) ;
 
-	m_configPathReadOnly = _configPathReadOnly( app ) ;
-	m_configPathShowUI   = _configPathShowUI( app ) ;
+	m_configPathReadOnly = utility::readOnlyOption() ;
 
 	this->setReadOnlyOption( m_checked ) ;
 }
@@ -80,33 +58,17 @@ void readOnlyWarning::pbOK()
 
 void readOnlyWarning::checkBoxChecked( bool checked )
 {
-	QFile f( m_configPathShowUI ) ;
-
-	if( checked ){
-
-		f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-	}else{
-		f.remove() ;
-	}
+	utility::readOnlyWarning( !checked ) ;
 }
 
 void readOnlyWarning::setReadOnlyOption( bool readOnly )
 {
-	QFile f( m_configPathReadOnly ) ;
-
-	f.open( QIODevice::WriteOnly | QIODevice::Truncate ) ;
-
-	if( readOnly ){
-
-		f.write( "1" ) ;
-	}else{
-		f.write( "0" ) ;
-	}
+	utility::readOnlyOption( readOnly ) ;
 }
 
 bool readOnlyWarning::showUIwarning()
 {
-	return !utility::pathExists( m_configPathShowUI ) ;
+	return utility::readOnlyWarning() ;
 }
 
 bool readOnlyWarning::eventFilter( QObject * watched,QEvent * event )

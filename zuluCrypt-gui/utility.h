@@ -370,6 +370,12 @@ namespace utility
 	bool reUseMountPointPath( void ) ;
 	bool reUseMountPoint( void ) ;
 
+	bool readOnlyOption( void ) ;
+	void readOnlyOption( bool ) ;
+
+	bool readOnlyWarning( void ) ;
+	void readOnlyWarning( bool ) ;
+
 	void polkitFailedWarning( std::function< void() > ) ;
 
 	void setLocalizationLanguage( bool translate,QMenu * ac,const QString& ) ;

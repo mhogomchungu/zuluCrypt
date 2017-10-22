@@ -2489,6 +2489,40 @@ bool utility::clearPassword()
 	}
 }
 
+bool utility::readOnlyOption()
+{
+	if( _settings->contains( "ReadOnly" ) ){
+
+		return _settings->value( "ReadOnly" ).toBool() ;
+	}else{
+		_settings->setValue( "ReadOnly",false ) ;
+
+		return false ;
+	}
+}
+
+void utility::readOnlyOption( bool e )
+{
+	_settings->setValue( "ReadOnly",e ) ;
+}
+
+bool utility::readOnlyWarning()
+{
+	if( _settings->contains( "ReadOnlyWarning" ) ){
+
+		return _settings->value( "ReadOnlyWarning" ).toBool() ;
+	}else{
+		_settings->setValue( "ReadOnlyWarning",true ) ;
+
+		return true ;
+	}
+}
+
+void utility::readOnlyWarning( bool e )
+{
+	_settings->setValue( "ReadOnlyWarning",e ) ;
+}
+
 QString utility::failedToStartzuluPolkit()
 {
 	return QObject::tr( "Failed To Start Helper Application.\n\n\"org.zulucrypt.zulupolkit.policy\" polkit file is misconfigured,\nzuluPolkit executable could not be found\n or pkexec failed to start zuluPolkit." ) ;
