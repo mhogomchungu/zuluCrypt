@@ -354,7 +354,7 @@ QString utility::helperSocketPath()
 {
 	auto a = utility::socketPath() ;
 	auto b = QCoreApplication::applicationName() + ".polkit.socket" ;
-	return a + b ;
+	return a + "/" + b ;
 }
 
 bool utility::useZuluPolkit()
