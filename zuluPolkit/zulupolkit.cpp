@@ -45,11 +45,9 @@ namespace utility
 		Task()
 		{
 		}
-		Task( const QString& exe,const QString& password,const QProcessEnvironment& env )
+		Task( const QString& exe,const QString& password )
 		{
 			QProcess p ;
-
-			p.setProcessEnvironment( env ) ;
 
 			p.start( exe ) ;
 
@@ -242,8 +240,6 @@ void zuluPolkit::gotConnection()
 		auto password = QString::fromStdString( json[ "password" ].get< std::string >() ) ;
 		auto cookie   = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
 		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
-		auto run_path_key   = QString::fromStdString( json[ "run_path_key" ].get< std::string >() ) ;
-		auto run_path_value = QString::fromStdString( json[ "run_path_value" ].get< std::string >() ) ;
 
 		if( cookie == m_cookie ){
 
@@ -257,10 +253,7 @@ void zuluPolkit::gotConnection()
 
 			}else if( _correct_cmd( command ) ){
 
-				auto e = QProcessEnvironment::systemEnvironment() ;
-				e.insert( run_path_key,run_path_value ) ;
-
-				return _respond( s,utility::Task( command,password,e ) ) ;
+				return _respond( s,utility::Task( command,password ) ) ;
 			}
 		}
 

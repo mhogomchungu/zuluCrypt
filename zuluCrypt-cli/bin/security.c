@@ -136,16 +136,6 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	StringListIterator  it ;
 	StringListIterator end ;
 
-	const char * e = getenv( "zuluCryptRuntimePath" ) ;
-
-	if( e ){
-
-		xt = String( e ) ;
-	}else{
-		xt = zuluCryptGetUserHomePath( uid ) ;
-		StringAppend( xt,"/.zuluCrypt-socket/" ) ;
-	}
-
 	/*
 	 * First,we make a copy of the enviromental varibales
 	 * Second,we clear the enviromental variable because we dont want it
@@ -154,11 +144,7 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 	 */
 	while( *env ){
 
-		if( StringPrefixNotEqual( *env,"zuluCryptRuntimePath=" ) ){
-
-			stl = StringListAppend( stl,*env ) ;
-		}
-
+		stl = StringListAppend( stl,*env ) ;
 		env++ ;
 	}
 
@@ -178,6 +164,10 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 			StringSubChar( st,index,'=' ) ;
 		}
 	}
+
+	xt = String( "/tmp/zuluCrypt-" ) ;
+
+	StringAppendInt( xt,uid ) ;
 
 	StringListAppendString_1( &stl,&xt ) ;
 

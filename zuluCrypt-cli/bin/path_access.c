@@ -109,16 +109,17 @@ void zuluCryptPrepareSocketPath( uid_t uid )
 {
 	return ;
 
-	string_t st = zuluCryptGetUserHomePath( uid ) ;
-	const char * e = StringAppend( st,"/.zuluCrypt-socket" ) ;
+	string_t st = String( "/tmp/zuluCrypt/-" ) ;
 
-	zuluCryptSecurityGainElevatedPrivileges() ;
-
-	mkdir( e,0777 ) ;
-	if( chown( e,uid,uid ) ){}
-	if( chmod( e,0700 ) ){}
+	const char * e = StringAppendInt( st,uid ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
+
+	if( mkdir( e,0700 ) ){
+
+		if( chown( e,uid,uid ) ){}
+		if( chmod( e,0700 ) ){}
+	}
 
 	StringDelete( &st ) ;
 }

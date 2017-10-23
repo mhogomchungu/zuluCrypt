@@ -32,12 +32,6 @@
 
 #include <memory>
 
-#if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
-	#include <QStandardPaths>
-#else
-	#include <QDesktopServices>
-#endif
-
 #include <QTranslator>
 #include <QEventLoop>
 #include <QDebug>
@@ -122,8 +116,6 @@ static QByteArray _json_command( const QByteArray& cookie,
 	json[ "command" ]  = exe.toLatin1().constData() ;
 	json[ "path" ]     = path.toLatin1().constData() ;
 	json[ "data" ]     = data.constData() ;
-	json[ "run_path_key" ]   = "zuluCryptRuntimePath" ;
-	json[ "run_path_value" ] = utility::passwordSocketPath().toStdString() + "/" ;
 
 	return json.dump().c_str() ;
 }
@@ -270,18 +262,22 @@ void utility::setDefaultEnvironment()
 
 QString utility::passwordSocketPath()
 {
-	return utility::socketPath() ;
+	return "/tmp/zuluCrypt-" + QString::number( getuid() ) ;
 }
 
-QString utility::socketPath()
-{
 #if QT_VERSION > QT_VERSION_CHECK( 5,0,0 )
-
-	return QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
+	#include <QStandardPaths>
+	QString utility::socketPath()
+	{
+		return QStandardPaths::writableLocation( QStandardPaths::RuntimeLocation ) ;
+	}
 #else
-	return QDesktopServices::storageLocation( QDesktopServices::DataLocation ) ;
+	#include <QDesktopServices>
+	QString utility::socketPath()
+	{
+		return QDesktopServices::storageLocation( QDesktopServices::DataLocation ) ;
+	}
 #endif
-}
 
 void utility::setSettingsObject( QSettings * e )
 {
@@ -352,9 +348,10 @@ void utility::startHelperExecutable( QObject * obj,const QString& arg,const char
 
 QString utility::helperSocketPath()
 {
-	auto a = utility::socketPath() ;
-	auto b = QCoreApplication::applicationName() + ".polkit.socket" ;
-	return a + "/" + b ;
+	auto a = QString::number( getuid() ) ;
+	auto b = QCoreApplication::applicationName() ;
+
+	return QString( "/tmp/zuluCrypt-%1/%2.polkit.socket" ).arg( a,b ) ;
 }
 
 bool utility::useZuluPolkit()
@@ -1123,6 +1120,11 @@ bool utility::configDirectoriesAreNotWritable( QWidget * w )
 {
 	auto a = utility::socketPath() ;
 	auto b = utility::passwordSocketPath() ;
+
+	QDir().mkpath( b ) ;
+
+	utility::changePathOwner( b ) ;
+	utility::changePathPermissions( b,0700 ) ;
 
 	if( utility::pathIsWritable( a ) && utility::pathIsWritable( b ) ){
 
