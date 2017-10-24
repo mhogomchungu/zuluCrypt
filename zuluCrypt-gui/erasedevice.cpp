@@ -153,6 +153,14 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 		}
 	}
 
+	if( utility::requireSystemPermissions( path ) ){
+
+		if( !utility::enablePolkit( utility::background_thread::False ) ){
+
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+		}
+	}
+
 	this->setWindowTitle( tr( "Writing Random Data Over Existing Data" ) ) ;
 
 	this->disableAll() ;

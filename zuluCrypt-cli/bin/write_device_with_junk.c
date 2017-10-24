@@ -138,8 +138,13 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	 * zuluCryptPartitionIsSystemPartition() is defined in ./partition.c
 	 */
 	if( zuluCryptPartitionIsSystemPartition( device,uid ) ){
-		if( uid != 0 ){
-			return zuluExit( stl,8 ) ;
+
+		if( zuluCryptExeOriginalUserIsNotRoot() ){
+
+			if( uid != 0 ){
+
+				return zuluExit( stl,8 ) ;
+			}
 		}
 	}
 	/*
