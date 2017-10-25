@@ -1916,7 +1916,7 @@ void utility::showTrayIcon( QAction * ac,QObject * obj,bool show )
 
 			_settings->setValue( "ShowTrayIcon",true ) ;
 		}
-		
+
 		ac->setCheckable( true ) ;
 
 		if( _settings->value( "ShowTrayIcon" ).toBool() ){
@@ -2287,7 +2287,7 @@ QStringList utility::supportedFileSystems()
 
 		return _settings->value( "SupportedFileSystems" ).toStringList() ;
 	}else{
-		QStringList s{ "ext4","vfat","ntfs","ext2","ext3","exfat","ntfs" } ;
+		QStringList s{ "ext4","vfat","ntfs","ext2","ext3","exfat","ntfs","btrfs" } ;
 
 		_settings->setValue( "SupportedFileSystems",s ) ;
 

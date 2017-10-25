@@ -1699,12 +1699,16 @@ void zuluMount::enableAll_1()
 	this->enableAll() ;
 }
 
-#define zuluMOUNT_AUTOPATH "/.zuluCrypt/zuluMount-gui.autoMountPartitions"
-
 bool zuluMount::autoMount()
 {
-	QFile f( utility::homePath() + zuluMOUNT_AUTOPATH ) ;
-	return f.exists() ;
+	auto& e = utility::settingsObject() ;
+
+	if( !e.contains( "AutoMountVolumes" ) ){
+
+		e.setValue( "AutoMountVolumes",true ) ;
+	}
+
+	return e.value( "AutoMountVolumes" ).toBool() ;
 }
 
 zuluMount::~zuluMount()
@@ -1714,19 +1718,9 @@ zuluMount::~zuluMount()
 		return ;
 	}
 
-	QFile f( utility::homePath() + zuluMOUNT_AUTOPATH ) ;
-
 	if( m_autoMountAction ){
 
-		if( m_autoMountAction->isChecked() ){
-
-			if( !f.exists() ){
-
-				f.open( QIODevice::WriteOnly ) ;
-			}
-		}else{
-			f.remove() ;
-		}
+		utility::settingsObject().setValue( "AutoMountVolumes",m_autoMountAction->isChecked() ) ;
 	}
 
 	auto q = m_ui->tableWidget ;
