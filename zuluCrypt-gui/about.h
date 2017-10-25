@@ -18,35 +18,36 @@
  */
 
 
-#ifndef CONTACTINFO_H
-#define CONTACTINFO_H
+#ifndef ABOUT_H
+#define ABOUT_H
 
 #include <QDialog>
+#include <QString>
 
 class QCloseEvent ;
 class QEvent ;
 class QObject ;
 
 namespace Ui {
-class contactInfo;
+class about;
 }
 
-class contactInfo : public QDialog
+class about : public QDialog
 {
 	Q_OBJECT
 public:
-	static contactInfo& instance( QWidget * parent )
+	static void instance( QWidget * parent )
 	{
-		return *( new contactInfo( parent ) ) ;
+		new about( parent ) ;
 	}
-	explicit contactInfo( QWidget * parent = 0 ) ;
-	~contactInfo() ;
+	explicit about( QWidget * parent ) ;
+	~about() ;
 private slots:
-	void pbOK( void ) ;
+	void pbClose( void ) ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	Ui::contactInfo * m_ui ;
+	Ui::about * m_ui ;
 };
 
-#endif // CONTACTINFO_H
+#endif // ABOUT_H

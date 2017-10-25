@@ -1637,14 +1637,7 @@ bool utility::userHasGoodVersionOfWhirlpool()
 
 void utility::licenseInfo( QWidget * parent )
 {
-	QString s ;
-
-	if( _polkit_support ){
-
-		s = "\nPolkit Support: YES" ;
-	}else{
-		s = "\nPolkit Support: NO" ;
-	}
+	QString s = "\nGpg key fingerprint: E3AF84691424AD00E099003502FC64E8DEBF43A8" ;
 
 	QString license = QString( "%1\n\n\
 This program is free software: you can redistribute it and/or modify \

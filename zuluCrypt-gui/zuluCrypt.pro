@@ -60,7 +60,7 @@ SOURCES += main.cpp\
     readonlywarning.cpp \
     checkforupdates.cpp \
     plugin.cpp \
-    contactinfo.cpp
+    help.cpp
 
 HEADERS  += zulucrypt.h \
     password_dialog.h \
@@ -109,7 +109,7 @@ HEADERS  += zulucrypt.h \
     readonlywarning.h \
     checkforupdates.h \
     plugin.h \
-    contactinfo.h
+    help.h
 
 
 FORMS    += zulucrypt.ui password.ui \
@@ -136,7 +136,7 @@ FORMS    += zulucrypt.ui password.ui \
     tcrypt.ui \
     readonlywarning.ui \
     plugin.ui \
-    contactinfo.ui
+    help.ui
 
 TRANSLATIONS = ../translations/zuluCrypt/en_US.ts \
                ../translations/zuluCrypt/de_DE.ts \

@@ -66,7 +66,8 @@
 #include "tablewidget.h"
 #include "utility.h"
 #include "task.h"
-#include "contactinfo.h"
+#include "about.h"
+#include "help.h"
 
 #include "veracrypt_support.h"
 #include "pdf_path.h"
@@ -381,7 +382,6 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionClose_all_opened_volumes,SIGNAL( triggered() ),this,SLOT( closeAllVolumes() ) ) ;
 	connect( m_ui->actionEncrypt_file,SIGNAL( triggered() ),this,SLOT( encryptFile() ) ) ;
 	connect( m_ui->actionDecrypt_file,SIGNAL( triggered() ),this,SLOT( decryptFile() ) ) ;
-	connect( m_ui->actionLuks_header_backup,SIGNAL( triggered() ),this,SLOT( HelpLuksHeaderBackUp() ) ) ;
 	connect( m_ui->actionManage_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageSystemPartitions() ) ) ;
 	connect( m_ui->actionManage_non_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageNonSystemPartitions() ) ) ;
 	connect( m_ui->actionChange_internal_wallet_password,SIGNAL( triggered() ),this,SLOT( changePassWordOfInternalWallet() ) ) ;
@@ -390,7 +390,6 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionManage_volumes_in_internal_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInInternalWallet() ) ) ;
 	connect( m_ui->actionOpen_zuluCrypt_pdf,SIGNAL( triggered() ),this,SLOT( openpdf() ) ) ;
 	connect( m_ui->actionCheck_For_Update,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
-	connect( m_ui->actionContact_Info,SIGNAL( triggered() ),this,SLOT( cinfo() ) ) ;
 	connect( m_ui->actionSet_File_Manager,SIGNAL( triggered() ),this,SLOT( setFileManager() ) ) ;
 
 	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
@@ -466,7 +465,6 @@ void zuluCrypt::updateCheck()
 
 void zuluCrypt::cinfo()
 {
-	contactInfo::instance( this ) ;
 }
 
 void zuluCrypt::autoUpdateCheck()
@@ -745,7 +743,6 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionVeracrypt_container_in_a_partition->setFont( Font ) ;
 	m_ui->actionOpen_zuluCrypt_pdf->setFont( Font ) ;
 	m_ui->actionCheck_For_Update->setFont( Font ) ;
-	m_ui->actionContact_Info->setFont( Font ) ;
 	m_ui->actionSelect_Language->setFont( Font ) ;
 	m_ui->actionAuto_Open_Mount_Point->setFont( Font ) ;
 	m_ui->actionSelect_Icons->setFont( Font ) ;
@@ -753,7 +750,7 @@ void zuluCrypt::setUserFont( QFont Font )
 
 void zuluCrypt::aboutMenuOption( void )
 {
-	utility::licenseInfo( this ) ;
+	about::instance( this ) ;
 }
 
 void zuluCrypt::HelpLuksHeaderBackUp()
@@ -904,24 +901,7 @@ void zuluCrypt::openFolder( const QString& path )
 
 void zuluCrypt::openpdf()
 {
-	auto x = tr( "WARNING!" ) ;
-	auto y = tr( "Failed to open zuluCrypt.pdf,make sure your system can open pdf files using \"%1\" tool and try again" ).arg( m_openPath ) ;
-
-	QString e = PDF_PATH ;
-
-	if( utility::pathExists( e ) ){
-
-		utility::openPath( e,m_openPath,this,x,y ) ;
-	}else{
-		e += ".gz" ;
-
-		if( utility::pathExists( e ) ){
-
-			utility::openPath( e,m_openPath,this,x,y ) ;
-		}else{
-			utility::openPath( PDF_PATH,m_openPath,this,x,y ) ;
-		}
-	}
+	help::instance( this,m_openPath ) ;
 }
 
 void zuluCrypt::itemClicked( QTableWidgetItem * it )

@@ -5,6 +5,8 @@ add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++14 -I${P
 include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/ )
 
 set( UI_FILES createfile.ui
+		about.ui
+		help.ui
 		createvolume.ui
 		luksdeletekey.ui
 		password.ui
@@ -23,12 +25,14 @@ set( UI_FILES createfile.ui
 		walletconfiginput.ui
 		openvolume.ui
 		tcrypt.ui
-		contactinfo.ui
+		help.ui
 		dialogok.ui
 		filemanager.ui
 )
 
 set( MOC_FILES
+		cryptoinfo.h
+		about.h
 		dialogok.h
 		utility.h
 		tcrypt.h
@@ -41,7 +45,7 @@ set( MOC_FILES
 		password_dialog.h
 		zulucrypt.h
 		favorites.h
-		cryptoinfo.h
+		help.h
 		erasedevice.h
 		managevolumeheader.h
 		cryptfiles.h
@@ -51,11 +55,13 @@ set( MOC_FILES
 		walletconfiginput.h
 		../zuluMount-gui/oneinstance.h
 		../zuluMount-gui/monitor_mountinfo.h
-		contactinfo.h
+		about.h
+		help.h
 		filemanager.h
  )
 
 set( SRC
+	about.cpp
 	dialogok.cpp
 	secrets.cpp
 	tcrypt.cpp
@@ -82,7 +88,8 @@ set( SRC
 	../zuluMount-gui/monitor_mountinfo.cpp
 	../zuluMount-gui/zulumounttask.cpp
 	../zuluMount-gui/volumeproperty.cpp
-	contactinfo.cpp
+	help.cpp
+	about.cpp
 	filemanager.cpp
 )
 

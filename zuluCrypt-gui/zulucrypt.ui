@@ -94,7 +94,7 @@
      <x>0</x>
      <y>0</y>
      <width>782</width>
-     <height>27</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOpen">
@@ -118,11 +118,8 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="actionLuks_header_backup"/>
     <addaction name="actionOpen_zuluCrypt_pdf"/>
-    <addaction name="actionCheck_For_Update"/>
     <addaction name="actionAbout"/>
-    <addaction name="actionContact_Info"/>
    </widget>
    <widget class="QMenu" name="menuConfigure">
     <property name="title">
@@ -170,6 +167,8 @@
     <addaction name="separator"/>
     <addaction name="actionEncrypt_file"/>
     <addaction name="actionDecrypt_file"/>
+    <addaction name="separator"/>
+    <addaction name="actionCheck_For_Update"/>
     <addaction name="separator"/>
     <addaction name="action_close"/>
    </widget>
@@ -487,10 +486,10 @@
   </action>
   <action name="actionOpen_zuluCrypt_pdf">
    <property name="text">
-    <string>&amp;Open ZuluCrypt.pdf</string>
+    <string>H&amp;elp</string>
    </property>
    <property name="shortcut">
-    <string>Shift+H</string>
+    <string>F1</string>
    </property>
   </action>
   <action name="actionCheck_For_Update">
@@ -529,7 +528,7 @@
   </action>
   <action name="actionSet_File_Manager">
    <property name="text">
-    <string>Set File Manager</string>
+    <string>Set Fi&amp;le Manager</string>
    </property>
   </action>
  </widget>
