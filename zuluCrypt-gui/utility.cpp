@@ -1929,30 +1929,27 @@ void utility::showTrayIcon( QAction * ac,QObject * obj,bool show )
 		}
 	}
 
-	::Task::exec( [ = ](){
+	auto _show_tray = [ & ]{
 
-		auto _show_tray = [ & ]{
+		QMetaObject::invokeMethod( obj,"showTrayIcon",Qt::QueuedConnection,
+					   Q_ARG( bool,show ? show : opt_show ) ) ;
+	} ;
 
-			QMetaObject::invokeMethod( obj,"showTrayIcon",Qt::QueuedConnection,
-						   Q_ARG( bool,show ? show : opt_show ) ) ;
-		} ;
+	for( int i = 0 ; i < 10 ; i++ ){
 
-		for( int i = 0 ; i < 10 ; i++ ){
+		if( QSystemTrayIcon::isSystemTrayAvailable() ){
 
-			if( QSystemTrayIcon::isSystemTrayAvailable() ){
-
-				return _show_tray() ;
-			}else{
-				utility::Task::waitForOneSecond() ;
-			}
+			return _show_tray() ;
+		}else{
+			utility::Task::suspendForOneSecond() ;
 		}
+	}
 
-		/*
-		 * The tray doesnt seem to be ready yet but we cant wait any longer,just display it and
-		 * hope for the best.
-		 */
-		_show_tray() ;
-	} ) ;
+	/*
+	 * The tray doesnt seem to be ready yet but we cant wait any longer,just display it and
+	 * hope for the best.
+	 */
+	_show_tray() ;
 }
 
 void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )
