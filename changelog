@@ -275,10 +275,10 @@ version 5.2.0
 -- dont run zuluCrypt-gui and zuluMount-gui from root's account when running in mixed mode.
 -- add arabic translation.
 
-version 5.3.0(unreleased)
+version 5.3.0
 -- fix a build time error when build with certain new compilers and a runtime crush when build with other newer compilers.
 -- add more support for wayland sessions by not requiring GUI to run from root's account to perform some operations.
--- add support for creating LUKS2 volumes(atleast cryptsetup 2.0.0 is required)
+-- add support for creating LUKS2 volumes(libcryptsetup >=2.0.0 is required)
 -- add support for unlocking of TrueCrypt and VeraCrypt volumes without mounting their file system.
    -- unlocking of a TrueCrypt volume is done by command: zuluCrypt-cli -O -d /dev/sdXX -t tcrypt
    -- unlocking of a VeraCrypt volume is done by command: zuluCrypt-cli -O -d /dev/sdXX -t vcrypt

@@ -7,7 +7,7 @@ project(zuluCrypt)
 
 INCLUDE(GNUInstallDirs)
 
-set( PGR_VERSION "5.2.0" )
+set( PGR_VERSION "5.3.0" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 
