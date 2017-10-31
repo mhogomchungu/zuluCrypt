@@ -34,7 +34,7 @@ HOW TO BUILD A ZULUCRYPT PACKAGE ON UBUNTU OR ANY OTHER DEBIAN BASED DISTRIBUTIO
 
    ******************************************************************************************************
 
-   tar cf - . | xz -zf - > ../zulucrypt_5.2.0.orig.tar.xz
+   tar cf - . | xz -zf - > ../zulucrypt_5.3.0.orig.tar.xz
 
    ******************************************************************************************************
 
@@ -90,7 +90,7 @@ HOW TO BUILD A ZULUCRYPT PACKAGE ON DEBIAN OR ANY OTHER DEBIAN BASED DISTRIBUTIO
 
    ******************************************************************************************************
 
-   tar cf - . | xz -zf - > ../zulucrypt_5.0.2.orig.tar.xz
+   tar cf - . | xz -zf - > ../zulucrypt_5.3.0.orig.tar.xz
 
    ******************************************************************************************************
 

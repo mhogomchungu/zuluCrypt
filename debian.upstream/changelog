@@ -1,3 +1,15 @@
+zulucrypt (5.3.0-1) UNRELEASED; urgency=low
+  [Mhogo Mchungu]
+  * New Features
+     -- fix a build time error when build with certain new compilers and a runtime crush when build with other newer compilers.
+     -- add more support for wayland sessions by not requiring GUI to run from root's account to perform some operations.
+     -- add support for creating LUKS2 volumes(libcryptsetup >=2.0.0 is required)
+     -- add support for unlocking of TrueCrypt and VeraCrypt volumes without mounting their file system.
+          -- unlocking of a TrueCrypt volume is done by command: zuluCrypt-cli -O -d /dev/sdXX -t tcrypt
+          -- unlocking of a VeraCrypt volume is done by command: zuluCrypt-cli -O -d /dev/sdXX -t vcrypt
+
+ -- Mhogo Mchungu <mhogomchungu@gmail.com>  Wed, 1 Nov 2017 16:38:48 +0000
+
 zulucrypt (5.2.0-1) UNRELEASED; urgency=low
   [Mhogo Mchungu]
   * New Features
