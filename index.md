@@ -63,7 +63,7 @@ Latest released version is 5.3.0 and it can be downloaded by clicking any one of
 
 ```
 The honors of being the first person to donate to zuluCrypt project goes to
-"ISRAEL JULIUS KIS JUHASZ" from Austria and version 5.3.0 is released in his name, thank you.
+"ISRAEL JULIUS KIS JUHASZ" from Austria and version 5.3.0 is released in his name.
 ```
 
 ## Binary packages
