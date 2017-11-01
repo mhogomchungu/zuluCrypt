@@ -62,8 +62,8 @@ Latest released version is 5.3.0 and it can be downloaded by clicking any one of
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0.tar.xz">zuluCrypt-5.3.0.tar.xz</a>
 
 ```
-The honors of being the first person to donate to zuluCrypt project goes to "ISRAEL JULIUS KIS JUHASZ" from Austria
-and version 5.3.0 is released in his name, thank you.
+The honors of being the first person to donate to zuluCrypt project goes to
+"ISRAEL JULIUS KIS JUHASZ" from Austria and version 5.3.0 is released in his name, thank you.
 ```
 
 ## Binary packages
