@@ -54,7 +54,9 @@ void checkForUpdates::check( bool s )
 
 void checkForUpdates::run( const QString& e )
 {
-	if( utility::pathExists( utility::homePath() + "/.zuluCrypt/autoCheckUpdates." + e ) ){
+	Q_UNUSED( e ) ;
+
+	if( utility::settingsObject().value( "autoChecForkUpdates" ).toBool() ){
 
 		this->check( true ) ;
 	}
