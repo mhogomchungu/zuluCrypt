@@ -71,6 +71,9 @@ endif( NOKDE )
 
 pkg_check_modules( CRYPTSETUP libcryptsetup )
 pkg_check_modules( BLKID blkid )
+pkg_check_modules( DEVMAPPER devmapper )
+pkg_check_modules( UUID uuid )
+
 if ( WITH_PWQUALITY )
 	pkg_check_modules( PWQUALITY pwquality )
 endif ( WITH_PWQUALITY )
@@ -87,6 +90,28 @@ file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2011-2017 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
+
+if( NOT DEVMAPPER_FOUND )
+	message( FATAL_ERROR "ERROR: could not find devmapper package" )
+else( )
+	find_library( devmapper_lib libdevmapper.so )
+	if( NOT devmapper_lib )
+		message( FATAL_ERROR "ERROR: could not find libdevmapper.so" )
+	else()
+		message( STATUS "found libdevmapper library at: ${devmapper_lib}" )
+	endif()
+endif()
+
+if( NOT UUID_FOUND )
+	message( FATAL_ERROR "ERROR: could not find uuid package" )
+else( )
+	find_library( uuid_lib libuuid.so )
+	if( NOT uuid_lib )
+		message( FATAL_ERROR "ERROR: could not find libuuid.so" )
+	else()
+		message( STATUS "found uuid library at: ${uuid_lib}" )
+	endif()
+endif()
 
 if( NOT BLKID_FOUND )
 	message( FATAL_ERROR "ERROR: could not find blkid package" )
@@ -106,7 +131,7 @@ else( NOT CRYPTSETUP_FOUND )
 	#add_definitions( "${CRYPTSETUP_CFLAGS}" )
 	find_library( cryptsetup_lib libcryptsetup.so )
 	#set( cryptsetup_lib "${CRYPTSETUP_LIBDIR}/libcryptsetup.so" )
-	MESSAGE( STATUS "libcryptsetup library path: ${cryptsetup_lib}" )
+	MESSAGE( STATUS "found libcryptsetup library at: ${cryptsetup_lib}" )
 
 	if( NOT cryptsetup_lib )
 		message( FATAL_ERROR "ERROR: could not find libcryptsetup.so" )
