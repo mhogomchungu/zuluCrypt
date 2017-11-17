@@ -136,12 +136,12 @@ volumeProperty _getVolumeProperties( const QString& e )
 
 Task::future< volumeProperty >& zuluMountTask::getVolumeProperties( const QString& e )
 {
-	return Task::run< volumeProperty >( [ e ](){ return _getVolumeProperties( e ) ; } ) ;
+	return Task::run( [ e ](){ return _getVolumeProperties( e ) ; } ) ;
 }
 
 Task::future< QString >& zuluMountTask::volumeProperties( const QString& v,const QString& volumeType )
 {
-	return Task::run< QString >( [ = ](){
+	return Task::run( [ = ](){
 
 		if( v.isEmpty() ){
 
@@ -225,7 +225,7 @@ utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QStr
 
 Task::future< utility::Task >& zuluMountTask::unmountVolume( const QString& volumePath,const QString& volumeType,const QString& powerOffCommand )
 {
-	return Task::run< utility::Task >( [ = ](){ return zuluMountTask::volumeUnmount( volumePath,volumeType,powerOffCommand ) ; } ) ;
+	return Task::run( [ = ](){ return zuluMountTask::volumeUnmount( volumePath,volumeType,powerOffCommand ) ; } ) ;
 }
 
 struct deviceList
@@ -396,7 +396,7 @@ void zuluMountTask::removeVolumeFromHiddenVolumeList( const QString& e )
 
 Task::future< QVector< volumeProperty > >& zuluMountTask::updateVolumeList()
 {
-	return Task::run< QVector< volumeProperty > >( [](){
+	return Task::run( [](){
 
 		auto l = zuluMountTask::hiddenVolumeList() ;
 

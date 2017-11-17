@@ -281,7 +281,7 @@ void MainWindow::pbOpen()
 
 	m_working = true ;
 
-	Task::run< bool >( [ &,exe,keyFile,key ](){
+	Task::run( [ &,exe,keyFile,key ](){
 
 		auto s = m_function( exe,keyFile,key ) ;
 

@@ -330,6 +330,8 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 	int k = 4 ;
 	int r ;
 
+	int socket_path ;
+
 	string_t st = StringVoid ;
 	string_t xt = StringVoid ;
 
@@ -355,7 +357,7 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 		/*
 		 * function is defined at "path_access.c"
 		 */
-		zuluCryptGetPassFromFile( opts->key,info->uid,&st ) ;
+		zuluCryptGetPassFromFile( &socket_path,opts->key,info->uid,&st ) ;
 
 		zuluCryptSecurityGainElevatedPrivileges() ;
 
@@ -363,7 +365,7 @@ static int _modify_tcrypt( info_t * info,const struct_opts * opts )
 
 			return zuluExit_1( k,st,xt ) ;
 		}else{
-			if( StringHasComponent( opts->key,".zuluCrypt-socket" ) ){
+			if( socket_path ){
 
 				info->key = StringContent( st ) ;
 				info->header_key            = info->key ;

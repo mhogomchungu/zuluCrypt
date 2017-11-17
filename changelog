@@ -282,3 +282,8 @@ version 5.3.0
 -- add support for unlocking of TrueCrypt and VeraCrypt volumes without mounting their file system.
    -- unlocking of a TrueCrypt volume is done by command: zuluCrypt-cli -O -d /dev/sdXX -t tcrypt
    -- unlocking of a VeraCrypt volume is done by command: zuluCrypt-cli -O -d /dev/sdXX -t vcrypt
+
+version 5.4.0(unreleased)
+-- fix a bug that caused a wrong password to be used when creating a TrueCrypt/VeraCrypt volume. Easiest way to notice this
+   was that a just created volume could not be unlocked.
+

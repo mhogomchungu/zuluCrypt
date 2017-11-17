@@ -193,7 +193,7 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 			/*
 			 * zuluCryptGetPassFromFile() is defined at "path_access.c"
 			 */
-			switch( zuluCryptGetPassFromFile( pass,uid,passphrase ) ){
+			switch( zuluCryptGetPassFromFile( NULL,pass,uid,passphrase ) ){
 				case 1 : return zuluExit( stl,10 ) ;
 				case 2 : return zuluExit( stl,11 ) ;
 				case 4 : return zuluExit( stl,12 ) ;

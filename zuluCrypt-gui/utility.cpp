@@ -173,7 +173,7 @@ static bool _polkit_support = AUTO_ENABLE_POLKIT_SUPPORT ;
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,int s,USEPOLKIT e )
 {
-	return ::Task::run< utility::Task >( [ = ](){
+	return ::Task::run( [ = ](){
 
 		auto env = QProcessEnvironment::systemEnvironment() ;
 
@@ -309,7 +309,7 @@ static ::Task::future< utility::Task >& _start_zulupolkit( const QString& e )
 
 	_cookie = f.read( 16 ).toHex() ;
 
-	return ::Task::run< utility::Task >( [ = ]{
+	return ::Task::run( [ = ]{
 
 		return utility::Task( e,
 				      -1,
@@ -677,12 +677,12 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 
 ::Task::future<int>& utility::exec( const QString& exe )
 {
-	return ::Task::run<int>( [ exe ](){ return utility::Task( exe ).exitCode() ; } ) ;
+	return ::Task::run( [ exe ](){ return utility::Task( exe ).exitCode() ; } ) ;
 }
 
 ::Task::future<QStringList>& utility::luksEmptySlots( const QString& volumePath )
 {
-	return ::Task::run<QStringList>( [ volumePath ](){
+	return ::Task::run( [ volumePath ](){
 
 		auto e = utility::appendUserUID( "%1 -b -d \"%2\"" ) ;
 
@@ -711,7 +711,7 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 
 ::Task::future<QString>& utility::getUUIDFromPath( const QString& dev )
 {
-	return ::Task::run<QString>( [ dev ](){
+	return ::Task::run( [ dev ](){
 
 		auto device = dev ;
 		device = device.replace( "\"", "\"\"\"" ) ;
@@ -763,7 +763,7 @@ void utility::dropPrivileges( int uid )
 
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
 {
-	return ::Task::run<bool>( [ = ](){
+	return ::Task::run( [ = ](){
 
 		auto e = opener + " " + utility::Task::makePath( path ) ;
 
@@ -786,7 +786,7 @@ void utility::openPath( const QString& path,const QString& opener,
 
 static ::Task::future<QString>& _getKey( LXQt::Wallet::Wallet& wallet,const QString& volumeID )
 {
-	return ::Task::run<QString>( [ & ](){
+	return ::Task::run( [ & ]()->QString{
 
 		decltype( wallet.readValue( volumeID ) ) key ;
 
@@ -910,7 +910,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 
 ::Task::future< int >& utility::clearVolume( const QString& volume,std::atomic_bool * exit,size_t volumeSize,std::function< void( int ) > function )
 {
-	return ::Task::run<int>( [ volume,exit,volumeSize,function ](){
+	return ::Task::run( [ volume,exit,volumeSize,function ](){
 
 		auto volumePath = volume ;
 

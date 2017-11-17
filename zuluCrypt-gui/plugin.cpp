@@ -104,7 +104,7 @@ void plugin::pbSetKey()
 
 	this->disableAll() ;
 
-	Task::run< QByteArray >( [ this,passphrase,keyFile ](){
+	Task::run( [ this,passphrase,keyFile ](){
 
 		switch( m_pluginType ){
 		case plugins::plugin::gpg:

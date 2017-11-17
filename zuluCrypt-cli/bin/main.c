@@ -147,7 +147,7 @@ static int zuluCryptEXECheckIfTcrypt( struct_opts * clargs,uid_t uid )
 		/*
 		 * zuluCryptGetPassFromFile() is defined in path_access.c
 		 */
-		if( zuluCryptGetPassFromFile( key,uid,&st_key ) == 0 ){
+		if( zuluCryptGetPassFromFile( NULL,key,uid,&st_key ) == 0 ){
 
 			key = StringContent( st_key ) ;
 			key_len = StringLength( st_key ) ;

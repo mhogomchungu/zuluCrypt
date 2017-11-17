@@ -190,7 +190,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 			/*
 			 * zuluCryptGetPassFromFile() is defined at path_access.c"
 			 */
-			switch( zuluCryptGetPassFromFile( keytoremove,uid,pass ) ){
+			switch( zuluCryptGetPassFromFile( NULL,keytoremove,uid,pass ) ){
 
 				case 1 : return zuluExit( 11,stl )  ;
 				case 2 : return zuluExit( 12,stl )  ;

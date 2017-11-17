@@ -271,6 +271,8 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 
 	int status = 0 ;
 
+	int socket_path ;
+
 	tcrypt_opts tcrypt ;
 
 	memset( &tcrypt,'\0',sizeof( tcrypt_opts ) ) ;
@@ -343,7 +345,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			 * this function is defined at "path_access.c"
 			 */
 
-			switch( zuluCryptGetPassFromFile( existingKey,uid,ek ) ){
+			switch( zuluCryptGetPassFromFile( &socket_path,existingKey,uid,ek ) ){
 
 				case 1 : return zuluExit( 11,stl ) ;
 				case 4 : return zuluExit( 12,stl ) ;
@@ -354,7 +356,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			key1 = StringContent( *ek ) ;
 			len1 = StringLength( *ek ) ;
 
-			if( StringHasNoComponent( existingKey,"/.zuluCrypt-socket" ) ){
+			if( !socket_path ){
 
 				tcrypt.existing_key_is_keyfile = 1 ;
 			}
@@ -365,7 +367,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			 * this function is defined at "path_access.c"
 			 */
 
-			switch( zuluCryptGetPassFromFile( newKey,uid,nk ) ){
+			switch( zuluCryptGetPassFromFile( &socket_path,newKey,uid,nk ) ){
 
 				case 1 : return zuluExit( 11,stl ) ;
 				case 4 : return zuluExit( 12,stl ) ;
@@ -376,7 +378,7 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 			key2 = StringContent( *nk ) ;
 			len2 = StringLength( *nk ) ;
 
-			if( StringHasNoComponent( newKey,"/.zuluCrypt-socket" ) ){
+			if( !socket_path ){
 
 				tcrypt.new_key_is_keyfile = 1 ;
 			}

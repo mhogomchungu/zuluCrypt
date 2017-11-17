@@ -116,6 +116,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int tcrypt_source   = TCRYPT_PASSPHRASE ;
 	int tcrypt_source_h = TCRYPT_PASSPHRASE ;
 
+	int socket_path ;
+
 	int st  ;
 
 	int j ;
@@ -286,7 +288,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			 * function is defined at "path_access.c"
 			 */
 
-			switch( zuluCryptGetPassFromFile( pass,uid,pass_1 ) ){
+			switch( zuluCryptGetPassFromFile( &socket_path,pass,uid,pass_1 ) ){
 
 				case 1 : return zuluExit( 14,stl ) ;
 				case 4 : return zuluExit( 15,stl ) ;
@@ -299,7 +301,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				return zuluExit( 17,stl ) ;
 			}
 
-			if( StringHasComponent( pass,"/.zuluCrypt-socket" ) ){
+			if( socket_path ){
 
 				tcrypt_source = TCRYPT_PASSPHRASE ;
 			}else{
@@ -324,14 +326,14 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				 * function is defined in "path_access.c"
 				 */
 
-				switch( zuluCryptGetPassFromFile( tcrypt_hidden_volume_key_file,uid,pass_3 ) ){
+				switch( zuluCryptGetPassFromFile( &socket_path,tcrypt_hidden_volume_key_file,uid,pass_3 ) ){
 
 					case 1 : return zuluExit( 14,stl ) ;
 					case 4 : return zuluExit( 15,stl ) ;
 					case 2 : return zuluExit( 16,stl ) ;
 					case 5 : return zuluExit( 17,stl ) ;
 				}
-				if( StringHasComponent( tcrypt_hidden_volume_key_file,"/.zuluCrypt-socket" ) ){
+				if( socket_path ){
 
 					tcrypt_source_h = TCRYPT_PASSPHRASE ;
 				}else{

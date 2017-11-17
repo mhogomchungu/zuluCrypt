@@ -132,7 +132,7 @@ void zuluCryptPrepareSocketPath( uid_t uid )
  *  2  insufficient memory to open file
  *  0  success
  */
-int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
+int zuluCryptGetPassFromFile( int * socket_path,const char * path,uid_t uid,string_t * st )
 {
 	string_t p     = String( zuluCryptRunTimePath() ) ;
 	const char * z = StringContent( p ) ;
@@ -143,6 +143,10 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 
 	if( m ){
 
+		if( socket_path ){
+
+			*socket_path = 1 ;
+		}
 		/*
 		 * zuluCryptPrepareSocketPath() is defined in path_access.c
 		 */
@@ -151,7 +155,7 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 		zuluCryptSecurityDropElevatedPrivileges() ;
 
 		/*
-		 * path that starts with $HOME/.zuluCrypt-socket is treated not as a path to key file but as path
+		 * path that starts with $/tmp/zuluCrypt-$UID is treated not as a path to key file but as path
 		 * to a local socket to get a passphrase
 		 */
 		/*
@@ -161,6 +165,11 @@ int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st )
 
 		return 0 ;
 	}else{
+		if( socket_path ){
+
+			*socket_path = 0 ;
+		}
+
 		zuluCryptSecurityDropElevatedPrivileges() ;
 
 		/*

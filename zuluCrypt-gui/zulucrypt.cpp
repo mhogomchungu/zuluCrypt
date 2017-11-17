@@ -782,7 +782,7 @@ void zuluCrypt::volume_property()
 
 	x.replace( "\"","\"\"\"" ) ;
 
-	Task::run<QString>( [ x ](){
+	Task::run( [ x ](){
 
 		auto e = utility::appendUserUID( "%1 -s -d \"%2\"" ) ;
 

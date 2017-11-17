@@ -476,7 +476,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			/*
 			 * function is defined at "path_access.c"
 			 */
-			switch( zuluCryptGetPassFromFile( pass,uid,data ) ){
+			switch( zuluCryptGetPassFromFile( NULL,pass,uid,data ) ){
 
 				case 1 : return zuluExit_1( 16,opts,device,mount_point,stl ) ;
 				case 2 : return zuluExit_1( 17,opts,device,mount_point,stl ) ;
@@ -532,7 +532,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			*offset = String( "/dev/urandom.aes.cbc-essiv:sha256.256.ripemd160." ) ;
 			volume.plain_dm_properties = StringAppend( *offset,opts->offset ) ;
 		}else{
-			if( StringsAreNotEqual( opts->type,"luks" ) ){
+			if( StringsAreEqual( opts->type,"plain" ) ){
+
+				volume.plain_dm_properties = "aes.cbc-essiv:sha256.256.sha256.0" ;
+
+			}else if( StringsAreNotEqual( opts->type,"luks" ) ){
 
 				volume.plain_dm_properties = opts->type ;
 			}

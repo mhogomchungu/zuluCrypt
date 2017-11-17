@@ -631,7 +631,7 @@ namespace utility
 
 		static ::Task::future< utility::Task >& run( const QString& exe )
 		{
-			return ::Task::run< utility::Task >( [ exe ](){ return utility::Task( exe ) ; } ) ;
+			return ::Task::run( [ exe ](){ return utility::Task( exe ) ; } ) ;
 		}
 		static void wait( int s )
 		{

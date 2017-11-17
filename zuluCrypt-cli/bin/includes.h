@@ -252,7 +252,7 @@ int zuluCryptMountPointPrefixMatch( const char * path,uid_t uid,string_t * m_poi
 /*
  * this function is defined in path_access.c
  */
-int zuluCryptGetPassFromFile( const char * path,uid_t uid,string_t * st ) ;
+int zuluCryptGetPassFromFile( int * socket_path,const char * path,uid_t uid,string_t * st ) ;
 
 /*
  * this function is defined in path_access.c
