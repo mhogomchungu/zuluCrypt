@@ -283,7 +283,7 @@ version 5.3.0
    -- unlocking of a TrueCrypt volume is done by command: zuluCrypt-cli -O -d /dev/sdXX -t tcrypt
    -- unlocking of a VeraCrypt volume is done by command: zuluCrypt-cli -O -d /dev/sdXX -t vcrypt
 
-version 5.4.0(unreleased)
--- fix a bug that caused a wrong password to be used when creating a TrueCrypt/VeraCrypt volume. Easiest way to notice this
-   was that a just created volume could not be unlocked.
-
+version 5.4.0
+-- fix a bug that caused a wrong password to be used when creating a TrueCrypt/VeraCrypt volume from zuluCrypt-gui.
+   Easiest way to notice this was that a just created volume could not be unlocked.
+-- fix a build issue on some distributions.

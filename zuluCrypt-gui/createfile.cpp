@@ -242,13 +242,22 @@ void createfile::pbCreate()
 	file.close() ;
 
 	m_exit = false ;
-	m_running = true ;
 
 	if( m_ui->checkBoxNoRandomData->isChecked() ){
 
+		m_running = true ;
 		m_function( filePath ) ;
-
 	}else{
+		if( utility::requireSystemPermissions( filePath ) ){
+
+			if( !utility::enablePolkit( utility::background_thread::False ) ){
+
+				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+			}
+		}
+
+		m_running = true ;
+
 		int r = utility::clearVolume( filePath,&m_exit,0,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
 
 		if( r == 5 ){
@@ -259,7 +268,6 @@ void createfile::pbCreate()
 		}else if( r == 0 ){
 
 			m_function( filePath ) ;
-
 		}else{
 			msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
 			QFile::remove( filePath ) ;

@@ -141,12 +141,12 @@ int zuluCryptGetPassFromFile( int * socket_path,const char * path,uid_t uid,stri
 
 	StringDelete( &p ) ;
 
+	if( socket_path ){
+
+		*socket_path = m ;
+	}
+
 	if( m ){
-
-		if( socket_path ){
-
-			*socket_path = 1 ;
-		}
 		/*
 		 * zuluCryptPrepareSocketPath() is defined in path_access.c
 		 */
@@ -165,10 +165,6 @@ int zuluCryptGetPassFromFile( int * socket_path,const char * path,uid_t uid,stri
 
 		return 0 ;
 	}else{
-		if( socket_path ){
-
-			*socket_path = 0 ;
-		}
 
 		zuluCryptSecurityDropElevatedPrivileges() ;
 
