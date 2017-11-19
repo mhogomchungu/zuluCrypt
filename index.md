@@ -54,16 +54,16 @@ Screenshots are at the end of this page.
 
 ## zuluCrypt download page
 
-Latest released version is 5.3.0 and it can be downloaded by clicking any one of the two links below.
+Latest released version is 5.4.0 and it can be downloaded by clicking any one of the two links below.
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0.tar.bz2">zuluCrypt-5.3.0.tar.bz2</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0.tar.bz2">zuluCrypt-5.4.0.tar.bz2</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0.tar.xz">zuluCrypt-5.3.0.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0.tar.xz">zuluCrypt-5.4.0.tar.xz</a>
 
 ```
 The honors of being the first person to donate to zuluCrypt project goes to
-"ISRAEL JULIUS KIS JUHASZ" from Austria and version 5.3.0 is released in his name.
+"ISRAEL JULIUS KIS JUHASZ" from Austria and version 5.4.0 is released in his name.
 ```
 
 ## Binary packages
@@ -91,24 +91,22 @@ because of the following reasons:
 
 ```Binary packages for debian and ubuntu are below:```
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0-debian-8-Jessie.tar.xz">zuluCrypt-5.3.0-debian-8-Jessie.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-debian-8-Jessie.tar.xz">zuluCrypt-5.4.0-debian-8-Jessie.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0-debian-9-Stretch.tar.xz">zuluCrypt-5.3.0-debian-9-Stretch.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-debian-9-Stretch.tar.xz">zuluCrypt-5.4.0-debian-9-Stretch.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0-ubuntu-14.04-Trusty_Tahr.tar.xz">zuluCrypt-5.3.0-ubuntu-14.04-Trusty_Tahr.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-5.4.0-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-5.3.0-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.4.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.3.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-5.4.0-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-5.3.0-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
-
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.3.0/zuluCrypt-5.3.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-5.3.0-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-5.4.0-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
 
 These archives contains binaries for both 32 bit and 64 bit systems.
 
 
-Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/5.3.0">here</a>.
+Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/5.4.0">here</a>.
 
 Development versions of binary packages together with other generated package files can be obtained from <a href="http://download.opensuse.org/repositories/home:/mhogomchungu/">here</a>.
 
@@ -174,13 +172,6 @@ The list of most frequently asked questions can be found <a href="https://github
 
 ## Contact info:
 
-There are two keys below. The top one is the one i currently
-use and can use to decrypt ecrypted messages.
-The bottom one i no longer use and have lost the ability to
-decrypt messages encrypted with it but its used to
-signed currently released packages. Version 5.3.0(unreleased)
-will be signed with the new key.
-
 ```
 Name: Francis Banyikwa
 email: banyikwafb@gmail.com
@@ -245,4 +236,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 
 ```
 
-last update: Wed Nov  1 03:37:37 EAT 2017
+last update: Sun Nov 19 17:23:41 EAT 2017
