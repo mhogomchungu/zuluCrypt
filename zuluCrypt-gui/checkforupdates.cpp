@@ -38,12 +38,11 @@ void checkForUpdates::check( bool s )
 {
 	m_autocheck = s ;
 
-	auto e = m_network.get( m_networkRequest,[ this ]( QNetworkReply& e ){
+	m_network.get( _timeOut,m_networkRequest,[ this ]( QNetworkReply& e ){
 
 		this->showResult( this->parseResult( e.readAll() ) ) ;
-	} ) ;
 
-	m_network.timeOutManager( _timeOut,e,[ this ](){
+	},[ this ](){
 
 		auto s = QString::number( _timeOut ) ;
 		auto e = tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
