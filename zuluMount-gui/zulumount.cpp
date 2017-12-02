@@ -756,7 +756,7 @@ void zuluMount::cryfsVolumeProperties()
 
 	struct statfs vfs ;
 
-	if( Task::await< int >( [ & ](){ return statfs( mountPath.toLatin1().constData(),&vfs ) ; } ) ){
+	if( Task::await( [ & ](){ return statfs( mountPath.toLatin1().constData(),&vfs ) ; } ) ){
 
 		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Read Volume Properties" ) ) ;
 

@@ -138,7 +138,7 @@ void zuluCrypt::updateVolumeList( const QString& volume )
 {
 	m_ui->tableWidget->setEnabled( false ) ;
 
-	emit updateVolumeListSignal( volume,Task::await< QString >( [](){
+	emit updateVolumeListSignal( volume,Task::await( [](){
 
 		utility::Task::waitForOneSecond() ;
 
@@ -1045,11 +1045,9 @@ void zuluCrypt::close()
 
 	auto path = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
 
-	auto r = Task::await<int>( [ this,item,path ](){
+	auto r = Task::await( [ this,item,path ](){
 
 		auto exe = utility::appendUserUID( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ;
-
-		//utility::Task::waitForOneSecond() ; //for UI effect
 
 		return utility::Task( exe ).exitCode() ;
 	} ) ;

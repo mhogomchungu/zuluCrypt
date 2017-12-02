@@ -326,7 +326,7 @@ void cryptfiles::cryptFile( const char * s,const char * d,const char * k,unsigne
 		return ( *function )( e ) ;
 	} ;
 
-	auto r = Task::await< lxqt_wallet_error >( [ & ]{
+	auto r = Task::await( [ & ]{
 
 		auto r = u_int32_t( l ) ;
 
