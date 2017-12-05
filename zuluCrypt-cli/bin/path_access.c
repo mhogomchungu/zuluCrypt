@@ -107,19 +107,7 @@ int zuluCryptCanOpenPathForWriting( const char * path,uid_t uid )
 
 void zuluCryptPrepareSocketPath( uid_t uid )
 {
-	string_t st = String( "/tmp/zuluCrypt/-" ) ;
-
-	const char * e = StringAppendInt( st,uid ) ;
-
-	zuluCryptSecurityDropElevatedPrivileges() ;
-
-	if( mkdir( e,0700 ) ){
-
-		if( chown( e,uid,uid ) ){}
-		if( chmod( e,0700 ) ){}
-	}
-
-	StringDelete( &st ) ;
+	if( uid ){}
 }
 
 /*
