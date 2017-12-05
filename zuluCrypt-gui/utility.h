@@ -53,7 +53,7 @@
 
 #include <blkid/blkid.h>
 
-#include "task.h"
+#include "task.hpp"
 #include "lxqt_wallet.h"
 
 #include <QObject>
@@ -721,7 +721,7 @@ namespace utility
 		}	
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
-			      const QByteArray& password,const std::function< void() >& f,USEPOLKIT ) ;
+			      const QByteArray& password,std::function< void() > f,USEPOLKIT ) ;
 		QByteArray m_stdOut ;
 		QByteArray m_stdError ;
 

@@ -189,7 +189,7 @@ void utility::polkitFailedWarning( std::function< void() > e )
 void utility::Task::execute( const QString& exe,int waitTime,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
-			     const std::function< void() >& f,
+			     std::function< void() > f,
 			     USEPOLKIT polkit )
 {
 	if( polkit == USEPOLKIT::True && utility::useZuluPolkit() ){
@@ -221,38 +221,13 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_stdOut     = QObject::tr( "zuluCrypt: Failed To Establish Connection With zuluPolkit" ).toLatin1() ;
 		}
 	}else{
-		class Process : public QProcess{
-		public:
-			Process( const std::function< void() >& f ) : m_function( f )
-			{
-			}
-		protected:
-			void setupChildProcess()
-			{
-				m_function() ;
-			}
-		private:
-			const std::function< void() >& m_function ;
-		} p( f ) ;
+		auto p = ::Task::process::run( exe,{},waitTime,password,env,std::move( f ) ).get() ;
 
-		p.setProcessEnvironment( env ) ;
-
-		p.start( exe ) ;
-
-		if( !password.isEmpty() ){
-
-			p.waitForStarted() ;
-
-			p.write( password + '\n' ) ;
-
-			p.closeWriteChannel() ;
-		}
-
-		m_finished   = p.waitForFinished( waitTime ) ;
-		m_exitCode   = p.exitCode() ;
-		m_exitStatus = p.exitStatus() ;
-		m_stdOut     = p.readAllStandardOutput() ;
-		m_stdError   = p.readAllStandardError() ;
+		m_finished   = p.finished() ;
+		m_exitCode   = p.exit_code() ;
+		m_exitStatus = p.exit_status() ;
+		m_stdOut     = p.std_out() ;
+		m_stdError   = p.std_error() ;
 	}
 }
 

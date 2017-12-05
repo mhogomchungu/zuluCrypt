@@ -28,7 +28,7 @@
  * SUCH DAMAGE.
  */
 
-#include "task.h"
+#include "task.hpp"
 #include "example.h"
 
 #include <QString>

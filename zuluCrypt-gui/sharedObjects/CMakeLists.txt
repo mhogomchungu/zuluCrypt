@@ -13,12 +13,10 @@ set( SRC
 
 set( MOC_FILES
 	../dialogok.h
-	../../external_libraries/tasks/task.h
 	../dialogmsg.h
 	../readonlywarning.h
 	../plugin.h
 	../utility.h
-	../networkAccessManager.hpp
 )
 
 set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui ../dialogok.ui )
@@ -33,9 +31,9 @@ if( QT5 )
 	add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} ${ICON} )
 
 	if( BUILDKWALLET )
-		target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt5Network_LIBRARIES} )
+                target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt5Network_LIBRARIES} tasks networkAccessManager )
 	else()
-		target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${Qt5Network_LIBRARIES} )
+                target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${Qt5Network_LIBRARIES} tasks networkAccessManager )
 	endif()
 else()
 	INCLUDE( ${QT_USE_FILE} )
@@ -46,9 +44,9 @@ else()
 	add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} ${ICON} )
 
 	if( BUILDKWALLET )
-		target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${QT_LIBRARIES} )
+                target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${QT_LIBRARIES} tasks networkAccessManager )
 	else()
-		target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${QT_LIBRARIES} )
+                target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${QT_LIBRARIES} tasks networkAccessManager )
 	endif()
 endif()
 

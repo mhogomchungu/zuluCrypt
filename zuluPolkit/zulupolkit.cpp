@@ -19,7 +19,7 @@
 
 
 #include "zulupolkit.h"
-#include "../external_libraries/tasks/task.h"
+#include "task.hpp"
 #include "bin_path.h"
 #include "../zuluCrypt-gui/executablesearchpaths.h"
 #include "json.h"
@@ -40,38 +40,6 @@
 
 namespace utility
 {
-	struct Task
-	{
-		Task()
-		{
-		}
-		Task( const QString& exe,const QString& password )
-		{
-			QProcess p ;
-
-			p.start( exe ) ;
-
-			p.waitForStarted() ;
-
-			p.write( password.toLatin1() + '\n' ) ;
-
-			p.closeWriteChannel() ;
-
-			finished   = p.waitForFinished( -1 ) ;
-			exitCode   = p.exitCode() ;
-			exitStatus = p.exitStatus() ;
-			stdOut     = p.readAllStandardOutput() ;
-			stdError   = p.readAllStandardError() ;
-		}
-
-		QByteArray stdOut ;
-		QByteArray stdError ;
-
-		int exitCode   = 255 ;
-		int exitStatus = 255 ;
-		bool finished  = false ;
-	};
-
 	QString executableFullPath( const QString& e )
 	{
 		QString exe ;
@@ -116,10 +84,8 @@ static bool _terminalEchoOff( struct termios * old,struct termios * current )
 	#define zuluPermission QFile
 #endif
 
-static utility::Task _zulupolkit( const QString& cmd,const QString& path,const QString& data )
+static QByteArray _zulupolkit( const QString& cmd,const QString& path,const QString& data )
 {
-	utility::Task s ;
-
 	QFile e( path ) ;
 
 	QDir().mkpath( "/etc/zuluCrypt" ) ;
@@ -127,12 +93,13 @@ static utility::Task _zulupolkit( const QString& cmd,const QString& path,const Q
 	auto q = zuluPermission::ReadOwner | zuluPermission::WriteOwner ;
 	QFile().setPermissions( "/etc/zuluCrypt",q | zuluPermission::ExeOwner ) ;
 
+	QByteArray s ;
+
 	if( cmd == "Read" ){
 
 		if( e.open( QIODevice::ReadOnly ) ){
 
-			s.stdOut = e.readAll() ;
-			s.exitCode = 0 ;
+			s = e.readAll() ;
 		}
 
 	}else if( cmd == "Write" ){
@@ -140,7 +107,6 @@ static utility::Task _zulupolkit( const QString& cmd,const QString& path,const Q
 		if( e.open( QIODevice::WriteOnly | QIODevice::Truncate ) ){
 
 			e.write( data.toLatin1() ) ;
-			s.exitCode = 0 ;
 		}
 	}
 
@@ -201,20 +167,34 @@ void zuluPolkit::start()
 	}
 }
 
-static void _respond( std::unique_ptr< QLocalSocket >& s,
-		      const utility::Task& e = utility::Task() )
+static void _respond( QLocalSocket& s,const QByteArray& e )
 {
 	nlohmann::json json ;
 
-	json[ "stdOut" ]     = e.stdOut.constData() ;
-	json[ "stdError" ]   = e.stdError.constData() ;
-	json[ "exitCode" ]   = e.exitCode ;
-	json[ "exitStatus" ] = e.exitStatus ;
-	json[ "finished" ]   = e.finished ;
+	json[ "stdOut" ]     = e.constData() ;
+	json[ "stdError" ]   = e.constData() ;
+	json[ "exitCode" ]   = 0 ;
+	json[ "exitStatus" ] = 0 ;
+	json[ "finished" ]   = true ;
 
-	s->write( json.dump().c_str() ) ;
+	s.write( json.dump().c_str() ) ;
 
-	s->waitForBytesWritten() ;
+	s.waitForBytesWritten() ;
+}
+
+static void _respond( QLocalSocket& s,const Task::process::result& e = Task::process::result() )
+{
+	nlohmann::json json ;
+
+	json[ "stdOut" ]     = e.std_out().constData() ;
+	json[ "stdError" ]   = e.std_error().constData() ;
+	json[ "exitCode" ]   = e.exit_code() ;
+	json[ "exitStatus" ] = e.exit_status() ;
+	json[ "finished" ]   = e.finished() ;
+
+	s.write( json.dump().c_str() ) ;
+
+	s.waitForBytesWritten() ;
 }
 
 static bool _correct_cmd( const QString& cmd )
@@ -223,17 +203,20 @@ static bool _correct_cmd( const QString& cmd )
 	auto b = zuluMountPath" " ;
 	auto su = utility::executableFullPath( "su" ) ;
 	auto e = su + " - -c \"" + utility::executableFullPath( "ecryptfs-simple" ) ;
-	return cmd.startsWith( a ) || cmd.startsWith( b ) || cmd.startsWith( e ) ;
+	auto f = su + " - -c \"'" + utility::executableFullPath( "ecryptfs-simple" ) ;
+	return cmd.startsWith( a ) || cmd.startsWith( b ) || cmd.startsWith( e ) || cmd.startsWith( f ) ;
 }
 
 void zuluPolkit::gotConnection()
 {
-	std::unique_ptr< QLocalSocket > s( m_server.nextPendingConnection() ) ;
+	std::unique_ptr< QLocalSocket > m( m_server.nextPendingConnection() ) ;
+
+	auto& s = *m ;
 
 	try{
-		s->waitForReadyRead() ;
+		s.waitForReadyRead() ;
 
-		auto json = nlohmann::json::parse( s->readAll().constData() ) ;
+		auto json = nlohmann::json::parse( s.readAll().constData() ) ;
 
 		auto path     = QString::fromStdString( json[ "path" ].get< std::string >() ) ;
 		auto data     = QString::fromStdString( json[ "data" ].get< std::string >() ) ;
@@ -253,13 +236,13 @@ void zuluPolkit::gotConnection()
 
 			}else if( _correct_cmd( command ) ){
 
-				return _respond( s,utility::Task( command,password ) ) ;
+				return _respond( s,Task::process::run( command,password.toLatin1() ).get() ) ;
 			}
 		}
 
 	}catch( ... ){}
 
-	_respond( s ) ;
+	_respond( s,"zuluPolkit: Booooooooo!!!!" ) ;
 }
 
 QString zuluPolkit::readStdin()

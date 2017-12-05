@@ -22,7 +22,7 @@
 #include <functional>
 #include <memory>
 
-#include "task.h"
+#include "task.hpp"
 
 class QObject ;
 class events ;

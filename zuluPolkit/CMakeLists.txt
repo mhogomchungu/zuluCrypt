@@ -5,7 +5,6 @@ include_directories( ${PROJECT_BINARY_DIR}/zuluPolkit/ )
 
 set( MOC_FILES
 	zulupolkit.h
-	../external_libraries/tasks/task.h
  )
 
 set( SRC
@@ -30,9 +29,9 @@ set_target_properties( zuluPolkit PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL
 set_target_properties( zuluPolkit PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
 
 if( QT5 )
-	target_link_libraries( zuluPolkit ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} )
+        target_link_libraries( zuluPolkit ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} tasks )
 else()
-	target_link_libraries( zuluPolkit ${QT_LIBRARIES} )
+        target_link_libraries( zuluPolkit ${QT_LIBRARIES} tasks )
 endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/org.zulucrypt.zulupolkit.policy

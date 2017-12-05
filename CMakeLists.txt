@@ -265,8 +265,6 @@ add_subdirectory( zuluSafe )
 
 if( NOT NOGUI )
 
-	include_directories( external_libraries/tasks )
-
 	if( INTERNAL_LXQT_WALLET )
 
 		message( STATUS "---------------------------------------------------------------------------" )
@@ -372,10 +370,26 @@ if( NOT NOGUI )
 	set( CMAKE_CXX_STANDARD_REQUIRED ON )
 	set( CMAKE_CXX_EXTENSIONS OFF)
 
+        ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/tasks )
+        ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/NetworkAccessManager )
+        include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/tasks )
+        include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/NetworkAccessManager )
+
 	ADD_SUBDIRECTORY( zuluCrypt-gui/sharedObjects )
 	ADD_SUBDIRECTORY( zuluCrypt-gui )
 	ADD_SUBDIRECTORY( plugins )
 	ADD_SUBDIRECTORY( zuluMount-gui )
+
+        file( WRITE ${PROJECT_BINARY_DIR}/zuluPolkit.h "#define POLKIT_SUPPORT 1" )
+
+        if( USE_POLKIT )
+
+                file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 1" )
+        else()
+                file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 0" )
+        endif()
+
+        ADD_SUBDIRECTORY( zuluPolkit )
 
 else( NOT NOGUI )
 	if( QT5 )
@@ -474,17 +488,6 @@ else()
 	message( STATUS "Not building GUI components" )
 	message( STATUS "---------------------------------------------------------------------------\n\n" )
 endif()
-
-file( WRITE ${PROJECT_BINARY_DIR}/zuluPolkit.h "#define POLKIT_SUPPORT 1" )
-
-if( USE_POLKIT )
-
-        file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 1" )
-else()
-        file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 0" )
-endif()
-
-ADD_SUBDIRECTORY( zuluPolkit )
 
 install ( FILES zuluCrypt.xml  DESTINATION "${CMAKE_INSTALL_PREFIX}/share/mime/packages/" )
 
