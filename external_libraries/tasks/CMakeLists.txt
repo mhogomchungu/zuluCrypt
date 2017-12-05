@@ -10,21 +10,26 @@ set( CMAKE_CXX_EXTENSIONS OFF)
 
 INCLUDE(CMakeDependentOption)
 
-find_package( Qt5Core REQUIRED )
+if( QT5 )
 
-QT5_WRAP_CPP( MOC task.hpp example.h )
-QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
+	find_package( Qt5Core REQUIRED )
+	QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
+	include_directories( ${Qt5Core_INCLUDE_DIRS} )
 
-include_directories( ${Qt5Core_INCLUDE_DIRS} )
+	add_library( tasks STATIC ${MOC_LIBRARY} )
 
-#add_executable( example example.cpp main.cpp ${MOC} )
-
-add_library( tasks STATIC ${MOC_LIBRARY} )
-
-#TARGET_LINK_LIBRARIES( example ${Qt5Core_LIBRARIES} )
-
-if( WIN32 )
-	set_target_properties( tasks PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic " )
+	TARGET_LINK_LIBRARIES( tasks ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} )
 else()
-	set_target_properties( tasks PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
+	find_package( Qt4 REQUIRED )
+
+	add_definitions( -I${Qt4_INCLUDE_DIR} )
+	add_definitions( -I${QT_HEADERS_DIR} )
+	INCLUDE( ${QT_USE_FILE} )
+	QT4_WRAP_CPP( MOC_LIBRARY task.hpp )
+
+	add_library( tasks STATIC ${MOC_LIBRARY} )
+
+	TARGET_LINK_LIBRARIES( tasks -lQtCore )
 endif()
+
+set_target_properties( tasks PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
