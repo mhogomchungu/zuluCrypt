@@ -351,7 +351,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="219"/>
         <source>zuluCrypt: Failed To Establish Connection With zuluPolkit</source>
-        <translation type="unfinished"></translation>
+        <translation>zuluCrypt a échoué à établir une connexion avec zuluPolkit.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="526"/>
@@ -384,7 +384,8 @@ et un «miroir» secondaire du point de montage accessible au public sera créé
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1108"/>
         <source>&quot;%1&quot; Folder Must Be Writable.
 &quot;%2&quot; Folder Must Also Be Writable.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; Répertoire devant être autorisé en écriture.
+&quot;%2&quot; Répertoire devant être aussi autorisé en écriture.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1582"/>
@@ -446,7 +447,11 @@ Ce plugin récupère une clé de verrouillage dans un fichier gpg avec une clé 
 &quot;org.zulucrypt.zulupolkit.policy&quot; polkit file is misconfigured,
 zuluPolkit executable could not be found
  or pkexec failed to start zuluPolkit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec du démarrage de l&apos;Application d&apos;Aide.
+
+&quot;org.zulucrypt.zulupolkit.policy&quot; le fichier polkit file est mal configuré,
+zuluPolkit l&apos;exécutable n&apos;est pas trouvé
+ ou pkexec échoue au démarrage de zuluPolkit.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="304"/>
@@ -458,7 +463,7 @@ zuluPolkit executable could not be found
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="305"/>
         <source>Failed to locate pkexec executable</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec pour trouver l&apos;emplacement de l&apos;exécutable pkexec</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1925"/>
@@ -548,7 +553,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="51"/>
         <source>Network Request Failed To Respond Within %1 Seconds.</source>
-        <translation type="unfinished"></translation>
+        <translation>Le réseau n&apos;a pas répondu dans l&apos;espace de temps de %1 secondes.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="53"/>
@@ -569,7 +574,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="139"/>
         <source>Version Info</source>
-        <translation>Infos de Version</translation>
+        <translation>Infos de la Version</translation>
     </message>
 </context>
 <context>
@@ -1223,7 +1228,7 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="871"/>
         <source>Failed to enable polkit support</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;activation du support polkit</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="879"/>
@@ -1495,7 +1500,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="295"/>
         <source>These very old encrypted files are no longer supported</source>
-        <translation type="unfinished"></translation>
+        <translation>Ces fichiers chiffrés de manière obsolète ne sont plus supportés</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/cryptfiles.cpp" line="434"/>
@@ -1756,7 +1761,7 @@ Recommandations de lecture FAQ de la page officielle du projet.</translation>
     <message>
         <location filename="../../zuluCrypt-gui/dialogok.ui" line="45"/>
         <source>TextLabel</source>
-        <translation>Etiquette de texte</translation>
+        <translation>EtiquetteTexte</translation>
     </message>
 </context>
 <context>
@@ -2013,22 +2018,22 @@ Are you sure you want to continue? </source>
     <message>
         <location filename="../../zuluCrypt-gui/filemanager.ui" line="14"/>
         <source>Set File Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le gestionnaire de fichiers</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/filemanager.ui" line="26"/>
         <source>TextLabel</source>
-        <translation type="unfinished">Etiquette de texte</translation>
+        <translation>EtiquetteTexte</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/filemanager.ui" line="55"/>
         <source>&amp;Set</source>
-        <translation type="unfinished">&amp;Activer</translation>
+        <translation>&amp;Activer</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/filemanager.cpp" line="36"/>
         <source>Enter Below The Name Of The Application You Want To Be Used To Open Mount Points.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tapez ci dessous le nom de l&apos;application que vous voulez utiliser pour ouvrir les points de montage</translation>
     </message>
 </context>
 <context>
@@ -2230,7 +2235,7 @@ Are you sure you want to continue? </source>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.cpp" line="361"/>
         <source>Failed to enable polkit support</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;activation du support polkit</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.cpp" line="382"/>
@@ -2363,7 +2368,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.ui" line="45"/>
         <source>Key </source>
-        <translation>Clé</translation>
+        <translation>Clé </translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.ui" line="83"/>
@@ -2458,7 +2463,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="228"/>
         <source>Failed to enable polkit support</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;activation du support polkit</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="246"/>
@@ -2474,7 +2479,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="253"/>
         <source>
 Deleting it will make the volume unopenable and lost forever.</source>
-        <translation>Cet effacement rendra le volume impossible à ouvrir et perdu définitivement.</translation>
+        <translation>Cet effacement rendra le volume impossible à ouvrir et donc perdu définitivement.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksdeletekey.cpp" line="254"/>
@@ -2712,12 +2717,12 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="330"/>
         <source>Outer Volume Key ONLY</source>
-        <translation type="unfinished"></translation>
+        <translation>Clé de volume externe SEULEMENT</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.ui" line="352"/>
         <source>TextLabel</source>
-        <translation type="unfinished">Etiquette de texte</translation>
+        <translation>EtiquetteTexte</translation>
     </message>
     <message>
         <source>Keyfile</source>
@@ -2822,7 +2827,7 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="395"/>
         <source>Failed to enable polkit support</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;activation du support polkit</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="441"/>
@@ -2864,7 +2869,7 @@ Si possible, stockez le en toute sécurité.</translation>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="566"/>
         <source>Presented device is not a LUKS device</source>
-        <translation type="unfinished"></translation>
+        <translation>Le périphérique choisi n&apos;est pas un périphérique LUKS</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/managevolumeheader.cpp" line="567"/>
@@ -3108,7 +3113,8 @@ Redémarrer zuluCrypt depuis un compte root pour le faire</translation>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="152"/>
         <source>Check This Box To Make Password Visible</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment> </translatorcomment>
+        <translation>Cocher cette case pour rendre le mot de passe visible</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="154"/>
@@ -3118,7 +3124,7 @@ Redémarrer zuluCrypt depuis un compte root pour le faire</translation>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="189"/>
         <source>PIM Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valeur PIM</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="197"/>
@@ -3256,12 +3262,12 @@ Le volume ne semble pas avoir une entrée dans le trousseau</translation>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="762"/>
         <source>Volume is not a LUKS volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Le volume n&apos;est pas un volume LUKS</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="783"/>
         <source>Failed to get a key from the network</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;obtention de la clé depuis le réseau</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="892"/>
@@ -3581,7 +3587,7 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
     <message>
         <location filename="../../zuluCrypt-gui/tcrypt.cpp" line="59"/>
         <source>TrueCrypt/VeraCrypt Keys</source>
-        <translation>TrueCrypt/VeraCrypt Clés</translation>
+        <translation>Clés TrueCrypt/VeraCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/tcrypt.cpp" line="110"/>
@@ -3644,7 +3650,7 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
     <message>
         <location filename="../../zuluCrypt-gui/walletconfig.ui" line="64"/>
         <source>Do&amp;ne</source>
-        <translation>&amp;Fini</translation>
+        <translation>Fi&amp;ni</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/walletconfig.ui" line="111"/>
@@ -3756,7 +3762,7 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="139"/>
         <source>Optio&amp;ns</source>
-        <translation type="unfinished"></translation>
+        <translation>Optio&amp;ns</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="162"/>
@@ -4317,7 +4323,7 @@ Faire un glisser/déposer des fichiers de clés pour les ajouter à la liste</tr
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="532"/>
         <source>Set File Manager</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir le Gestionnaire de Fichiers</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="693"/>
@@ -4430,13 +4436,14 @@ Avoir une sauvegarde de l&apos;en-tête de volume est fortement recommandé car 
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="132"/>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="232"/>
         <source>ERROR</source>
-        <translation type="unfinished">ERREUR</translation>
+        <translation>ERREUR</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="232"/>
         <source>zuluCrypt Failed To Connect To zuluPolkit.
 Please Report This Serious Bug.</source>
-        <translation type="unfinished"></translation>
+        <translation>zuluCrypt a échoué à la connexion de zuluPolkit.
+Merci de reporter ce bug important.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="938"/>
