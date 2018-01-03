@@ -196,6 +196,8 @@ void zuluCrypt::updateVolumeList( QString volume,QString r )
 
 void zuluCrypt::initKeyCombo()
 {
+	return ;
+
 	this->addAction( [ this ](){
 
 		auto ac = new QAction( this ) ;
@@ -353,6 +355,20 @@ void zuluCrypt::itemEntered( QTableWidgetItem * item )
 void zuluCrypt::setupConnections()
 {
 	m_ui->tableWidget->setMouseTracking( true ) ;
+
+	m_ui->tableWidget->setContextMenuPolicy( Qt::CustomContextMenu ) ;
+
+	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
+
+		Q_UNUSED( s ) ;
+
+		auto item = m_ui->tableWidget->currentItem() ;
+
+		if( item ){
+
+			this->itemClicked( item,QCursor::pos() ) ;
+		}
+	} ) ;
 
 	connect( this,SIGNAL( updateVolumeListSignal( QString,QString ) ),this,SLOT( updateVolumeList( QString,QString ) ),Qt::QueuedConnection ) ;
 
@@ -909,7 +925,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * it )
 	this->itemClicked( it,true ) ;
 }
 
-void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
+void zuluCrypt::itemClicked( QTableWidgetItem * item,QPoint point )
 {
 	QMenu m ;
 
@@ -935,7 +951,6 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	m_sharedMountPoint = utility::sharedMountPointPath( m_point ) ;
 
-
 	m.addSeparator() ;
 
 	if( m_ui->tableWidget->item( item->row(),2 )->text().startsWith( "luks" ) ){
@@ -954,18 +969,22 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	auto volume_id = m_ui->tableWidget->item( item->row(),0 )->text() + "\t" ;
 
-	QFile f( utility::homePath() + "/.zuluCrypt/favorites" ) ;
+	auto has_favorite = [ & ](){
 
-	decltype( f.readAll() ) data ;
+		for( const auto& it : utility::readFavorites() ){
 
-	if( f.open( QIODevice::ReadOnly ) ){
+			if( it.startsWith( volume_id ) ){
 
-		data = f.readAll() ;
-	}
+				return true ;
+			}
+		}
+
+		return false ;
+	}() ;
 
 	auto ac = m.addAction( tr( "Add To Favorite" ) ) ;
 
-	if( data.contains( volume_id.toLatin1() ) ){
+	if( has_favorite ){
 
 		ac->setEnabled( false ) ;
 	}else{
@@ -977,16 +996,22 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
 
 	connect( m.addAction( tr( "Unmount" ) ),SIGNAL( triggered() ),this,SLOT( close() ) ) ;
 
+	m.addSeparator() ;
+	m.addAction( tr( "Cancel" ) ) ;
+
+	m.exec( point ) ;
+}
+
+void zuluCrypt::itemClicked( QTableWidgetItem * item,bool clicked )
+{
 	if( clicked ){
 
-		m.exec( QCursor::pos() ) ;
+		this->itemClicked( item,QCursor::pos() ) ;
 	}else{
 		int x = m_ui->tableWidget->columnWidth( 0 ) ;
 		int y = m_ui->tableWidget->rowHeight( item->row() ) * item->row() + 20 ;
 
-		m.addSeparator() ;
-		m.addAction( tr( "Cancel" ) ) ;
-		m.exec( m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
+		this->itemClicked( item,m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
 	}
 }
 

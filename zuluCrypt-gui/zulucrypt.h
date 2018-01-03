@@ -24,6 +24,7 @@
 #include <QString>
 #include <QStringList>
 #include <QSystemTrayIcon>
+#include <QPoint>
 
 #include "../zuluMount-gui/monitor_mountinfo.h"
 #include "lxqt_wallet.h"
@@ -83,6 +84,7 @@ private slots :
 	void closeAll( QTableWidgetItem *,int ) ;
 	void itemClicked(  QTableWidgetItem * item ) ;
 	void itemClicked( QTableWidgetItem * item,bool ) ;
+	void itemClicked( QTableWidgetItem * item,QPoint point ) ;
 	void volume_property( void ) ;
 	void UIMessage( QString title,QString message ) ;
 	void fonts( void ) ;

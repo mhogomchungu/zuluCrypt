@@ -138,6 +138,20 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 	connect( this,SIGNAL( unlistVolume( QString ) ),
 		 this,SLOT( removeVolume( QString ) ) ) ;
 
+	m_ui->tableWidget->setContextMenuPolicy( Qt::CustomContextMenu ) ;
+
+	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
+
+		Q_UNUSED( s ) ;
+
+		auto item = m_ui->tableWidget->currentItem() ;
+
+		if( item ){
+
+			this->showContextMenu( item,true ) ;
+		}
+	} ) ;
+
 	this->setUpShortCuts() ;
 
 	this->setUpFont() ;
@@ -1079,6 +1093,7 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 	m.addAction( tr( "Close Menu" ) ) ;
 
 	if( itemClicked ){
+
 		m.exec( QCursor::pos() ) ;
 	}else{
 		auto p = this->pos() ;
