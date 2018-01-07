@@ -68,7 +68,7 @@ The honors of being the first person to donate to zuluCrypt project goes to
 
 ## Binary packages
 
-Fedora and opensuse users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Amhogomchungu&package=zuluCrypt">this link</a>.
+Fedora and opensuse users can install binary packages by following instructions on <a href="http://software.opensuse.org/download.html?project=home%3Aobs_mhogomchungu&package=zulucrypt">this link</a>.
 
 Debian and Ubuntu users can install binary packages from a list given below.
 
