@@ -31,6 +31,7 @@
 #include <locale.h>
 #include <libintl.h>
 #include <locale.h>
+#include <linux/limits.h>
 
 #include "zuluwallet.h"
 #include "version.h"

@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <libintl.h>
 #include <locale.h>
+#include "<linux/limits.h>"
 
 #include <blkid/blkid.h>
 
