@@ -364,16 +364,46 @@ if( NOT NOGUI )
 		INCLUDE( ${QT_USE_FILE} )
         endif()
 
-        add_definitions( -std=c++14 )
+	pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
+	pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
+
+	if( MCHUNGU_NETWORK_FOUND )
+
+		message( STATUS "---------------------------------------------------------------------------" )
+		message( STATUS "mhogomchungu_network library will be provided by an external library" )
+		message( STATUS "---------------------------------------------------------------------------" )
+
+		include_directories( "${MCHUNGU_NETWORK_INCLUDEDIR}" )
+		link_directories( "${MCHUNGU_NETWORK_LIBDIR}" )
+	else()
+		message( STATUS "---------------------------------------------------------------------------" )
+		message( STATUS "mhogomchungu_network library will be provided by an internal library" )
+		message( STATUS "---------------------------------------------------------------------------" )
+		ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/NetworkAccessManager )
+		include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/NetworkAccessManager )
+	endif()
+
+	if( MCHUNGU_TASK_FOUND )
+
+		message( STATUS "---------------------------------------------------------------------------" )
+		message( STATUS "mhogomchungu_task library will be provided by an external library" )
+		message( STATUS "---------------------------------------------------------------------------" )
+
+		include_directories( "${MCHUNGU_TASK_INCLUDEDIR}" )
+		link_directories( "${MCHUNGU_TASK_LIBDIR}" )
+	else()
+		message( STATUS "---------------------------------------------------------------------------" )
+		message( STATUS "mhogomchungu_task library will be provided by an internal library" )
+		message( STATUS "---------------------------------------------------------------------------" )
+		include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/tasks )
+		ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/tasks )
+	endif()
+
+	add_definitions( -std=c++14 )
 
 	set( CMAKE_CXX_STANDARD 14 )
 	set( CMAKE_CXX_STANDARD_REQUIRED ON )
 	set( CMAKE_CXX_EXTENSIONS OFF)
-
-        ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/tasks )
-        ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/NetworkAccessManager )
-        include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/tasks )
-        include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/NetworkAccessManager )
 
 	ADD_SUBDIRECTORY( zuluCrypt-gui/sharedObjects )
 	ADD_SUBDIRECTORY( zuluCrypt-gui )

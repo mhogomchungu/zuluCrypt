@@ -26,7 +26,7 @@
 #include <QString>
 #include <QByteArray>
 
-#include "networkAccessManager.hpp"
+#include "network_access_manager.hpp"
 
 #include <utility>
 #include <array>
