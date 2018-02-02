@@ -29,9 +29,9 @@ set_target_properties( zuluPolkit PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL
 set_target_properties( zuluPolkit PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
 
 if( QT5 )
-        target_link_libraries( zuluPolkit ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} tasks )
+        target_link_libraries( zuluPolkit ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} mhogomchungu_task )
 else()
-        target_link_libraries( zuluPolkit ${QT_LIBRARIES} tasks )
+        target_link_libraries( zuluPolkit ${QT_LIBRARIES} mhogomchungu_task )
 endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/org.zulucrypt.zulupolkit.policy

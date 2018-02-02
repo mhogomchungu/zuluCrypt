@@ -65,7 +65,7 @@
 #include "install_prefix.h"
 #include "utility.h"
 #include "executablesearchpaths.h"
-#include "networkAccessManager.hpp"
+#include "network_access_manager.hpp"
 #include "zuluPolkit.h"
 
 #include <sys/types.h>
