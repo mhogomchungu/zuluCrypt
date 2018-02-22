@@ -73,6 +73,8 @@ pkg_check_modules( CRYPTSETUP libcryptsetup )
 pkg_check_modules( BLKID blkid )
 pkg_check_modules( DEVMAPPER devmapper )
 pkg_check_modules( UUID uuid )
+pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
+pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 
 if ( WITH_PWQUALITY )
 	pkg_check_modules( PWQUALITY pwquality )
@@ -398,6 +400,38 @@ if( NOT NOGUI )
 		include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/tasks )
 		ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/tasks )
 	endif()
+
+        if( MCHUNGU_NETWORK_FOUND )
+
+                message( STATUS "---------------------------------------------------------------------------" )
+                message( STATUS "mhogomchungu_network library will be provided by an external library" )
+                message( STATUS "---------------------------------------------------------------------------" )
+
+                include_directories( "${MCHUNGU_NETWORK_INCLUDEDIR}" )
+                link_directories( "${MCHUNGU_NETWORK_LIBDIR}" )
+        else()
+                message( STATUS "---------------------------------------------------------------------------" )
+                message( STATUS "mhogomchungu_network library will be provided by an internal library" )
+                message( STATUS "---------------------------------------------------------------------------" )
+                ADD_SUBDIRECTORY( src/3rdParty/NetworkAccessManager )
+                include_directories( src/3rdParty/NetworkAccessManager )
+        endif()
+
+        if( MCHUNGU_TASK_FOUND )
+
+                message( STATUS "---------------------------------------------------------------------------" )
+                message( STATUS "mhogomchungu_task library will be provided by an external library" )
+                message( STATUS "---------------------------------------------------------------------------" )
+
+                include_directories( "${MCHUNGU_TASK_INCLUDEDIR}" )
+                link_directories( "${MCHUNGU_TASK_LIBDIR}" )
+        else()
+                message( STATUS "---------------------------------------------------------------------------" )
+                message( STATUS "mhogomchungu_task library will be provided by an internal library" )
+                message( STATUS "---------------------------------------------------------------------------" )
+                include_directories( src/3rdParty/tasks )
+                ADD_SUBDIRECTORY( src/3rdParty/tasks )
+        endif()
 
 	add_definitions( -std=c++14 )
 

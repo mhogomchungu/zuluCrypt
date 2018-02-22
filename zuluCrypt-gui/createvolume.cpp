@@ -30,7 +30,7 @@
 #include <QCloseEvent>
 #include <QThreadPool>
 
-#include "task.h"
+#include "task.hpp"
 #include "utility.h"
 #include "erasedevice.h"
 #include "createvolumedialog.h"

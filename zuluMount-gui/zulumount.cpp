@@ -54,7 +54,7 @@
 #include "../zuluCrypt-gui/utility.h"
 #include "siritask.h"
 #include "zulumounttask.h"
-#include "task.h"
+#include "task.hpp"
 #include "../zuluCrypt-gui/checkforupdates.h"
 #include "../zuluCrypt-gui/favorites.h"
 
@@ -214,7 +214,7 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 	m_favorite_menu = [ this,trayMenu ](){
 
-		auto m = trayMenu->addMenu( tr( "Favorites" ) ) ;
+		auto m = new QMenu( tr( "Favorites" ),this ) ;
 
 		m_menuPair.append( { m,"Favorites" } ) ;
 
@@ -225,6 +225,8 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 		connect( m,SIGNAL( aboutToShow() ),
 			 this,SLOT( showFavorites() ) ) ;
+
+		m_ui->pbfavorites->setMenu( m ) ;
 
 		return m ;
 	}() ;

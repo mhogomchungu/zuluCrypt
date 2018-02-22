@@ -43,7 +43,7 @@
 #include "ui_password.h"
 #include "openvolume.h"
 #include "tcrypt.h"
-#include "task.h"
+#include "task.hpp"
 #include "utility.h"
 #include "dialogmsg.h"
 #include "plugin_path.h"

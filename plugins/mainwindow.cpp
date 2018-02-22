@@ -28,7 +28,7 @@
 
 #include "../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 
-#include "task.h"
+#include "task.hpp"
 
 MainWindow::MainWindow( MainWindow::function_t f,QWidget * parent ) :
 	QWidget( parent ),m_ui( new Ui::MainWindow ),m_handle( nullptr ),m_function( std::move( f ) )

@@ -133,6 +133,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="pbfavorites">
+          <property name="text">
+           <string>&amp;Favorites</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="pbmenu">
           <property name="text">
            <string>Men&amp;u</string>

@@ -31,7 +31,7 @@
 
 #include "bin_path.h"
 #include "../zuluCrypt-gui/dialogmsg.h"
-#include "task.h"
+#include "task.hpp"
 #include "../zuluCrypt-cli/constants.h"
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/utility.h"

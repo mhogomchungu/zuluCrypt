@@ -22,7 +22,7 @@
 #include <QCloseEvent>
 #include <QDialog>
 #include "ui_openvolume.h"
-#include "task.h"
+#include "task.hpp"
 #include <QProcess>
 #include <iostream>
 #include <QTableWidget>

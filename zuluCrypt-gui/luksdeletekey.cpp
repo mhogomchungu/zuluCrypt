@@ -36,7 +36,7 @@
 #include "ui_openvolume.h"
 #include "openvolume.h"
 #include "ui_luksdeletekey.h"
-#include "task.h"
+#include "task.hpp"
 #include "dialogmsg.h"
 #include "plugin.h"
 

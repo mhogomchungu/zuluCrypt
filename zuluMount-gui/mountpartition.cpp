@@ -38,7 +38,7 @@
 
 #include "zulumounttask.h"
 #include "bin_path.h"
-#include "task.h"
+#include "task.hpp"
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "../zuluCrypt-gui/utility.h"

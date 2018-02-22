@@ -38,7 +38,7 @@
 #include <QCloseEvent>
 
 #include "openvolume.h"
-#include "task.h"
+#include "task.hpp"
 #include "dialogmsg.h"
 #include "plugin.h"
 

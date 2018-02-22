@@ -26,7 +26,7 @@
 #include "tablewidget.h"
 #include "walletconfiginput.h"
 #include "utility.h"
-#include "task.h"
+#include "task.hpp"
 
 #include <Qt>
 #include <QTableWidget>

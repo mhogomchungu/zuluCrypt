@@ -32,7 +32,7 @@
 #include <QFileDialog>
 
 #include "ui_managevolumeheader.h"
-#include "task.h"
+#include "task.hpp"
 #include "utility.h"
 #include "openvolume.h"
 #include "dialogmsg.h"

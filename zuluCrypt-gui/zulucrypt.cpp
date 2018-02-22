@@ -65,7 +65,7 @@
 #include "walletconfig.h"
 #include "tablewidget.h"
 #include "utility.h"
-#include "task.h"
+#include "task.hpp"
 #include "about.h"
 #include "help.h"
 
