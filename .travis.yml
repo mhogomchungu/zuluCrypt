@@ -8,21 +8,20 @@ before_install:
   - sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
 
-# For Qt 5.7
-  - sudo add-apt-repository --yes ppa:beineri/opt-qt57-trusty
+# For Qt 5.9
+  - sudo add-apt-repository ppa:beineri/opt-qt591-trusty
 
   - sudo apt-get update -qq
 
 install:
   - sudo apt-get remove g++
-  - sudo apt-get install -qq g++-6 gcc-6 qt57-meta-full
+  - sudo apt-get install -qq g++-6 gcc-6 qt59-meta-full
 
   - sudo apt-get install --yes libblkid-dev libcryptsetup-dev cmake libgcrypt11-dev pkg-config libdevmapper-dev uuid-dev libudev-dev chrpath bzip2 debhelper qt55base-dev
 
 env: CXX="g++-6" CC="gcc-6"
 
 before_script:
-  - QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
-  - source $QT_ENV_SCRIPT
+  - Source /opt/qt59/bin/qt59-env.sh
 
 script: cmake -DCMAKE_INSTALL_PREFIX=/usr -DSHARE_MOUNT_PREFIX=default -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false -DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DNOKDE=false -DCMAKE_BUILD_TYPE=RELEASE . && make
