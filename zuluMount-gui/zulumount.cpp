@@ -1694,6 +1694,7 @@ void zuluMount::disableAll()
 	m_ui->pbupdate->setEnabled( false ) ;
 	m_ui->tableWidget->setEnabled( false ) ;
 	m_ui->pbunlockcryptfs->setEnabled( false ) ;
+	m_ui->pbfavorites->setEnabled( false ) ;
 }
 
 void zuluMount::enableAll()
@@ -1708,6 +1709,7 @@ void zuluMount::enableAll()
 	m_ui->pbmount->setEnabled( true ) ;
 	m_ui->tableWidget->setFocus() ;
 	m_ui->pbunlockcryptfs->setEnabled( true ) ;
+	m_ui->pbfavorites->setEnabled( true ) ;
 }
 
 void zuluMount::enableAll_1()
