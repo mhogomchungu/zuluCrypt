@@ -9,7 +9,7 @@ before_install:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
 
 # For Qt 5.9
-  - sudo add-apt-repository ppa:beineri/opt-qt591-trusty
+  - sudo add-apt-repository --yes ppa:beineri/opt-qt591-trusty
 
   - sudo apt-get update -qq
 
