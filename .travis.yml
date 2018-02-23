@@ -24,6 +24,6 @@ install:
 env: CXX="g++-6" CC="gcc-6"
 
 before_script:
-  - Source /opt/qt59/bin/qt59-env.sh
+  - source /opt/qt59/bin/qt59-env.sh
 
 script: cmake -DCMAKE_INSTALL_PREFIX=/usr -DSHARE_MOUNT_PREFIX=default -DUDEVSUPPORT=true -DNOGUI=false -DQT5=false -DHOMEMOUNTPREFIX=false -DREUSEMOUNTPOINT=false -DNOGNOME=false -DNOKDE=false -DCMAKE_BUILD_TYPE=RELEASE . && make
