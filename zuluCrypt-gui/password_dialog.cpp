@@ -870,14 +870,16 @@ void passwordDialog::openVolume()
 
 		this->HideUI() ;
 	}else{
-		this->failed( r.exitCode() ) ;
+		this->failed( r ) ;
 
 		m_veraCryptWarning.hide() ;
 	}
 }
 
-void passwordDialog::failed( int r )
+void passwordDialog::failed( const utility::Task& e )
 {
+	int r = e.exitCode() ;
+
 	if( r == 12 && m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
 		/*
 		 * A user cancelled the plugin
@@ -913,8 +915,10 @@ void passwordDialog::failed( int r )
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open a system volume.\n\nConsult menu->help->permission for more informaion\n" ) ) ;					break ;
 		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "A non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;					break ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR with status number %1 encountered" ).arg( r ) ) ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;
 	}
+
+	utility::debug() << e.stdOut() << "--" << e.stdError() ;
 
 	this->enableAll() ;
 

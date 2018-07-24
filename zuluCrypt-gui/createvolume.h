@@ -88,8 +88,8 @@ private slots:
 	void setOptions( int ) ;
 	void tcryptGui( bool ) ;
 private:
-	void taskFinished( int ) ;
-	void taskFinished_1( int ) ;
+	void taskFinished( const utility::Task& ) ;
+	void taskFinished_1( const utility::Task& ) ;
 	void keyChanged( bool,const QString& ) ;
 	void eraseDataPartition( void ) ;
 	void enableAll( void ) ;

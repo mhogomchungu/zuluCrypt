@@ -453,7 +453,7 @@ void luksaddkey::pbAdd( void )
 
 	raii.cancel() ;
 
-	this->taskFinished( utility::exec( exe ).await() ) ;
+	this->taskFinished( utility::Task::run( exe ).await() ) ;
 }
 
 void luksaddkey::keyAdded()
@@ -478,14 +478,14 @@ void luksaddkey::keyAdded()
 	this->HideUI() ;
 }
 
-void luksaddkey::taskFinished( int r )
+void luksaddkey::taskFinished( const utility::Task& e )
 {
 	m_veraCryptWarning.stopTimer() ;
 
 	m_isWindowClosable = true ;
 	DialogMsg msg( this ) ;
 
-	switch( r ){
+	switch( e.exitCode() ){
 		case 0  : return this->keyAdded() ;
 		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented key does not match any key in the volume" ) ) ;		      	break ;
 		case 2  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open luks volume" ) ) ;					     	break ;
@@ -504,7 +504,7 @@ void luksaddkey::taskFinished( int r )
 		case 15 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get elevated privilege,check binary permissions" ) ) ;		break ;
 		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not find a partition that match presented UUID" ) ) ;			break ;
 		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "Device is not a luks device" ) ) ;						break ;
-		default : msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;
 	}
 
 	m_veraCryptWarning.hide() ;

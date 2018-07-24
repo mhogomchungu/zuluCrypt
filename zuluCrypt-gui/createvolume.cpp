@@ -1117,17 +1117,17 @@ void createvolume::pbCreateClicked()
 #else
 	if( type == createvolume::luks_external_header ){
 #endif
-		this->taskFinished_1( utility::exec( utility::appendUserUID( exe ) ).await() ) ;
+		this->taskFinished_1( utility::Task::run( utility::appendUserUID( exe ) ).await() ) ;
 	}else{
-		this->taskFinished( utility::exec( utility::appendUserUID( exe ) ).await() ) ;
+		this->taskFinished( utility::Task::run( utility::appendUserUID( exe ) ).await() ) ;
 	}
 }
 
-void createvolume::taskFinished_1( int st )
+void createvolume::taskFinished_1( const utility::Task& e )
 {
-	if( st != 0 ){
+	if( e.exitCode() != 0 ){
 
-		this->taskFinished( st ) ;
+		this->taskFinished( e ) ;
 	}else{
 		auto volumePath   = m_ui->lineEditVolumePath->text() ;
 		volumePath.replace( "\"","\"\"\"" ) ;
@@ -1158,7 +1158,7 @@ void createvolume::taskFinished_1( int st )
 	}
 }
 
-void createvolume::taskFinished( int st )
+void createvolume::taskFinished( const utility::Task& e )
 {
 	DialogMsg msg( this ) ;
 
@@ -1172,7 +1172,7 @@ void createvolume::taskFinished( int st )
 		x += tr( "\nCreating a backup of the \"%1\" volume header is strongly advised.\nPlease read documentation on why this is important." ).arg( m_volumeType ) ;
 	}
 
-	switch ( st ){
+	switch ( e.exitCode() ){
 		case 0 : msg.ShowUIOK( tr( "SUCCESS!" ),x ) ;
 		return this->HideUI() ;													break  ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented file system is not supported,see documentation for more information" ) ) ;	break  ;
@@ -1200,7 +1200,7 @@ only root user or members of group zulucrypt can do that" ) ) ;									break  ;
 		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create a volume" ) ) ;						break  ;
 		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "Wrong argument detected for tcrypt volume" ) ) ;				break  ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not find any partition with the presented UUID" ) ) ;			break  ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( st ) ) ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;
 	}
 
 	m_veraCryptWarning.hide() ;

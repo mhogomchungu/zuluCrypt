@@ -64,7 +64,7 @@ private slots:
 	void pbOpenPartition( void ) ;
 	void pbAdd( void ) ;
 	void pbCancel( void ) ;
-	void taskFinished( int ) ;
+	void taskFinished( const utility::Task& ) ;
 	void setFieldFocus( void ) ;
 private:
 	void keyAdded( void ) ;

@@ -288,13 +288,13 @@ void luksdeletekey::deleteKey( const QStringList& l )
 
 	m_isWindowClosable = false ;
 
-	auto e = utility::exec( exe ).await() ;
+	auto e = utility::Task::run( exe ).await() ;
 
 	m_isWindowClosable = true ;
 
 	QString success ;
 
-	switch( e ){
+	switch( e.exitCode() ){
 		case 0 :
 			success = tr( "Key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( keyNumber ) ).arg( totalKeys ) ;
 			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
@@ -314,12 +314,12 @@ only root user or members of group zulucrypt can do that" ) ) ;											break 
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) ) ;					break ;
 		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a key from a socket" ) ) ;							break ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not find a partition that match presented UUID" ) ) ;					break ;
-		default :msg.ShowUIOK( tr( "ERROR!" ),tr( "Unrecognized ERROR! with status number %1 encountered" ).arg( r ) ) ;
+		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;
 	}
 
 	this->enableAll() ;
 
-	if( e == 2 ){
+	if( e.exitCode() == 2 ){
 
 		this->Key( 0 ) ;
 		m_ui->cbKey->setCurrentIndex( 0 ) ;

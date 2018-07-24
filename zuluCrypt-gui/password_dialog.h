@@ -86,7 +86,7 @@ private :
 	void enableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void failed( int ) ;
+	void failed( const utility::Task& ) ;
 	void failed( void ) ;
 	Ui::PasswordDialog * m_ui ;
 	QTableWidget * m_table ;
