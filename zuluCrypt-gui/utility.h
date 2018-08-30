@@ -67,6 +67,53 @@
 
 namespace utility
 {
+template< typename T >
+class result
+{
+public:
+		result()
+		{
+		}
+		result( T e ) : m_valid( true ),m_value( std::move( e ) )
+		{
+		}
+		T * operator->()
+		{
+			return &m_value ;
+		}
+		const T * operator->() const
+		{
+			return &m_value ;
+		}
+		T& operator*()
+		{
+			return m_value ;
+		}
+		const T& operator*() const
+		{
+			return m_value ;
+		}
+		operator bool()
+		{
+			return m_valid ;
+		}
+		bool has_value() const
+		{
+			return m_valid ;
+		}
+		T& value()
+		{
+			return m_value ;
+		}
+		const T& value() const
+		{
+			return m_value ;
+		}
+	private:
+		bool m_valid = false ;
+		T m_value ;
+	} ;
+
 	class raii
 	{
 	public:
@@ -292,6 +339,14 @@ namespace utility
 
 	void setSettingsObject( QSettings * ) ;
 	QSettings& settingsObject() ;
+
+	::Task::future< utility::result< QString > >& backEndInstalledVersion( const QString& backend ) ;
+
+	::Task::future< utility::result< bool > >& backendIsLessThan( const QString& backend,
+								      const QString& version ) ;
+
+	::Task::future< utility::result< bool > >& backendIsGreaterOrEqualTo( const QString& backend,
+									      const QString& version ) ;
 
 	void setDefaultEnvironment() ;
 	QString passwordSocketPath() ;

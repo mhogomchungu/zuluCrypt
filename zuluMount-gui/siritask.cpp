@@ -264,10 +264,10 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
 
-				mode += " -o fsname=gocryptfs@" + cipherFolder ;
+				mode += ",fsname=gocryptfs@" + cipherFolder ;
 
 				auto e = QString( "%1 %2 %3 %4 %5" ) ;
-				return e.arg( exe,mode,configPath,cipherFolder,mountPoint ) ;
+				return e.arg( exe,configPath,cipherFolder,mountPoint,mode ) ;
 			}
 		}else{
 			if( create ){
@@ -275,8 +275,8 @@ static QString _args( const QString& exe,const siritask::options& opt,
 				auto e = QString( "%1 create %2 %3" ) ;
 				return e.arg( exe,configPath,cipherFolder ) ;
 			}else{
-				auto e = QString( "%1 mount -b %2 %3 -o fsname=securefs@%4 -o subtype=securefs %5 %6" ) ;
-				return e.arg( exe,configPath,mode,cipherFolder,cipherFolder,mountPoint ) ;
+				auto e = QString( "%1 mount -b %2 %3 %4 %5,fsname=securefs@%6,subtype=securefs" ) ;
+				return e.arg( exe,configPath,cipherFolder,mountPoint,mode,cipherFolder ) ;
 			}
 		}
 
@@ -328,16 +328,16 @@ static QString _args( const QString& exe,const siritask::options& opt,
 			return s ;
 		}
 	}else{
-		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8 -o subtype=%9" ) ;
+		auto e = QString( "%1 %2 %3 %4 %5 %6 -o fsname=%7@%8,subtype=%9" ) ;
 
 		auto opts = e.arg( exe,cipherFolder,mountPoint,mountOptions,configPath,
 				   separator,type.name(),cipherFolder,type.name() ) ;
 
 		if( opt.ro ){
 
-			return opts + " -o ro" ;
+			return opts + ",ro" ;
 		}else{
-			return opts + " -o rw" ;
+			return opts + ",rw" ;
 		}
 	}
 }

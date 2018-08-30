@@ -478,7 +478,7 @@ bool utility::reUseMountPoint()
 
 int utility::getUID()
 {
-	return getuid() ;
+	return static_cast< int >( getuid() ) ;
 }
 
 int utility::getUserID()
@@ -488,11 +488,11 @@ int utility::getUserID()
 
 int utility::getGUID( int uid )
 {
-	auto e = getpwuid( uid ) ;
+	auto e = getpwuid( static_cast< uid_t >( uid ) ) ;
 
 	if( e ){
 
-		return e->pw_gid ;
+		return static_cast< int >( e->pw_gid ) ;
 	}else{
 		return uid ;
 	}
@@ -515,7 +515,7 @@ QString utility::appendUserUID( const QString& e )
 
 static passwd * _getPassWd()
 {
-	return getpwuid( utility::getUserID() ) ;
+	return getpwuid( static_cast< uid_t >( utility::getUserID() ) ) ;
 }
 
 QString utility::userName()
@@ -525,7 +525,7 @@ QString utility::userName()
 
 QString utility::homePath()
 {
-	return getpwuid( utility::getUserID() )->pw_dir ;
+	return getpwuid( static_cast< uid_t >( utility::getUserID() ) )->pw_dir ;
 }
 
 static int _help()
@@ -579,7 +579,7 @@ void utility::keySend( const QString& path,const QByteArray& key )
 
 		if( handle ){
 
-			size_t size = key.size() ;
+			size_t size = static_cast< size_t >( key.size() ) ;
 
 			/*
 			 * ZULUCRYPT_KEYFILE_MAX_SIZE is defined in ../zuluCrypt-cli/constants.h
@@ -720,7 +720,7 @@ void utility::dropPrivileges( int uid )
 
 	if( uid != -1 ){
 
-		auto id = getpwuid( uid ) ;
+		auto id = getpwuid( static_cast< uid_t >( uid ) ) ;
 
 		if( id ){
 
@@ -729,10 +729,10 @@ void utility::dropPrivileges( int uid )
 			setenv( "USER",id->pw_name,1 ) ;
 		}
 
-		Q_UNUSED( setgid( uid ) ) ;
+		Q_UNUSED( setgid( static_cast< gid_t >( uid ) ) ) ;
 		Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
-		Q_UNUSED( setegid( uid ) ) ;
-		Q_UNUSED( setuid( uid ) ) ;
+		Q_UNUSED( setegid( static_cast< gid_t >( uid ) ) ) ;
+		Q_UNUSED( setuid( static_cast< gid_t >( uid ) ) ) ;
 	}
 }
 
@@ -1156,12 +1156,17 @@ bool utility::eventFilter( QObject * gui,QObject * watched,QEvent * event,std::f
 
 QStringList utility::split( const QString& str,char token )
 {
+	if( str.isEmpty() ){
+
+		return {} ;
+	}
+
 	return str.split( token,QString::SkipEmptyParts ) ;
 }
 
 QStringList utility::split( const QByteArray& str,char token )
 {
-	return QString( str ).split( token,QString::SkipEmptyParts ) ;
+	return  utility::split( QString( str ),token ) ;
 }
 
 bool utility::mapperPathExists( const QString& path )
@@ -1269,7 +1274,7 @@ QString utility::hashPath( const QByteArray& p )
 
 	for( int i = 0 ; i < l ; i++ ){
 
-		hash += *( key + i ) ;
+		hash += static_cast< unsigned int >( *( key + i ) ) ;
 
 		hash += ( hash << 10 ) ;
 
@@ -1794,7 +1799,7 @@ bool utility::notRunningInMixedMode()
 
 bool utility::userBelongsToGroup( const char * groupname )
 {
-	auto user = getpwuid( utility::getUserID() ) ;
+	auto user = getpwuid( static_cast< gid_t >( utility::getUserID() ) ) ;
 
 	if( user != nullptr ){
 
@@ -2034,6 +2039,8 @@ void utility::setLocalizationLanguage( bool translate,QMenu * m,const QString& a
 
 void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac,const char * app )
 {
+	Q_UNUSED( w ) ;
+
 	auto e = ac->text() ;
 
 	e.remove( "&" ) ;
@@ -2045,10 +2052,6 @@ void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac,const char * app 
 	_selectOption( m,e ) ;
 
 	return ;
-
-	DialogMsg msg( w ) ;
-
-	msg.ShowUIOK( QObject::tr( "INFO" ),QObject::tr( "Translation will be done the next time you restart." ) ) ;
 }
 
 QStringList utility::directoryList( const QString& e )
@@ -2373,7 +2376,7 @@ static inline bool _terminalEchoOff( struct termios * old,struct termios * curre
 	}
 
 	*current = *old;
-	current->c_lflag &= ~ECHO;
+	current->c_lflag &= static_cast< unsigned int >( ~ECHO ) ;
 
 	if( tcsetattr( 1,TCSAFLUSH,current ) != 0 ){
 
@@ -2506,4 +2509,187 @@ void utility::readOnlyWarning( bool e )
 QString utility::failedToStartzuluPolkit()
 {
 	return QObject::tr( "Failed To Start Helper Application.\n\n\"org.zulucrypt.zulupolkit.policy\" polkit file is misconfigured,\nzuluPolkit executable could not be found\n or pkexec failed to start zuluPolkit." ) ;
+}
+
+static utility::result< int > _convert_string_to_version( const QString& e )
+{
+	auto _convert = []( const QString& e )->utility::result< int >{
+
+		bool ok ;
+
+		auto s = e.toInt( &ok ) ;
+
+		if( ok ){
+
+			return s  ;
+		}else{
+			return {} ;
+		}
+	} ;
+
+	auto s = utility::split( e,'.' ) ;
+
+	auto components = s.size() ;
+
+	int major = 1000000 ;
+	int minor = 1000 ;
+	int patch = 1 ;
+
+	if( components == 1 ){
+
+		auto a = _convert( s.first() ) ;
+
+		if( a ){
+
+			return major * a.value() ;
+		}
+
+	}else if( components == 2 ){
+
+		auto a = _convert( s.at( 0 ) ) ;
+		auto b = _convert( s.at( 1 ) ) ;
+
+		if( a && b ){
+
+			return major * a.value() + minor * b.value() ;
+		}
+
+	}else if( components == 3 ){
+
+		auto a = _convert( s.at( 0 ) ) ;
+		auto b = _convert( s.at( 1 ) ) ;
+		auto c = _convert( s.at( 2 ) ) ;
+
+		if( a && b && c ){
+
+			return major * a.value() + minor * b.value() + patch * c.value() ;
+		}
+	}
+
+	return {} ;
+}
+
+static utility::result< QString > _installed_version( const QString& backend )
+{
+	auto _remove_junk = []( QString e ){
+
+		e.replace( "v","" ).replace( ";","" ) ;
+
+		QString m ;
+
+		for( int s = 0 ; s < e.size() ; s++ ){
+
+			auto n = e.at( s ) ;
+
+			if( n == '.' || ( n >= '0' && n <= '9' ) ){
+
+				m += n ;
+			}else{
+				break ;
+			}
+		}
+
+		return m ;
+	} ;
+
+	auto exe = utility::executableFullPath( backend ) ;
+
+	if( exe.isEmpty() ){
+
+		return {} ;
+	}
+
+	auto cmd = [ & ](){
+
+		if( backend == "securefs" ){
+
+			return backend + " version" ;
+		}else{
+			return backend + " --version" ;
+		}
+	}() ;
+
+	auto s = utility::systemEnvironment() ;
+
+	auto r = [ & ](){
+
+		if( backend == "encfs" ){
+
+			return QString( ::Task::process::run( cmd,{},-1,{},s ).get().std_error() ) ;
+		}else{
+			return QString( ::Task::process::run( cmd,{},-1,{},s ).get().std_out() ) ;
+		}
+	}() ;
+
+	if( r.isEmpty() ){
+
+		return {} ;
+	}
+
+	auto m = utility::split( utility::split( r,'\n' ).first(),' ' ) ;
+
+	if( utility::equalsAtleastOne( backend,"cryfs","encfs","sshfs" ) ){
+
+		if( m.size() >= 3 ){
+
+			return _remove_junk( m.at( 2 ) ) ;
+		}
+
+	}else if( utility::equalsAtleastOne( backend,"gocryptfs","securefs","ecryptfs-simple" ) ){
+
+		if( m.size() >= 2 ){
+
+			return _remove_junk( m.at( 1 ) ) ;
+		}
+	}
+
+	return {} ;
+}
+
+::Task::future< utility::result< QString > >& utility::backEndInstalledVersion( const QString& backend )
+{
+	return ::Task::run( _installed_version,backend ) ;
+}
+
+static utility::result< int > _installedVersion( const QString& backend )
+{
+	auto s = utility::backEndInstalledVersion( backend ).get() ;
+
+	if( s && !s.value().isEmpty() ){
+
+		return _convert_string_to_version( s.value() ) ;
+	}else{
+		return {} ;
+	}
+}
+
+template< typename Function >
+::Task::future< utility::result< bool > >& _compare_versions( const QString& backend,
+							     const QString& version,
+							     Function compare )
+{
+	return ::Task::run( [ = ]()->utility::result< bool >{
+
+		auto installed = _installedVersion( backend ) ;
+		auto guard_version = _convert_string_to_version( version ) ;
+
+		if( installed && guard_version ){
+
+			return compare( installed.value(),guard_version.value() ) ;
+		}else{
+			return {} ;
+		}
+	} ) ;
+}
+
+::Task::future< utility::result< bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
+									       const QString& version )
+{
+	return _compare_versions( backend,version,std::greater_equal<int>() ) ;
+}
+
+::Task::future< utility::result< bool > >& utility::backendIsLessThan( const QString& backend,
+								       const QString& version )
+{
+	return _compare_versions( backend,version,std::less<int>() ) ;
 }
