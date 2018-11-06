@@ -3,7 +3,7 @@
  <class>zuluCrypt</class>
  <widget class="QMainWindow" name="zuluCrypt">
   <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="enabled">
    <bool>true</bool>
@@ -494,7 +494,7 @@
   </action>
   <action name="actionCheck_For_Update">
    <property name="text">
-    <string>&amp;Check For Update</string>
+    <string>C&amp;heck For Update</string>
    </property>
    <property name="shortcut">
     <string>Shift+U</string>
