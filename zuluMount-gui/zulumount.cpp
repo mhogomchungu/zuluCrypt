@@ -67,10 +67,17 @@ static bool _encrypted_folder( const QString& e,bool f = true )
 
 zuluMount::zuluMount( QWidget * parent ) :
 	QWidget( parent ),
-	m_mountInfo( this,true,[ this ](){ QCoreApplication::quit() ; } ),
+	m_mountInfo( this,true,[](){ QCoreApplication::quit() ; } ),
 	m_events( this,m_mountInfo.stop() ),
-	m_checkForUpdates( this )
+	m_checkForUpdates( this ),
+	m_signalHandler( this )
 {
+	m_signalHandler.setAction( [ this ]( systemSignalHandler::signal s ){
+
+		Q_UNUSED( s ) ;
+
+		this->emergencyQuitApplication() ;
+	} ) ;
 }
 
 void zuluMount::helperStarted( bool start,const QString& volume )
@@ -1527,6 +1534,44 @@ void zuluMount::pbUmount()
 void zuluMount::pbUmount_powerDown()
 {
 	this->unmount( m_powerOff ) ;
+}
+
+void zuluMount::emergencyQuitApplication()
+{
+	this->hide() ;
+
+	auto table = m_ui->tableWidget ;
+
+	m_removeAllVolumes = true ;
+
+	auto paths       = tablewidget::columnEntries( table,0 ) ;
+	auto mountPoints = tablewidget::columnEntries( table,1 ) ;
+	auto fileSystems = tablewidget::columnEntries( table,2 ) ;
+
+	auto mountPath = utility::mountPath( QString() ) ;
+	auto homeMountPath = utility::homeMountPath( QString() ) ;
+
+	for( int i = 0 ; i < paths.size() ; i++ ){
+
+		const auto& a = paths.at( i ) ;
+		const auto& b = mountPoints.at( i ) ;
+		const auto& c = fileSystems.at( i ) ;
+
+		if( utility::startsWithAtLeastOne( b,mountPath,homeMountPath ) ){
+
+			if( _encrypted_folder( c ) ){
+
+				if( siritask::encryptedFolderUnMount( a,b,c ).await() ){
+
+					siritask::deleteMountFolder( b ) ;
+				}
+			}else{
+				zuluMountTask::unmountVolume( a,c ).await() ;
+			}
+		}
+	}
+
+	this->closeApplication() ;
 }
 
 void zuluMount::unMountAll()

@@ -79,8 +79,15 @@
 zuluCrypt::zuluCrypt( QWidget * parent ) :
 	QMainWindow( parent ),
 	m_mountInfo( this,false,[ this ](){ this->quitApplication() ; } ),
-	m_checkForUpdates( this )
+	m_checkForUpdates( this ),
+	m_signalHandler( this )
 {
+	m_signalHandler.setAction( [ this ]( systemSignalHandler::signal s ){
+
+		Q_UNUSED( s ) ;
+
+		this->emergencyQuitApplication() ;
+	} ) ;
 }
 
 void zuluCrypt::setLocalizationLanguage( bool translate )
@@ -553,6 +560,46 @@ void zuluCrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem 
 	}else{
 		m_ui->tableWidget->setColumnWidth( 2,95 ) ;
 	}
+}
+
+void zuluCrypt::emergencyQuitApplication()
+{
+	this->hide() ;
+
+	m_mountInfo.announceEvents( false ) ;
+
+	Task::await( [ this ](){
+
+		auto table = m_ui->tableWidget ;
+
+		auto volumeCount = table->rowCount() ;
+
+		if( volumeCount > 0 ){
+
+			QVector< QTableWidgetItem * > tableItems( volumeCount ) ;
+
+			auto it = tableItems.data() ;
+
+			for( int i = 0 ; i < volumeCount ; i++ ){
+
+				*( it + i ) = table->item( i,0 ) ;
+			}
+
+			auto exe = utility::appendUserUID( "%1 -q -d \"%2\"" ) ;
+
+			for( int i = tableItems.count() - 1 ; i >= 0 ; i-- ){
+
+				auto e = *( it + i ) ;
+
+				auto device = e->text().replace( "\"","\"\"\"" ) ;
+
+				utility::Task( exe.arg( ZULUCRYPTzuluCrypt,device ) ) ;
+			}
+		}
+
+	} ) ;
+
+	this->quitApplication() ;
 }
 
 void zuluCrypt::closeAllVolumes()

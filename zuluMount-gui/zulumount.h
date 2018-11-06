@@ -31,6 +31,7 @@
 #include "events.h"
 #include "monitor_mountinfo.h"
 #include "../zuluCrypt-gui/checkforupdates.h"
+#include "../zuluCrypt-gui/systemsignalhandler.h"
 
 class QCloseEvent ;
 class QAction ;
@@ -80,6 +81,7 @@ private slots:
 	void pbMount( void ) ;
 	void slotMount( void ) ;
 	void unMountAll( void ) ;
+	void emergencyQuitApplication( void ) ;
 	void pbUmount( void ) ;
 	void pbUmount_powerDown( void ) ;
 	void unmount( const QString& = QString() ) ;
@@ -159,6 +161,8 @@ private:
 	events m_events ;
 
 	checkForUpdates m_checkForUpdates ;
+
+	systemSignalHandler m_signalHandler ;
 };
 
 #endif // MAINWINDOW_H

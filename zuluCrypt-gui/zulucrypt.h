@@ -31,6 +31,7 @@
 #include "utility.h"
 #include "secrets.h"
 #include "checkforupdates.h"
+#include "systemsignalhandler.h"
 
 class QWidget ;
 class QTableWidgetItem ;
@@ -98,6 +99,7 @@ private slots :
 	void closeApplication( int ) ;
 	void minimizeToTray( void ) ;
 	void closeAllVolumes( void ) ;
+	void emergencyQuitApplication( void ) ;
 	void menuKeyPressed( void ) ;
 	void ShowCreateFile( void ) ;
 	void ShowFavoritesEntries( void ) ;
@@ -174,6 +176,7 @@ private:
 	bool m_autoOpenMountPoint ;
 	monitor_mountinfo m_mountInfo ;
 	checkForUpdates m_checkForUpdates ;
+	systemSignalHandler m_signalHandler ;
 };
 
 #endif // ZULUCRYPT_H

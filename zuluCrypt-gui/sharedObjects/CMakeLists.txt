@@ -9,6 +9,7 @@ set( SRC
 	../checkforupdates.cpp
 	../plugin.cpp
 	../executablesearchpaths.cpp
+	../systemsignalhandler.cpp
 )
 
 set( MOC_FILES
