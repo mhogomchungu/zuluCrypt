@@ -159,6 +159,9 @@ private:
 	void initKeyCombo( void ) ;
 	void closeStatusErrorMessage( int ) ;
 	void decryptFile( const QString& ) ;
+	void updateTrayContextMenu( void ) ;
+
+	QMenu m_trayIconMenu ;
 
 	secrets m_secrets ;
 

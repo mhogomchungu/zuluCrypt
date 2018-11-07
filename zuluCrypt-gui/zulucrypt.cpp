@@ -318,15 +318,6 @@ void zuluCrypt::setupUIElements()
 
 	m_trayIcon.setParent( this ) ;
 
-	auto trayMenu = new QMenu( this ) ;
-
-	trayMenu->setFont( this->font() ) ;
-
-	trayMenu->addAction( tr( "Show/Hide" ),this,SLOT( showTrayGUI() ) ) ;
-	trayMenu->addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
-
-	m_trayIcon.setContextMenu( trayMenu ) ;
-
 	const auto f = utility::getWindowDimensions( "zuluCrypt" ) ;
 
 	const auto e = f.data() ;
@@ -458,6 +449,27 @@ void zuluCrypt::setupConnections()
 	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( true ) ;
 
 	this->setAcceptDrops( true ) ;
+	this->updateTrayContextMenu() ;
+}
+
+void zuluCrypt::updateTrayContextMenu()
+{
+	m_trayIconMenu.clear() ;
+
+	m_trayIconMenu.addMenu( m_ui->menu_zc ) ;
+
+	m_trayIconMenu.addMenu( m_ui->menuOpen ) ;
+
+	m_trayIconMenu.addMenu( m_ui->menuCreate ) ;
+
+	//m_trayIconMenu.addMenu( m_ui->menuFavorites ) ;
+
+	m_trayIconMenu.setFont( this->font() ) ;
+
+	m_trayIconMenu.addAction( tr( "Show/Hide" ),this,SLOT( showTrayGUI() ) ) ;
+	m_trayIconMenu.addAction( tr( "Quit" ),this,SLOT( closeApplication() ) ) ;
+
+	m_trayIcon.setContextMenu( &m_trayIconMenu ) ;
 }
 
 void zuluCrypt::showTrayGUI()
@@ -918,6 +930,7 @@ void zuluCrypt::favClicked( QAction * ac )
 void zuluCrypt::readFavorites()
 {
 	utility::readFavorites( m_ui->menuFavorites,false,false ) ;
+	this->updateTrayContextMenu() ;
 }
 
 void zuluCrypt::addToFavorite()
