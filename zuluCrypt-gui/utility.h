@@ -439,6 +439,8 @@ namespace utility
 	void setLocalizationLanguage( bool translate,QMenu * ac,const QString& ) ;
 	void languageMenu( QWidget *,QMenu *,QAction *,const char * ) ;
 
+	bool unMountVolumesOnLogout( void ) ;
+
 	using array_t = std::array< int,10 > ;
 
 	utility::array_t getWindowDimensions( const QString& application ) ;

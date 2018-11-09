@@ -1533,6 +1533,16 @@ QStringList utility::readFavorites()
 	}
 }
 
+bool utility::unMountVolumesOnLogout()
+{
+	if( !_settings->contains( "unMountVolumesOnLogout" ) ){
+
+		_settings->setValue( "unMountVolumesOnLogout",false ) ;
+	}
+
+	return _settings->value( "unMountVolumesOnLogout" ).toBool() ;
+}
+
 void utility::removeFavoriteEntry( const QString& e )
 {
 	auto s = utility::readFavorites() ;

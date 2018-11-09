@@ -18,8 +18,7 @@
  */
 
 #include "systemsignalhandler.h"
-
-#ifdef Q_OS_LINUX
+#include "utility.h"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -71,6 +70,11 @@ static void setup_unix_signal_handlers()
 systemSignalHandler::systemSignalHandler( QObject * parent )
 	: m_parent( parent )
 {
+	if( !utility::unMountVolumesOnLogout() ){
+
+		return ;
+	}
+
 	setup_unix_signal_handlers() ;
 
 	::socketpair( AF_UNIX,SOCK_STREAM,0,sighupFd ) ;
@@ -120,17 +124,3 @@ void systemSignalHandler::setAction( std::function< void( signal ) > function )
 {
 	m_function = std::move( function ) ;
 }
-
-#else
-
-systemSignalHandler::systemSignalHandler( QObject * parent )
-	: m_parent( parent )
-{
-}
-
-void systemSignalHandler::setAction( std::function< void( signal ) > function )
-{
-	Q_UNUSED( function ) ;
-}
-
-#endif
