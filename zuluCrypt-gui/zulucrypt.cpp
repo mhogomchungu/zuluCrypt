@@ -202,19 +202,7 @@ void zuluCrypt::updateVolumeList( QString volume,QString r )
 }
 
 void zuluCrypt::initKeyCombo()
-{
-	return ;
-
-	this->addAction( [ this ](){
-
-		auto ac = new QAction( this ) ;
-
-		ac->setShortcuts( { Qt::Key_Menu,Qt::CTRL + Qt::Key_M } ) ;
-
-		connect( ac,SIGNAL( triggered() ),this,SLOT( menuKeyPressed() ) ) ;
-
-		return ac ;
-	}() ) ;
+{	
 }
 
 void zuluCrypt::initFont()
@@ -407,6 +395,16 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionSet_File_Manager,SIGNAL( triggered() ),this,SLOT( setFileManager() ) ) ;
 
 	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
+
+	m_ui->actionDo_not_minimize_to_tray->setChecked( utility::doNotMinimizeToTray() ) ;
+
+	connect( m_ui->actionDo_not_minimize_to_tray,&QAction::triggered,[ this ](){
+
+		auto s = !utility::doNotMinimizeToTray() ;
+
+		m_ui->actionDo_not_minimize_to_tray->setChecked( s ) ;
+		utility::setDoNotMinimizeToTray( s ) ;
+	} ) ;
 
 	m_autoOpenMountPoint = utility::autoOpenFolderOnMount( "zuluCrypt-gui" ) ;
 
@@ -693,7 +691,13 @@ void zuluCrypt::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 
-	if( m_trayIcon.isVisible() ){
+	if( utility::doNotMinimizeToTray() ){
+
+		this->hide() ;
+
+		this->closeApplication() ;
+
+	}else if( m_trayIcon.isVisible() ){
 
 		this->hide() ;
 	}else{
@@ -1130,7 +1134,7 @@ void zuluCrypt::close()
 
 	auto path = m_ui->tableWidget->item( item->row(),0 )->text().replace( "\"","\"\"\"" ) ;
 
-	auto r = Task::await( [ this,item,path ](){
+	auto r = Task::await( [ path ](){
 
 		auto exe = utility::appendUserUID( "%1 -q -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,path ) ;
 

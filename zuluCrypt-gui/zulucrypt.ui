@@ -136,6 +136,7 @@
      <string>Optio&amp;ns</string>
     </property>
     <addaction name="actionTray_icon"/>
+    <addaction name="actionDo_not_minimize_to_tray"/>
     <addaction name="actionAuto_Open_Mount_Point"/>
     <addaction name="actionSet_File_Manager"/>
     <addaction name="actionSelect_Language"/>
@@ -529,6 +530,17 @@
   <action name="actionSet_File_Manager">
    <property name="text">
     <string>Set Fi&amp;le Manager</string>
+   </property>
+  </action>
+  <action name="actionDo_not_minimize_to_tray">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Do Not Minimize To Tray</string>
+   </property>
+   <property name="toolTip">
+    <string>This Option Will Close The App Instead Of Minimizing It To Tray</string>
    </property>
   </action>
  </widget>

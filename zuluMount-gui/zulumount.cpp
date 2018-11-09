@@ -180,6 +180,28 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 	trayMenu->addAction( [ this ](){
 
+		auto ac = new QAction( tr( "Do Not Minimize To Tray" ),this ) ;
+
+		m_actionPair.append( { ac,"Do Not Minimize To Tray" } ) ;
+
+		ac->setCheckable( true ) ;
+		ac->setChecked( utility::doNotMinimizeToTray() ) ;
+
+		connect( ac,&QAction::triggered,[ ac ](){
+
+			auto s = !utility::doNotMinimizeToTray() ;
+
+			ac->setChecked( s ) ;
+			utility::setDoNotMinimizeToTray( s ) ;
+		} ) ;
+
+		m_autoMountAction = ac ;
+
+		return ac ;
+	}() ) ;
+
+	trayMenu->addAction( [ this ](){
+
 		auto ac = new QAction( tr( "Automount Volumes" ),this ) ;
 
 		m_actionPair.append( { ac,"Automount Volumes" } ) ;
@@ -1227,7 +1249,13 @@ void zuluMount::setUpFont()
 void zuluMount::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
+
 	this->hide() ;
+
+	if( utility::doNotMinimizeToTray() ){
+
+		this->closeApplication() ;
+	}
 }
 
 void zuluMount::slotTrayClicked( QSystemTrayIcon::ActivationReason e )

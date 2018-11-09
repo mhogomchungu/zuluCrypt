@@ -208,7 +208,7 @@ bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
 void passwordDialog::pbPlugin()
 {
 	utility::createPlugInMenu( m_pluginMenu,tr( INTERNAL_WALLET ),
-				   tr( GNOME_WALLET ),tr( KWALLET ),true ) ;
+				   tr( GNOME_WALLET ),tr( KWALLET ),!utility::useZuluPolkit() ) ;
 
 	m_pluginMenu->addSeparator() ;
 

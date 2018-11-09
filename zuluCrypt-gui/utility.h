@@ -409,6 +409,8 @@ namespace utility
 	void licenseInfo( QWidget * ) ;
 	void showTrayIcon( QAction *,QObject * obj,bool = true ) ;
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
+	void setDoNotMinimizeToTray( bool ) ;
+	bool doNotMinimizeToTray() ;
 	bool platformIsLinux( void ) ;
 	bool platformIsOSX( void ) ;
 	QStringList executableSearchPaths( void ) ;

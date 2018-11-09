@@ -2188,6 +2188,21 @@ QString utility::powerOffCommand()
 	}
 }
 
+void utility::setDoNotMinimizeToTray( bool e )
+{
+	_settings->setValue( "doNotMinimizeToTray",e ) ;
+}
+
+bool utility::doNotMinimizeToTray()
+{
+	if( !_settings->contains( "doNotMinimizeToTray" ) ){
+
+		_settings->setValue( "doNotMinimizeToTray",false ) ;
+	}
+
+	return _settings->value( "doNotMinimizeToTray" ).toBool() ;
+}
+
 QString utility::prettyfySpaceUsage( quint64 s )
 {
 	auto _convert = [ & ]( const char * p,double q ){

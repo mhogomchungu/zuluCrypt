@@ -365,7 +365,7 @@ void keyDialog::pbkeyOption()
 void keyDialog::Plugin()
 {
 	utility::createPlugInMenu( m_menu,tr( INTERNAL_WALLET ),
-				   tr( GNOME_WALLET ),tr( KWALLET ),!m_encryptedFolder ) ;
+				   tr( GNOME_WALLET ),tr( KWALLET ),!m_encryptedFolder || !utility::useZuluPolkit() ) ;
 
 	m_menu->setFont( this->font() ) ;
 
