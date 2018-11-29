@@ -234,17 +234,17 @@ void createfile::pbCreate()
 		m_running = true ;
 		m_function( filePath ) ;
 	}else{
-		if( utility::requireSystemPermissions( filePath ) ){
-
-			if( !utility::enablePolkit( utility::background_thread::False ) ){
-
-				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
-			}
-		}
-
 		m_running = true ;
 
 		if( utility::useDmCryptForRandomData() ){
+
+			if( utility::requireSystemPermissions( filePath ) ){
+
+				if( !utility::enablePolkit( utility::background_thread::False ) ){
+
+					return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+				}
+			}
 
 			QFile file( filePath ) ;
 
