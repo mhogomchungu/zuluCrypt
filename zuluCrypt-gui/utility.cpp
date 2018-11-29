@@ -103,6 +103,16 @@ static std::function< void() > _failed_to_connect_to_zulupolkit ;
 
 static QSettings * _settings ;
 
+std::unique_ptr< utility::RandomDataSource > utility::RandomDataSource::get( utility::RandomDataSource::types type )
+{
+	Q_UNUSED( type ) ;
+	return std::make_unique< utility::UrandomDataSource >() ;
+}
+
+utility::RandomDataSource::~RandomDataSource()
+{
+}
+
 static QByteArray _json_command( const QByteArray& cookie,
 				 const QByteArray& password,
 				 const QString& exe,
@@ -278,11 +288,7 @@ static QString zuluPolkitExe()
 
 static ::Task::future< utility::Task >& _start_zulupolkit( const QString& e )
 {
-	QFile f( "/dev/urandom" ) ;
-
-	f.open( QIODevice::ReadOnly ) ;
-
-	_cookie = f.read( 16 ).toHex() ;
+	_cookie = utility::UrandomDataSource().getData( 16 ).toHex() ;
 
 	return ::Task::run( [ = ]{
 
@@ -1029,6 +1035,16 @@ bool utility::pathPointsToAFolder( const QString& path )
 	}else{
 		return false ;
 	}
+}
+
+bool utility::useDmCryptForRandomData()
+{
+	if( !_settings->contains( "UseDmCryptForRandomData" ) ){
+
+		_settings->setValue( "UseDmCryptForRandomData",false ) ;
+	}
+
+	return _settings->value( "UseDmCryptForRandomData" ).toBool() ;
 }
 
 QString utility::localizationLanguage( const QString& program )
@@ -2717,4 +2733,24 @@ template< typename Function >
 								       const QString& version )
 {
 	return _compare_versions( backend,version,std::less<int>() ) ;
+}
+
+utility::UrandomDataSource::UrandomDataSource() :
+	m_file( "/dev/urandom" )
+{
+}
+
+bool utility::UrandomDataSource::open()
+{
+	return m_file.open( QIODevice::ReadOnly ) ;
+}
+
+qint64 utility::UrandomDataSource::getData( char * data,qint64 size )
+{
+	return m_file.read( data,size ) ;
+}
+
+QByteArray utility::UrandomDataSource::getData( qint64 size )
+{
+	return m_file.read( size ) ;
 }

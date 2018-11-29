@@ -163,6 +163,7 @@ process and be safer in the long run." ) ;
 	}
 }
 
+
 void createfile::pbCreate()
 {
 	DialogMsg msg( this ) ;
@@ -207,14 +208,14 @@ void createfile::pbCreate()
 		return ;
 	}
 
-	qulonglong size = 0 ;
+	qint64 size = 0 ;
 
 	switch( m_ui ->comboBox->currentIndex() ){
-	case 0 :size = fileSize.toULongLong() * 1024 ;
+	case 0 :size = fileSize.toLongLong() * 1024 ;
 		break ;
-	case 1 :size = fileSize.toULongLong() * 1024 * 1024 ;
+	case 1 :size = fileSize.toLongLong() * 1024 * 1024 ;
 		break ;
-	case 2 :size = fileSize.toULongLong() * 1024 * 1024  * 1024 ;
+	case 2 :size = fileSize.toLongLong() * 1024 * 1024  * 1024 ;
 		break ;
 	}
 
@@ -224,22 +225,7 @@ void createfile::pbCreate()
 
 	this->disableAll() ;
 
-	QFile file( filePath ) ;
-
-	if( !file.open( QIODevice::WriteOnly ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
-	}
-
 	emit sendProgress( 0 ) ;
-
-	if( !file.resize( size ) ){
-		QFile::remove( filePath ) ;
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
-	}
-
-	utility::changePathOwner( file ) ;
-
-	file.close() ;
 
 	m_exit = false ;
 
@@ -258,25 +244,116 @@ void createfile::pbCreate()
 
 		m_running = true ;
 
-		int r = utility::clearVolume( filePath,&m_exit,0,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
+		if( utility::useDmCryptForRandomData() ){
 
-		if( r == 5 ){
+			QFile file( filePath ) ;
 
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
-			QFile::remove( filePath ) ;
+			if( !file.open( QIODevice::WriteOnly ) ){
 
-		}else if( r == 0 ){
+				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+			}
 
-			m_function( filePath ) ;
+			utility::changePathOwner( file ) ;
+
+			if( !file.resize( size ) ){
+
+				QFile::remove( filePath ) ;
+				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+			}
+
+			file.close() ;
+
+			int r = utility::clearVolume( filePath,&m_exit,0,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
+
+			if( r == 5 ){
+
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
+				QFile::remove( filePath ) ;
+
+			}else if( r == 0 ){
+
+				m_function( filePath ) ;
+			}else{
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
+				QFile::remove( filePath ) ;
+			}
 		}else{
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
-			QFile::remove( filePath ) ;
+			this->createFile( filePath,size ) ;
 		}
+
+		m_running = false ;
 	}
 
-	m_running = false ;
-
 	this->HideUI() ;
+}
+
+void createfile::createFile( const QString& filePath,qint64 size )
+{
+	int i = 0 ;
+	int j = 0 ;
+
+	std::array< char,1024 > buffer ;
+
+	qint64 size_written = 0 ;
+
+	enum class result{ success,deviceFail,cancelled,fileFail } ;
+
+	auto s = Task::await( [ & ]{
+
+		auto rd = utility::RandomDataSource::get() ;
+
+		if( !rd->open() ){
+
+			return result::deviceFail ;
+		}
+
+		QFile file( filePath ) ;
+
+		if( !file.open( QIODevice::WriteOnly ) ){
+
+			return result::fileFail ;
+		}
+
+		while( size_written < size ){
+
+			if( m_exit ){
+
+				return result::cancelled ;
+			}else{
+				auto s = rd->getData( buffer.data(),buffer.size() ) ;
+
+				size_written += file.write( buffer.data(),s ) ;
+
+				i = int( ( size_written * 100 / size ) ) ;
+
+				if( i > j ){
+
+					emit sendProgress( i ) ;
+
+					j = i ;
+				}
+			}
+		}
+
+		file.resize( size ) ;
+
+		return  result::success ;
+	} ) ;
+
+	switch ( s ) {
+		case result::success :
+		m_function( filePath ) ;
+		break ;
+	case  result::fileFail :
+		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+		break ;
+	case  result::deviceFail :
+		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
+		break ;
+	case result::cancelled :
+		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
+		break ;
+	}
 }
 
 void createfile::pbCancel()

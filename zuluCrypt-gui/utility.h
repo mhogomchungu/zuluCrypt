@@ -138,6 +138,27 @@ public:
 }
 namespace utility
 {
+	struct RandomDataSource
+	{
+		enum class types{ urandom };
+		static std::unique_ptr< RandomDataSource > get( types = types::urandom ) ;
+		virtual ~RandomDataSource() ;
+		virtual bool open() = 0 ;
+		virtual qint64 getData( char * data,qint64 size ) = 0 ;
+		virtual QByteArray getData( qint64 size ) = 0 ;
+	};
+
+	class UrandomDataSource : public RandomDataSource
+	{
+	public:
+		UrandomDataSource() ;
+		bool open() override ;
+		qint64 getData( char * data,qint64 size ) override ;
+		QByteArray getData( qint64 size ) override ;
+	private:
+		QFile m_file;
+	} ;
+
 	class debug
 	{
 	public:
@@ -348,6 +369,7 @@ namespace utility
 	::Task::future< utility::result< bool > >& backendIsGreaterOrEqualTo( const QString& backend,
 									      const QString& version ) ;
 
+	bool useDmCryptForRandomData() ;
 	void setDefaultEnvironment() ;
 	QString passwordSocketPath() ;
 	QString socketPath() ;

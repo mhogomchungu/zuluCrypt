@@ -57,6 +57,7 @@ private slots:
 	void setProgress( int ) ;
 	void fileTextChange( QString ) ;
 private:
+	void createFile( const QString&,qint64 ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
