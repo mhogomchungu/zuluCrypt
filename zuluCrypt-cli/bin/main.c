@@ -668,6 +668,20 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 			}
 			return zuluExit( 114,stl,stx,env,gettext( "ERROR: Could not resolve path to device" ) ) ;
 		}else{
+			q = String( "/dev/mapper/zuluCrypt-" ) ;
+
+			StringAppendInt( q,uid ) ;
+			StringAppend( q,"-" ) ;
+
+			st = StringPrefixMatch( dev,StringContent( q ),StringLength( q ) ) ;
+
+			StringDelete( &q ) ;
+
+			if( st && clargs.action == 'P' ){
+
+				return zuluCryptEXEGetDevice( clargs.device ) ;
+			}
+
 			/*
 			 * zuluCryptDeviceIsSupported() is defined in partitions.c
 			 */
