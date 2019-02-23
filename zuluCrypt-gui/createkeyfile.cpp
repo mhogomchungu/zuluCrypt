@@ -150,7 +150,7 @@ void createkeyfile::pbCreate()
 
 	if( fileName.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "The key name field is empth" ) ) ;
+		return msg.ShowUIOK( tr( "ERROR!" ),tr( "The key name field is empty" ) ) ;
 	}
 	if( path.isEmpty() ){
 
