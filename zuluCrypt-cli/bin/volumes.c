@@ -823,12 +823,9 @@ void zuluCryptPrintPartitionProperties( const char * device )
 		}else{
 			printf( "Nil\t" ) ;
 		}
-		if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
 
-			printf( "%s\t",e ) ;
-		}else{
-			printf( "Nil\t" ) ;
-		}
+		printf( "%s\t",zuluCryptVolumeType( blkid,device ) ) ;
+
 		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
 
 			printf( "%s\n",e ) ;

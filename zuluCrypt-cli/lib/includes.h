@@ -27,6 +27,8 @@
 #include "libzuluCrypt.h"
 #include "../bin/bash_special_chars.h"
 
+#include <blkid/blkid.h>
+
 #include <gcrypt.h>
 
 #include "support_whirlpool.h"
@@ -308,6 +310,11 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device ) ;
  * this function is defined in ./blkid_evaluate_tag.c
  */
 int zuluCryptDeviceHasEncryptedFileSystem( const char * device ) ;
+
+/*
+ * this function is defined in ./blkid_evaluate_tag.c
+ */
+const char * zuluCryptVolumeType( blkid_probe blkid,const char * device ) ;
 
 /*
  * this function is defined in ./blkid_evaluate_tag.c

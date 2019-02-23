@@ -144,12 +144,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 
 		blkid_do_probe( blkid ) ;
 
-		if( blkid_probe_lookup_value( blkid,"TYPE",&g,NULL ) == 0 ){
-
-			printf( "%s\t",g ) ;
-		}else{
-			printf( "Nil\t" ) ;
-		}
+		printf( "%s\t",zuluCryptVolumeType( blkid,device ) ) ;
 
 		if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 ){
 

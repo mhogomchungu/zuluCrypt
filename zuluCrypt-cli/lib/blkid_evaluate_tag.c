@@ -18,7 +18,9 @@
  */
 
 #include "includes.h"
-#include <blkid/blkid.h>
+
+#include <fcntl.h>
+#include <unistd.h>
 
 static char * _resolve_path( char * path )
 {
@@ -157,4 +159,42 @@ int zuluCryptDeviceHasEncryptedFileSystem( const char * device )
 	}
 
 	return r ;
+}
+
+const char * zuluCryptVolumeType( blkid_probe blkid,const char * device )
+{
+	static char buffer[ 32 ] ;
+	const char * e ;
+
+	int fd ;
+
+	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
+
+		return e ;
+	}else{
+		/*
+		 * We are manually checking for signature because blkid has failed us.
+		 * Added to support checking for bitlocker signatures since this functionality
+		 * in blkid was added in version 2.33(released Nov 6th,2018) and i dont have it yet.
+		 */
+
+		fd = open( device,O_RDONLY ) ;
+
+		if( fd != -1 ){
+
+			read( fd,buffer,11 ) ;
+
+			if( StringAtLeastOnePrefixMatch( buffer,
+							 "\xeb\x52\x90-FVE-FS-",
+							 "\xeb\x58\x90-FVE-FS-",
+							 "\xeb\x58\x90MSWIN4.1",NULL ) ){
+
+				strcpy( buffer,"crypto_BitLocker" ) ;
+
+				return buffer ;
+			}
+		}
+
+		return "Nil" ;
+	}
 }

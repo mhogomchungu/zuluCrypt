@@ -124,6 +124,11 @@ int zuluCryptVolumeIsNotLuks( const char * dev ) ;
 int zuluCryptPrintDeviceProperties( int type ) ;
 
 /*
+ * this function is defined in volumes.c
+ */
+const char * zuluCryptVolumeType( blkid_probe blkid,const char * device ) ;
+
+/*
  * this function is defined in security.c
  */
 int zuluCryptSecurityCheckPartitionPermissions( uid_t uid ) ;
