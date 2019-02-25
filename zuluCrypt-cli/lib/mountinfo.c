@@ -243,15 +243,19 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 		it++ ;
 
-		if( StringPrefixNotEqual( c,t ) ){
+		if( StringPrefixNotEqual( c,t ) && !zuluCryptBitLockerVolume_1( c ) ){
 
 			/*
 			 * we only care about zuluCrypt volumes and these volumes that we care about starts with
 			 * "/dev/mapper/zuluCrypt-"
+			 *
+			 * We also care about dislocker volumes so we let them through. These volumes ends with
+			 * "dislocker-file"
 			 */
 
 			continue ;
 		}
+
 		if( StringHasComponent( c,SHARE_MOUNT_PREFIX "/" ) ){
 
 			/*
@@ -287,6 +291,16 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			StringListAppendString_1( &list,&z ) ;
 
 			StringFree( f ) ;
+
+		}else if( zuluCryptBitLockerVolume( e ) ){
+
+			q = zuluCryptBitLockerResolveMapperPath( e ,uid) ;
+
+			d = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
+
+			StringMultipleAppend( q,"\t",d,"\t",zuluCryptBitLockerType(),NULL ) ;
+
+			StringListAppendString_1( &list,&q ) ;
 		}else{
 			/*
 			 * zuluCryptVolumeDeviceName() is defined in status.c

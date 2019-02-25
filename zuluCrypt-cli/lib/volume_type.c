@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include <pwd.h>
 
 #ifdef CRYPT_TCRYPT
 int zuluCryptGetVolumeType( const char * device,const char * pass,size_t pass_size )
@@ -49,4 +50,3 @@ int zuluCryptGetVolumeType( const char * device,const char * pass,size_t pass_si
 	}
 }
 #endif
-

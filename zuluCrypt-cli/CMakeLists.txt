@@ -30,6 +30,7 @@
  bin/create_mount_point.c
  bin/path_access.c
  bin/test.c
+ ../zuluMount-cli/volume_status.c
  )
 
  SET( BINMount
@@ -42,6 +43,7 @@
  )
 
  SET( LIB
+ lib/bitlocker.c
  lib/mountinfo.c
  lib/create_mapper_name.c
  lib/is_path_valid.c

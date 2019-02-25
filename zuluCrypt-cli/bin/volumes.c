@@ -317,7 +317,7 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 
 					e = zuluCryptLoopDeviceAddress_1( device ) ;
 
-					if( StringListHasNoEntry( stz,e ) ){
+					if( !zuluCryptBitLockerVolume( e ) && StringListHasNoEntry( stz,e ) ){
 
 						/*
 						 * Here we only keep one loop device if the volume file has

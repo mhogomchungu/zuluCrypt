@@ -214,12 +214,7 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 	blkid_do_probe( blkid ) ;
 
-	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
-
-		StringMultipleAppend( p,"\n file system:\t",e,NULL ) ;
-	}else{
-		StringAppend( p,"\n file system:\tNil" ) ;
-	}
+	StringMultipleAppend( p,"\n file system:\t",zuluCryptVolumeType( blkid,mapper ),NULL ) ;
 
 	blkid_free_probe( blkid ) ;
 

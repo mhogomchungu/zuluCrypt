@@ -45,11 +45,11 @@ typedef struct{
 
 int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid ) ;
 
-int zuluMountUnEncryptedVolumeStatus( const char * device ) ;
+int zuluMountUnEncryptedVolumeStatus( const char * device,const char * fs,const char * device1 ) ;
 
 int zuluMountPrintVolumesProperties( uid_t uid ) ;
 
-int zuluMountprintAListOfMountedVolumes( void ) ;
+int zuluMountprintAListOfMountedVolumes( uid_t ) ;
 
 int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t uid ) ;
 

@@ -21,36 +21,65 @@
 #include <stdio.h>
 #include <libintl.h>
 
+int zuluMountUnEncryptedVolumeStatus( const char * device,const char * fs,const char * device1 ) ;
+
 int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 {
 	char * output ;
-	int xt ;
+	int xt = 2 ;
 
-	/*
-	 * ZULUCRYPTlongMapperPath is set in ../constants.h
-	 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
-	 */
-	string_t p = zuluCryptCreateMapperName( device,mapper,uid,ZULUCRYPTlongMapperPath ) ;
+	string_t p ;
+
+	const char * e ;
+
+	char * m ;
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
-	/*
-	 *zuluCryptVolumeStatus() is defined in ../lib/status.c
-	 */
-	output = zuluCryptVolumeStatus( StringContent( p ) ) ;
 
-	zuluCryptSecurityDropElevatedPrivileges() ;
+	if( zuluCryptDeviceHasAgivenFileSystem( device,zuluCryptBitLockerType() ) ){
 
-	if( output != NULL ){
+		if( StringPrefixEqual( device,"/dev/loop" ) ){
 
-		printf( "%s\n",output ) ;
-		StringFree( output ) ;
-		xt = 0 ;
+			p = zuluCryptLoopDeviceAddress_2( device ) ;
+		}else{
+			p = String( device ) ;
+		}
+
+		e = zuluCryptBitLockerCreateMapperPath( p,uid ) ;
+
+		m = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( e ) ;
+
+		xt = zuluMountUnEncryptedVolumeStatus( device,"bitlocker",m ) ;
+
+		StringFree( m ) ;
+
+		StringDelete( &p ) ;
 	}else{
-		printf( gettext( "ERROR: Could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
-		xt = 2 ;
+		/*
+		 * ZULUCRYPTlongMapperPath is set in ../constants.h
+		 * zuluCryptCreateMapperName() is defined at ../lib/create_mapper_name.c
+		 */
+		p = zuluCryptCreateMapperName( device,mapper,uid,ZULUCRYPTlongMapperPath ) ;
+
+		/*
+		 *zuluCryptVolumeStatus() is defined in ../lib/status.c
+		 */
+		output = zuluCryptVolumeStatus( StringContent( p ) ) ;
+
+		if( output != NULL ){
+
+			printf( "%s\n",output ) ;
+			StringFree( output ) ;
+			xt = 0 ;
+		}else{
+			printf( gettext( "ERROR: Could not get volume properties,volume is not open or was opened by a different user\n" ) ) ;
+			xt = 2 ;
+		}
+
+		StringDelete( &p ) ;
 	}
 
-	StringDelete( &p ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	return xt ;
 }

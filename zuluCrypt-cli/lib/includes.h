@@ -131,6 +131,11 @@ static inline int zuluCryptWhirlpoolIsSupported()
 }
 
 /*
+ * zuluCryptVeraCryptPIM() is defined in volume_type.c
+ */
+const char * zuluCryptBitLockerType( void ) ;
+
+/*
  * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
  */
 int zuluCryptVeraCryptPIM( int e ) ;
@@ -430,6 +435,33 @@ int zulucryptFileSystemIsSupported( const char * fs ) ;
  * this function is defined in user_home_path.c
  */
 string_t zuluCryptGetUserName( uid_t uid ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+string_t zuluCryptBitLockerMapperPath( uid_t uid ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+string_t zuluCryptBitLockerResolveMapperPath( const char * e,uid_t ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+const char * zuluCryptBitLockerCreateMapperPath( string_t e,uid_t uid ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+int zuluCryptBitLockerVolume( const char * e ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+int zuluCryptBitLockerVolume_1( const char * e ) ;
+
+int zuluCryptBitLockerMount( const char * device,const char * m_point ) ;
 
 /*
  * this function is defined in real_path.c

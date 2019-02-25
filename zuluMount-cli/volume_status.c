@@ -144,7 +144,12 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 
 		blkid_do_probe( blkid ) ;
 
-		printf( "%s\t",zuluCryptVolumeType( blkid,device ) ) ;
+		if( StringPrefixEqual( fs,zuluCryptBitLockerType() ) ){
+
+			printf( "%s\t",fs ) ;
+		}else{
+			printf( "%s\t",zuluCryptVolumeType( blkid,device ) ) ;
+		}
 
 		if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 ){
 
@@ -236,7 +241,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 	zuluCryptSecurityDropElevatedPrivileges() ;
 }
 
-static void _print_device_properties( string_t entry,const char * mapper_path,size_t mapper_length )
+static void _print_device_properties( string_t entry,const char * mapper_path,size_t mapper_length,uid_t uid )
 {
 	char * x ;
 
@@ -249,6 +254,7 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 	ssize_t index ;
 
 	string_t st = StringVoid ;
+	string_t xt ;
 
 	stringList_t stx = StringListStringSplit( entry,' ' ) ;
 
@@ -308,6 +314,32 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 		}else{
 			StringReplaceChar_1( entry,0,' ','\0' ) ;
 		}
+
+	}else if( zuluCryptBitLockerVolume( q ) ){
+
+		st = zuluCryptBitLockerResolveMapperPath( q,uid ) ;
+
+		e = zuluCryptDecodeMountEntry( st ) ;
+		f = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
+
+		StringReplace( entry,e ) ;
+
+		zuluCryptSecurityGainElevatedPrivileges() ;
+
+		xt = zuluCryptGetFileSystemFromDevice( q ) ;
+
+		if( xt != StringVoid ){
+
+			StringMultiplePrepend( xt,"/",zuluCryptBitLockerType(),NULL ) ;
+
+			zuluMountPartitionProperties( e,NULL,e,f,StringContent( xt ) ) ;
+		}else{
+			zuluMountPartitionProperties( e,NULL,e,f,zuluCryptBitLockerType() ) ;
+		}
+
+		zuluCryptSecurityDropElevatedPrivileges() ;
+
+		StringMultipleDelete( &st,&xt,NULL ) ;
 	}else{
 		StringReplaceChar_1( entry,0,' ','\0' ) ;
 
@@ -416,7 +448,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 
 		if( _normal_mounted_volume( st ) ){
 
-			_print_device_properties( st,z,l ) ;
+			_print_device_properties( st,z,l,uid ) ;
 
 			if( StringStartsWith( st,"UUID=" ) ){
 
@@ -460,10 +492,16 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 	return 0 ;
 }
 
-static void  _zuluMountprintAListOfMountedVolumes( string_t st,const char * mapper_prefix )
+static void  _zuluMountprintAListOfMountedVolumes( string_t st,uid_t uid )
 {
 	const char * e ;
 	const char * f ;
+
+	/*
+	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
+	 * mapper_prefix will probably contain "/dev/mapper/"
+	 */
+	const char * mapper_prefix = zuluCryptMapperPrefix() ;
 
 	string_t q ;
 
@@ -535,13 +573,21 @@ static void  _zuluMountprintAListOfMountedVolumes( string_t st,const char * mapp
 		}
 
 		StringDelete( &q ) ;
+
+	}else if( zuluCryptBitLockerVolume( StringContent( st ) ) ){
+
+		q = zuluCryptBitLockerResolveMapperPath( StringContent( st ),uid ) ;
+
+		StringPrintLine( q ) ;
+
+		StringDelete( &q ) ;
 	}else{
 		zuluCryptDecodeMountEntry( st ) ;
 		StringPrintLine( st ) ;
 	}
 }
 
-int zuluMountprintAListOfMountedVolumes( void )
+int zuluMountprintAListOfMountedVolumes( uid_t uid )
 {
 	/*
 	 * zuluCryptGetAListOfMountedVolumes() is defined in ../zuluCrypt-cli/lib/process_mountinfo.c
@@ -554,11 +600,6 @@ int zuluMountprintAListOfMountedVolumes( void )
 	StringListIterator it  ;
 	StringListIterator end ;
 
-	/*
-	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
-	 * mapper_prefix will probably contain "/dev/mapper/"
-	 */
-	const char * e = zuluCryptMapperPrefix() ;
 	const char * f ;
 	/*
 	 * remove duplicates caused by bind mounts and other entries we dont care about
@@ -580,7 +621,7 @@ int zuluMountprintAListOfMountedVolumes( void )
 				/*
 				 * Only print one entry if there are more due to bind mounts
 				 */
-				_zuluMountprintAListOfMountedVolumes( st,e ) ;
+				_zuluMountprintAListOfMountedVolumes( st,uid ) ;
 				stx = StringListAppend( stx,f ) ;
 			}
 		}
@@ -663,7 +704,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 		/*
 		 * mounted and encrypted volume opened by this user
 		 */
-		_print_device_properties( p,mapper_prefix,mapper_length ) ;
+		_print_device_properties( p,mapper_prefix,mapper_length,uid ) ;
 	}else{
 		/*
 		 * We will get if:
@@ -680,7 +721,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			/*
 			 * volume is unencrypted and mounted by any user
 			 */
-			_print_device_properties( p,mapper_prefix,mapper_length ) ;
+			_print_device_properties( p,mapper_prefix,mapper_length,uid ) ;
 		}else{
 			/*
 			 * We will get here is:
@@ -727,7 +768,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 				 * The volume is encrypted and mounted by any user,probably a different user
 				 * since volumes mounted by this user are already checked.
 				 */
-				_print_device_properties( f,mapper_prefix,mapper_length ) ;
+				_print_device_properties( f,mapper_prefix,mapper_length,uid ) ;
 			}else{
 				/*
 				 * volume is not mounted
@@ -746,7 +787,7 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 	return 0 ;
 }
 
-int zuluMountUnEncryptedVolumeStatus( const char * device )
+int zuluMountUnEncryptedVolumeStatus( const char * device,const char * fs,const char * device1 )
 {
 	char * e ;
 	char * z ;
@@ -759,13 +800,23 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 	/*
 	 * zuluCryptGetMountEntry() is defined in ../zuluCrypt/cli/lib/process_mountinfo.c
 	 */
-	p = zuluCryptGetMountEntry( device ) ;
+	if( device1 != NULL ){
+
+		p = zuluCryptGetMountEntry( device1 ) ;
+	}else{
+		p = zuluCryptGetMountEntry( device ) ;
+	}
 
 	stl = StringListStringSplit( p,' ' ) ;
 
 	StringDelete( &p ) ;
 
-	p = String( "\n type:   \tNil\n cipher:   \tNil\n keysize:   \tNil\n offset:    \tNil\n" ) ;
+	if( fs != NULL ){
+
+		p = String_1( "\n type:   \t",fs,"\n cipher:   \tNil\n keysize:   \tNil\n offset:    \tNil\n",NULL ) ;
+	}else{
+		p = String( "\n type:   \tNil\n cipher:   \tNil\n keysize:   \tNil\n offset:    \tNil\n" ) ;
+	}
 
 	if( StringPrefixEqual( device,"/dev/loop" ) ){
 		/*
@@ -804,7 +855,14 @@ int zuluMountUnEncryptedVolumeStatus( const char * device )
 	 * zuluCryptFileSystemProperties() is defined in ../zuluCrypt-cli/lib/status.c
 	 * zuluCryptDecodeMountEntry() is defined in ../zuluCrypt-cli/lib/mount_volume.c
 	 */
-	zuluCryptFileSystemProperties( p,device,zuluCryptDecodeMountEntry( q ) ) ;
+
+	if( device1 != NULL ){
+
+		zuluCryptFileSystemProperties( p,device1,zuluCryptDecodeMountEntry( q ) ) ;
+	}else{
+		zuluCryptFileSystemProperties( p,device,zuluCryptDecodeMountEntry( q ) ) ;
+	}
+
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 

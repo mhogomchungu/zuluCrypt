@@ -101,69 +101,90 @@ int zuluCryptFileSystemIsFUSEbased( const char * device )
 	}
 }
 
-string_t zuluCryptGetFileSystemFromDevice( const char * device )
+static string_t _zulucrypt_getfs( const char * device )
 {
-	string_t st = StringVoid ;
-
-	const char * cf = NULL ;
+	string_t st ;
 
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
 
-	if( blkid != NULL ){
+	blkid_do_probe( blkid ) ;
 
-		blkid_do_probe( blkid ) ;
-		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
-		st = String( cf ) ;
-		blkid_free_probe( blkid ) ;
-	}
+	st = String( zuluCryptVolumeType( blkid,device ) ) ;
+
+	blkid_free_probe( blkid ) ;
+
 	return st ;
+}
+
+static string_t _zulucrypt_getloopfs( const char * device )
+{
+	string_t st ;
+	char * e = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( device ) ;
+
+	if( e ){
+		st = _zulucrypt_getfs( e ) ;
+		StringFree( e ) ;
+
+		return st ;
+	}else{
+		return StringVoid ;
+	}
+}
+
+string_t zuluCryptGetFileSystemFromDevice( const char * device )
+{
+	char * e ;
+
+	string_t st ;
+
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
+
+		e = zuluCryptLoopDeviceAddress( device ) ;
+
+		if( e ){
+
+			st = _zulucrypt_getloopfs( e ) ;
+
+			StringFree( e ) ;
+
+			return st ;
+		}else{
+			return StringVoid ;
+		}
+
+	}else if( StringPrefixEqual( device,"/dev/" ) ){
+
+		return _zulucrypt_getfs( device ) ;
+	}else{
+		return _zulucrypt_getloopfs( device ) ;
+	}
 }
 
 int zuluCryptDeviceHasAgivenFileSystem( const char * device,const char * fs )
 {
-	const char * cf = NULL ;
-	int r = 0 ;
-
-	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
-
-	if( blkid != NULL ){
-
-		blkid_do_probe( blkid ) ;
-		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
-		r = StringsAreEqual( cf,fs ) ;
-		blkid_free_probe( blkid ) ;
-	}
+	string_t s = zuluCryptGetFileSystemFromDevice( device ) ;
+	int r = StringContains( s,fs ) ;
+	StringDelete( &s ) ;
 	return r ;
 }
 
 int zuluCryptDeviceHasEncryptedFileSystem( const char * device )
 {
-	const char * cf = NULL ;
-	int r = 0 ;
+	string_t st = zuluCryptGetFileSystemFromDevice( device ) ;
+	int r ;
 
-	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
-
-	if( blkid != NULL ){
-
-		blkid_do_probe( blkid ) ;
-		blkid_probe_lookup_value( blkid,"TYPE",&cf,NULL ) ;
-
-		if( cf == NULL ){
-
-			r = 1 ;
-		}else{
-			r = StringPrefixEqual( cf,"crypto_LUKS" ) ;
-		}
-
-		blkid_free_probe( blkid ) ;
+	if( st == StringVoid ){
+		return 1 ;
+	}else{
+		r = StringStartsWith( st,"crypto_" ) ;
+		StringDelete( &st ) ;
+		return r ;
 	}
-
-	return r ;
 }
 
 const char * zuluCryptVolumeType( blkid_probe blkid,const char * device )
 {
-	static char buffer[ 32 ] ;
+	char buffer[ 16 ] ;
 	const char * e ;
 
 	int fd ;
@@ -189,9 +210,7 @@ const char * zuluCryptVolumeType( blkid_probe blkid,const char * device )
 							 "\xeb\x58\x90-FVE-FS-",
 							 "\xeb\x58\x90MSWIN4.1",NULL ) ){
 
-				strcpy( buffer,"crypto_BitLocker" ) ;
-
-				return buffer ;
+				return zuluCryptBitLockerType() ;
 			}
 		}
 

@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <grp.h>
 
 static void _seteuid( uid_t uid )
@@ -182,6 +183,17 @@ static int _zuluMountMountedList( uid_t uid )
 	return zuluMountPrintVolumesProperties( uid ) ;
 }
 
+static string_t _zuluCryptGetFileSystemFromDevice( const char * device )
+{
+	string_t st ;
+
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	st = zuluCryptGetFileSystemFromDevice( device ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
+
+	return st ;
+}
+
 static int _zuluPartitionHasCryptoFs( const char * device )
 {
 	int r ;
@@ -324,6 +336,14 @@ static int _zuluMountExe( ARGS * args )
 	const char * offset = args->offset ;
 	size_t       uid    = args->uid    ;
 
+	string_t st ;
+	string_t xt ;
+
+	int r ;
+
+	const char * e ;
+
+	char * m ;
 
 	if( StringsAreEqual( action,"-L" ) ){
 
@@ -331,12 +351,37 @@ static int _zuluMountExe( ARGS * args )
 	}
 	if( StringsAreEqual( action,"-s" ) ){
 
-		if( offset != NULL || _zuluPartitionHasCryptoFs( device ) ){
+		st = _zuluCryptGetFileSystemFromDevice( device ) ;
 
-			return zuluMountVolumeStatus( device,uuid,uid ) ;
+		if( StringContains( st,"crypto_BitLocker" ) ){
+
+			if( StringPrefixEqual( device,"/dev/loop" ) ){
+
+				xt = zuluCryptLoopDeviceAddress_2( device ) ;
+			}else{
+				xt = String( device ) ;
+			}
+
+			e = zuluCryptBitLockerCreateMapperPath( xt,uid ) ;
+
+			m = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( e ) ;
+
+			r = zuluMountUnEncryptedVolumeStatus( device,"bitlocker",m ) ;
+
+			StringDelete( &xt ) ;
+
+			StringFree( m ) ;
+
+		}else if( offset != NULL || st == StringVoid || StringStartsWith( st,"crypto_" ) ){
+
+			r = zuluMountVolumeStatus( device,uuid,uid ) ;
 		}else{
-			return zuluMountUnEncryptedVolumeStatus( device ) ;
+			r = zuluMountUnEncryptedVolumeStatus( device,NULL,NULL ) ;
 		}
+
+		StringDelete( &st ) ;
+
+		return r ;
 	}
 	if( StringsAreEqual( action,"-m" ) ){
 
@@ -705,7 +750,7 @@ int main( int argc,char * argv[] )
 	}
 	if( StringsAreEqual( args.action,"-E" ) ){
 
-		return _zuluExit_2(  zuluMountprintAListOfMountedVolumes(),stl,stx,NULL ) ;
+		return _zuluExit_2(  zuluMountprintAListOfMountedVolumes( uid ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-c" ) ){
 
