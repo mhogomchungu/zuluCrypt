@@ -294,7 +294,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 		}else if( zuluCryptBitLockerVolume( e ) ){
 
-			q = zuluCryptBitLockerResolveMapperPath( e ,uid) ;
+			q = zuluCryptBitLockerResolveMapperPath( e,uid ) ;
 
 			d = zuluCryptDecodeMountEntry( StringListStringAtSecondPlace( stx ) ) ;
 

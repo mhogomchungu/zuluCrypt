@@ -287,3 +287,6 @@ version 5.4.0
 -- fix a bug that caused a wrong password to be used when creating a TrueCrypt/VeraCrypt volume from zuluCrypt-gui.
    Easiest way to notice this was that a just created volume could not be unlocked.
 -- fix a build issue on some distributions.
+
+version 5.5.0
+-- Add support for unlocking bitlocker volumes using dislocker(https://github.com/Aorimn/dislocker)
