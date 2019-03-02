@@ -69,6 +69,7 @@ typedef struct{
 	const char * device ;
 	const char * plain_dm_properties ;
 	const char * mapper_name ;
+	const char * mapper_path ;
 	const char * key ;
 	const char * m_point ;
 	const char * fs_opts ;
@@ -83,6 +84,7 @@ typedef struct{
 	int tcrypt_keyfiles_count ;
 	int veraCrypt_volume ;
 	int trueCrypt_volume ;
+	int bitlocker_volume ;
 	int tcrypt_system ;
 	const char * const * tcrypt_keyfiles ;
 	unsigned long m_flags ;
@@ -444,7 +446,27 @@ string_t zuluCryptBitLockerMapperPath( uid_t uid ) ;
 /*
  * this function is defined in bitlocker.c
  */
+string_t zuluCryptBitLockerFullMapperPath( uid_t uid,const char * e ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+string_t zuluCryptBitLockerMapperName( const char * ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
 string_t zuluCryptBitLockerResolveMapperPath( const char * e,uid_t ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * st ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point ) ;
 
 /*
  * this function is defined in bitlocker.c
@@ -460,8 +482,6 @@ int zuluCryptBitLockerVolume( const char * e ) ;
  * this function is defined in bitlocker.c
  */
 int zuluCryptBitLockerVolume_1( const char * e ) ;
-
-int zuluCryptBitLockerMount( const char * device,const char * m_point ) ;
 
 /*
  * this function is defined in real_path.c

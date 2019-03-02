@@ -18,6 +18,7 @@
  */
 
 #include "includes.h"
+#include "../lib/includes.h"
 #include <locale.h>
 #include <stdio.h>
 #include <libintl.h>
@@ -55,17 +56,37 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	 struct stat xt ;
 	 const char * mapper ;
 
-	 /*
-	  * ZULUCRYPTlongMapperPath is set in ../constants.h
-	  * zuluCryptCreateMapperName() defined in ../lib/create_mapper_name.c
-	  */
-	 p = zuluCryptCreateMapperName( dev,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
+	 int r ;
 
-	 mapper = StringContent( p ) ;
+	 zuluCryptSecurityGainElevatedPrivileges() ;
 
-	 if( stat( mapper,&xt ) != 0 ){
+	 r = zuluCryptDeviceHasAgivenFileSystem( dev,zuluCryptBitLockerType() ) ;
 
-		 return zuluExit( 1,p ) ;
+	 zuluCryptSecurityDropElevatedPrivileges() ;
+
+	 if( r == 1 ){
+
+		 p = zuluCryptBitLockerFullMapperPath( uid,dev ) ;
+
+		 mapper = StringContent( p ) ;
+
+		// if( stat( mapper,&xt ) != 0 ){
+
+		//	 return zuluExit( 1,p ) ;
+		// }
+	 }else{
+		 /*
+		  * ZULUCRYPTlongMapperPath is set in ../constants.h
+		  * zuluCryptCreateMapperName() defined in ../lib/create_mapper_name.c
+		  */
+		 p = zuluCryptCreateMapperName( dev,mapping_name,uid,ZULUCRYPTlongMapperPath ) ;
+
+		 mapper = StringContent( p ) ;
+
+		 if( stat( mapper,&xt ) != 0 ){
+
+			 return zuluExit( 1,p ) ;
+		 }
 	 }
 
 	 /*
@@ -87,11 +108,20 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	  * zuluCryptReuseMountPoint() is defined in create_mount_point.c
 	  */
 
-	 if( zuluCryptReuseMountPoint() ){
+	 if( r == 1 ){
+		 if( zuluCryptReuseMountPoint() ){
 
-		 st = zuluCryptCloseVolume( mapper,NULL ) ;
+			 st = zuluCryptBitLockerlock( p,NULL ) ;
+		 }else{
+			 st = zuluCryptBitLockerlock( p,&m_point ) ;
+		 }
 	 }else{
-		 st = zuluCryptCloseVolume( mapper,&m_point ) ;
+		 if( zuluCryptReuseMountPoint() ){
+
+			 st = zuluCryptCloseVolume( mapper,NULL ) ;
+		 }else{
+			 st = zuluCryptCloseVolume( mapper,&m_point ) ;
+		 }
 	 }
 
 	 if( st == 0 && m_point != NULL ){

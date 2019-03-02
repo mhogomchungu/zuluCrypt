@@ -353,7 +353,7 @@ static int _zuluMountExe( ARGS * args )
 
 		st = _zuluCryptGetFileSystemFromDevice( device ) ;
 
-		if( StringContains( st,"crypto_BitLocker" ) ){
+		if( StringContains( st,zuluCryptBitLockerType() ) ){
 
 			if( StringPrefixEqual( device,"/dev/loop" ) ){
 

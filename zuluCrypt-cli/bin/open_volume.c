@@ -277,10 +277,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	const char * key = NULL ;
 	const char * mapper_name ;
-	const char * e ;
+	const char * path_mapper ;
 
 	size_t key_len = 0 ;
 	int st = 0 ;
+
+	int bitlockerVolume ;
 
 	stringList_t stz ;
 	tvcrypt v_info ;
@@ -384,18 +386,39 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		}
 	}
 
-	/*
-	 * zuluCryptCreateMapperName() is defined in ../lib/create_mapper_name.c
-	 */
-	*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
+	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	*mapper = StringCopy( *m_name ) ;
-	mapper_name = StringContent( *m_name ) ;
+	bitlockerVolume = zuluCryptDeviceHasAgivenFileSystem( device,zuluCryptBitLockerType() ) ;
 
-	*mapper_path = String( zuluCryptMapperPrefix() ) ;
-	e = StringMultipleAppend( *mapper_path,"/",mapper_name,NULL ) ;
+	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	if( stat( e,&statstr ) == 0 ){
+	if( bitlockerVolume ){
+
+		*mapper_path = zuluCryptBitLockerMapperPath( uid ) ;
+
+		zuluCryptSecurityGainElevatedPrivileges() ;
+
+		*m_name = zuluCryptBitLockerMapperName( device ) ;
+
+		zuluCryptSecurityDropElevatedPrivileges() ;
+
+		mapper_name = StringContent( *m_name ) ;
+		path_mapper = StringContent( *mapper_path ) ;
+	}else{
+		/*
+		 * zuluCryptCreateMapperName() is defined in ../lib/create_mapper_name.c
+		 */
+		*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
+
+		*mapper = StringCopy( *m_name ) ;
+		mapper_name = StringContent( *m_name ) ;
+
+		*mapper_path = String( zuluCryptMapperPrefix() ) ;
+
+		path_mapper = StringMultipleAppend( *mapper_path,"/",mapper_name,NULL ) ;
+	}
+
+	if( stat( path_mapper,&statstr ) == 0 ){
 
 		return zuluExit_1( 11,opts,device,mount_point,stl ) ;
 	}
@@ -509,11 +532,13 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	volume.device      = device ;
 	volume.mapper_name = mapper_name ;
+	volume.mapper_path = path_mapper ;
 	volume.m_point     = mount_point ;
 	volume.fs_opts     = fs_opts ;
 	volume.uid         = uid ;
 	volume.m_opts      = m_opts ;
 	volume.m_flags     = m_flags ;
+	volume.bitlocker_volume = bitlockerVolume ;
 
 	/*
 	 * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in this source file.
@@ -582,7 +607,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	}else{
 		st = _open_volume( &volume ) ;
 	}
-
 	/*
 	 * below two return values comes from ../lib/mount_volume.c
 	 */
@@ -596,7 +620,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		st = 3 ;
 	}
 
-	device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),NULL ) ;
+	if( !volume.bitlocker_volume ){
+
+		device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),NULL ) ;
+	}
 
 	if( st == 0 && share ){
 

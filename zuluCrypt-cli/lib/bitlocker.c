@@ -19,6 +19,7 @@
 
 #include "includes.h"
 #include <pwd.h>
+#include <sys/mount.h>
 
 const char * zuluCryptBitLockerType()
 {
@@ -28,6 +29,36 @@ const char * zuluCryptBitLockerType()
 string_t zuluCryptBitLockerMapperPath( uid_t uid )
 {
 	return String_1( "/run/media/private/",getpwuid( uid )->pw_name,"/cryptoBitlocker",NULL ) ;
+}
+
+string_t zuluCryptBitLockerMapperName( const char * e )
+{
+	string_t st ;
+
+	if( StringPrefixEqual( e,"/dev/loop" ) ){
+
+		st = zuluCryptLoopDeviceAddress_2( e ) ;
+	}else{
+		st = String( e ) ;
+	}
+
+	StringReplaceChar( st,'/','_' ) ;
+
+	return st ;
+}
+
+string_t zuluCryptBitLockerFullMapperPath( uid_t uid,const char * e )
+{
+	string_t a = zuluCryptBitLockerMapperPath( uid ) ;
+	string_t b = zuluCryptBitLockerMapperName( e ) ;
+
+	StringAppendString( a,b ) ;
+
+	StringAppend( a,"/dislocker-file" ) ;
+
+	StringDelete( &b ) ;
+
+	return a ;
 }
 
 int zuluCryptBitLockerVolume( const char * e )
@@ -64,4 +95,70 @@ const char * zuluCryptBitLockerCreateMapperPath( string_t e,uid_t uid )
 	StringPrependString( e,st ) ;
 	StringDelete( &st ) ;
 	return StringAppend( e,"/dislocker-file" ) ;
+}
+
+int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
+{
+	char * e = NULL ;
+
+	int r = zuluCryptUnmountVolume( StringContent( mapperPath ),&e ) ;
+
+	int s ;
+
+	const char * m ;
+
+	if( r == 0 ){
+
+		m = StringRemoveString( mapperPath,"/dislocker-file" ) ;
+
+		s = ProcessExecute( ZULUCRYPTumount,m,NULL ) ; ;
+
+		if( s == 0 ){
+
+			*mount_point = e ;
+		}else{
+			StringFree( e ) ;
+		}
+
+		return s ;
+	}else{
+		return r ;
+	}
+}
+
+int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
+{
+	int r ;
+
+	string_t st = String_1( opts->mapper_path,opts->mapper_name,NULL ) ;
+
+	process_t p = Process( "/usr/bin/dislocker-fuse",opts->device,"-u \"Abc123@ 2\"","--",StringContent( st ),NULL ) ;
+
+
+	ProcessStart( p ) ;
+
+	//int m = ProcessWrite( p,opts->key,opts->key_len ) ;
+
+	//printf( "--%d:%d",m,opts->key_len ) ;
+
+	//ProcessCloseStdWrite( p ) ;
+
+	r = ProcessExitStatus( p ) ;
+
+	char * e = "dsdsd" ;
+	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
+
+	printf( "---**--%s----\n",e ) ;
+
+	printf( "---%d---\n",r ) ;
+	if( r == 0 ){
+
+		StringAppend( st,"/dislocker-file" ) ;
+		*xt = st ;
+		return 0 ;
+	}else{
+		puts( "ddd" ) ;
+		StringDelete( &st ) ;
+		return 4 ;
+	}
 }

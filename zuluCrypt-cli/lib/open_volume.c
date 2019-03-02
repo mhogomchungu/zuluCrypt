@@ -187,9 +187,25 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 
 	string_t zt = StringVoid ;
 
+	string_t xt = StringVoid ;
+
 	const char * keyfile ;
 
-	if( opts->plain_dm_properties != NULL ){
+	if( opts->bitlocker_volume ){
+
+		r = zuluCryptBitLockerUnlock( opts,&xt ) ;
+
+		if( r == 0 ){
+
+			r = zuluCryptMountVolume( StringContent( xt ),
+						  opts->m_point,
+						  opts->m_flags,
+						  opts->fs_opts,
+						  opts->uid ) ;
+		}
+
+		StringDelete( &xt ) ;
+	}else if( opts->plain_dm_properties != NULL ){
 		/*
 		 * zuluCryptOpenPlain_1() is defined in open_plain.c
 		 */
