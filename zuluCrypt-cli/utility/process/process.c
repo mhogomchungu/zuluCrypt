@@ -365,12 +365,12 @@ pid_t ProcessStart( process_t p )
 			_ignore_result( setuid( p->str.user_id ) ) ;
 		}
 
-		dup2( p->fd_0[ 0 ],0 ) ;
+		dup2( p->fd_0[ 1 ],0 ) ;
 		dup2( p->fd_1[ 1 ],1 ) ;
 		dup2( p->fd_2[ 1 ],2 ) ;
 
 		close( p->fd_1[ 0 ] ) ;
-		close( p->fd_0[ 1 ] ) ;
+		close( p->fd_0[ 0 ] ) ;
 		close( p->fd_2[ 0 ] ) ;
 
 		if( p->str.priority != 0 ){
@@ -531,8 +531,8 @@ size_t ProcessWrite( process_t p,const char * data,size_t len )
 
 void ProcessCloseStdWrite( process_t p )
 {
-	close( p->fd_0[ 0 ] ) ;
-	p->fd_0[ 0 ] = -1 ;
+	close( p->fd_0[ 1 ] ) ;
+	p->fd_0[ 1 ] = -1 ;
 }
 
 void ProcessSetOptionTimeout( process_t p,int timeout,int signal )

@@ -471,12 +471,27 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point ) ;
 /*
  * this function is defined in bitlocker.c
  */
+int zuluCryptBitLockerlock_1( const char * ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
 const char * zuluCryptBitLockerCreateMapperPath( string_t e,uid_t uid ) ;
 
 /*
  * this function is defined in bitlocker.c
  */
 int zuluCryptBitLockerVolume( const char * e ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+string_t zuluCryptBitLockerVolumeFS( const char * e ) ;
+
+/*
+ * this function is defined in blkid_evaluate_tag.c
+ */
+string_t zulucryptGetBlkidFileSystem( const char * device ) ;
 
 /*
  * this function is defined in bitlocker.c

@@ -28,6 +28,28 @@ static inline int zuluExit( int x,string_t p )
 	return x ;
 }
 
+static int _mount_volume( const char * mapper,
+			  const open_struct_t * opts,
+			  int( *function )( const char * ) )
+{
+	/*
+	 * zuluCryptMountVolume() is defined in mount_volume.c
+	 */
+	int h = zuluCryptMountVolume( mapper,opts->m_point,opts->m_flags,opts->fs_opts,opts->uid ) ;
+
+	if( h != 0 ){
+		/*
+		 * zuluCryptCloseMapper() is defined in close_mapper.c
+		 */
+		if( function( mapper ) != 0 ){
+
+			h = 15 ;
+		}
+	}
+
+	return h;
+}
+
 int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_struct_t * opts )
 {
 	int h ;
@@ -68,19 +90,8 @@ int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_
 	}
 
 	if( opts->m_point != NULL ){
-		/*
-		 * zuluCryptMountVolume() is defined in mount_volume.c
-		 */
-		h = zuluCryptMountVolume( mapper,opts->m_point,opts->m_flags,opts->fs_opts,opts->uid ) ;
 
-		if( h != 0 ){
-			/*
-			 * zuluCryptCloseMapper() is defined in close_mapper.c
-			 */
-			if( zuluCryptCloseMapper( mapper ) != 0 ){
-				h = 15 ;
-			}
-		}
+		h = _mount_volume( mapper,opts,zuluCryptCloseMapper ) ;
 	}
 
 	return zuluExit( h,p ) ;
@@ -191,20 +202,21 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 
 	const char * keyfile ;
 
+	const char * mapper ;
+
 	if( opts->bitlocker_volume ){
 
 		r = zuluCryptBitLockerUnlock( opts,&xt ) ;
 
 		if( r == 0 ){
 
-			r = zuluCryptMountVolume( StringContent( xt ),
-						  opts->m_point,
-						  opts->m_flags,
-						  opts->fs_opts,
-						  opts->uid ) ;
+			mapper = StringContent( xt ) ;
+
+			r = _mount_volume( mapper,opts,zuluCryptBitLockerlock_1 ) ;
 		}
 
 		StringDelete( &xt ) ;
+
 	}else if( opts->plain_dm_properties != NULL ){
 		/*
 		 * zuluCryptOpenPlain_1() is defined in open_plain.c

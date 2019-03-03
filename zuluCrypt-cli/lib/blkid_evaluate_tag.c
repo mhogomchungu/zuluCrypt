@@ -101,7 +101,7 @@ int zuluCryptFileSystemIsFUSEbased( const char * device )
 	}
 }
 
-static string_t _zulucrypt_getfs( const char * device )
+string_t zulucryptGetBlkidFileSystem( const char * device )
 {
 	string_t st ;
 
@@ -122,7 +122,7 @@ static string_t _zulucrypt_getloopfs( const char * device )
 	char * e = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( device ) ;
 
 	if( e ){
-		st = _zulucrypt_getfs( e ) ;
+		st = zulucryptGetBlkidFileSystem( e ) ;
 		StringFree( e ) ;
 
 		return st ;
@@ -154,7 +154,7 @@ string_t zuluCryptGetFileSystemFromDevice( const char * device )
 
 	}else if( StringPrefixEqual( device,"/dev/" ) ){
 
-		return _zulucrypt_getfs( device ) ;
+		return zulucryptGetBlkidFileSystem( device ) ;
 	}else{
 		return _zulucrypt_getloopfs( device ) ;
 	}

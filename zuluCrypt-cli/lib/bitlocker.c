@@ -20,6 +20,8 @@
 #include "includes.h"
 #include <pwd.h>
 #include <sys/mount.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 const char * zuluCryptBitLockerType()
 {
@@ -45,6 +47,37 @@ string_t zuluCryptBitLockerMapperName( const char * e )
 	StringReplaceChar( st,'/','_' ) ;
 
 	return st ;
+}
+
+
+string_t zuluCryptBitLockerVolumeFS( const char * e )
+{
+	int fd = open( e,O_RDONLY ) ;
+
+	int r  ;
+
+	int fd_loop ;
+
+	string_t st = StringVoid ;
+
+	string_t xt = StringVoid ;
+
+	if( fd != -1 ){
+
+		r = zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( fd,&fd_loop,O_RDONLY,&st ) ;
+
+		if( r == 1 ){
+
+			xt = zulucryptGetBlkidFileSystem( StringContent( st ) ) ;
+		}
+
+		close( fd ) ;
+		close( fd_loop ) ;
+	}
+
+	StringDelete( &st ) ;
+
+	return xt ;
 }
 
 string_t zuluCryptBitLockerFullMapperPath( uid_t uid,const char * e )
@@ -97,6 +130,17 @@ const char * zuluCryptBitLockerCreateMapperPath( string_t e,uid_t uid )
 	return StringAppend( e,"/dislocker-file" ) ;
 }
 
+int zuluCryptBitLockerlock_1( const char * mapperPath )
+{
+	string_t st = String( mapperPath ) ;
+
+	int r = zuluCryptBitLockerlock( st,NULL ) ;
+
+	StringDelete( &st ) ;
+
+	return r ;
+}
+
 int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 {
 	char * e = NULL ;
@@ -115,7 +159,10 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 
 		if( s == 0 ){
 
-			*mount_point = e ;
+			if( mount_point ){
+
+				*mount_point = e ;
+			}
 		}else{
 			StringFree( e ) ;
 		}
@@ -132,17 +179,17 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 
 	string_t st = String_1( opts->mapper_path,opts->mapper_name,NULL ) ;
 
-	process_t p = Process( "/usr/bin/dislocker-fuse",opts->device,"-u \"Abc123@ 2\"","--",StringContent( st ),NULL ) ;
+	process_t p = Process( "/usr/bin/dislocker-fuse",opts->device,"-u","--",StringContent( st ),NULL ) ;
 
+//	const char * q = "Abc123@2\n" ;
 
+	puts("1");
 	ProcessStart( p ) ;
-
-	//int m = ProcessWrite( p,opts->key,opts->key_len ) ;
-
-	//printf( "--%d:%d",m,opts->key_len ) ;
-
+	puts("2");
+	//ProcessWrite( p,q,strlen(q));
+	puts("3");
 	//ProcessCloseStdWrite( p ) ;
-
+	puts("4");
 	r = ProcessExitStatus( p ) ;
 
 	char * e = "dsdsd" ;

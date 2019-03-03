@@ -439,12 +439,20 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	mst.uid = uid ;
 	mst.m_flags = mount_opts ;
 
-	/*
-	 * zuluCryptGetFileSystemFromDevice() is defined in blkid_evaluate_tag.c
-	 */
-	fs = zuluCryptGetFileSystemFromDevice( path ) ;
+	int bitLockerVolume = zuluCryptBitLockerVolume( path ) ;
+
+	if( bitLockerVolume ){
+
+		fs = zuluCryptBitLockerVolumeFS( path ) ;
+	}else{
+		/*
+		 * zuluCryptGetFileSystemFromDevice() is defined in blkid_evaluate_tag.c
+		 */
+		fs = zuluCryptGetFileSystemFromDevice( path ) ;
+	}
 
 	if( fs == StringVoid ){
+
 		/*
 		 * failed to read file system,probably because the volume does have any or
 		 * a plain volume was opened with a wrong key
@@ -453,6 +461,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	}
 
 	if( StringStartsWith( fs,"crypto" ) ){
+
 		/*
 		 * we cant mount an encrypted volume, exiting
 		 */
@@ -463,6 +472,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	 * zuluCryptMountHasNotAllowedFileSystemOptions() is defined in ./mount_fs_options.c
 	 */
 	if( zuluCryptMountHasNotAllowedFileSystemOptions( uid,fs_opts,fs ) ){
+
 		return zuluExit( -1,fd,opts,fs,loop ) ;
 	}
 
@@ -470,7 +480,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	mst.fs = StringContent( fs ) ;
 	opts = set_mount_options( &mst ) ;
 
-	if( StringPrefixNotEqual( path,"/dev/" ) ){
+	if( StringPrefixNotEqual( path,"/dev/" ) && !bitLockerVolume ){
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
 		 */
