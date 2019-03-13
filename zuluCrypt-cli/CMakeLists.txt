@@ -123,7 +123,7 @@
  set_target_properties( zuluCrypt-exe PROPERTIES SOVERSION ${LIB_VERSION} )
 
  if( STATIC_ZULUPLAY )
-	TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${uuid_lib} ${devmapper_lib} -lgcrypt zuluplay-static )
+	TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process zuluplay-static ${cryptsetup_lib} ${blkid} ${uuid_lib} ${devmapper_lib} -lgcrypt )
  else()
 	TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${uuid_lib} ${devmapper_lib} ${TCPLAY_LIB} -lgcrypt -lzuluplay )
  endif()
