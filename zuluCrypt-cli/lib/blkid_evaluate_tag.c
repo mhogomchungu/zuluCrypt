@@ -186,12 +186,26 @@ const char * zuluCryptVolumeType( blkid_probe blkid,const char * device )
 {
 	char buffer[ 16 ] ;
 	const char * e ;
+	const char * s ;
+	string_t xt ;
 
 	int fd ;
+	int r ;
 
 	if( blkid_probe_lookup_value( blkid,"TYPE",&e,NULL ) == 0 ){
 
-		return e ;
+		xt = String( e ) ;
+
+		s = StringToLowerCase( xt ) ;
+		r = StringHasComponent( s,"bitlocker" ) ;
+
+		StringDelete( &xt ) ;
+
+		if( r ){
+			return zuluCryptBitLockerType() ;
+		}else{
+			return e ;
+		}
 	}else{
 		/*
 		 * We are manually checking for signature because blkid has failed us.

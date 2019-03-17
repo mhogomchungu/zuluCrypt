@@ -22,6 +22,8 @@
 #include <sys/mount.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 const char * zuluCryptBitLockerType()
 {
@@ -48,7 +50,6 @@ string_t zuluCryptBitLockerMapperName( const char * e )
 
 	return st ;
 }
-
 
 string_t zuluCryptBitLockerVolumeFS( const char * e )
 {
@@ -159,6 +160,8 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 
 		if( s == 0 ){
 
+			rmdir( m ) ;
+
 			if( mount_point ){
 
 				*mount_point = e ;
@@ -173,39 +176,81 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 	}
 }
 
+static const char * _dislocker_fuse_path()
+{
+	struct stat st ;
+	const char * e ;
+
+	const char * exe[] = { "/usr/bin/dislocker-fuse",
+			       "/usr/local/bin/dislocker-fuse",
+			       "/bin/dislocker-fuse",
+			       "/opt/bin/dislocker-fuse",
+			       NULL } ;
+
+	for( e = *exe ; e != NULL ; e++ ){
+
+		if( stat( e,&st ) == 0 ){
+
+			return e ;
+		}
+	}
+
+	return NULL ;
+}
+
 int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 {
 	int r ;
 
-	string_t st = String_1( opts->mapper_path,opts->mapper_name,NULL ) ;
+	const char * exe = _dislocker_fuse_path() ;
 
-	process_t p = Process( "/usr/bin/dislocker-fuse",opts->device,"-u","--",StringContent( st ),NULL ) ;
+	string_t st ;
 
-//	const char * q = "Abc123@2\n" ;
+	const char * mapper_path ;
 
-	puts("1");
-	ProcessStart( p ) ;
-	puts("2");
-	//ProcessWrite( p,q,strlen(q));
-	puts("3");
-	//ProcessCloseStdWrite( p ) ;
-	puts("4");
-	r = ProcessExitStatus( p ) ;
+	process_t p ;
 
-	char * e = "dsdsd" ;
-	ProcessGetOutPut( p,&e,ProcessStdOut ) ;
+	string_t m ;
 
-	printf( "---**--%s----\n",e ) ;
+	char * env[ 2 ] = { NULL,NULL } ;
 
-	printf( "---%d---\n",r ) ;
-	if( r == 0 ){
+	if( exe == NULL ){
 
-		StringAppend( st,"/dislocker-file" ) ;
-		*xt = st ;
-		return 0 ;
-	}else{
-		puts( "ddd" ) ;
+		return 15 ;
+	}
+
+	st = String_1( opts->mapper_path,opts->mapper_name,NULL ) ;
+
+	mapper_path = StringContent( st ) ;
+
+	if( mkdir( mapper_path,S_IRWXU ) != 0 ){
+
 		StringDelete( &st ) ;
-		return 4 ;
+		return 2 ;
+	}else{
+		m = String_1( "DISLOCKER_PASSWORD=",opts->key,NULL ) ;
+
+		*env = ( char * )StringContent( m ) ;
+
+		p = Process( exe,opts->device,"-u","--",mapper_path,NULL ) ;
+
+		ProcessSetEnvironmentalVariable( p,( char * const * )env ) ;
+
+		ProcessStart( p ) ;
+
+		r = ProcessWaitUntilFinished( &p ) ;
+
+		StringDelete( &m ) ;
+
+		if( r == 0 ){
+
+			StringAppend( st,"/dislocker-file" ) ;
+			*xt = st ;
+			return 0 ;
+		}else{
+			rmdir( mapper_path ) ;
+			StringDelete( &st ) ;
+			return 4 ;
+		}
 	}
 }

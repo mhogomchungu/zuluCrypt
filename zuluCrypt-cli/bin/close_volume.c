@@ -62,7 +62,6 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 
 	 r = zuluCryptDeviceHasAgivenFileSystem( dev,zuluCryptBitLockerType() ) ;
 
-	 zuluCryptSecurityDropElevatedPrivileges() ;
 
 	 if( r == 1 ){
 
@@ -70,11 +69,17 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 
 		 mapper = StringContent( p ) ;
 
-		// if( stat( mapper,&xt ) != 0 ){
+		 i = stat( mapper,&xt ) ;
 
-		//	 return zuluExit( 1,p ) ;
-		// }
+		 zuluCryptSecurityDropElevatedPrivileges() ;
+
+		if( i != 0 ){
+
+			 return zuluExit( 1,p ) ;
+		}
 	 }else{
+		 zuluCryptSecurityDropElevatedPrivileges() ;
+
 		 /*
 		  * ZULUCRYPTlongMapperPath is set in ../constants.h
 		  * zuluCryptCreateMapperName() defined in ../lib/create_mapper_name.c

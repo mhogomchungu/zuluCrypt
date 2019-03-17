@@ -290,3 +290,4 @@ version 5.4.0
 
 version 5.5.0
 -- Add support for unlocking bitlocker volumes using dislocker(https://github.com/Aorimn/dislocker)
+-- Fix a build issue on some distributions.

@@ -1051,7 +1051,11 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 				m.addAction( tr( "Properties" ) )->setEnabled( false ) ;
 			}
 		}else{
-			connect( m.addAction( tr( "Properties" ) ),SIGNAL( triggered() ),
+			auto ac = m.addAction( tr( "Properties" ) ) ;
+
+			ac->setEnabled( fs != "crypto_BitLocker" ) ;
+
+			connect( ac,SIGNAL( triggered() ),
 				 this,SLOT( volumeProperties() ) ) ;
 		}
 

@@ -1007,7 +1007,9 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,QPoint point )
 
 	m.addSeparator() ;
 
-	connect( m.addAction( tr( "Properties" ) ) ,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
+	auto ac = m.addAction( tr( "Properties" ) ) ;
+	ac->setEnabled( !m_ui->tableWidget->item( item->row(),2 )->text().startsWith( "bitlocker" ) ) ;
+	connect( ac,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
 
 	m.addSeparator() ;
 
@@ -1046,7 +1048,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,QPoint point )
 		return false ;
 	}() ;
 
-	auto ac = m.addAction( tr( "Add To Favorite" ) ) ;
+	ac = m.addAction( tr( "Add To Favorite" ) ) ;
 
 	if( has_favorite ){
 
