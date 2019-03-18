@@ -1008,7 +1008,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,QPoint point )
 	m.addSeparator() ;
 
 	auto ac = m.addAction( tr( "Properties" ) ) ;
-	ac->setEnabled( !m_ui->tableWidget->item( item->row(),2 )->text().startsWith( "bitlocker" ) ) ;
+	//ac->setEnabled( !m_ui->tableWidget->item( item->row(),2 )->text().startsWith( "bitlocker" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
 
 	m.addSeparator() ;

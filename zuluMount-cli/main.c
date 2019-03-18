@@ -337,40 +337,21 @@ static int _zuluMountExe( ARGS * args )
 	size_t       uid    = args->uid    ;
 
 	string_t st ;
-	string_t xt ;
 
 	int r ;
-
-	const char * e ;
-
-	char * m ;
 
 	if( StringsAreEqual( action,"-L" ) ){
 
 		return zuluMountPrintDeviceProperties( device,uuid,uid ) ;
 	}
+
 	if( StringsAreEqual( action,"-s" ) ){
 
 		st = _zuluCryptGetFileSystemFromDevice( device ) ;
 
 		if( StringContains( st,zuluCryptBitLockerType() ) ){
 
-			if( StringPrefixEqual( device,"/dev/loop" ) ){
-
-				xt = zuluCryptLoopDeviceAddress_2( device ) ;
-			}else{
-				xt = String( device ) ;
-			}
-
-			e = zuluCryptBitLockerCreateMapperPath( xt,uid ) ;
-
-			m = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( e ) ;
-
-			r = zuluMountUnEncryptedVolumeStatus( device,"bitlocker",m ) ;
-
-			StringDelete( &xt ) ;
-
-			StringFree( m ) ;
+			r = zuluMountPrintBitLockerProperties( device,uid ) ;
 
 		}else if( offset != NULL || st == StringVoid || StringStartsWith( st,"crypto_" ) ){
 
@@ -383,6 +364,7 @@ static int _zuluMountExe( ARGS * args )
 
 		return r ;
 	}
+
 	if( StringsAreEqual( action,"-m" ) ){
 
 		if( offset != NULL || _zuluPartitionHasCryptoFs( device ) ){

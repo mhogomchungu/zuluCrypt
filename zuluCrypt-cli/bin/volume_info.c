@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <libintl.h>
 
-int zuluMountUnEncryptedVolumeStatus( const char * device,const char * fs,const char * device1 ) ;
+int zuluMountPrintBitLockerProperties( const char * device,uid_t uid ) ;
 
 int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 {
@@ -30,30 +30,11 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 
 	string_t p ;
 
-	const char * e ;
-
-	char * m ;
-
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	if( zuluCryptDeviceHasAgivenFileSystem( device,zuluCryptBitLockerType() ) ){
 
-		if( StringPrefixEqual( device,"/dev/loop" ) ){
-
-			p = zuluCryptLoopDeviceAddress_2( device ) ;
-		}else{
-			p = String( device ) ;
-		}
-
-		e = zuluCryptBitLockerCreateMapperPath( p,uid ) ;
-
-		m = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( e ) ;
-
-		xt = zuluMountUnEncryptedVolumeStatus( device,"bitlocker",m ) ;
-
-		StringFree( m ) ;
-
-		StringDelete( &p ) ;
+		xt = zuluMountPrintBitLockerProperties( device,uid ) ;
 	}else{
 		/*
 		 * ZULUCRYPTlongMapperPath is set in ../constants.h

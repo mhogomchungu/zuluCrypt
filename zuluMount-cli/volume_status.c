@@ -945,3 +945,35 @@ int zuluMountVolumeStatus( const char * device,const char * UUID,uid_t uid )
 
 	return st ;
 }
+
+int zuluMountPrintBitLockerProperties( const char * device,uid_t uid )
+{
+	string_t xt ;
+	string_t mt ;
+
+	int r ;
+
+	const char * e ;
+
+	if( StringPrefixEqual( device,"/dev/loop" ) ){
+
+		xt = zuluCryptLoopDeviceAddress_2( device ) ;
+		mt = StringCopy( xt ) ;
+
+		e = zuluCryptBitLockerCreateMapperPath( xt,uid ) ;
+
+		r = zuluMountUnEncryptedVolumeStatus( StringContent( mt ),"bitlocker",e ) ;
+
+		StringDelete( &mt ) ;
+	}else{
+		xt = String( device ) ;
+
+		e = zuluCryptBitLockerCreateMapperPath( xt,uid ) ;
+
+		r = zuluMountUnEncryptedVolumeStatus( device,"bitlocker",e ) ;
+	}
+
+	StringDelete( &xt ) ;
+
+	return r ;
+}

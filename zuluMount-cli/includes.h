@@ -55,6 +55,8 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 
 int zuluMountUMount( ARGS * args ) ;
 
+int zuluMountPrintBitLockerProperties( const char * device,uid_t uid ) ;
+
 int zuluMountMount( ARGS * args ) ;
 
 int zuluMountCryptoMount( ARGS * args ) ;
