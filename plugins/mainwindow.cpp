@@ -192,7 +192,7 @@ void MainWindow::pbCancel()
 
 		DialogMsg msg( this ) ;
 
-		int st = msg.ShowUIYesNoDefaultNo( tr( "WARNING"),
+		auto st = msg.ShowUIYesNoDefaultNo( tr( "WARNING"),
 						   tr( "Are you sure you want to terminate this operation prematurely?" ) ) ;
 
 		if( st == QMessageBox::Yes ){
@@ -291,7 +291,7 @@ void MainWindow::pbOpen()
 		}else{
 			if( m_handle ){
 
-				zuluCryptPluginManagerSendKey( m_handle,s.constData(),s.size() ) ;
+				zuluCryptPluginManagerSendKey( m_handle,s.constData(),size_t( s.size() ) ) ;
 
 				return true ;
 			}else{

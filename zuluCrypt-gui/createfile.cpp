@@ -183,7 +183,7 @@ void createfile::pbCreate()
 	}
 	if( m_ui->checkBoxNoRandomData->isChecked() ){
 
-		int e = msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),tr( "Are you really sure you do not want to create a more secured volume?" ) ) ;
+		auto e = msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),tr( "Are you really sure you do not want to create a more secured volume?" ) ) ;
 
 		if( e != QMessageBox::Yes ){
 
@@ -231,7 +231,22 @@ void createfile::pbCreate()
 
 	if( m_ui->checkBoxNoRandomData->isChecked() ){
 
-		m_running = true ;
+		QFile file( filePath ) ;
+
+		if( !file.open( QIODevice::WriteOnly ) ){
+
+			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+		}
+
+		utility::changePathOwner( file ) ;
+
+		if( !file.resize( size ) ){
+
+			QFile::remove( filePath ) ;
+			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+		}
+
+		file.close() ;
 		m_function( filePath ) ;
 	}else{
 		m_running = true ;

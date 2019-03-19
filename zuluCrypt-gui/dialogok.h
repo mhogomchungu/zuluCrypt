@@ -23,6 +23,7 @@
 #include <QDialog>
 #include <QString>
 #include <QCloseEvent>
+#include <QMessageBox>
 
 namespace Ui {
 class dialogok;
@@ -34,7 +35,7 @@ class dialogok : public QDialog
 public:
 	dialogok( QWidget * parent,bool,bool,const QString& title,const QString& msg ) ;
 	~dialogok() ;
-	int Show() ;
+	QMessageBox::StandardButton Show() ;
 private slots:
 	void ok() ;
 	void yes() ;
@@ -42,6 +43,7 @@ private slots:
 private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::dialogok * m_ui ;
+	QMessageBox::StandardButton m_buttonRole ;
 } ;
 
 #endif // DIALOGOK_H

@@ -54,17 +54,20 @@ dialogok::dialogok(  QWidget  * parent,bool s,bool q,const QString& e,const QStr
 
 void dialogok::ok()
 {
-	this->done( int( QMessageBox::Ok ) ) ;
+	m_buttonRole = QMessageBox::Ok ;
+	this->done( 0 ) ;
 }
 
 void dialogok::yes()
 {
-	this->done( int( QMessageBox::Yes ) ) ;
+	m_buttonRole = QMessageBox::Yes ;
+	this->done( 0 ) ;
 }
 
 void dialogok::no()
 {
-	this->done( int( QMessageBox::No ) ) ;
+	m_buttonRole = QMessageBox::No ;
+	this->done( 0 ) ;
 }
 
 void dialogok::closeEvent( QCloseEvent * e )
@@ -77,8 +80,9 @@ dialogok::~dialogok()
 	delete m_ui ;
 }
 
-int dialogok::Show()
+QMessageBox::StandardButton dialogok::Show()
 {
 	this->show() ;
-	return this->exec() ;
+	this->exec() ;
+	return m_buttonRole ;
 }

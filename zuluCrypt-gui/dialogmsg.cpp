@@ -50,19 +50,19 @@ bool DialogMsg::eventFilter( QObject * watched,QEvent * event )
 
 void DialogMsg::pbNo()
 {
-	m_status = ( int ) QMessageBox::No ;
+	m_status = QMessageBox::No ;
 	this->hide() ;
 }
 
 void DialogMsg::pbOK()
 {
-	m_status = ( int ) QMessageBox::Ok ;
+	m_status = QMessageBox::Ok ;
 	this->hide() ;
 }
 
 void DialogMsg::pbYes()
 {
-	m_status = ( int ) QMessageBox::Yes ;
+	m_status = QMessageBox::Yes ;
 	this->hide() ;
 }
 
@@ -74,7 +74,7 @@ void DialogMsg::closeEvent( QCloseEvent * e )
 
 void DialogMsg::HideUI()
 {
-	m_status = -1 ;
+	m_status = QMessageBox::NoButton ;
 	this->hide() ;
 }
 
@@ -312,29 +312,14 @@ void DialogMsg::SetUpButtons()
 	this->HideLabels() ;
 }
 
-int DialogMsg::ShowUIYesNo( const QString& title,const QString& msg )
+QMessageBox::StandardButton DialogMsg::ShowUIYesNo( const QString& title,const QString& msg )
 {
 	return dialogok( m_parent,true,false,title,msg ).Show() ;
-
-	//this->SetUpButtons() ;
-	//this->setDimentions( msg ) ;
-	//this->ShowUI( title,msg ) ;
-
-	//return m_status;
 }
 
-int  DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
+QMessageBox::StandardButton DialogMsg::ShowUIYesNoDefaultNo( const QString& title,const QString& msg )
 {
 	return dialogok( m_parent,true,true,title,msg ).Show() ;
-
-	//this->SetUpButtons() ;
-	//this->setDimentions( msg ) ;
-
-	//m_ui->pbNo->setFocus() ;
-
-	//this->ShowUI( title,msg ) ;
-
-	//return m_status ;
 }
 
 bool DialogMsg::ShowUIOKDoNotShowOption( const QString& title,const QString& msg )

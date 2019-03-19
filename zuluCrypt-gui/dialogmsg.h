@@ -21,6 +21,7 @@
 
 #include <QDialog>
 #include <QString>
+#include "dialogok.h"
 
 class QWidget ;
 class QCloseEvent ;
@@ -35,8 +36,8 @@ class DialogMsg : public QDialog
 public:
 	explicit DialogMsg( QWidget * parent = 0 ) ;
 	void ShowUIOK( const QString& title,const QString& msg ) ;
-	int  ShowUIYesNo( const QString& title,const QString& msg ) ;
-	int  ShowUIYesNoDefaultNo( const QString& title,const QString& msg ) ;
+	QMessageBox::StandardButton ShowUIYesNo( const QString& title,const QString& msg ) ;
+	QMessageBox::StandardButton ShowUIYesNoDefaultNo( const QString& title,const QString& msg ) ;
 	void ShowUIInfo( const QString& title,bool,const QString& msg ) ;
 	void ShowUIVolumeProperties( const QString& title,const QString& msg ) ;
 	bool ShowUIOKDoNotShowOption( const QString& title,const QString& msg ) ;
@@ -60,7 +61,7 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::DialogMsg * m_ui ;
 	QWidget * m_parent ;
-	int m_status ;
+	QMessageBox::StandardButton m_status ;
 };
 
 #endif // DIALOGMSG_H
