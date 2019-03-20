@@ -219,6 +219,8 @@ const char * zuluCryptVolumeType( blkid_probe blkid,const char * device )
 
 			read( fd,buffer,11 ) ;
 
+			close( fd ) ;
+
 			if( StringAtLeastOnePrefixMatch( buffer,
 							 "\xeb\x52\x90-FVE-FS-",
 							 "\xeb\x58\x90-FVE-FS-",
@@ -226,8 +228,6 @@ const char * zuluCryptVolumeType( blkid_probe blkid,const char * device )
 
 				return zuluCryptBitLockerType() ;
 			}
-
-			close( fd ) ;
 		}
 
 		return "Nil" ;
