@@ -226,6 +226,8 @@ const char * zuluCryptVolumeType( blkid_probe blkid,const char * device )
 
 				return zuluCryptBitLockerType() ;
 			}
+
+			close( fd ) ;
 		}
 
 		return "Nil" ;

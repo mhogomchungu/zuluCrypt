@@ -451,7 +451,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 		fs = zuluCryptGetFileSystemFromDevice( path ) ;
 	}
 
-	if( fs == StringVoid ){
+	if( StringsAreEqual_2( fs,"Nil" ) || fs == StringVoid ){
 
 		/*
 		 * failed to read file system,probably because the volume does have any or
