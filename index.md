@@ -103,6 +103,10 @@ because of the following reasons:
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-5.4.0-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
 
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-18.04-Bionic_Beaver.tar.xz">zuluCrypt-5.4.0-ubuntu-18.04-Bionic_Beaver.tar.xz</a>
+
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz">zuluCrypt-5.4.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz</a>
+
 These archives contains binaries for both 32 bit and 64 bit systems.
 
 
@@ -236,4 +240,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 
 ```
 
-last update: Sun Nov 19 17:23:41 EAT 2017
+last update: Fri Mar 22 19:45:39 EAT 2019
