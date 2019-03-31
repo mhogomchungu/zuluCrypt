@@ -179,7 +179,8 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 static const char * _dislocker_fuse_path()
 {
 	struct stat st ;
-	const char ** e ;
+	const char * e ;
+	int i ;
 
 	const char * exe[] = { "/usr/bin/dislocker-fuse",
 			       "/usr/sbin/dislocker-fuse",
@@ -191,15 +192,17 @@ static const char * _dislocker_fuse_path()
 			       "/opt/sbin/dislocker-fuse",
 			       NULL } ;
 
-	for( e = exe ; *e != NULL ; e++ ){
+	for( i = 0 ; *( exe + i ) != NULL ; i++ ){
 
-		if( stat( *e,&st ) == 0 ){
+		e = *( exe + i ) ;
 
-			printf( "Looking for dislocker-fuse at \"%s\" :PASSED\n",*e ) ;
+		if( stat( e,&st ) == 0 ){
 
-			return *e ;
+			printf( "Looking for dislocker-fuse at \"%s\" : PASSED\n",e ) ;
+
+			return e ;
 		}else{
-			printf( "Looking for dislocker-fuse at \"%s\" :FAILED\n",*e ) ;
+			printf( "Looking for dislocker-fuse at \"%s\" : FAILED\n",e ) ;
 		}
 	}
 
