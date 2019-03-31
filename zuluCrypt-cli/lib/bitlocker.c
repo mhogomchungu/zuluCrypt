@@ -182,16 +182,24 @@ static const char * _dislocker_fuse_path()
 	const char ** e ;
 
 	const char * exe[] = { "/usr/bin/dislocker-fuse",
+			       "/usr/sbin/dislocker-fuse",
 			       "/usr/local/bin/dislocker-fuse",
+			       "/usr/local/sbin/dislocker-fuse",
 			       "/bin/dislocker-fuse",
+			       "/sbin/dislocker-fuse",
 			       "/opt/bin/dislocker-fuse",
+			       "/opt/sbin/dislocker-fuse",
 			       NULL } ;
 
 	for( e = exe ; *e != NULL ; e++ ){
 
 		if( stat( *e,&st ) == 0 ){
 
+			printf( "Looking for dislocker-fuse at \"%s\" :PASSED\n",*e ) ;
+
 			return *e ;
+		}else{
+			printf( "Looking for dislocker-fuse at \"%s\" :FAILED\n",*e ) ;
 		}
 	}
 
