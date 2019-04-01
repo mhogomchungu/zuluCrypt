@@ -198,11 +198,11 @@ static const char * _dislocker_fuse_path()
 
 		if( stat( e,&st ) == 0 ){
 
-			printf( "Looking for dislocker-fuse at \"%s\" : PASSED\n",e ) ;
+			fprintf( stderr,"Looking for dislocker-fuse at \"%s\" : PASSED\n",e ) ;
 
 			return e ;
 		}else{
-			printf( "Looking for dislocker-fuse at \"%s\" : FAILED\n",e ) ;
+			fprintf( stderr,"Looking for dislocker-fuse at \"%s\" : FAILED\n",e ) ;
 		}
 	}
 
