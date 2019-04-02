@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+#include <stdio.h>
 #include <unistd.h>
 #include <stddef.h>
 #include <libcryptsetup.h>
@@ -64,6 +64,8 @@ int zuluCryptCloseMapper( const char * mapper )
 			sleep( 1 ) ;
 		}
 	}
+
+	fprintf( stderr,"Trouble ahead, failed to remove encryption mapper: %s\n",mapper ) ;
 
 	return 1 ;
 }

@@ -143,6 +143,30 @@ int zuluCryptBitLockerlock_1( const char * mapperPath )
 	return r ;
 }
 
+static int _unmount( const char * m )
+{
+	int h ;
+
+	int i ;
+
+	for ( i = 0 ; i < 4 ; i++ ){
+
+		//h = ProcessExecute( ZULUCRYPTumount,m,NULL ) ;
+		h = umount( m ) ;
+
+		if( h == 0 ){
+
+			return 0 ;
+		}else{
+			sleep( 1 ) ;
+		}
+	}
+
+	fprintf( stderr,"Trouble ahead, failed to remove encryption mapper: %s\n",m ) ;
+
+	return -1 ;
+}
+
 int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 {
 	char * e = NULL ;
@@ -157,7 +181,7 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 
 		m = StringRemoveString( mapperPath,"/dislocker-file" ) ;
 
-		s = ProcessExecute( ZULUCRYPTumount,m,NULL ) ; ;
+		s = _unmount( m ) ;
 
 		if( s == 0 ){
 

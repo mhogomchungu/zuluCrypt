@@ -38,16 +38,11 @@ static int _mount_volume( const char * mapper,
 	int h = zuluCryptMountVolume( mapper,opts->m_point,opts->m_flags,opts->fs_opts,opts->uid ) ;
 
 	if( h != 0 ){
-		/*
-		 * zuluCryptCloseMapper() is defined in close_mapper.c
-		 */
-		if( function( mapper ) != 0 ){
 
-			h = 15 ;
-		}
+		function( mapper ) ;
 	}
 
-	return h;
+	return h ;
 }
 
 int zuluCryptOpenVolume_0( int( *function )( const open_struct_t * ),const open_struct_t * opts )
