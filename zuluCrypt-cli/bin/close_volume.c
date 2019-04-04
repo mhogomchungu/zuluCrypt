@@ -62,7 +62,6 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 
 	 r = zuluCryptDeviceHasAgivenFileSystem( dev,zuluCryptBitLockerType() ) ;
 
-
 	 if( r == 1 ){
 
 		 p = zuluCryptBitLockerFullMapperPath( uid,dev ) ;

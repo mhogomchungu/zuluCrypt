@@ -132,17 +132,6 @@ const char * zuluCryptBitLockerCreateMapperPath( string_t e,uid_t uid )
 	return StringAppend( e,"/dislocker-file" ) ;
 }
 
-int zuluCryptBitLockerlock_1( const char * mapperPath )
-{
-	string_t st = String( mapperPath ) ;
-
-	int r = zuluCryptBitLockerlock( st,NULL ) ;
-
-	StringDelete( &st ) ;
-
-	return r ;
-}
-
 static int _unmount( const char * m )
 {
 	int h ;
@@ -167,6 +156,18 @@ static int _unmount( const char * m )
 	return -1 ;
 }
 
+int zuluCryptBitLockerlock_1( const char * m )
+{
+	int s = _unmount( m ) ;
+
+	if( s == 0 ){
+
+		rmdir( m ) ;
+	}
+
+	return s ;
+}
+
 int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 {
 	char * e = NULL ;
@@ -181,11 +182,9 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 
 		m = StringRemoveString( mapperPath,"/dislocker-file" ) ;
 
-		s = _unmount( m ) ;
+		s = zuluCryptBitLockerlock_1( m ) ;
 
 		if( s == 0 ){
-
-			rmdir( m ) ;
 
 			if( mount_point ){
 
