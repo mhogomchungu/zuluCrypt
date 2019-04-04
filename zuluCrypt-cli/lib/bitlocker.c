@@ -267,7 +267,7 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 
 		*env = ( char * )StringContent( m ) ;
 
-		p = Process( exe,opts->device,"-u","--",mapper_path,NULL ) ;
+		p = Process( exe,opts->device,"-u","--","-oallow_root",mapper_path,NULL ) ;
 
 		ProcessSetEnvironmentalVariable( p,( char * const * )env ) ;
 
