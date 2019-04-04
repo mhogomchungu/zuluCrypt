@@ -140,8 +140,11 @@ static int _unmount( const char * m )
 
 	for ( i = 0 ; i < 4 ; i++ ){
 
-		//h = ProcessExecute( ZULUCRYPTumount,m,NULL ) ;
-		h = umount( m ) ;
+		/*
+		 * doing it this way over calling umount() function is better
+		 * because the mount tool cleans up /etc/mtab
+		 */
+		h = ProcessExecute( ZULUCRYPTumount,m,NULL ) ;
 
 		if( h == 0 ){
 
