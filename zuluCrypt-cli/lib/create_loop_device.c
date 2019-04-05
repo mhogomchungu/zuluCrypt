@@ -52,6 +52,20 @@ static string_t _StringGetFromVirtualFile( string_t * st )
 	return xt ;
 }
 
+static const char * _clean_loop_path( string_t xt )
+{
+	if( StringEndsWith( xt," (deleted)\n" ) ){
+
+		return StringRemoveString( xt," (deleted)\n" ) ;
+
+	}else if( StringEndsWith( xt,"\n" ) ){
+
+		return StringRemoveRight( xt,1 ) ;
+	}else{
+		return StringContent( xt ) ;
+	}
+}
+
 string_t zuluCryptLoopDeviceAddress_2( const char * device )
 {
 	int fd ;
@@ -75,9 +89,9 @@ string_t zuluCryptLoopDeviceAddress_2( const char * device )
 		close( fd ) ;
 
 		xt = StringInherit( &path ) ;
-	}else{
-		StringRemoveRight( xt,1 ) ;
 	}
+
+	_clean_loop_path( xt ) ;
 	/*
 	 * zuluCryptEncodeMountEntry() is defined in mount_volume.c
 	 */
@@ -113,9 +127,14 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 
 		close( fd ) ;
 
-		return path ;
+		st = String( path ) ;
+
+		StringFree( path ) ;
+
+		_clean_loop_path( st ) ;
+		return StringDeleteHandle( &st ) ; ;
 	}else{
-		StringRemoveRight( xt,1 ) ;
+		_clean_loop_path( xt ) ;
 		return StringDeleteHandle( &xt ) ;
 	}
 }
@@ -174,7 +193,7 @@ char * zuluCryptGetLoopDeviceAddress( const char * device )
 
 			xt = StringGetFromVirtualFile( StringAppend( st,"/loop/backing_file" ) ) ;
 
-			e = StringRemoveRight( xt,1 ) ;
+			e = _clean_loop_path( xt ) ;
 			r = StringsAreEqual( e,z ) ;
 
 			StringDelete( &xt ) ;

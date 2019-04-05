@@ -173,19 +173,23 @@ int zuluCryptBitLockerlock_1( const char * m )
 
 int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 {
-	char * e = NULL ;
-
-	int r = zuluCryptUnmountVolume( StringContent( mapperPath ),&e ) ;
+	const char * n = StringContent( mapperPath ) ;
 
 	int s ;
 
-	const char * m ;
+	char * e = NULL ;
+
+	char * m = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( n ) ;
+
+	int r = zuluCryptUnmountVolume( m,&e ) ;
+
+	StringFree( m ) ;
 
 	if( r == 0 ){
 
-		m = StringRemoveString( mapperPath,"/dislocker-file" ) ;
+		n = StringRemoveString( mapperPath,"/dislocker-file" ) ;
 
-		s = zuluCryptBitLockerlock_1( m ) ;
+		s = zuluCryptBitLockerlock_1( n ) ;
 
 		if( s == 0 ){
 
