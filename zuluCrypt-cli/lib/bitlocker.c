@@ -132,45 +132,6 @@ const char * zuluCryptBitLockerCreateMapperPath( string_t e,uid_t uid )
 	return StringAppend( e,"/dislocker-file" ) ;
 }
 
-static int _unmount( const char * m )
-{
-	int h ;
-
-	int i ;
-
-	for ( i = 0 ; i < 4 ; i++ ){
-
-		/*
-		 * doing it this way over calling umount() function is better
-		 * because the mount tool cleans up /etc/mtab
-		 */
-		h = ProcessExecute( ZULUCRYPTumount,m,NULL ) ;
-
-		if( h == 0 ){
-
-			return 0 ;
-		}else{
-			sleep( 1 ) ;
-		}
-	}
-
-	fprintf( stderr,"Trouble ahead, failed to remove encryption mapper: %s\n",m ) ;
-
-	return -1 ;
-}
-
-int zuluCryptBitLockerlock_1( const char * m )
-{
-	int s = _unmount( m ) ;
-
-	if( s == 0 ){
-
-		rmdir( m ) ;
-	}
-
-	return s ;
-}
-
 int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 {
 	const char * n = StringContent( mapperPath ) ;
@@ -187,9 +148,7 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 
 	if( r == 0 ){
 
-		n = StringRemoveString( mapperPath,"/dislocker-file" ) ;
-
-		s = zuluCryptBitLockerlock_1( n ) ;
+		s = zuluCryptCloseMapper( n ) ;
 
 		if( s == 0 ){
 

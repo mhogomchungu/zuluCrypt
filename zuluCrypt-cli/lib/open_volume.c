@@ -207,7 +207,7 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 
 			mapper = StringContent( xt ) ;
 
-			r = _mount_volume( mapper,opts,zuluCryptBitLockerlock_1 ) ;
+			r = _mount_volume( mapper,opts,zuluCryptCloseMapper ) ;
 		}
 
 		StringDelete( &xt ) ;

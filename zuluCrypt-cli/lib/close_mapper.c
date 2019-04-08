@@ -23,41 +23,63 @@
 #include "includes.h"
 #include "zuluplay_support.h"
 
-static int _close_mapper( const char * mapper,int TrueCryptOrVeraCryptVolume )
+typedef struct{
+
+	const char * mapper ;
+	int ( * function )( const char * mapper ) ;
+
+}mapper_closer ;
+
+static int _close_cryptsetup( const char * mapper )
 {
-	int r ;
+	int r = 1 ;
 
 	struct crypt_device * cd ;
 
-	if( TrueCryptOrVeraCryptVolume ){
+	if( crypt_init_by_name( &cd,mapper ) == 0 ){
 
-		return tc_api_close_mapper( mapper ) ;
-	}else{
-		if( crypt_init_by_name( &cd,mapper ) == 0 ){
+		r = crypt_deactivate( cd,mapper ) ;
 
-			r = crypt_deactivate( cd,mapper ) ;
-
-			crypt_free( cd ) ;
-
-			return r ;
-		}else{
-			return 1 ;
-		}
+		crypt_free( cd ) ;
 	}
+
+	return r ;
 }
 
-int zuluCryptCloseMapper( const char * mapper )
+static int _close_dislocker( const char * mapper )
 {
-	int i ;
+	int r ;
+
+	string_t st = String( mapper ) ;
+
+	const char * m = StringRemoveString( st,"/dislocker-file" ) ;
 
 	/*
-	 * zuluCryptTrueCryptOrVeraCryptVolume() is defined in status.c
+	 * doing it this way over calling umount() function is better
+	 * because the mount tool cleans up /etc/mtab
 	 */
-	int e = zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ;
+	r = ProcessExecute( ZULUCRYPTumount,m,NULL ) ;
 
-	for( i = 0 ; i < 3 ; i++ ){
+	if( r == 0 ){
 
-		if( _close_mapper( mapper,e ) == 0 ){
+		rmdir( m ) ;
+	}
+
+	StringDelete( &st ) ;
+
+	return r ;
+}
+
+static int _close_mapper( const mapper_closer * m )
+{
+	int i ;
+	int k = 1 ;
+
+	for( i = 0 ; i < 5 ; i++ ){
+
+		k = m->function( m->mapper ) ;
+
+		if( k == 0 ){
 
 			return 0 ;
 		}else{
@@ -65,7 +87,28 @@ int zuluCryptCloseMapper( const char * mapper )
 		}
 	}
 
-	fprintf( stderr,"Trouble ahead, failed to remove encryption mapper: %s\n",mapper ) ;
+	fprintf( stderr,"Trouble ahead, failed to remove encryption mapper: %s\n",m->mapper ) ;
 
-	return 1 ;
+	return k ;
+}
+
+int zuluCryptCloseMapper( const char * mapper )
+{
+	mapper_closer m = { mapper,NULL } ;
+
+	/*
+	 * zuluCryptTrueCryptOrVeraCryptVolume() is defined in status.c
+	 */
+	if( zuluCryptTrueCryptOrVeraCryptVolume( m.mapper ) ){
+
+		m.function = tc_api_close_mapper ;
+
+	}else if( zuluCryptBitLockerVolume( m.mapper ) ){
+
+		m.function = _close_dislocker ;
+	}else{
+		m.function = _close_cryptsetup ;
+	}
+
+	return _close_mapper( &m ) ;
 }
