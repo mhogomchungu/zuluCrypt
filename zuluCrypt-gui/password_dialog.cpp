@@ -88,8 +88,6 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	m_pluginMenu = new QMenu( this ) ;
 	m_pluginMenu->setFont( this->font() ) ;
 
-	m_ui->pushButtonPlugin->setIcon( QIcon( ":/module.png" ) ) ;
-
 	m_veraCryptVolume = utility::autoSetVolumeAsVeraCrypt( "zuluCrypt-gui" ) ;
 
 	if( m_veraCryptVolume ){
@@ -108,7 +106,6 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	connect( m_ui->pushButtonPassPhraseFromFile,SIGNAL( clicked() ),this,SLOT( clickedPassPhraseFromFileButton() ) ) ;
 	connect( m_ui->OpenVolumePath,SIGNAL( textChanged( QString ) ),this,SLOT( mountPointPath( QString ) ) ) ;
 	connect( m_ui->checkBoxReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbStateChanged( int ) ) ) ;
-	connect( m_ui->pushButtonPlugin,SIGNAL( clicked() ),this,SLOT( pbPlugin() ) ) ;
 	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
 	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
 	connect( m_ui->cbVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbVolumeType( int ) ) ) ;
@@ -116,7 +113,6 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
-	m_ui->pushButtonPlugin->setVisible( false ) ;
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
@@ -400,8 +396,6 @@ void passwordDialog::pluginOption()
 	m_ui->labelPassphrase->setText( tr( "Plugin Name" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 	m_ui->pbKeyOption->setIcon( QIcon( ":/module.png" ) ) ;
-	m_ui->pushButtonPlugin->setEnabled( true ) ;
-	m_ui->pushButtonPlugin->setToolTip( tr( "Select A Key Module" ) ) ;
 	m_ui->pbKeyOption->setEnabled( true ) ;
 	m_ui->PassPhraseField->setEnabled( false ) ;
 	m_ui->PassPhraseField->setText( INTERNAL_WALLET ) ;
@@ -415,7 +409,6 @@ void passwordDialog::passphraseOption()
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 	m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
-	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->pbKeyOption->setIcon( QIcon() ) ;
 	m_ui->pbKeyOption->setEnabled( false ) ;
 	m_ui->PassPhraseField->setFocus() ;
@@ -432,9 +425,7 @@ void passwordDialog::passphraseFromFileOption()
 	m_ui->pushButtonPassPhraseFromFile->setFocus() ;
 	m_ui->labelPassphrase->setText( tr( "KeyFile Path" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
-	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->pbKeyOption->setIcon( QIcon( ":/keyfile.png" ) ) ;
-	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->pbKeyOption->setEnabled( true ) ;
 	m_ui->PassPhraseField->setEnabled( true ) ;
 }
@@ -588,7 +579,6 @@ void passwordDialog::disableAll()
 	m_ui->cbVolumeType->setEnabled( false ) ;
 	m_ui->labelVolumeType->setEnabled( false ) ;
 	m_ui->cbShareMountPoint->setEnabled( false ) ;
-	m_ui->pushButtonPlugin->setEnabled( false ) ;
 	m_ui->checkBoxReadOnly->setEnabled( false ) ;
 	m_ui->labelMoutPointPath->setEnabled( false ) ;
 	m_ui->labelPassphrase->setEnabled( false ) ;
@@ -616,7 +606,6 @@ void passwordDialog::enableAll()
 	m_ui->cbVolumeType->setEnabled( true ) ;
 	m_ui->labelVolumeType->setEnabled( true ) ;
 	m_ui->cbShareMountPoint->setEnabled( true ) ;
-	m_ui->pushButtonPlugin->setEnabled( true ) ;
 	m_ui->checkBoxReadOnly->setEnabled( true ) ;
 	m_ui->labelMoutPointPath->setEnabled( true ) ;
 	m_ui->labelPassphrase->setEnabled( true ) ;
@@ -641,16 +630,10 @@ void passwordDialog::enableAll()
 	if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
 
 		m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
-		m_ui->pushButtonPlugin->setEnabled( false ) ;
 		m_ui->PassPhraseField->setEnabled( true ) ;
 	}else{
 		m_ui->pbKeyOption->setEnabled( true ) ;
 		m_ui->PassPhraseField->setEnabled( false ) ;
-	}
-
-	if( m_ui->cbKeyType->currentIndex() == passwordDialog::keyfile ){
-
-		m_ui->pushButtonPlugin->setEnabled( false ) ;
 	}
 }
 
