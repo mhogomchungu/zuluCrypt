@@ -96,19 +96,24 @@ int zuluCryptCloseMapper( const char * mapper )
 {
 	mapper_closer m = { mapper,NULL } ;
 
-	/*
-	 * zuluCryptTrueCryptOrVeraCryptVolume() is defined in status.c
-	 */
-	if( zuluCryptTrueCryptOrVeraCryptVolume( m.mapper ) ){
+	if( zuluCryptPathIsNotValid( m.mapper ) ){
 
-		m.function = tc_api_close_mapper ;
-
-	}else if( zuluCryptBitLockerVolume( m.mapper ) ){
-
-		m.function = _close_dislocker ;
+		/*
+		 * Why are we getting here???
+		 */
+		return 0 ;
 	}else{
-		m.function = _close_cryptsetup ;
-	}
+		if( zuluCryptTrueCryptOrVeraCryptVolume( m.mapper ) ){
 
-	return _close_mapper( &m ) ;
+			m.function = tc_api_close_mapper ;
+
+		}else if( zuluCryptBitLockerVolume( m.mapper ) ){
+
+			m.function = _close_dislocker ;
+		}else{
+			m.function = _close_cryptsetup ;
+		}
+
+		return _close_mapper( &m ) ;
+	}
 }

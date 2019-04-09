@@ -103,15 +103,18 @@ int zuluCryptFileSystemIsFUSEbased( const char * device )
 
 string_t zulucryptGetBlkidFileSystem( const char * device )
 {
-	string_t st ;
+	string_t st = StringVoid ;
 
 	blkid_probe blkid = blkid_new_probe_from_filename( device ) ;
 
-	blkid_do_probe( blkid ) ;
+	if( blkid != NULL ){
 
-	st = String( zuluCryptVolumeType( blkid,device ) ) ;
+		blkid_do_probe( blkid ) ;
 
-	blkid_free_probe( blkid ) ;
+		st = String( zuluCryptVolumeType( blkid,device ) ) ;
+
+		blkid_free_probe( blkid ) ;
+	}
 
 	return st ;
 }
@@ -174,10 +177,22 @@ int zuluCryptDeviceHasEncryptedFileSystem( const char * device )
 	int r ;
 
 	if( st == StringVoid ){
+
 		return 1 ;
 	}else{
-		r = StringStartsWith( st,"crypto_" ) ;
+		if( StringsAreEqual_2( st,"Nil" ) ){
+
+			r = 1 ;
+
+		}else if( StringStartsWith( st,"crypto_" ) ){
+
+			r = 1 ;
+		}else{
+			r = 0 ;
+		}
+
 		StringDelete( &st ) ;
+
 		return r ;
 	}
 }
