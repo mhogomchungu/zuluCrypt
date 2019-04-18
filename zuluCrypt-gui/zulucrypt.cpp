@@ -202,7 +202,7 @@ void zuluCrypt::updateVolumeList( QString volume,QString r )
 }
 
 void zuluCrypt::initKeyCombo()
-{	
+{
 }
 
 void zuluCrypt::initFont()
@@ -360,7 +360,7 @@ void zuluCrypt::setupConnections()
 
 	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->actionErase_data_on_device,SIGNAL( triggered() ),this,SLOT( ShowEraseDataDialog() ) ) ;
-	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( createVolumeInExistingFile() ) ) ;
+	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( ShowOpenPartition() ) ) ;
 	connect( m_ui->actionFileOpen,SIGNAL( triggered() ),this,SLOT( ShowPasswordDialog() ) ) ;
 	connect( m_ui->actionFileCreate,SIGNAL( triggered() ),this,SLOT( ShowCreateFile() ) ) ;
 	connect( m_ui->actionEncrypted_Container_In_An_Existing_FIle,SIGNAL( triggered() ),this,SLOT( createVolumeInExistingFile() ) ) ;

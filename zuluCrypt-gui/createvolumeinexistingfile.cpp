@@ -30,6 +30,8 @@ createVolumeInExistingFIle::createVolumeInExistingFIle( QWidget * parent ) :
 {
 	m_ui->setupUi( this ) ;
 
+	m_ui->lineEditPassword->setMaxLength( 32767 ) ;
+
 	this->setFixedSize( this->size() ) ;
 
 	m_ui->pbSetFile->setIcon( QIcon( ":/file.png" ) ) ;
