@@ -62,6 +62,9 @@ keyDialog::keyDialog( QWidget * parent,
 	m_success( std::move( q ) )
 {
 	m_ui->setupUi( this ) ;
+
+	m_ui->lineEditKey->setMaxLength( 32767 ) ;
+
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
 	m_table = table ;
 	m_path = e.volumeName() ;

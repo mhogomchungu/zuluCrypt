@@ -72,6 +72,8 @@ passwordDialog::passwordDialog( QTableWidget * table,
 {
 	m_ui->setupUi( this ) ;
 
+	m_ui->PassPhraseField->setMaxLength( 32767 ) ;
+
 	m_parent = parent ;
 
 	this->setFixedSize( this->size() ) ;

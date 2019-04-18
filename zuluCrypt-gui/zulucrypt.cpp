@@ -68,7 +68,7 @@
 #include "task.hpp"
 #include "about.h"
 #include "help.h"
-
+#include "createvolumeinexistingfile.h"
 #include "veracrypt_support.h"
 #include "pdf_path.h"
 
@@ -360,9 +360,10 @@ void zuluCrypt::setupConnections()
 
 	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->actionErase_data_on_device,SIGNAL( triggered() ),this,SLOT( ShowEraseDataDialog() ) ) ;
-	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( ShowOpenPartition() ) ) ;
+	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( createVolumeInExistingFile() ) ) ;
 	connect( m_ui->actionFileOpen,SIGNAL( triggered() ),this,SLOT( ShowPasswordDialog() ) ) ;
 	connect( m_ui->actionFileCreate,SIGNAL( triggered() ),this,SLOT( ShowCreateFile() ) ) ;
+	connect( m_ui->actionEncrypted_Container_In_An_Existing_FIle,SIGNAL( triggered() ),this,SLOT( createVolumeInExistingFile() ) ) ;
 	connect( m_ui->actionManage_names,SIGNAL( triggered() ),this,SLOT( ShowFavoritesEntries() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),
 		 this,SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
@@ -528,6 +529,11 @@ void zuluCrypt::manageVolumesInInternalWallet()
 void zuluCrypt::manageVolumesInKDEWallet()
 {
 	_walletconfig( this,m_secrets,LXQt::Wallet::BackEnd::kwallet ) ;
+}
+
+void zuluCrypt::createVolumeInExistingFile()
+{
+	createVolumeInExistingFIle::instance( this ) ;
 }
 
 void zuluCrypt::failedToOpenWallet()

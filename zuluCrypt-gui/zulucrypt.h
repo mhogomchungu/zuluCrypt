@@ -137,6 +137,7 @@ private slots :
 	void cinfo( void ) ;
 	void updateVolumeList( const QString& = QString() ) ;
 	void updateVolumeList( QString,QString ) ;
+	void createVolumeInExistingFile( void ) ;
 private:
 	void raiseWindow( const QString& ) ;
 	void setIcons( void ) ;

@@ -111,6 +111,7 @@
      <string>&amp;Create</string>
     </property>
     <addaction name="actionFileCreate"/>
+    <addaction name="actionEncrypted_Container_In_An_Existing_FIle"/>
     <addaction name="actionPartitionCreate"/>
     <addaction name="actionCreatekeyFile"/>
    </widget>
@@ -541,6 +542,14 @@
    </property>
    <property name="toolTip">
     <string>This Option Will Close The App Instead Of Minimizing It To Tray</string>
+   </property>
+  </action>
+  <action name="actionEncrypted_Container_In_An_Existing_FIle">
+   <property name="text">
+    <string>Encrypted Container Hidden In Video/Cover File (Steganography)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

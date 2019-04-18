@@ -142,7 +142,14 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 
 	char * m = zuluCryptGetALoopDeviceAssociatedWithAnImageFile( n ) ;
 
-	int r = zuluCryptUnmountVolume( m,&e ) ;
+	int r ;
+
+	if( m == NULL ){
+
+		return 6 ;
+	}
+
+	r = zuluCryptUnmountVolume( m,&e ) ;
 
 	StringFree( m ) ;
 
