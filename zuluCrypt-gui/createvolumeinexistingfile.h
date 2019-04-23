@@ -37,12 +37,19 @@ public:
 	}
 	explicit createVolumeInExistingFIle( QWidget * parent ) ;
 	~createVolumeInExistingFIle();
-
+private slots :
+	void updateProgress( int ) ;
 private:
+	void enableAll() ;
+	void disableAll() ;
+	void displayWarning( bool ) ;
 	void create() ;
 	void Hide() ;
-	Ui::createVolumeInExistingFIle * m_ui ;
 	void closeEvent( QCloseEvent * ) ;
+	bool eventFilter( QObject * watched,QEvent * event ) ;
+	QString m_warning ;
+	std::pair< qint64,QString > m_volumeOffset ;
+	Ui::createVolumeInExistingFIle * m_ui ;
 };
 
 #endif // CREATEVOLUMEINEXISTINGFILE_H

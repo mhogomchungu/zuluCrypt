@@ -19,7 +19,7 @@
      <x>10</x>
      <y>10</y>
      <width>621</width>
-     <height>281</height>
+     <height>311</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -74,7 +74,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>120</y>
+      <y>160</y>
       <width>171</width>
       <height>31</height>
      </rect>
@@ -89,12 +89,12 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="lineEditContainerSize">
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>120</y>
-      <width>101</width>
+      <y>160</y>
+      <width>131</width>
       <height>31</height>
      </rect>
     </property>
@@ -128,17 +128,43 @@
      </rect>
     </property>
    </widget>
+   <widget class="QPushButton" name="pbCancel">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>280</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&amp;Cancel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pbCreate">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>280</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>C&amp;reate</string>
+    </property>
+   </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>160</y>
+      <y>120</y>
       <width>171</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Volume OffSet (MB)</string>
+     <string>Volume OffSet</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -182,12 +208,12 @@
      </property>
     </widget>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_2">
+   <widget class="QLineEdit" name="lineEditVolumeOffset">
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>160</y>
-      <width>101</width>
+      <y>120</y>
+      <width>131</width>
       <height>31</height>
      </rect>
     </property>
@@ -227,39 +253,50 @@
      <enum>QLineEdit::Password</enum>
     </property>
    </widget>
-  </widget>
-  <widget class="QPushButton" name="pbCreate">
-   <property name="geometry">
-    <rect>
-     <x>200</x>
-     <y>290</y>
-     <width>121</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>C&amp;reate</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pbCancel">
-   <property name="geometry">
-    <rect>
-     <x>320</x>
-     <y>290</y>
-     <width>121</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&amp;Cancel</string>
-   </property>
+   <widget class="QCheckBox" name="cbShowPassword">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>200</y>
+      <width>21</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelWarning">
+    <property name="geometry">
+     <rect>
+      <x>-10</x>
+      <y>-10</y>
+      <width>641</width>
+      <height>321</height>
+     </rect>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
  </widget>
  <tabstops>
   <tabstop>lineEditVolumePath</tabstop>
   <tabstop>pbSetFile</tabstop>
-  <tabstop>lineEdit</tabstop>
-  <tabstop>lineEdit_2</tabstop>
+  <tabstop>lineEditVolumeOffset</tabstop>
+  <tabstop>lineEditContainerSize</tabstop>
+  <tabstop>lineEditPassword</tabstop>
+  <tabstop>cbShowPassword</tabstop>
   <tabstop>cbVolumeProperties</tabstop>
   <tabstop>pbCreate</tabstop>
   <tabstop>pbCancel</tabstop>
