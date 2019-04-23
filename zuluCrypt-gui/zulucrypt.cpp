@@ -1001,6 +1001,10 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,QPoint point )
 
 	m.setFont( this->font() ) ;
 
+	auto m_point = item->tableWidget()->item( item->row(),1 )->text() ;
+
+	m_sharedMountPoint = utility::sharedMountPointPath( m_point ) ;
+
 	if( m_sharedMountPoint.isEmpty() ){
 
 		connect( m.addAction( tr( "Open Folder" ) ) ,SIGNAL( triggered() ),this,SLOT( openFolder() ) ) ;
@@ -1016,12 +1020,6 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,QPoint point )
 	auto ac = m.addAction( tr( "Properties" ) ) ;
 	//ac->setEnabled( !m_ui->tableWidget->item( item->row(),2 )->text().startsWith( "bitlocker" ) ) ;
 	connect( ac,SIGNAL( triggered() ),this,SLOT( volume_property() ) ) ;
-
-	m.addSeparator() ;
-
-	auto m_point = item->tableWidget()->item( item->row(),1 )->text() ;
-
-	m_sharedMountPoint = utility::sharedMountPointPath( m_point ) ;
 
 	m.addSeparator() ;
 
