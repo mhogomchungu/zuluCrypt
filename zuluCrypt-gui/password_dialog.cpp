@@ -81,6 +81,8 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	this->setFont( parent->font() ) ;
 	this->setDefaultOpenMode() ;
 
+	m_ui->cbShareMountPoint->setChecked( utility::mountWithSharedMountPoint() ) ;
+
 	m_ui->PushButtonMountPointPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	m_open_with_path = false ;
@@ -112,6 +114,11 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
 	connect( m_ui->cbVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbVolumeType( int ) ) ) ;
 	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
+
+	connect( m_ui->cbShareMountPoint,&QCheckBox::stateChanged,[]( int s ){
+
+		utility::mountWithSharedMountPoint( s == Qt::Checked ) ;
+	} ) ;
 
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;

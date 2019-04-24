@@ -433,6 +433,8 @@ namespace utility
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
 	void setDoNotMinimizeToTray( bool ) ;
 	bool doNotMinimizeToTray() ;
+	bool mountWithSharedMountPoint() ;
+	void mountWithSharedMountPoint( bool ) ;
 	bool platformIsLinux( void ) ;
 	bool platformIsOSX( void ) ;
 	QStringList executableSearchPaths( void ) ;

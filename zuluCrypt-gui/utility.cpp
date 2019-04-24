@@ -2229,6 +2229,21 @@ bool utility::doNotMinimizeToTray()
 	return _settings->value( "doNotMinimizeToTray" ).toBool() ;
 }
 
+void utility::mountWithSharedMountPoint( bool e )
+{
+	_settings->setValue( "mountWithSharedMountPoint",e ) ;
+}
+
+bool utility::mountWithSharedMountPoint()
+{
+	if( !_settings->contains( "mountWithSharedMountPoint" ) ){
+
+		_settings->setValue( "mountWithSharedMountPoint",false ) ;
+	}
+
+	return _settings->value( "mountWithSharedMountPoint" ).toBool() ;
+}
+
 QString utility::prettyfySpaceUsage( quint64 s )
 {
 	auto _convert = [ & ]( const char * p,double q ){

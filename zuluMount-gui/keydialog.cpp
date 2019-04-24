@@ -82,6 +82,8 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
+	m_ui->checkBoxShareMountPoint->setChecked( utility::mountWithSharedMountPoint() ) ;
+
 	this->setWindowTitle( msg ) ;
 
 	m_ui->lineEditMountPoint->setText( m_path ) ;
@@ -120,6 +122,11 @@ keyDialog::keyDialog( QWidget * parent,
 	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
 
 	m_ui->pbOpenMountPoint->setVisible( false ) ;
+
+	connect( m_ui->checkBoxShareMountPoint,&QCheckBox::stateChanged,[]( int s ){
+
+		utility::mountWithSharedMountPoint( s == Qt::Checked ) ;
+	} ) ;
 
 	const auto& m = e.mountPoint() ;
 
