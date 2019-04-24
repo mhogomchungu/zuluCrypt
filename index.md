@@ -25,23 +25,13 @@ Some options of zuluMount-gui are set through its tray icon, if you are on a GNO
 ## DONATIONS
 
 ```
-Paypal does not work where i live(United Republic of Tanzani)
-and i accept donations only through Western Union and bank transfers.
+I accept donations through:
+1. Bitcoin transfers.
+2. Bank transfers.
+3. Western Union.
+4. Mobile money transfers through services like <a href="https://www.worldremit.com/">worldremit</a> among others.
 
-1. Western Union information for donating through Western Union
-Name:  Francis Nkulu Banyikwa
-Email: banyikwafb@gmail.com
-
-The email address should be used to send tracking number(MTCN)
-
-2. Bank information for donating through bank tranfer:
-Name:		Francis Nkulu Banyikwa
-Bank Name:	CRDB BANK PLC
-Bank Location:	Tegeta Kibo complex,
-		Dar Es Salaam,
-		United Republic of Tanzania
-Swift Code:	CORUTZTZ
-Account Number:	0152454497500
+Send me an email through mhogomchungu at Gmail Dot coM for transfer details.
 ```
 
 ## Screen shots
