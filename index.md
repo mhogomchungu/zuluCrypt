@@ -29,7 +29,7 @@ I accept donations through:
 1. Bitcoin transfers.
 2. Bank transfers.
 3. Western Union.
-4. Mobile money transfers through services like <a href="https://www.worldremit.com/">worldremit</a> among others.
+4. Mobile money transfers through services like https://www.worldremit.com among others.
 
 Send me an email through mhogomchungu at Gmail Dot coM for transfer details.
 ```
