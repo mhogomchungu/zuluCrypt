@@ -55,6 +55,7 @@
 
 #include "task.hpp"
 #include "lxqt_wallet.h"
+#include "debugwindow.h"
 
 #include <QObject>
 #include <QLabel>
@@ -387,6 +388,7 @@ namespace utility
 	bool useZuluPolkit( void ) ;
 	void startHelperExecutable( QObject *,const QString&,const char *,const char * ) ;
 	void dropPrivileges( int = -1 ) ;
+	void setDebugWindow( debugWindow * w ) ;
 	QString fileManager( void ) ;
 	void setFileManager( const QString& ) ;
 	QString failedToStartzuluPolkit() ;

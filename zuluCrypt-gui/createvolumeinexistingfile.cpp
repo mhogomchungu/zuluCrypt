@@ -92,7 +92,7 @@ public:
 		}
 	}
 	template< typename Function >
-	bool resize( qint64 size,qint64 offSet,Function function )
+	bool resize( qint64 containerSize,qint64 offSet,Function function )
 	{
 		std::array< char,1024 > buffer ;
 
@@ -101,7 +101,7 @@ public:
 		int i ;
 		int j = 0 ;
 
-		size = size + offSet - m_file.size() ;
+		containerSize = containerSize + offSet - m_file.size() ;
 
 		Task::await( [ & ](){
 
@@ -115,7 +115,7 @@ public:
 
 				size_written += s ;
 
-				i = int( ( size_written * 100 / size ) ) ;
+				i = int( ( size_written * 100 / containerSize ) ) ;
 
 				if( i > j ){
 
@@ -129,7 +129,7 @@ public:
 				 * to be. It may be bigger and this is a feature since the final size may not
 				 * be a multiple of 512.
 				 */
-				if( size_written >= size ){
+				if( size_written >= containerSize ){
 
 					break ;
 				}

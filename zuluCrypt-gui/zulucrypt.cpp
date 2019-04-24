@@ -44,6 +44,7 @@
 #include <QCloseEvent>
 #include <QUrl>
 #include <QMimeData>
+#include <QShortcut>
 
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluMount-gui/oneinstance.h"
@@ -446,6 +447,11 @@ void zuluCrypt::setupConnections()
 
 	m_ui->actionVeracrypt_container_in_a_file->setEnabled( true ) ;
 	m_ui->actionVeracrypt_container_in_a_partition->setEnabled( true ) ;
+
+	connect( m_ui->actionShow_Debug_Window,&QAction::triggered,[ this ](){
+
+		m_debugWindow.Show() ;
+	} ) ;
 
 	this->setAcceptDrops( true ) ;
 	this->updateTrayContextMenu() ;

@@ -39,6 +39,7 @@
 #include <QTranslator>
 #include <QMimeData>
 #include <QFile>
+#include <QShortcut>
 
 #include <utility>
 #include <initializer_list>
@@ -410,6 +411,13 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 		this->raiseWindow() ;
 	}
+
+	auto debugWindowShortCut = new QShortcut( this ) ;
+	debugWindowShortCut->setKey(Qt::CTRL | Qt::SHIFT | Qt::Key_D ) ;
+	connect( debugWindowShortCut,&QShortcut::activated,[ this ](){
+
+		m_debugWindow.Show() ;
+	} ) ;
 }
 
 void zuluMount::showTrayIcon( bool e )

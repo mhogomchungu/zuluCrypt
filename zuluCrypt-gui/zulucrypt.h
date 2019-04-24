@@ -32,6 +32,7 @@
 #include "secrets.h"
 #include "checkforupdates.h"
 #include "systemsignalhandler.h"
+#include "debugwindow.h"
 
 class QWidget ;
 class QTableWidgetItem ;
@@ -181,6 +182,7 @@ private:
 	monitor_mountinfo m_mountInfo ;
 	checkForUpdates m_checkForUpdates ;
 	systemSignalHandler m_signalHandler ;
+	debugWindow m_debugWindow ;
 };
 
 #endif // ZULUCRYPT_H

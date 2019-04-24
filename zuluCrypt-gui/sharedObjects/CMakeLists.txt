@@ -10,6 +10,7 @@ set( SRC
 	../plugin.cpp
 	../executablesearchpaths.cpp
 	../systemsignalhandler.cpp
+	../debugwindow.cpp
 )
 
 set( MOC_FILES
@@ -18,9 +19,10 @@ set( MOC_FILES
 	../readonlywarning.h
 	../plugin.h
 	../utility.h
+	../debugwindow.h
 )
 
-set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui ../dialogok.ui )
+set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui ../dialogok.ui ../debugwindow.ui )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++14 -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR})
 

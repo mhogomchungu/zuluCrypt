@@ -103,6 +103,22 @@ static std::function< void() > _failed_to_connect_to_zulupolkit ;
 
 static QSettings * _settings ;
 
+static debugWindow * _debugWindow ;
+
+
+static void _post_backend_cmd( const QString& b )
+{
+	QString a = "***************************\n" ;
+	QString c = "\n***************************" ;
+
+	_debugWindow->UpdateOutPut( a + b + c,true ) ;
+}
+
+void utility::setDebugWindow( debugWindow * w )
+{
+	_debugWindow = w ;
+}
+
 std::unique_ptr< utility::RandomDataSource > utility::RandomDataSource::get( utility::RandomDataSource::types type )
 {
 	Q_UNUSED( type ) ;
@@ -208,6 +224,8 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 		if( _connected( s ) ){
 
+			_post_backend_cmd( exe ) ;
+
 			s.write( _json_command( _cookie,password,exe ) ) ;
 
 			s.waitForBytesWritten() ;
@@ -231,6 +249,8 @@ void utility::Task::execute( const QString& exe,int waitTime,
 			m_stdOut     = QObject::tr( "zuluCrypt: Failed To Establish Connection With zuluPolkit" ).toLatin1() ;
 		}
 	}else{
+		_post_backend_cmd( exe ) ;
+
 		auto p = ::Task::process::run( exe,{},waitTime,password,env,std::move( f ) ).get() ;
 
 		m_finished   = p.finished() ;

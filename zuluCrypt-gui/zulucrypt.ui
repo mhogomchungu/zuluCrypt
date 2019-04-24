@@ -172,6 +172,8 @@
     <addaction name="separator"/>
     <addaction name="actionCheck_For_Update"/>
     <addaction name="separator"/>
+    <addaction name="actionShow_Debug_Window"/>
+    <addaction name="separator"/>
     <addaction name="action_close"/>
    </widget>
    <addaction name="menu_zc"/>
@@ -550,6 +552,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionShow_Debug_Window">
+   <property name="text">
+    <string>Show Debug Window</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+D</string>
    </property>
   </action>
  </widget>

@@ -32,6 +32,7 @@
 #include "monitor_mountinfo.h"
 #include "../zuluCrypt-gui/checkforupdates.h"
 #include "../zuluCrypt-gui/systemsignalhandler.h"
+#include "../zuluCrypt-gui/debugwindow.h"
 
 class QCloseEvent ;
 class QAction ;
@@ -163,6 +164,8 @@ private:
 	checkForUpdates m_checkForUpdates ;
 
 	systemSignalHandler m_signalHandler ;
+
+	debugWindow m_debugWindow ;
 };
 
 #endif // MAINWINDOW_H
