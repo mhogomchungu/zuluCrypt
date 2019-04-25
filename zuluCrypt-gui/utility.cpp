@@ -121,8 +121,12 @@ void utility::setDebugWindow( debugWindow * w )
 
 std::unique_ptr< utility::RandomDataSource > utility::RandomDataSource::get( utility::RandomDataSource::types type )
 {
-	Q_UNUSED( type ) ;
-	return std::make_unique< utility::UrandomDataSource >() ;
+	if( type == utility::RandomDataSource::types::urandom ){
+
+		return std::make_unique< utility::UrandomDataSource >() ;
+	}else{
+		return std::make_unique< utility::CRandDataSource >() ;
+	}
 }
 
 utility::RandomDataSource::~RandomDataSource()
@@ -190,7 +194,7 @@ static bool _connected( QLocalSocket& s )
 }
 
 static QByteArray _cookie ;
-static bool _polkit_support = AUTO_ENABLE_POLKIT_SUPPORT ;
+static bool _run_through_polkit ;
 
 ::Task::future< utility::Task >& utility::Task::run( const QString& exe,USEPOLKIT e )
 {
@@ -308,7 +312,14 @@ static QString zuluPolkitExe()
 
 static ::Task::future< utility::Task >& _start_zulupolkit( const QString& e )
 {
-	_cookie = utility::UrandomDataSource().getData( 16 ).toHex() ;
+	utility::UrandomDataSource randSource ;
+
+	if( randSource.open() ){
+
+		_cookie = randSource.getData( 16 ).toHex() ;
+	}else{
+		_cookie = utility::CRandDataSource().getData( 16 ).toHex() ;
+	}
 
 	return ::Task::run( [ = ]{
 
@@ -321,15 +332,34 @@ static ::Task::future< utility::Task >& _start_zulupolkit( const QString& e )
 	} ) ;
 }
 
-void utility::startHelperExecutable( QObject * obj,const QString& arg,const char * slot,const char * slot1 )
+static bool _enable_polkit_support( const QString& m )
 {
-	if( AUTO_ENABLE_POLKIT_SUPPORT ){
+	struct stat st ;
+
+	if( m == "zuluCrypt" ){
+
+		stat( ZULUCRYPTzuluCrypt,&st ) ;
+	}else{
+		stat( zuluMountPath,&st ) ;
+	}
+
+	bool s = st.st_mode & S_ISUID ;
+
+	return !s ;
+}
+
+void utility::startHelperExecutable( QObject * obj,const QString& arg,const QString& exe,
+				     const char * slot,const char * slot1 )
+{
+	if( _enable_polkit_support( exe ) ){
 
 		auto exe = zuluPolkitExe() ;
 
 		if( !exe.isEmpty() ){
 
 			_start_zulupolkit( exe ).then( [ = ]( const utility::Task& e ){
+
+				_run_through_polkit = e.success() ;
 
 				QMetaObject::invokeMethod( obj,
 							   slot,
@@ -357,7 +387,7 @@ QString utility::helperSocketPath()
 
 bool utility::useZuluPolkit()
 {
-	return _polkit_support ;
+	return _run_through_polkit ;
 }
 
 bool utility::requireSystemPermissions( const QString& e,utility::background_thread thread )
@@ -399,7 +429,7 @@ bool utility::requireSystemPermissions( const QString& e,utility::background_thr
 
 bool utility::enablePolkit( utility::background_thread thread )
 {
-	if( _polkit_support ){
+	if( _run_through_polkit ){
 
 		return true ;
 	}
@@ -414,7 +444,7 @@ bool utility::enablePolkit( utility::background_thread thread )
 
 			if( _start_zulupolkit( exe ).get().success() ){
 
-				_polkit_support = true ;
+				_run_through_polkit = true ;
 
 				while( !utility::pathExists( socketPath ) ){
 
@@ -424,7 +454,7 @@ bool utility::enablePolkit( utility::background_thread thread )
 		}else{
 			if( _start_zulupolkit( exe ).await().success() ){
 
-				_polkit_support = true ;
+				_run_through_polkit = true ;
 
 				while( !utility::pathExists( socketPath ) ){
 
@@ -434,7 +464,7 @@ bool utility::enablePolkit( utility::background_thread thread )
 		}
 	}
 
-	return _polkit_support ;
+	return _run_through_polkit ;
 }
 
 void utility::quitHelper()
@@ -1159,11 +1189,16 @@ bool utility::getOpenVolumeReadOnlyOption( const QString& app )
 
 QString utility::keyPath()
 {
-	QFile f( "/dev/urandom" ) ;
+	utility::UrandomDataSource randomSource ;
 
-	f.open( QIODevice::ReadOnly ) ;
+	QByteArray data ;
 
-	QByteArray data = f.read( 64 ) ;
+	if( randomSource.open() ){
+
+		data = randomSource.getData( 64 ) ;
+	}else{
+		data = utility::CRandDataSource().getData( 64 ) ;
+	}
 
 	QString a = utility::passwordSocketPath() ;
 
@@ -2777,7 +2812,9 @@ utility::UrandomDataSource::UrandomDataSource() :
 
 bool utility::UrandomDataSource::open()
 {
-	return m_file.open( QIODevice::ReadOnly ) ;
+	m_file.open( QIODevice::ReadOnly ) ;
+
+	return m_file.isOpen() ;
 }
 
 qint64 utility::UrandomDataSource::getData( char * data,qint64 size )
@@ -2788,4 +2825,38 @@ qint64 utility::UrandomDataSource::getData( char * data,qint64 size )
 QByteArray utility::UrandomDataSource::getData( qint64 size )
 {
 	return m_file.read( size ) ;
+}
+
+utility::CRandDataSource::CRandDataSource()
+{
+}
+
+bool utility::CRandDataSource::open()
+{
+	return true ;
+}
+
+qint64 utility::CRandDataSource::getData( char * data,qint64 size )
+{
+	time_t t ;
+
+	srand( static_cast< unsigned int >( time( &t ) ) ) ;
+
+	for( int i = 0 ; i < size ; i++ ){
+
+	   *( data + i ) = static_cast< char >( rand() ) ;
+	}
+
+	return size ;
+}
+
+QByteArray utility::CRandDataSource::getData( qint64 size )
+{
+	QByteArray data ;
+
+	data.resize( static_cast< int >( size ) ) ;
+
+	utility::CRandDataSource().getData( data.data(),size ) ;
+
+	return data ;
 }

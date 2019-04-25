@@ -261,6 +261,7 @@ void zuluCrypt::start()
 			       utility::cmdArgumentValue( l,"-d" ),
 			       [ this ]( const QString& e ){ utility::startHelperExecutable( this,
 											     e,
+											     "zuluCrypt",
 											     "helperStarted",
 											     "closeApplication" ) ; },
 			       [ this ]( int s ){ this->closeApplication( s ) ;	},

@@ -781,6 +781,7 @@ void zuluMount::Show()
 			       utility::cmdArgumentValue( l,"-d" ),
 			       [ this ]( const QString& e ){ utility::startHelperExecutable( this,
 											     e,
+											     "zuluMount",
 											     "helperStarted",
 											     "closeApplication" ) ; },
 			       [ this ]( int s ){ this->closeApplication( s ) ;	},

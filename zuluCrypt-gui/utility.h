@@ -141,13 +141,13 @@ namespace utility
 {
 	struct RandomDataSource
 	{
-		enum class types{ urandom };
+		enum class types{ urandom,crand };
 		static std::unique_ptr< RandomDataSource > get( types = types::urandom ) ;
 		virtual ~RandomDataSource() ;
 		virtual bool open() = 0 ;
 		virtual qint64 getData( char * data,qint64 size ) = 0 ;
 		virtual QByteArray getData( qint64 size ) = 0 ;
-	};
+	} ;
 
 	class UrandomDataSource : public RandomDataSource
 	{
@@ -158,6 +158,15 @@ namespace utility
 		QByteArray getData( qint64 size ) override ;
 	private:
 		QFile m_file;
+	} ;
+
+	class CRandDataSource : public RandomDataSource
+	{
+	public:
+		CRandDataSource() ;
+		bool open() override ;
+		qint64 getData( char * data,qint64 size ) override ;
+		QByteArray getData( qint64 size ) override ;
 	} ;
 
 	class debug
@@ -386,7 +395,7 @@ namespace utility
 	bool pathExists( const QString& ) ;
 	bool canCreateFile( const QString& ) ;
 	bool useZuluPolkit( void ) ;
-	void startHelperExecutable( QObject *,const QString&,const char *,const char * ) ;
+	void startHelperExecutable( QObject *,const QString&,const QString&,const char *,const char * ) ;
 	void dropPrivileges( int = -1 ) ;
 	void setDebugWindow( debugWindow * w ) ;
 	QString fileManager( void ) ;
