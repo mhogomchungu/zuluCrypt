@@ -44,6 +44,7 @@
 #include <memory>
 #include <array>
 #include <utility>
+#include <chrono>
 #include <QtNetwork/QLocalSocket>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -918,4 +919,43 @@ namespace utility
 	}
 }
 
+namespace utility {
+	class duration{
+	public:
+		duration( long miliseconds ) : m_milliseconds( miliseconds )
+		{
+			this->reset() ;
+		}
+		bool passed()
+		{
+			auto now = std::chrono::high_resolution_clock::now() ;
+
+			auto seconds = std::chrono::duration_cast< std::chrono::milliseconds >( now - m_start_time ).count() ;
+
+			if( seconds >= m_milliseconds ){
+
+				this->reset() ;
+
+				return true ;
+			}else{
+				return false ;
+			}
+		}
+		template< typename Function >
+		void passed( Function function )
+		{
+			if( this->passed() ){
+
+				function() ;
+			}
+		}
+	private:
+		void reset()
+		{
+			m_start_time = std::chrono::high_resolution_clock::now() ;
+		}
+		long m_milliseconds ;
+		decltype( std::chrono::high_resolution_clock::now() ) m_start_time ;
+	};
+}
 #endif // MISCFUNCTIONS_H

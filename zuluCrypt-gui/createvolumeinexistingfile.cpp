@@ -51,15 +51,15 @@ static std::pair< qint64,QString > _volumeOffset( qint64 s )
 {
 	if( s >= Unit::GB ){
 
-		return _offset( s,Unit::GB,"GB" ) ;
+		return _offset( s,Unit::GB,"g" ) ;
 
 	}else if( s >= Unit::MB ){
 
-		return _offset( s,Unit::MB,"MB" ) ;
+		return _offset( s,Unit::MB,"m" ) ;
 
 	}else if( s >= Unit::KB ){
 
-		return _offset( s,Unit::KB,"KB" ) ;
+		return _offset( s,Unit::KB,"k" ) ;
 	}else{
 		return { s,QString::number( s ) + "B" } ;
 	}
@@ -105,6 +105,8 @@ public:
 
 		Task::await( [ & ](){
 
+			utility::duration time( 250 ) ;
+
 			while( true ){
 
 				m_randomData->getData( buffer.data(),buffer.size() ) ;
@@ -119,7 +121,7 @@ public:
 
 				if( i > j ){
 
-					function( i ) ;
+					time.passed( [ & ](){ function( i ) ; } ) ;
 
 					j = i ;
 				}
@@ -285,6 +287,8 @@ void createVolumeInExistingFIle::create()
 
 		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Open \"/dev/urandom\" Device In Read Mode" ) ) ;
 	}
+
+	this->updateProgress( 0 ) ;
 
 	this->displayWarning( true ) ;
 
