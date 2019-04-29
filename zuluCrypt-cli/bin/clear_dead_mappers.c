@@ -19,11 +19,13 @@
 
 #include "includes.h"
 #include "../lib/includes.h"
+#include "mount_prefix_path.h"
 #include <sys/types.h>
 #include <string.h>
 #include <dirent.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <libintl.h>
 #include <libcryptsetup.h>
 
@@ -52,6 +54,63 @@ static void _remove_mapper( const char * path,stringList_t stl,uid_t uid )
 		remove( m_point ) ;
 		StringFree( m_point ) ;
 	}
+}
+
+static void _zuluCryptDeleteDeadMountPoints( stringList_t stl,const char * m )
+{
+	struct dirent * entry ;
+	const char * e ;
+	string_t st ;
+	string_t xt ;
+
+	DIR * dir = opendir( m ) ;
+
+	if( dir == NULL ){
+
+		return ;
+	}
+
+	while( ( entry = readdir( dir ) ) != NULL ){
+
+		e = entry->d_name ;
+
+		if( !StringAtLeastOneMatch_1( e,".","..","cryptoBitlocker",NULL ) ){
+
+			st = String( e ) ;
+
+			zuluCryptEncodeMountEntry( st ) ;
+
+			StringMultiplePrepend( st,"/",m,NULL ) ;
+
+			e = StringAppend( st," " ) ;
+
+			if( StringListHasSequence( stl,e ) < 0 ){
+
+				xt = String_1( m,"/",entry->d_name,NULL ) ;
+
+				if( rmdir( StringContent( xt ) ) != 0 ){
+
+					/*
+					 * Failed to delete an unmounted folder for some reason
+					 */
+				}
+
+				StringDelete( &xt ) ;
+			}
+
+			StringDelete( &st ) ;
+		}
+	}
+}
+
+void zuluCryptDeleteDeadMountPoints( uid_t uid,stringList_t stl )
+{
+	string_t st = zuluCryptGetUserName( uid ) ;
+
+	_zuluCryptDeleteDeadMountPoints( stl,StringPrepend( st,"/run/media/private/" ) ) ;
+	_zuluCryptDeleteDeadMountPoints( stl,"/run/media/public" ) ;
+
+	StringDelete( &st ) ;
 }
 
 void zuluCryptClearDeadMappers( uid_t uid )
@@ -145,6 +204,7 @@ void zuluCryptClearDeadMappers( uid_t uid )
 		}
 	}
 
+	zuluCryptDeleteDeadMountPoints( uid,stl ) ;
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in security.c
 	 */

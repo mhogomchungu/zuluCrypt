@@ -194,6 +194,11 @@ char * zuluCryptRealPath( const char * path ) ;
 void zuluCryptClearDeadMappers( uid_t uid ) ;
 
 /*
+ * this function is defined in clear_dead_mapper.c
+ */
+void zuluCryptDeleteDeadMountPoints( uid_t,stringList_t ) ;
+
+/*
  * this function is defined in save_and_restore_luks_header.c
  */
 int zuluCryptHeaderMatchBackUpHeader( const char * device,const char * header_backup,uid_t uid ) ;
