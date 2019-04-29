@@ -42,7 +42,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Key </string>
+    <string>Password</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -186,7 +186,7 @@
    </property>
    <item>
     <property name="text">
-     <string>Key</string>
+     <string>Password</string>
     </property>
    </item>
    <item>

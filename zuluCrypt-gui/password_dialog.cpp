@@ -416,7 +416,7 @@ void passwordDialog::passphraseOption()
 	m_ui->PassPhraseField->setEchoMode( QLineEdit::Password ) ;
 	m_ui->PassPhraseField->clear() ;
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
-	m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
+	m_ui->labelPassphrase->setText( tr( "Password" ) ) ;
 	m_ui->pushButtonPassPhraseFromFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	m_ui->pbKeyOption->setIcon( QIcon() ) ;
 	m_ui->pbKeyOption->setEnabled( false ) ;

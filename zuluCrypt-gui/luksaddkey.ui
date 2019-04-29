@@ -131,7 +131,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Key Already In The Encrypted Volume</string>
+    <string>Password Already In The Encrypted Volume</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -147,7 +147,7 @@
     </rect>
    </property>
    <property name="text">
-    <string> Key To Be Added To The Encrypted Volume</string>
+    <string> Password To Be Added To The Encrypted Volume</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -173,7 +173,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Reenter Key</string>
+    <string>Reenter Password</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -221,7 +221,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Key</string>
+    <string>Password</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -241,7 +241,7 @@
    </property>
    <item>
     <property name="text">
-     <string>Key</string>
+     <string>Password</string>
     </property>
    </item>
    <item>
@@ -275,7 +275,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Key</string>
+    <string>Password</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -314,7 +314,7 @@
    </property>
    <item>
     <property name="text">
-     <string>Key</string>
+     <string>Password</string>
     </property>
    </item>
    <item>

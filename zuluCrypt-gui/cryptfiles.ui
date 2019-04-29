@@ -145,7 +145,7 @@
     </property>
     <item>
      <property name="text">
-      <string>Key</string>
+      <string>Password</string>
      </property>
     </item>
     <item>
@@ -193,7 +193,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Key</string>
+    <string>Password</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -222,7 +222,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Repeat Key</string>
+    <string>Repeat Password</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
