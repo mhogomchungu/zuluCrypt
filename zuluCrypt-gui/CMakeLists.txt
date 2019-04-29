@@ -15,6 +15,7 @@ set( UI_FILES createfile.ui
 		luksaddkey.ui
 		createvolume.ui
 		cryptoinfo.ui
+		warnwhenextendingcontainerfile.ui
 		createvolumeinexistingfile.ui
 		managevolumeheader.ui
 		cryptfiles.ui
@@ -40,6 +41,7 @@ set( MOC_FILES
 		createfile.h
 		luksaddkey.h
 		createkeyfile.h
+		warnwhenextendingcontainerfile.h
 		luksdeletekey.h
 		createvolume.h
 		openvolume.h
@@ -74,6 +76,7 @@ set( SRC
 	createkeyfile.cpp
 	luksaddkey.cpp
 	main.cpp
+	warnwhenextendingcontainerfile.cpp
 	password_dialog.cpp
 	createvolumeinexistingfile.cpp
 	zulucrypt.cpp

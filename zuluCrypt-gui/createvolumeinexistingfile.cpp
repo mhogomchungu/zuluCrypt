@@ -61,7 +61,7 @@ static std::pair< qint64,QString > _volumeOffset( qint64 s )
 
 		return _offset( s,Unit::KB,"k" ) ;
 	}else{
-		return { s,QString::number( s ) + "B" } ;
+		return { s,QString::number( s ) + "b" } ;
 	}
 }
 

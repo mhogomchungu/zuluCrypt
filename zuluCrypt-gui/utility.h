@@ -461,6 +461,9 @@ namespace utility
 
 	QString executableFullPath( const QString& ) ;
 
+	bool showWarningOnExtendingCoverFile() ;
+	void showWarningOnExtendingCoverFile( bool ) ;
+
 	bool reUseMountPointPath( void ) ;
 	bool reUseMountPoint( void ) ;
 

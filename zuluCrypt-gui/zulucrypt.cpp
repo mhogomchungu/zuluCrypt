@@ -72,6 +72,7 @@
 #include "createvolumeinexistingfile.h"
 #include "veracrypt_support.h"
 #include "pdf_path.h"
+#include "warnwhenextendingcontainerfile.h"
 
 #include "checkforupdates.h"
 
@@ -540,7 +541,10 @@ void zuluCrypt::manageVolumesInKDEWallet()
 
 void zuluCrypt::createVolumeInExistingFile()
 {
-	createVolumeInExistingFIle::instance( this ) ;
+	warnWhenExtendingContainerFile::Show( this,[ this ](){
+
+		createVolumeInExistingFIle::instance( this ) ;
+	} ) ;
 }
 
 void zuluCrypt::failedToOpenWallet()

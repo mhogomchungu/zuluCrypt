@@ -19,6 +19,7 @@ SOURCES += main.cpp\
     luksdeletekey.cpp \
     createvolume.cpp \
     createfile.cpp \
+    warnwhenextendingcontainerfile.cpp \
     createkeyfile.cpp \
     utility.cpp \
     partitionproperties.cpp \
@@ -82,6 +83,7 @@ HEADERS  += zulucrypt.h \
     dialogmsg.h \
     managesystemvolumes.h \
     keystrength.h \
+    warnwhenextendingcontainerfile.h \
     userfont.h \
     tablewidget.h \
     socketsendkey.h \
@@ -127,6 +129,7 @@ FORMS    += zulucrypt.ui password.ui \
     erasedevice.ui \
     cryptfiles.ui \
     createvolumedialog.ui \
+    warnwhenextendingcontainerfile.ui \
     dialogmsg.ui \
     managesystemvolumes.ui \
     lxqt_wallet/frontend/password_dialog.ui \

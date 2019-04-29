@@ -1563,6 +1563,22 @@ QString utility::getVolumeID( const QString& id,bool expand )
 	return _partition_id_to_device_id( id,expand ) ;
 }
 
+
+bool utility::showWarningOnExtendingCoverFile()
+{
+	if( !_settings->contains( "ShowWarningOnExtendingCoverFile" ) ){
+
+		 utility::showWarningOnExtendingCoverFile( true ) ;
+	}
+
+	return _settings->value( "ShowWarningOnExtendingCoverFile" ).toBool() ;
+}
+
+void utility::showWarningOnExtendingCoverFile( bool e )
+{
+	_settings->setValue( "ShowWarningOnExtendingCoverFile",e ) ;
+}
+
 void utility::addToFavorite( const QString& dev,const QString& m_point )
 {
 	if( !( dev.isEmpty() || m_point.isEmpty() ) ){
