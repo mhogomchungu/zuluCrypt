@@ -1101,6 +1101,25 @@ int StringStartsWithAtLeastOne( string_t st,... )
 	return r ;
 }
 
+int StringEndsWithAtLeastOne( const char * e,... )
+{
+	const char * entry ;
+	va_list list ;
+	va_start( list,e ) ;
+	int r = 0 ;
+	while( 1 ){
+		entry = va_arg( list,const char * ) ;
+		if( entry == NULL ){
+			break ;
+		}else if( StringEndsWith_1( e,entry ) ){
+			r = 1 ;
+			break ;
+		}
+	}
+	va_end( list ) ;
+	return r ;
+}
+
 const char * StringMultipleAppend( string_t st,... )
 {
 	const char * entry ;

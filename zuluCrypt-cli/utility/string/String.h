@@ -401,6 +401,15 @@ int StringEndsWith( string_t st,const char * s ) ;
 int StringEndsWith_1( const char * e,const char * s ) ;
 
 /*
+ * Check to see if string e ends with atleast one of other arguments.
+ *
+ * return 1 is it does
+ *
+ * return 0 if it doesnt
+ */
+int StringEndsWithAtLeastOne( const char * e,... ) __attribute__ ( ( sentinel ) ) ;
+
+/*
  * Check to see if a string e ends with a string s.
  *
  * return 1 is it does

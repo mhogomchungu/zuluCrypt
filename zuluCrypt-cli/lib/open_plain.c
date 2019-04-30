@@ -38,10 +38,27 @@ static int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
+static const char * _remove_letters( char * e )
+{
+	char * m = e ;
+
+	while( *e ){
+
+		if( !( *e >= '0' && *e <= '9' ) ){
+
+			*e = '\0' ;
+			break ;
+		}
+
+		e++ ;
+	}
+
+	return m ;
+}
+
 static u_int64_t _offset( const char * offset )
 {
 	char * e ;
-	char f   ;
 
 	u_int64_t r = 0 ;
 
@@ -51,36 +68,42 @@ static u_int64_t _offset( const char * offset )
 
 		return 0 ;
 	}else{
-		f = *( offset + s - 1 ) ;
-	}
-	if( !( f >= '0' && f <= '9' ) ){
-		/*
-		 * The argument ends with a non digit number,assume the argument is not in sectors but
-		 * in bytes and convert it to offsets
-		 */
 		e = StringCopy_2( offset ) ;
-		*( e + s - 1 ) = '\0' ;
-		r = StringConvertToInt( e ) ;
-		if( f == 'b' || f == 'B' ) {
+
+		if( StringEndsWithAtLeastOne( e,"m","MB","mb","Mb","M",NULL ) ){
+
+			r = StringConvertToInt( _remove_letters( e ) ) ;
+			r = 2 * 1024 * r ;
+
+		}else if( StringEndsWithAtLeastOne( e,"g","GB","gb","Gb","G",NULL ) ){
+
+			r = StringConvertToInt( _remove_letters( e ) ) ;
+			r = 2 * 1024 * 1024 * r ;
+
+		}else if( StringEndsWithAtLeastOne( e,"t","TB","tb","Tb","T",NULL ) ){
+
+			r = StringConvertToInt( _remove_letters( e ) ) ;
+			r = 1.0 * 2 * 1024 * 1024 * 1024 * r ;
+
+		}else if( StringEndsWithAtLeastOne( e,"k","KB","kb","Kb","K",NULL ) ){
+
+			r = StringConvertToInt( _remove_letters( e ) ) ;
+			r = 2 * r ;
+
+		}else if( StringEndsWithAtLeastOne( e,"b","B",NULL ) ){
+
+			r = StringConvertToInt( _remove_letters( e ) ) ;
+
 			if( r < 512 ){
 				r = 0 ;
 			}else{
 				r = r / 512 ;
 			}
-		}else if( f == 'k' || f == 'K' ){
-			r = 2 * r ;
-		}else if( f == 'm' || f == 'M' ){
-			r = 2 * 1024 * r ;
-		}else if( f == 'g' || f == 'G' ){
-			r = 2 * 1024 * 1024 * r ;
-		}else if( f == 't' || f == 'T' ){
-			r = 1.0 * 2 * 1024 * 1024 * 1024 * r ;
-		}else{
-			r = 0 ;
+		}else {
+			r = StringConvertToInt( offset ) ;
 		}
+
 		StringFree( e ) ;
-	}else{
-		r = StringConvertToInt( offset ) ;
 	}
 
 	return r ;
