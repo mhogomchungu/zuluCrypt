@@ -234,7 +234,7 @@ void utility::Task::execute( const QString& exe,int waitTime,
 
 			s.waitForBytesWritten() ;
 
-			s.waitForReadyRead() ;
+			s.waitForReadyRead( -1 ) ;
 
 			auto e = _json_result( s.readAll() ) ;
 
