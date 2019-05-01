@@ -45,17 +45,9 @@ Screenshots are at the end of this page.
 
 ## zuluCrypt download page
 
-Latest released version is 5.4.0 and it can be downloaded by clicking any one of the two links below.
+Latest released version is 5.5.0 and it can be downloaded by clicking below link.
 
-
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0.tar.bz2">zuluCrypt-5.4.0.tar.bz2</a>
-
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0.tar.xz">zuluCrypt-5.4.0.tar.xz</a>
-
-```
-The honors of being the first person to donate to zuluCrypt project goes to
-"ISRAEL JULIUS KIS JUHASZ" from Austria and version 5.4.0 is released in his name.
-```
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.5.0/zuluCrypt-5.5.0.tar.xz">zuluCrypt-5.5.0.tar.xz</a>
 
 ## Binary packages
 
@@ -84,24 +76,26 @@ because of the following reasons:
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-debian-8-Jessie.tar.xz">zuluCrypt-5.4.0-debian-8-Jessie.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-debian-9-Stretch.tar.xz">zuluCrypt-5.4.0-debian-9-Stretch.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.5.0/zuluCrypt-5.5.0-debian-9-Stretch.tar.xz">zuluCrypt-5.5.0-debian-9-Stretch.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-5.4.0-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.5.0/zuluCrypt-5.5.0-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-5.5.0-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.4.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.5.0/zuluCrypt-5.5.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.5.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-5.4.0-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.5.0/zuluCrypt-5.5.0-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-5.5.0-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-5.4.0-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.5.0/zuluCrypt-5.5.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-5.5.0-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-18.04-Bionic_Beaver.tar.xz">zuluCrypt-5.4.0-ubuntu-18.04-Bionic_Beaver.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.5.0/zuluCrypt-5.5.0-ubuntu-18.04-Bionic_Beaver.tar.xz">zuluCrypt-5.5.0-ubuntu-18.04-Bionic_Beaver.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz">zuluCrypt-5.4.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.5.0/zuluCrypt-5.5.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz">zuluCrypt-5.5.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz</a>
+
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.5.0/zuluCrypt-5.5.0-ubuntu-19.04-Disco_Dingo.tar.xz">zuluCrypt-5.5.0-ubuntu-19.04-Disco_Dingo.tar.xz</a>
 
 These archives contains binaries for both 32 bit and 64 bit systems.
 
 
-Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/5.4.0">here</a>.
+Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/5.5.0">here</a>.
 
 Development versions of binary packages together with other generated package files can be obtained from <a href="http://download.opensuse.org/repositories/home:/mhogomchungu/">here</a>.
 
@@ -231,4 +225,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 
 ```
 
-last update: Fri Mar 22 19:45:39 EAT 2019
+last update: Thu 02 May 2019 12:48:08 AM EAT
