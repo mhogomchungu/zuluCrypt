@@ -32,13 +32,13 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>80</y>
+      <y>70</y>
       <width>171</width>
-      <height>31</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="text">
-     <string>Select Cover File (mp4, mp3, etc)</string>
+     <string>Select Cover File (Video files like mp4 and mkv)</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
