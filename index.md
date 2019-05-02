@@ -1,6 +1,6 @@
 ## zuluCrypt
 
-zuluCrypt is currently ```Linux only``` and it does hard drives encryption and it can manage PLAIN dm-crypt volumes, LUKS encrypted volumes, TrueCrypt encrypted volumes and VeraCrypt encrypted volumes.
+zuluCrypt is currently ```Linux only``` and it does hard drives encryption and it can manage PLAIN dm-crypt volumes, LUKS encrypted volumes, TrueCrypt encrypted volumes, VeraCrypt encrypted volumes and Microsoft's BitLocker volumes using <a href="https://github.com/mhogomchungu/dislocker">dislocker</a> backend.
 
 zuluCrypt can manage encrypted volumes that are hosted in image files, lvm, mdraid, hard drives, usb sticks or any other block device.
 
@@ -72,7 +72,11 @@ because of the following reasons:
 
 ```Archlinux``` users can get the development version of zuluCrypt from <a href="https://aur.archlinux.org/packages/zulucrypt-git/">here</a>.
 
-```Binary packages for debian and ubuntu are below:```
+```Binary packages for debian and ubuntu are below:
+These are zipped files, download the appropriate one and then right click it and
+the generated context menu should have an option to extract it. Extract it and
+read the README file for further instructions.
+```
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.4.0/zuluCrypt-5.4.0-debian-8-Jessie.tar.xz">zuluCrypt-5.4.0-debian-8-Jessie.tar.xz</a>
 
