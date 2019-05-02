@@ -72,7 +72,8 @@ because of the following reasons:
 
 ```Archlinux``` users can get the development version of zuluCrypt from <a href="https://aur.archlinux.org/packages/zulucrypt-git/">here</a>.
 
-```Binary packages for debian and ubuntu are below:
+```
+Binary packages for debian and ubuntu are below:
 These are zipped files, download the appropriate one and then right click it and
 the generated context menu should have an option to extract it. Extract it and
 read the README file for further instructions.
