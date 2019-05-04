@@ -31,9 +31,16 @@ const char * zuluCryptBitLockerType()
 	return "crypto_BitLocker" ;
 }
 
+const char * zuluCryptBitLockerFolderPrefix( void )
+{
+	return "cryptoBitlocker" ;
+}
+
 string_t zuluCryptBitLockerMapperPath( uid_t uid )
 {
-	return String_1( "/run/media/private/",getpwuid( uid )->pw_name,"/cryptoBitlocker",NULL ) ;
+	const char * m = zuluCryptBitLockerFolderPrefix() ;
+
+	return String_1( "/run/media/private/",getpwuid( uid )->pw_name,"/",m,NULL ) ;
 }
 
 string_t zuluCryptBitLockerMapperName( const char * e )

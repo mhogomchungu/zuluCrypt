@@ -138,6 +138,11 @@ static inline int zuluCryptWhirlpoolIsSupported()
 const char * zuluCryptBitLockerType( void ) ;
 
 /*
+ * zuluCryptVeraCryptPIM() is defined in volume_type.c
+ */
+const char * zuluCryptBitLockerFolderPrefix( void ) ;
+
+/*
  * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
  */
 int zuluCryptVeraCryptPIM( int e ) ;

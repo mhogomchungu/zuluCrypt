@@ -63,6 +63,8 @@ static void _zuluCryptDeleteDeadMountPoints( stringList_t stl,const char * m )
 	string_t st ;
 	string_t xt ;
 
+	const char * bl = zuluCryptBitLockerFolderPrefix() ;
+
 	DIR * dir = opendir( m ) ;
 
 	if( dir == NULL ){
@@ -74,7 +76,7 @@ static void _zuluCryptDeleteDeadMountPoints( stringList_t stl,const char * m )
 
 		e = entry->d_name ;
 
-		if( !StringAtLeastOneMatch_1( e,".","..","cryptoBitlocker",NULL ) ){
+		if( !StringAtLeastOneMatch_1( e,".","..",bl,NULL ) ){
 
 			st = String( e ) ;
 
