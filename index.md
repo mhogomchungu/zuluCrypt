@@ -1,6 +1,6 @@
 ## zuluCrypt
 
-zuluCrypt is currently ```Linux only``` and it does hard drives encryption and it can manage PLAIN dm-crypt volumes, LUKS encrypted volumes, TrueCrypt encrypted volumes, VeraCrypt encrypted volumes and Microsoft's BitLocker volumes using <a href="https://github.com/mhogomchungu/dislocker">dislocker</a> backend.
+zuluCrypt is currently ```Linux only``` and it does hard drives encryption and it can manage PLAIN dm-crypt volumes, LUKS encrypted volumes, TrueCrypt encrypted volumes, VeraCrypt encrypted volumes and Microsoft's BitLocker volumes.
 
 zuluCrypt can manage encrypted volumes that are hosted in image files, lvm, mdraid, hard drives, usb sticks or any other block device.
 
@@ -120,23 +120,10 @@ Older versions can be downloaded from <a href="https://github.com/mhogomchungu/z
 
 <a href="https://www.veracrypt.fr/en/Home.html">VeraCrypt</a> is a security enhanced fork of TrueCrypt.
 
-## key sources
 
-zuluCrypt has a plugin architecture that allows it to retrieve keys to unlock volume from difference source:
+## BitLocker
 
-* gnome's libsecret (gnome wallet)
-
-* kde's kwallet
-
-* an internal storage system powered by libgcrypt
-
-* a keyfile where key = contents of a keyfile
-
-* a combination of a passphrase and keyfile where key = passphrase + content of keyfile
-
-* a combination of a passphrase and keyfile where key = gpg_symmetric_decrypt (passphrase, keyfile)
-
-* a combination of a passphrase and keyfile where key = hmac-sha256 (passphrase, keyfile)
+BitLocker is a full volume encryption feature included with Microsoft Windows versions starting with Windows Vista.<a href="https://github.com/mhogomchungu/dislocker"> Disclocker</a> backend is required for zuluCrypt to gain support for bitlocker volumes.
 
 ## Where did the name come from?
 
