@@ -802,6 +802,16 @@ void passwordDialog::openVolume()
 	const QString& e = passtype ;
 	const QString& f = keyPath ;
 
+	if( !b.startsWith( "/dev/" ) ){
+
+		auto s = utility::loopDevicePath( b ) ;
+
+		if( !s.isEmpty() ){
+
+			b = s ;
+		}
+	}
+
 	auto exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a,b,c,d,e,f ) ;
 
 	if( !m_keyFiles.isEmpty() ){

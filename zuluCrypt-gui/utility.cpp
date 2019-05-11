@@ -2876,3 +2876,36 @@ QByteArray utility::CRandDataSource::getData( qint64 size )
 
 	return data ;
 }
+
+QString utility::loopDevicePath( const QString& e )
+{
+	const auto s = QDir( "/sys/block" ).entryList() ;
+
+	QFile file ;
+
+	for( const auto& it : s ){
+
+		if( it.startsWith( "loop" ) ){
+
+			QString m = "/sys/block/" + it + "/loop/backing_file" ;
+
+			if( utility::pathExists( m ) ){
+
+				file.setFileName( m ) ;
+
+				file.open( QIODevice::ReadOnly ) ;
+
+				QString s = file.readAll() ;
+
+				file.close() ;
+
+				if( s.startsWith( e ) ){
+
+					return "/dev/" + it ;
+				}
+			}
+		}
+	}
+
+	return QString() ;
+}

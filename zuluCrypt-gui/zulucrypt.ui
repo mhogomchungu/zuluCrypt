@@ -111,6 +111,7 @@
      <string>&amp;Create</string>
     </property>
     <addaction name="actionFileCreate"/>
+    <addaction name="actionEncrypted_Container_In_A_File"/>
     <addaction name="actionEncrypted_Container_In_An_Existing_FIle"/>
     <addaction name="actionPartitionCreate"/>
     <addaction name="actionCreatekeyFile"/>
@@ -205,7 +206,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>&amp;Encrypted Container In A File</string>
+    <string>&amp;Encrypted Container In A New File</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
@@ -560,6 +561,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+D</string>
+   </property>
+  </action>
+  <action name="actionEncrypted_Container_In_A_File">
+   <property name="text">
+    <string>Encrypted Container In An Existing File</string>
    </property>
   </action>
  </widget>

@@ -35,7 +35,7 @@
 #include <QDebug>
 #include <QKeySequence>
 #include <QTranslator>
-
+#include <QFileDialog>
 #include <QTableWidgetItem>
 #include <QFont>
 #include <QWidget>
@@ -341,6 +341,16 @@ void zuluCrypt::itemEntered( QTableWidgetItem * item )
 	}
 }
 
+void zuluCrypt::createVolumeInFile()
+{
+	auto e = QFileDialog::getOpenFileName( this,tr( "Path To A File" ),QDir::homePath() ) ;
+
+	if( !e.isEmpty() ){
+
+		createvolume::instance( this ).ShowFile( e ) ;
+	}
+}
+
 void zuluCrypt::setupConnections()
 {
 	m_ui->tableWidget->setMouseTracking( true ) ;
@@ -360,7 +370,7 @@ void zuluCrypt::setupConnections()
 	} ) ;
 
 	connect( this,SIGNAL( updateVolumeListSignal( QString,QString ) ),this,SLOT( updateVolumeList( QString,QString ) ),Qt::QueuedConnection ) ;
-
+	connect( m_ui->actionEncrypted_Container_In_A_File,SIGNAL( triggered() ),this,SLOT( createVolumeInFile() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;
 	connect( m_ui->actionErase_data_on_device,SIGNAL( triggered() ),this,SLOT( ShowEraseDataDialog() ) ) ;
 	connect( m_ui->actionPartitionOpen,SIGNAL( triggered() ),this,SLOT( ShowOpenPartition() ) ) ;
@@ -805,6 +815,7 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->tableWidget->horizontalHeaderItem( 1 )->setFont( Font ) ;
 	m_ui->tableWidget->horizontalHeaderItem( 2 )->setFont( Font ) ;
 
+	m_ui->actionEncrypted_Container_In_An_Existing_FIle->setFont( Font ) ;
 	m_ui->actionAbout->setFont( Font ) ;
 	m_ui->actionAddKey->setFont( Font ) ;
 	m_ui->actionCreatekeyFile->setFont( Font ) ;
@@ -817,6 +828,7 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionManage_favorites->setFont( Font ) ;
 	m_ui->actionPartitionCreate->setFont( Font ) ;
 	m_ui->actionPartitionOpen->setFont( Font ) ;
+	m_ui->actionEncrypted_Container_In_A_File->setFont( Font ) ;
 	m_ui->actionSelect_random_number_generator->setFont( Font ) ;
 	m_ui->actionTray_icon->setFont( Font ) ;
 	m_ui->menuFavorites->setFont( Font ) ;

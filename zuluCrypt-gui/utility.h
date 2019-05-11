@@ -400,6 +400,7 @@ namespace utility
 	void dropPrivileges( int = -1 ) ;
 	void setDebugWindow( debugWindow * w ) ;
 	QString fileManager( void ) ;
+	QString loopDevicePath( const QString& ) ;
 	void setFileManager( const QString& ) ;
 	QString failedToStartzuluPolkit() ;
 	QString prettyfySpaceUsage( quint64 ) ;

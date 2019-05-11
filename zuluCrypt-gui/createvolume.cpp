@@ -541,15 +541,20 @@ void createvolume::pbOpenHiddenKeyFile()
 
 void createvolume::pbCancelClicked()
 {
+#if 0
 	if( m_created == false ){
 
 		auto s = m_ui->lineEditVolumePath->text() ;
 
 		if( !s.startsWith( "/dev/" ) ){
 
-			QFile::remove( s ) ;
+			if( utility::loopDevicePath( s ).isEmpty() ){
+
+				QFile::remove( s ) ;
+			}
 		}
 	}
+#endif
 
 	this->HideUI() ;
 }

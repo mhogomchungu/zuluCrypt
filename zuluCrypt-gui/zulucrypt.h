@@ -69,6 +69,7 @@ signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
 	void updateVolumeListSignal( QString,QString ) ;
 private slots :
+	void createVolumeInFile() ;
 	void showTrayIcon( bool ) ;
 	void polkitFailedWarning( void ) ;
 	void setFileManager( void ) ;
