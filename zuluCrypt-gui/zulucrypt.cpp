@@ -84,6 +84,8 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :
 	m_checkForUpdates( this ),
 	m_signalHandler( this )
 {
+	utility::mainWindowWidget( this ) ;
+
 	m_signalHandler.setAction( [ this ]( systemSignalHandler::signal s ){
 
 		Q_UNUSED( s ) ;

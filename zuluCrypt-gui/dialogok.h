@@ -44,6 +44,8 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	Ui::dialogok * m_ui ;
 	QMessageBox::StandardButton m_buttonRole ;
+	QWidget * m_parent ;
+	QWidget * m_mainWindow ;
 } ;
 
 #endif // DIALOGOK_H

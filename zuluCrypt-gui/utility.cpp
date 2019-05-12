@@ -105,6 +105,7 @@ static QSettings * _settings ;
 
 static debugWindow * _debugWindow ;
 
+static QWidget * _mainWindow ;
 
 static void _post_backend_cmd( const QString& b )
 {
@@ -118,6 +119,17 @@ void utility::setDebugWindow( debugWindow * w )
 {
 	_debugWindow = w ;
 }
+
+void utility::mainWindowWidget( QWidget * e )
+{
+	_mainWindow = e ;
+}
+
+QWidget * utility::mainWindowWidget()
+{
+	return _mainWindow ;
+}
+
 
 std::unique_ptr< utility::RandomDataSource > utility::RandomDataSource::get( utility::RandomDataSource::types type )
 {

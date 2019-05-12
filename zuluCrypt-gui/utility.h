@@ -406,6 +406,8 @@ namespace utility
 	QString prettyfySpaceUsage( quint64 ) ;
 	QString resolvePath( const QString& ) ;
 	QString hashPath( const QByteArray& ) ;
+	QWidget * mainWindowWidget() ;
+	void mainWindowWidget( QWidget * ) ;
 	QString cryptMapperPath( void ) ;
 	QString mapperPath( const QString&,const QString& component = QString() ) ;
 	QString getVolumeID( const QString&,bool = false ) ;

@@ -19,11 +19,30 @@
 
 #include "dialogok.h"
 #include "ui_dialogok.h"
+#include "utility.h"
 #include <QMessageBox>
 
-dialogok::dialogok(  QWidget  * parent,bool s,bool q,const QString& e,const QString& f ) :
-	QDialog( parent ),m_ui( new Ui::dialogok )
+static QWidget * _setParent( QWidget * s )
 {
+	auto m = utility::mainWindowWidget() ;
+
+	if( m != s ){
+
+		return m ;
+	}else{
+		return s ;
+	}
+}
+
+dialogok::dialogok( QWidget * parent,bool s,bool q,const QString& e,const QString& f ) :
+	QDialog( _setParent( parent ) ),m_ui( new Ui::dialogok ),
+	m_parent( parent ),m_mainWindow( utility::mainWindowWidget() )
+{
+	if( m_parent != m_mainWindow ){
+
+		m_parent->hide() ;
+	}
+
 	m_ui->setupUi( this ) ;
 	m_ui->label->setText( f ) ;
 
@@ -84,5 +103,11 @@ QMessageBox::StandardButton dialogok::Show()
 {
 	this->show() ;
 	this->exec() ;
+
+	if( m_parent != m_mainWindow ){
+
+		m_parent->show() ;
+	}
+
 	return m_buttonRole ;
 }

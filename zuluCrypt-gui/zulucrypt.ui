@@ -567,6 +567,9 @@
    <property name="text">
     <string>Encrypted Container In An Existing File</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+J</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
