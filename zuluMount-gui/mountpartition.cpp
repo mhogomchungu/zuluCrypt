@@ -196,6 +196,17 @@ void mountPartition::pbMount()
 	QString exe = zuluMountPath ;
 
 	auto volume = m_path ;
+
+	if( !volume.startsWith( "/dev/" ) ){
+
+		auto m = utility::loopDevicePath( volume ) ;
+
+		if( !m.isEmpty() ){
+
+			volume = m ;
+		}
+	}
+
 	volume.replace( "\"","\"\"\"" ) ;
 
 	if( m_ui->checkBoxShareMountPoint->isChecked() ){

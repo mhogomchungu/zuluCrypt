@@ -775,6 +775,17 @@ void keyDialog::openVolume()
 	}
 
 	auto volume = m_path ;
+
+	if( !volume.startsWith( "/dev/" ) ){
+
+		auto m = utility::loopDevicePath( volume ) ;
+
+		if( !m.isEmpty() ){
+
+			volume = m ;
+		}
+	}
+
 	volume.replace( "\"","\"\"\"" ) ;
 
 	QString exe = zuluMountPath ;
