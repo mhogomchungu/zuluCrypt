@@ -4803,7 +4803,7 @@ Anweisungen zum Entsperren des Volumes lauten wie folgt:
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="568"/>
         <source>Encrypted Container In An Existing File</source>
-        <translation type="unfinished"></translation>
+        <translation>Verschlüsselter Container in einer vorhandenen Datei</translation>
     </message>
     <message>
         <source>&amp;Open ZuluCrypt.pdf</source>
@@ -4852,7 +4852,7 @@ Anweisungen zum Entsperren des Volumes lauten wie folgt:
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="209"/>
         <source>&amp;Encrypted Container In A New File</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Verschlüsselter Container in einer neuen Datei</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="282"/>
@@ -5016,7 +5016,7 @@ Bitte melden Sie diesen schwerwiegenden Fehler.</translation>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="348"/>
         <source>Path To A File</source>
-        <translation type="unfinished"></translation>
+        <translation>Pfad zu einer Datei</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.cpp" line="488"/>
