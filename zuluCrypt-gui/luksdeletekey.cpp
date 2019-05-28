@@ -60,6 +60,8 @@ luksdeletekey::luksdeletekey( QWidget * parent ) : QDialog( parent ),m_ui( new U
 
 	this->Key( 0 ) ;
 
+	m_ui->cbKey->addItem( tr( "YubiKey Challenge/Responce" ) ) ;
+
 	this->installEventFilter( this ) ;
 }
 
@@ -92,7 +94,7 @@ void luksdeletekey::Key( int e )
 		m_ui->lineEditPassphrase->setEnabled( true ) ;
 	} ;
 
-	if( e == 0 ){
+	if( e == 0 || e == 3 ){
 
 		_key_ui() ;
 
@@ -278,6 +280,19 @@ void luksdeletekey::deleteKey( const QStringList& l )
 		keypath = utility::keyPath() ;
 
 		auto key = m_ui->lineEditPassphrase->text() ;
+
+		if( m_ui->cbKey->currentIndex() == 3 ){
+
+			auto m = utility::yubiKey( key ) ;
+
+			if( m.has_value() ){
+
+				key = m.value() ;
+			}else{
+				DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+				return this->enableAll() ;
+			}
+		}
 
 		utility::keySend( keypath,key ) ;
 	}

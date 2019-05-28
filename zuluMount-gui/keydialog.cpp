@@ -178,6 +178,8 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 	}
 
+	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Responce" ) ) ;
+
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
@@ -290,7 +292,9 @@ void keyDialog::pbMountPointPath()
 
 void keyDialog::cbVisibleKeyStateChanged( int s )
 {
-	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+	auto m = m_ui->cbKeyType->currentIndex() ;
+
+	if( m == keyDialog::Key || m == keyDialog::yubikey ){
 
 		if( s == Qt::Checked ){
 
@@ -305,7 +309,9 @@ void keyDialog::cbVisibleKeyStateChanged( int s )
 
 void keyDialog::enableAll()
 {
-	m_ui->checkBoxVisibleKey->setEnabled( m_ui->cbKeyType->currentIndex() == keyDialog::Key ) ;
+	auto m = m_ui->cbKeyType->currentIndex() ;
+
+	m_ui->checkBoxVisibleKey->setEnabled( m == keyDialog::Key || m == keyDialog::yubikey ) ;
 	m_ui->checkBoxVeraCryptVolume->setEnabled( true ) ;
 	m_ui->pbOptions->setEnabled( !m_encryptedFolder ) ;
 	m_ui->label_2->setEnabled( true ) ;
@@ -318,9 +324,12 @@ void keyDialog::enableAll()
 
 	auto index = m_ui->cbKeyType->currentIndex() ;
 
-	m_ui->lineEditKey->setEnabled( index == keyDialog::Key ) ;
+	m_ui->lineEditKey->setEnabled( index == keyDialog::Key || index == keyDialog::yubikey ) ;
 
-	m_ui->pbkeyOption->setEnabled( index == keyDialog::Key || index == keyDialog::keyfile ) ;
+	m_ui->pbkeyOption->setEnabled( index == keyDialog::Key ||
+				       index == keyDialog::yubikey ||
+				       index == keyDialog::keyfile ) ;
+
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
 	m_ui->checkBoxShareMountPoint->setEnabled( !m_encryptedFolder ) ;
@@ -574,7 +583,9 @@ void keyDialog::encryptedFolderMount()
 		break;
 	}
 
-	if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+	auto mm = m_ui->cbKeyType->currentIndex() ;
+
+	if( mm == keyDialog::Key || mm == keyDialog::yubikey ){
 
 		m_ui->lineEditKey->clear() ;
 	}
@@ -690,7 +701,23 @@ void keyDialog::openVolume()
 	}
 
 	QString m ;
-	if( keyType == keyDialog::Key ){
+
+	if( keyType == keyDialog::yubikey ){
+
+		auto s = utility::yubiKey( m_ui->lineEditKey->text() ) ;
+
+		if( s.has_value() ){
+
+			auto addr = utility::keyPath() ;
+			m = QString( "-f %1" ).arg( addr ) ;
+
+			utility::keySend( addr,s.value() ) ;
+		}else{
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+			return this->enableAll() ;
+		}
+
+	}else if( keyType == keyDialog::Key ){
 
 		auto addr = utility::keyPath() ;
 		m = QString( "-f %1" ).arg( addr ) ;
@@ -883,7 +910,9 @@ void keyDialog::openVolume()
 				msg.ShowUIOK( tr( "ERROR" ),z ) ;
 			}
 
-			if( m_ui->cbKeyType->currentIndex() == keyDialog::Key ){
+			auto m = m_ui->cbKeyType->currentIndex() ;
+
+			if( m == keyDialog::Key || m == keyDialog::yubikey ){
 
 				if( utility::clearPassword() ){
 
@@ -907,12 +936,19 @@ void keyDialog::openVolume()
 
 void keyDialog::cbActicated( int e )
 {
-	m_ui->pbkeyOption->setVisible( e != keyDialog::Key ) ;
-	m_ui->checkBoxVisibleKey->setVisible( e == keyDialog::Key ) ;
+	if( e == keyDialog::Key || e == keyDialog::yubikey ){
+
+		m_ui->checkBoxVisibleKey->setVisible( true ) ;
+		m_ui->pbkeyOption->setVisible( false ) ;
+	}else {
+		m_ui->checkBoxVisibleKey->setVisible( false ) ;
+		m_ui->pbkeyOption->setVisible( true ) ;
+	}
 
 	switch( e ){
 
 		case keyDialog::Key        : return this->key() ;
+		case keyDialog::yubikey    : return this->key() ;
 		case keyDialog::keyfile    : return this->keyFile() ;
 		case keyDialog::keyKeyFile : return this->keyAndKeyFile() ;
 		case keyDialog::plugin     : return this->plugIn() ;
@@ -948,6 +984,7 @@ void keyDialog::key()
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
+	m_ui->lineEditKey->setFocus() ;
 }
 
 void keyDialog::keyFile()
@@ -958,6 +995,7 @@ void keyDialog::keyFile()
 	m_ui->pbkeyOption->setEnabled( true ) ;
 	m_ui->lineEditKey->clear() ;
 	m_ui->lineEditKey->setEnabled( true ) ;
+	m_ui->lineEditKey->setFocus() ;
 }
 
 void keyDialog::tcryptGui()

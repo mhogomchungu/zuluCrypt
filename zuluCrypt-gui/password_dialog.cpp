@@ -129,6 +129,8 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 	m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 
+	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Responce" ) ) ;
+
 	m_ui->pushButtonPlainDmCryptOptions->setMenu( [ this ](){
 
 		auto m = new QMenu( this ) ;
@@ -353,7 +355,7 @@ void passwordDialog::mountPointPath( QString path )
 
 void passwordDialog::cbActicated( int e )
 {
-	if( e == passwordDialog::key ){
+	if( e == passwordDialog::key || e == passwordDialog::yubikey ){
 
 		m_ui->checkBoxVisibleKey->setEnabled( true ) ;
 	}else{
@@ -364,6 +366,7 @@ void passwordDialog::cbActicated( int e )
 	switch( e ){
 
 		case passwordDialog::key         : return this->passphraseOption() ;
+		case passwordDialog::yubikey     : return this->passphraseOption() ;
 		case passwordDialog::keyfile     : return this->passphraseFromFileOption() ;
 		case passwordDialog::keyKeyFile  : return this->keyAndKeyFile() ;
 		case passwordDialog::plugin      : return this->pluginOption() ;
@@ -570,7 +573,21 @@ void passwordDialog::buttonOpenClicked( void )
 			this->enableAll() ;
 		}
 	}else{
-		m_key = m_ui->PassPhraseField->text().toLatin1() ;
+		if( m_ui->cbKeyType->currentIndex() == passwordDialog::yubikey ){
+
+			auto m = utility::yubiKey( m_ui->PassPhraseField->text() ) ;
+
+			if( m.has_value() ){
+
+				m_key = m.value() ;
+			}else{
+				DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+				return this->enableAll() ;
+			}
+		}else{
+			m_key = m_ui->PassPhraseField->text().toLatin1() ;
+		}
+
 		this->openVolume() ;
 	}
 }
@@ -628,7 +645,8 @@ void passwordDialog::enableAll()
 	m_ui->pushButtonPassPhraseFromFile->setEnabled( true ) ;
 	m_ui->PushButtonVolumePath->setEnabled( true ) ;
 	m_ui->cbKeyType->setEnabled( true ) ;
-	m_ui->checkBoxVisibleKey->setEnabled( m_ui->cbKeyType->currentIndex() == passwordDialog::key ) ;
+
+	auto m = m_ui->cbKeyType->currentIndex() ;
 
 	if( m_open_with_path ){
 
@@ -636,11 +654,13 @@ void passwordDialog::enableAll()
 		m_ui->PushButtonVolumePath->setEnabled( false ) ;
 	}
 
-	if( m_ui->cbKeyType->currentIndex() == passwordDialog::key ){
+	if( m == passwordDialog::key || m == passwordDialog::yubikey ){
 
+		m_ui->checkBoxVisibleKey->setEnabled( true ) ;
 		m_ui->pushButtonPassPhraseFromFile->setEnabled( false ) ;
 		m_ui->PassPhraseField->setEnabled( true ) ;
 	}else{
+		m_ui->checkBoxVisibleKey->setEnabled( false ) ;
 		m_ui->pbKeyOption->setEnabled( true ) ;
 		m_ui->PassPhraseField->setEnabled( false ) ;
 	}
@@ -700,7 +720,9 @@ void passwordDialog::openVolume()
 			passtype = "-f" ;
 			keyPath = utility::resolvePath( m_key ).replace( "\"","\"\"\"" ) ;
 		}
-	}else if( keySource == passwordDialog::key || keySource == passwordDialog::keyKeyFile ){
+	}else if( keySource == passwordDialog::key ||
+		  keySource == passwordDialog::keyKeyFile ||
+		  keySource == passwordDialog::yubikey ){
 
 		passtype = "-f" ;
 		keyPath = utility::keyPath() ;
@@ -892,7 +914,7 @@ void passwordDialog::failed( const utility::Task& e )
 	DialogMsg msg( this ) ;
 
 	switch ( r ){
-		case 0 : ;
+		case 0 : return ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There seem to be an open volume accociated with given address" ) ) ;				break ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "No file or device exist on given path" ) ) ; 						break ;
@@ -926,7 +948,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 
 	auto index = m_ui->cbKeyType->currentIndex() ;
 
-	if( utility:: clearPassword() && index == passwordDialog::key ){
+	if( utility:: clearPassword() && ( index == passwordDialog::key || index == passwordDialog::yubikey ) ){
 
 		m_ui->PassPhraseField->clear() ;
 		m_ui->PassPhraseField->setFocus() ;
@@ -934,7 +956,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 
 	if( r == 4 ){
 
-		if( index == passwordDialog::key ){
+		if( index == passwordDialog::key || index == passwordDialog::yubikey ){
 
 			m_ui->PassPhraseField->setFocus() ;
 

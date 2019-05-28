@@ -2921,3 +2921,51 @@ QString utility::loopDevicePath( const QString& e )
 
 	return QString() ;
 }
+
+static QString _yubiKeySlot()
+{
+	if( !_settings->contains( "YubiKeySlot" ) ){
+
+		_settings->setValue( "YubiKeySlot","2" ) ;
+	}
+
+	auto a = _settings->value( "YubiKeySlot" ).toString() ;
+
+	return " -" + a + " -i -" ;
+}
+
+static QString _ykchalresp_path()
+{
+	static QString m = utility::executableFullPath( "ykchalresp" ) ;
+	return m ;
+}
+
+
+utility::result<QByteArray> utility::yubiKey( const QString& challenge )
+{
+	QString exe = _ykchalresp_path() ;
+
+	if( !exe.isEmpty() ){
+
+		exe = exe + _yubiKeySlot() ;
+
+		_post_backend_cmd( exe ) ;
+
+		auto s = ::Task::process::run( exe,challenge.toLatin1() ).await() ;
+
+		if( s.success() ){
+
+			auto m = s.std_out() ;
+
+			m.replace( "\n","" ) ;
+
+			return m ;
+		}else{
+			std::cout << "Failed to get a responce from ykchalresp" << std::endl ;
+			std::cout << "StdOUt:" << s.std_out().toStdString() << std::endl ;
+			std::cout << "StdError:" << s.std_error().toStdString() << std::endl ;
+		}
+	}
+
+	return {} ;
+}

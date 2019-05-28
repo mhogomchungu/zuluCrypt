@@ -111,7 +111,7 @@ private :
 	bool m_veraCryptVolume = false ;
 	bool m_working ;
 	bool m_encryptedFolder = false ;
-	enum{ Key = 0,keyfile = 1,keyKeyFile = 2,plugin = 3,tcryptKeys = 4 } ;
+	enum{ Key = 0,keyfile = 1,keyKeyFile = 2,plugin = 3,tcryptKeys = 4,yubikey = 5 } ;
 	int m_veraCryptPIMValue = 0 ;
 	std::function< void() > m_cancel ;
 	std::function< void( const QString& ) > m_success ;

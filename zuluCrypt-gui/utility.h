@@ -380,6 +380,7 @@ namespace utility
 	::Task::future< utility::result< bool > >& backendIsGreaterOrEqualTo( const QString& backend,
 									      const QString& version ) ;
 
+	utility::result< QByteArray > yubiKey( const QString& ) ;
 	bool useDmCryptForRandomData() ;
 	void setDefaultEnvironment() ;
 	QString passwordSocketPath() ;
