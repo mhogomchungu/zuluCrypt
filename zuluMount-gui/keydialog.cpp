@@ -178,7 +178,7 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 	}
 
-	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Responce" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
 	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
 

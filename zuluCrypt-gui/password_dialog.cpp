@@ -129,7 +129,7 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 	m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 
-	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Responce" ) ) ;
+	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
 	m_ui->pushButtonPlainDmCryptOptions->setMenu( [ this ](){
 

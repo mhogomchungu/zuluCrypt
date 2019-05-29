@@ -60,7 +60,7 @@ luksdeletekey::luksdeletekey( QWidget * parent ) : QDialog( parent ),m_ui( new U
 
 	this->Key( 0 ) ;
 
-	m_ui->cbKey->addItem( tr( "YubiKey Challenge/Responce" ) ) ;
+	m_ui->cbKey->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
 	this->installEventFilter( this ) ;
 }
