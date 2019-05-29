@@ -2922,16 +2922,14 @@ QString utility::loopDevicePath( const QString& e )
 	return QString() ;
 }
 
-static QString _yubiKeySlot()
+static QString _ykchalrespArguments()
 {
-	if( !_settings->contains( "YubiKeySlot" ) ){
+	if( !_settings->contains( "YkchalrespArguments" ) ){
 
-		_settings->setValue( "YubiKeySlot","2" ) ;
+		_settings->setValue( "YkchalrespArguments","-2 -i -" ) ;
 	}
 
-	auto a = _settings->value( "YubiKeySlot" ).toString() ;
-
-	return " -" + a + " -i -" ;
+	return _settings->value( "YkchalrespArguments" ).toString() ;
 }
 
 static QString _ykchalresp_path()
@@ -2947,9 +2945,9 @@ utility::result<QByteArray> utility::yubiKey( const QString& challenge )
 
 	if( !exe.isEmpty() ){
 
-		exe = exe + _yubiKeySlot() ;
+		exe = exe + " " + _ykchalrespArguments() ;
 
-		_post_backend_cmd( exe ) ;
+		//_post_backend_cmd( exe ) ;
 
 		auto s = ::Task::process::run( exe,challenge.toLatin1() ).await() ;
 
