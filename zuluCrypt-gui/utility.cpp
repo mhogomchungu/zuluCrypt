@@ -2922,6 +2922,16 @@ QString utility::loopDevicePath( const QString& e )
 	return QString() ;
 }
 
+static bool _removeYkchalrespNewLineCharacter()
+{
+	if( !_settings->contains( "RemoveYkchalrespNewLineCharacter" ) ){
+
+		_settings->setValue( "RemoveYkchalrespNewLineCharacter",false ) ;
+	}
+
+	return _settings->value( "RemoveYkchalrespNewLineCharacter" ).toBool() ;
+}
+
 static QString _ykchalrespArguments()
 {
 	if( !_settings->contains( "YkchalrespArguments" ) ){
@@ -2955,7 +2965,10 @@ utility::result<QByteArray> utility::yubiKey( const QString& challenge )
 
 			auto m = s.std_out() ;
 
-			m.replace( "\n","" ) ;
+			if( _removeYkchalrespNewLineCharacter() ){
+
+				m.replace( "\n","" ) ;
+			}
 
 			return m ;
 		}else{
