@@ -2926,7 +2926,7 @@ static bool _removeYkchalrespNewLineCharacter()
 {
 	if( !_settings->contains( "RemoveYkchalrespNewLineCharacter" ) ){
 
-		_settings->setValue( "RemoveYkchalrespNewLineCharacter",false ) ;
+		_settings->setValue( "RemoveYkchalrespNewLineCharacter",true ) ;
 	}
 
 	return _settings->value( "RemoveYkchalrespNewLineCharacter" ).toBool() ;
