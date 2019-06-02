@@ -2973,8 +2973,8 @@ utility::result<QByteArray> utility::yubiKey( const QString& challenge )
 			return m ;
 		}else{
 			std::cout << "Failed to get a responce from ykchalresp" << std::endl ;
-			std::cout << "StdOUt:" << s.std_out().data() << std::endl ;
-			std::cout << "StdError:" << s.std_error().data() << std::endl ;
+			std::cout << "StdOUt:" << s.std_out().constData() << std::endl ;
+			std::cout << "StdError:" << s.std_error().constData() << std::endl ;
 		}
 	}
 
