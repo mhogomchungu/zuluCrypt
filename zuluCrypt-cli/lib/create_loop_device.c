@@ -66,6 +66,12 @@ static const char * _clean_loop_path( string_t xt )
 	}
 }
 
+/*
+ *  We only care about loop device path that are in a form of "/dev/loopX.
+ *
+ *  We dont care about loop device path that are in a form of /dev/loopXpY
+ *  and this method converts the latter path to the former if found.
+ */
 static string_t _loop_device_path( const char * device )
 {
 	string_t st ;

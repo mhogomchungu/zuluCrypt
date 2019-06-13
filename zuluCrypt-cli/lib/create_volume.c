@@ -46,6 +46,10 @@ int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapp
 	char * e = NULL ;
 	process_t p ;
 
+	if( StringsAreEqual( fs,"none" ) ){
+
+		return 0 ;
+	}
 	/*
 	 * zulucryptFileSystemIsSupported() is defined in mount_fs_options.c
 	 */
