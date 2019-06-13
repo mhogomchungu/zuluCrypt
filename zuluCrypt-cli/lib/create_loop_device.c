@@ -66,13 +66,37 @@ static const char * _clean_loop_path( string_t xt )
 	}
 }
 
+static string_t _loop_device_path( const char * device )
+{
+	string_t st ;
+
+	char * e = StringCopy_2( device ) ;
+	char * s = e + 10 ;
+
+	while( *s ){
+
+		if( *s == 'p' ){
+
+			*s = '\0' ;
+
+			break ;
+		}
+	}
+
+	st = String_1( "/sys/block/",e + 5,"/loop/backing_file",NULL ) ;
+
+	StringFree( e ) ;
+
+	return st ;
+}
+
 string_t zuluCryptLoopDeviceAddress_2( const char * device )
 {
 	int fd ;
 	char * path ;
 	struct loop_info64 l_info ;
 
-	string_t st = String_1( "/sys/block/",device + 5,"/loop/backing_file",NULL ) ;
+	string_t st = _loop_device_path( device ) ;
 
 	string_t xt = _StringGetFromVirtualFile( &st ) ;
 
@@ -111,7 +135,7 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 	char * path ;
 	struct loop_info64 l_info ;
 
-	string_t st = String_1( "/sys/block/",device + 5,"/loop/backing_file",NULL ) ;
+	string_t st = _loop_device_path( device ) ;
 
 	string_t xt = _StringGetFromVirtualFile( &st ) ;
 
