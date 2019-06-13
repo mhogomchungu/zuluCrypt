@@ -86,6 +86,8 @@ static string_t _loop_device_path( const char * device )
 			*s = '\0' ;
 
 			break ;
+		}else{
+			s++ ;
 		}
 	}
 
