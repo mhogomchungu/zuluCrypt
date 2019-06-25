@@ -191,7 +191,7 @@ static int _not_removed( stringList_t stl,StringListIterator it,StringListIterat
 
 	StringListIterator e = it + 1 ;
 
-	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd","/dev/mmcblk",NULL ) ){
+	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd","/dev/mmcblk","/dev/nvme",NULL ) ){
 
 		/*
 		 * we have a partition,lets continue
@@ -256,7 +256,15 @@ static stringList_t _remove_root_devices( stringList_t stl )
 
 static int _supported_device( const char * device )
 {
-	return StringAtLeastOnePrefixMatch( device,"/dev/sd","/dev/hd","/dev/loop","/dev/sr","/dev/md","/dev/mmcblk",NULL ) ;
+	return StringAtLeastOnePrefixMatch( device,
+					    "/dev/sd",
+					    "/dev/hd",
+					    "/dev/loop",
+					    "/dev/sr",
+					    "/dev/md",
+					    "/dev/mmcblk",
+					    "/dev/nvme",
+					    NULL ) ;
 }
 
 static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
@@ -436,7 +444,7 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 		 */
 		StringRemoveDigits( st ) ;
 
-	}else if( StringStartsWith( st,"/dev/mmc" ) ){
+	}else if( StringStartsWithAtLeastOne( st,"/dev/mmc","/dev/nvme",NULL ) ){
 
 		/*
 		 * device path will be something like "/dev/mmcblk0p2" and what we want to do
