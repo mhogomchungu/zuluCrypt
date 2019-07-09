@@ -25,6 +25,7 @@
 #include <QString>
 
 #include "volumeproperty.h"
+#include "../zuluCrypt-gui/utility.h"
 
 #include <functional>
 #include <memory>
@@ -87,6 +88,7 @@ private:
 	QMenu * m_menu ;
 	std::function< void() > m_cancel ;
 	std::function< void( const QString& ) > m_success ;
+	utility::label m_Label ;
 };
 
 #endif // MOUNTPARTITION_H

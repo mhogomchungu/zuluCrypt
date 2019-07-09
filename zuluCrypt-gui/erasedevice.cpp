@@ -33,6 +33,8 @@ erasedevice::erasedevice( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::e
 {
 	m_ui->setupUi( this ) ;
 
+	m_label.setOptions( m_ui->label_2,m_ui->pushButton ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
@@ -96,23 +98,23 @@ void erasedevice::taskResult( int st )
 
 	switch( st ){
 
-		case 0 : m_ui->progressBar->setValue( 100 ) ;
-			 msg.ShowUIOK( tr( "SUCCESS!" ),tr( "Data on the device successfully erased" ) )			;break ;
-		case 1: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create mapper" ) )						;break ;
-		case 2: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not resolve device path" ) )					;break ;
-		case 3: msg.ShowUIOK( tr( "ERROR!" ),tr( "Random data successfully written" ) )					;break ;
-		//case 4: msg.ShowUIOK( tr( "ERROR!" ),tr( "User chose not to proceed" ) )					;break ;
-		case 5: msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) )				;break ;
-		case 6: msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not write on a device with opened mapper" ) )			;break ;
-		case 7: msg.ShowUIOK( tr( "ERROR!" ),tr( "Policy prevents non root user opening mapper on system partition" ) ) ;break;
+		case 0: m_ui->progressBar->setValue( 100 ) ;
+			m_label.show( tr( "Data on the device successfully erased" ) )			        ;break ;
+		case 1: m_label.show( tr( "Could not create mapper" ) )						;break ;
+		case 2: m_label.show( tr( "Could not resolve device path" ) )					;break ;
+		case 3: m_label.show( tr( "Random data successfully written" ) )				;break ;
+		//case 4: msg.ShowUIOK( tr( "ERROR!" ),tr( "User chose not to proceed" ) )			;break ;
+		case 5: m_label.show( tr( "Operation terminated per user choice" ) )				;break ;
+		case 6: m_label.show( tr( "Can not write on a device with opened mapper" ) )			;break ;
+		case 7: m_label.show( tr( "Policy prevents non root user opening mapper on system partition" ) );break;
 		case 8: msg.ShowPermissionProblem( "Writing",m_ui->lineEdit->text() )				;break ;
-		case 9: msg.ShowUIOK( tr( "ERROR!" ),tr( "Device path is invalid" ) )						;break ;
-		case 10:msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrase file does not exist" ) )					;break ;
-		case 11:msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get enought memory to hold the key file" ) )		;break ;
-		case 12:msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) )		;break ;
-		case 13:msg.ShowUIOK( tr( "ERROR!" ),tr( "This device appear to already be in use" ) )				;break ;
-		case 14:msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not open a mapper on a mounted device" ) )			;break ;
-		default:msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not write to the device" ) ) ;
+		case 9: m_label.show( tr( "Device path is invalid" ) )						;break ;
+		case 10:m_label.show( tr( "Passphrase file does not exist" ) )					;break ;
+		case 11:m_label.show( tr( "Could not get enought memory to hold the key file" ) )		;break ;
+		case 12:m_label.show( tr( "Insufficient privilege to open key file for reading" ) )		;break ;
+		case 13:m_label.show( tr( "This device appear to already be in use" ) )				;break ;
+		case 14:m_label.show( tr( "Can not open a mapper on a mounted device" ) )			;break ;
+		default:m_label.show( tr( "Could not write to the device" ) ) ;
 	}
 
 	this->HideUI() ;
@@ -132,14 +134,14 @@ void erasedevice::pbStart()
 
 	if( path.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Device path field is empty" ) ) ;
+		return m_label.show( tr( "Device path field is empty" ) ) ;
 	}
 
 	path = utility::resolvePath( path ) ;
 
 	if( !utility::pathExists( path ) ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to device" ) ) ;
+		return m_label.show( tr( "Invalid path to device" ) ) ;
 	}
 
 	if( m_option == 0 ){
@@ -157,7 +159,7 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 
 		if( !utility::enablePolkit( utility::background_thread::False ) ){
 
-			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+			return m_label.show( tr( "Failed to enable polkit support" ) ) ;
 		}
 	}
 

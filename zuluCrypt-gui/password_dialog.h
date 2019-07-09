@@ -104,6 +104,7 @@ private :
 	bool m_working = false ;
 	enum{ key = 0,keyfile = 1,keyKeyFile = 2,plugin = 3,tcryptKeys = 4,yubikey = 5 } ;
 	std::function< void( const QString& ) > m_openFolder ;
+	utility::label m_label ;
 };
 
 #endif // PASSWORD_DIALOG_H

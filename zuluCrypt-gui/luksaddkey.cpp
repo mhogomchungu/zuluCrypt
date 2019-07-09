@@ -47,6 +47,8 @@ luksaddkey::luksaddkey( QWidget * parent ) : QDialog( parent )
 	m_ui = new Ui::luksaddkey() ;
 	m_ui->setupUi( this ) ;
 
+	m_label.setOptions( m_ui->label_5,m_ui->pushButton ) ;
+
 	m_isWindowClosable = true ;
 
 	m_ui->textEditPathToVolume->setText( QString() ) ;
@@ -462,18 +464,15 @@ void luksaddkey::keyAdded()
 
 	auto l = utility::luksEmptySlots( m_volumePath ).await() ;
 
-	decltype( tr( "" ) ) success ;
+	QString success ;
 
 	if( l.isEmpty() ){
 
-		success = tr( "Key added successfully." ) ;
+		m_label.show( tr( "Key added successfully." ) ) ;
 	}else{
 		QString x = tr( "Key added successfully.\n%1 / %2 slots are now in use" ) ;
-		success = x.arg( l.first() ).arg( l.at( 1 ) ) ;
+		m_label.show( x.arg( l.first() ).arg( l.at( 1 ) ) ) ;
 	}
-
-	DialogMsg msg( this ) ;
-	msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
 
 	this->HideUI() ;
 }
@@ -483,28 +482,27 @@ void luksaddkey::taskFinished( const utility::Task& e )
 	m_veraCryptWarning.stopTimer() ;
 
 	m_isWindowClosable = true ;
-	DialogMsg msg( this ) ;
 
 	switch( e.exitCode() ){
 		case 0  : return this->keyAdded() ;
-		case 1  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented key does not match any key in the volume" ) ) ;		      	break ;
-		case 2  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open luks volume" ) ) ;					     	break ;
-		case 3  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume is not a luks volume" ) ) ;					     	break ;
-		case 4  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to add a key to a system device,\nonly root user or members of group \"zulucrypt\" can do that\n" ) )	;break ;
-		case 5  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open volume in write mode" ) ) ;					break ;
-		case 6  : msg.ShowUIOK( tr( "ERROR!" ),tr( "All key slots are occupied, can not add any more keys" ) ) ;		break ;
-		case 7  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not get passphrase in silent mode" ) ) ;			   	break ;
-		case 8  : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold passphrase" ) ) ;	                      	break ;
-		case 9  : msg.ShowUIOK( tr( "ERROR!" ),tr( "New passphrases do not match" ) ) ;						break ;
-		case 10 : msg.ShowUIOK( tr( "ERROR!" ),tr( "One or more required argument(s) for this operation is missing" ) ) ;      	break ;
-		case 11 : msg.ShowUIOK( tr( "ERROR!" ),tr( "One or both keyfile(s) does not exist" ) ) ;				break ;
-		case 12 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) ) ;			break ;
-		case 13 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Couldnt get enought memory to hold the key file" ) ) ;			break ;
-		case 14 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a key from a socket" ) ) ;					break ;
-		case 15 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get elevated privilege,check binary permissions" ) ) ;		break ;
-		case 110: msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not find a partition that match presented UUID" ) ) ;			break ;
-		case 113: msg.ShowUIOK( tr( "ERROR!" ),tr( "Device is not a luks device" ) ) ;						break ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;
+		case 1  : m_label.show( tr( "Presented key does not match any key in the volume" ) ) ;		      	break ;
+		case 2  : m_label.show( tr( "Could not open luks volume" ) ) ;					     	break ;
+		case 3  : m_label.show( tr( "Volume is not a luks volume" ) ) ;					     	break ;
+		case 4  : m_label.show( tr( "Insufficient privilege to add a key to a system device,\nonly root user or members of group \"zulucrypt\" can do that\n" ) )	;break ;
+		case 5  : m_label.show( tr( "Could not open volume in write mode" ) ) ;					break ;
+		case 6  : m_label.show( tr( "All key slots are occupied, can not add any more keys" ) ) ;		break ;
+		case 7  : m_label.show( tr( "Can not get passphrase in silent mode" ) ) ;			   	break ;
+		case 8  : m_label.show( tr( "Insufficient memory to hold passphrase" ) ) ;	                      	break ;
+		case 9  : m_label.show( tr( "New passphrases do not match" ) ) ;						break ;
+		case 10 : m_label.show( tr( "One or more required argument(s) for this operation is missing" ) ) ;      	break ;
+		case 11 : m_label.show( tr( "One or both keyfile(s) does not exist" ) ) ;				break ;
+		case 12 : m_label.show( tr( "Insufficient privilege to open key file for reading" ) ) ;			break ;
+		case 13 : m_label.show( tr( "Couldnt get enought memory to hold the key file" ) ) ;			break ;
+		case 14 : m_label.show( tr( "Could not get a key from a socket" ) ) ;					break ;
+		case 15 : m_label.show( tr( "Could not get elevated privilege,check binary permissions" ) ) ;		break ;
+		case 110: m_label.show( tr( "Can not find a partition that match presented UUID" ) ) ;			break ;
+		case 113: m_label.show( tr( "Device is not a luks device" ) ) ;						break ;
+		default:  m_label.show( tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;
 	}
 
 	m_veraCryptWarning.hide() ;

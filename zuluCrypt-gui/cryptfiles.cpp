@@ -69,6 +69,8 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 
 	m_OperationInProgress = false ;
 
+	m_label.setOptions( m_ui->label,m_ui->pushButton ) ;
+
 	m_ui->lineEditPass_2->setEchoMode( QLineEdit::Password ) ;
 
 	m_ui->lineEditSourcePath->setFocus() ;
@@ -230,28 +232,26 @@ void cryptfiles::disableAll()
 
 void cryptfiles::pbCreate()
 {
-	DialogMsg msg( this ) ;
-
 	auto source = utility::resolvePath( m_ui->lineEditSourcePath->text() ) ;
 
 	if( source.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Path to source field is empty" ) ) ;
+		return m_label.show( tr( "Path to source field is empty" ) ) ;
 	}
 
 	auto dest = utility::resolvePath( m_ui->lineEditDestinationPath->text() ) ;
 
 	if( !utility::pathExists( source ) ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to source file" ) ) ;
+		return m_label.show( tr( "Invalid path to source file" ) ) ;
 	}
 	if( utility::pathExists( dest ) ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Destination path already taken" ) ) ;
+		return m_label.show( tr( "Destination path already taken" ) ) ;
 	}
 	if( !utility::canCreateFile( dest ) ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "You dont seem to have writing access to the destination folder" ) ) ;
+		return m_label.show( tr( "You dont seem to have writing access to the destination folder" ) ) ;
 	}
 
 	auto key_1 = m_ui->lineEditPass_1->text() ;
@@ -265,7 +265,7 @@ void cryptfiles::pbCreate()
 
 			keySource = "-f" ;
 		}else{
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to key file" ) ) ;
+			return m_label.show( tr( "Invalid path to key file" ) ) ;
 		}
 
 	}else{
@@ -273,17 +273,17 @@ void cryptfiles::pbCreate()
 
 		if( key_1.isEmpty() ){
 
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "First key field is empty" ) ) ;
+			return m_label.show( tr( "First key field is empty" ) ) ;
 		}
 		if( m_operation == "-E" ){
 
 			if( key_2.isEmpty() ){
 
-				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Second key field is empty" ) ) ;
+				return m_label.show( tr( "Second key field is empty" ) ) ;
 			}
 			if( key_1 != key_2 ){
 
-				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Keys do not match" ) ) ;
+				return m_label.show( tr( "Keys do not match" ) ) ;
 			}
 		}
 	}
@@ -292,7 +292,7 @@ void cryptfiles::pbCreate()
 
 	if( m_operation == "-D" && source.endsWith( ".zc" ) ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "These very old encrypted files are no longer supported" ) ) ;
+		return m_label.show( tr( "These very old encrypted files are no longer supported" ) ) ;
 	}else{
 		#define _constPtr toLatin1().constData()
 
@@ -528,33 +528,33 @@ void cryptfiles::taskFinished( int st )
 	cryptfiles::status status = cryptfiles::status( st ) ;
 
 	switch( status ){
-	case cryptfiles::encryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "Encrypted file created successfully" ) )     ;
+	case cryptfiles::encryptSuccess        : m_label.show( tr( "Encrypted file created successfully" ) )     ;
 		 return this->HideUI() ;
 	case cryptfiles::md5Pass               :
-	case cryptfiles::decryptSuccess        : msg.ShowUIOK( tr( "SUCCESS" ),tr( "Decrypted file created successfully" ) )	;
+	case cryptfiles::decryptSuccess        : m_label.show( tr( "Decrypted file created successfully" ) )	;
 		 return this->HideUI() ;
-	case cryptfiles::openKeyFileReadFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open keyfile for reading" ) )	;
+	case cryptfiles::openKeyFileReadFail   : m_label.show( tr( "Could not open keyfile for reading" ) )	;
 		 break ;
-	case cryptfiles::openMapperFail : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open encryption routines" ) )	;
+	case cryptfiles::openMapperFail        : m_label.show( tr( "Could not open encryption routines" ) )	;
 		break ;
-	case cryptfiles::destinationFileExists : msg.ShowUIOK( tr( "ERROR!" ),tr( "File or folder already exist at destination address" ) )    ;
+	case cryptfiles::destinationFileExists : m_label.show( tr( "File or folder already exist at destination address" ) )    ;
 		break ;
 	case cryptfiles::OpenDestinationFail   :
-	case cryptfiles::createFileFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to create destination file" ) )      ;
+	case cryptfiles::createFileFail        : m_label.show( tr( "Insufficient privilege to create destination file" ) )      ;
 		break ;
-	case cryptfiles::wrongKey              : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented key did not match the encryption key" ) )         ;
+	case cryptfiles::wrongKey              : m_label.show( tr( "Presented key did not match the encryption key" ) )         ;
 		break ;
-	case cryptfiles::quit                  : msg.ShowUIOK( tr( "INFO!" ),tr( "Operation terminated per user request" ) )                   ;
+	case cryptfiles::quit                  : m_label.show( tr( "Operation terminated per user request" ) )                   ;
 		return this->HideUI() ;
-	case cryptfiles::OpenSourceFail        : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open source file for reading" ) ) ;
+	case cryptfiles::OpenSourceFail        : m_label.show( tr( "Insufficient privilege to open source file for reading" ) ) ;
 		break ;
-	case cryptfiles::md5Fail               : msg.ShowUIOK( tr( "WARNING"),tr( "Decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
+	case cryptfiles::md5Fail               : m_label.show( tr( "Decrypted file created successfully but md5 checksum failed,file maybe corrupted" ) ) ;
 		return this->HideUI() ;
-	case cryptfiles::openMapperReadFail    : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open reading encryption routines" ) )	;
+	case cryptfiles::openMapperReadFail    : m_label.show( tr( "Could not open reading encryption routines" ) )	;
 		break ;
-	case cryptfiles::openMapperWriteFail   : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open writing encryption routines" ) )	;
+	case cryptfiles::openMapperWriteFail   : m_label.show( tr( "Could not open writing encryption routines" ) )	;
 		break ;
-	case cryptfiles::closeMapperFail       : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to close encryption routine" ) )		;
+	case cryptfiles::closeMapperFail       : m_label.show( tr( "Failed to close encryption routine" ) )		;
 		break ;
 	case cryptfiles::unset                 :
 	case cryptfiles::success               :

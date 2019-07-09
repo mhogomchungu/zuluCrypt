@@ -66,6 +66,7 @@ private:
 	std::atomic_bool m_exit ;
 	bool m_running ;
 	std::function< void( const QString& ) > m_function ;
+	utility::label m_label ;
 };
 
 #endif // CREATEFILE_H

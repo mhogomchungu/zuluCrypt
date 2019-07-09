@@ -99,6 +99,7 @@ private:
 	bool m_OperationInProgress ;
 	QString m_operation ;
 	cryptfiles * m_task ;
+	utility::label m_label ;
 };
 
 #endif // CREATEKEYFILE_H

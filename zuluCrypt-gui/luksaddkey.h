@@ -77,6 +77,7 @@ private:
 	bool m_isWindowClosable ;
 	keystrength m_keystrength ;
 	utility::veraCryptWarning m_veraCryptWarning ;
+	utility::label m_label ;
 };
 
 #endif // luksaddkeySUI_H

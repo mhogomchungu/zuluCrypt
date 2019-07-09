@@ -59,6 +59,8 @@ createkeyfile::createkeyfile( QWidget * parent ) : QDialog( parent ),m_ui( new U
 
 	m_running = false ;
 
+	m_label.setOptions( m_ui->label_3,m_ui->pushButton ) ;
+
 	this->ShowUI() ;
 }
 
@@ -143,26 +145,24 @@ void createkeyfile::disableAll()
 
 void createkeyfile::pbCreate()
 {
-	DialogMsg msg( this ) ;
-
 	auto fileName = m_ui->lineEditFileName->text() ;
 	auto path = m_ui->lineEditPath->text() ;
 
 	if( fileName.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "The key name field is empty" ) ) ;
+		return m_label.show( tr( "The key name field is empty" ) ) ;
 	}
 	if( path.isEmpty() ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Folder path to where the key will be created is empty" ) ) ;
+		return m_label.show( tr( "Folder path to where the key will be created is empty" ) ) ;
 	}
 	if( utility::pathExists( path ) ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File with the same name and at the destination folder already exist" ) ) ;
+		return m_label.show( tr( "File with the same name and at the destination folder already exist" ) ) ;
 	}
 	if( !utility::canCreateFile( path ) ){
 
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "You dont seem to have writing access to the destination folder" ) ) ;
+		m_label.show( tr( "You dont seem to have writing access to the destination folder" ) ) ;
 		m_ui->lineEditPath->setFocus() ;
 		return ;
 	}
@@ -215,10 +215,10 @@ void createkeyfile::pbCreate()
 
 	if( m_stop ){
 
-		msg.ShowUIOK( tr( "WARNING!" ),tr( "Process interrupted,key not fully generated" ) ) ;
+		m_label.show( tr( "Process interrupted,key not fully generated" ) ) ;
 		this->enableAll() ;
 	}else{
-		msg.ShowUIOK( tr( "SUCCESS!" ),tr( "KeyFile successfully created" ) ) ;
+		m_label.show( tr( "KeyFile successfully created" ) ) ;
 		this->HideUI() ;
 	}
 }

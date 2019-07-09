@@ -45,6 +45,8 @@ luksdeletekey::luksdeletekey( QWidget * parent ) : QDialog( parent ),m_ui( new U
 	m_isWindowClosable = true ;
 	m_ui->setupUi( this ) ;
 
+	m_label.setOptions( m_ui->label_2,m_ui->pushButton ) ;
+
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
@@ -241,11 +243,9 @@ void luksdeletekey::pbDelete()
 
 void luksdeletekey::deleteKey( const QStringList& l )
 {
-	DialogMsg msg( this ) ;
-
 	if( l.isEmpty() ){
 
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume is not a luks volume" ) ) ;
+		m_label.show( tr( "Volume is not a luks volume" ) ) ;
 
 		return this->enableAll() ;
 
@@ -255,17 +255,17 @@ void luksdeletekey::deleteKey( const QStringList& l )
 		s = s + tr( "\nDeleting it will make the volume unopenable and lost forever." ) ;
 		s = s + tr( "\nAre you sure you want to delete this key?" ) ;
 
-		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
+		if( DialogMsg( this ).ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
 
 			return this->enableAll() ;
 		}
 	}else{
-		auto s = tr( "Are you sure you want to delete a key from this volume?" ) ;
+		//auto s = tr( "Are you sure you want to delete a key from this volume?" ) ;
 
-		if( msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
+		//if( DialogMsg( this ).ShowUIYesNoDefaultNo( tr( "WARNING" ),s ) == QMessageBox::No ){
 
-			return this->enableAll() ;
-		}
+		//	return this->enableAll() ;
+		//}
 	}
 
 	auto keyNumber = l.first().toInt() - 1 ;
@@ -289,7 +289,7 @@ void luksdeletekey::deleteKey( const QStringList& l )
 
 				key = m.value() ;
 			}else{
-				DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+				m_label.show( tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
 				return this->enableAll() ;
 			}
 		}
@@ -312,24 +312,24 @@ void luksdeletekey::deleteKey( const QStringList& l )
 	switch( e.exitCode() ){
 		case 0 :
 			success = tr( "Key removed successfully.\n%1 / %2 slots are now in use" ).arg( QString::number( keyNumber ) ).arg( totalKeys ) ;
-			msg.ShowUIOK( tr( "SUCCESS!" ),success ) ;
+			m_label.show( success ) ;
 			return this->HideUI() ;
-		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There is no key in the volume that match the presented key" ) ) ;				break ;
-		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open the volume" ) ) ;								break ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open a system device,\
+		case 2 : m_label.show( tr( "There is no key in the volume that match the presented key" ) ) ;				break ;
+		case 3 : m_label.show( tr( "Could not open the volume" ) ) ;								break ;
+		case 4 : m_label.show( tr( "Insufficient privilege to open a system device,\
 only root user or members of group zulucrypt can do that" ) ) ;											break ;
-		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open the volume in write mode" ) ) ;						break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold your response" ) ) ;						break ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user request" ) ) ;							break ;
-		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not get passphrase in silent mode" ) ) ;							break ;
-		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold passphrase" ) ) ;						break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "One or more required argument(s) for this operation is missing" ) ) ;			break ;
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "Keyfile does not exist" ) ) ;								break;
-		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get enough memory to open the key file") ) ;					break ;
-		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) ) ;					break ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a key from a socket" ) ) ;							break ;
-		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not find a partition that match presented UUID" ) ) ;					break ;
-		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;
+		case 5 : m_label.show( tr( "Could not open the volume in write mode" ) ) ;						break ;
+		case 6 : m_label.show( tr( "Insufficient memory to hold your response" ) ) ;						break ;
+		case 7 : m_label.show( tr( "Operation terminated per user request" ) ) ;							break ;
+		case 8 : m_label.show( tr( "Can not get passphrase in silent mode" ) ) ;							break ;
+		case 9 : m_label.show( tr( "Insufficient memory to hold passphrase" ) ) ;						break ;
+		case 10: m_label.show( tr( "One or more required argument(s) for this operation is missing" ) ) ;			break ;
+		case 11: m_label.show( tr( "Keyfile does not exist" ) ) ;								break;
+		case 12: m_label.show( tr( "Could not get enough memory to open the key file") ) ;					break ;
+		case 13: m_label.show( tr( "Insufficient privilege to open key file for reading" ) ) ;					break ;
+		case 14: m_label.show( tr( "Could not get a key from a socket" ) ) ;							break ;
+		case 110:m_label.show( tr( "Can not find a partition that match presented UUID" ) ) ;					break ;
+		default: m_label.show( tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;
 	}
 
 	this->enableAll() ;

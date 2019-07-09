@@ -62,6 +62,7 @@ private:
 	Ui::createkeyfile * m_ui ;
 	bool m_running ;
 	bool m_stop ;
+	utility::label m_label ;
 };
 
 #endif // CREATEKEYFILE_H

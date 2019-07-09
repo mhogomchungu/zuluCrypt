@@ -37,6 +37,7 @@
 #include <QVector>
 #include <QSystemTrayIcon>
 #include <QAction>
+#include <QEventLoop>
 #include <QIcon>
 #include <QByteArray>
 #include <QEvent>
@@ -59,6 +60,8 @@
 #include "debugwindow.h"
 
 #include <QObject>
+#include <QLabel>
+#include <QPushButton>
 #include <QLabel>
 
 #include <poll.h>
@@ -136,6 +139,43 @@ public:
 	private:
 		bool m_run = true ;
 		std::function< void() > m_function ;
+	};
+
+	class label
+	{
+	public:
+		void setOptions( QLabel * l,QPushButton * b )
+		{
+			m_label = l ;
+			m_pushButton = b ;
+
+			m_label->setVisible( false ) ;
+			m_pushButton->setVisible( false ) ;
+
+			QObject::connect( m_pushButton,&QPushButton::clicked,[ this ](){
+
+				this->hide() ;
+				m_eventLoop.exit() ;
+			} ) ;
+		}
+		void show( const QString& e )
+		{
+			m_label->setText( e ) ;
+			m_label->setVisible( true ) ;
+			m_pushButton->setVisible( true ) ;
+			m_pushButton->setFocus() ;
+			m_eventLoop.exec() ;
+		}
+		void hide()
+		{
+			m_label->clear() ;
+			m_label->setVisible( false ) ;
+			m_pushButton->setVisible( false ) ;
+		}
+	private:
+		QLabel * m_label ;
+		QPushButton * m_pushButton ;
+		QEventLoop m_eventLoop ;
 	};
 }
 namespace utility

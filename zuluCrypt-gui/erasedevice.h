@@ -23,6 +23,8 @@
 #include <QString>
 #include <atomic>
 
+#include "utility.h"
+
 class QCloseEvent ;
 class EraseTask ;
 class QWidget ;
@@ -64,6 +66,7 @@ private:
 	int m_option ;
 	std::atomic_bool m_exit ;
 	bool m_running ;
+	utility::label m_label ;
 };
 
 #endif // ERASEDEVICE_H

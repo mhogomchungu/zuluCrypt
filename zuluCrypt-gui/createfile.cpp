@@ -40,6 +40,8 @@ createfile::createfile( QWidget * parent,std::function< void( const QString& ) >
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
+	m_label.setOptions( m_ui->label_6,m_ui->pushButton ) ;
+
 	m_ui->progressBar->setMinimum( 0 ) ;
 	m_ui->progressBar->setMaximum( 100 ) ;
 	m_ui->progressBar->setValue( 0 ) ;
@@ -166,24 +168,22 @@ process and be safer in the long run." ) ;
 
 void createfile::pbCreate()
 {
-	DialogMsg msg( this ) ;
-
 	auto fileName = m_ui->lineEditFileName->text() ;
 	auto filePath = m_ui->lineEditFilePath->text() ;
 	auto fileSize = m_ui->lineEditFileSize->text() ;
 
 	if( fileName.isEmpty()){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File name field is empty" ) ) ;
+		return m_label.show( tr( "File name field is empty" ) ) ;
 	}
 	if( filePath.isEmpty()){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File path field is empty" ) ) ;
+		return m_label.show( tr( "File path field is empty" ) ) ;
 	}
 	if( fileSize.isEmpty()){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File size field is empty" ) ) ;
+		return m_label.show( tr( "File size field is empty" ) ) ;
 	}
 	if( m_ui->checkBoxNoRandomData->isChecked() ){
 
-		auto e = msg.ShowUIYesNoDefaultNo( tr( "WARNING" ),tr( "Are you really sure you do not want to create a more secured volume?" ) ) ;
+		auto e = DialogMsg( this ).ShowUIYesNoDefaultNo( tr( "WARNING" ),tr( "Are you really sure you do not want to create a more secured volume?" ) ) ;
 
 		if( e != QMessageBox::Yes ){
 
@@ -196,14 +196,14 @@ void createfile::pbCreate()
 	fileSize.toInt( &test ) ;
 
 	if( test == false ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Illegal character in the file size field.Only digits are allowed" ) ) ;
+		return m_label.show( tr( "Illegal character in the file size field.Only digits are allowed" ) ) ;
 	}
 
 	if( utility::pathExists( filePath ) ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "File with the same name and at the destination folder already exist" ) ) ;
+		return m_label.show( tr( "File with the same name and at the destination folder already exist" ) ) ;
 	}
 	if( !utility::canCreateFile( filePath ) ){
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "You dont seem to have writing access to the destination folder" ) ) ;
+		m_label.show( tr( "You dont seem to have writing access to the destination folder" ) ) ;
 		m_ui->lineEditFilePath->setFocus() ;
 		return ;
 	}
@@ -220,7 +220,7 @@ void createfile::pbCreate()
 	}
 
 	if( size < 3145728 ){
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Container file must be bigger than 3MB" ) ) ;
+		return m_label.show( tr( "Container file must be bigger than 3MB" ) ) ;
 	}
 
 	this->disableAll() ;
@@ -235,7 +235,7 @@ void createfile::pbCreate()
 
 		if( !file.open( QIODevice::WriteOnly ) ){
 
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+			return m_label.show( tr( "Failed to create volume file" ) ) ;
 		}
 
 		utility::changePathOwner( file ) ;
@@ -243,7 +243,7 @@ void createfile::pbCreate()
 		if( !file.resize( size ) ){
 
 			QFile::remove( filePath ) ;
-			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+			return m_label.show( tr( "Failed to create volume file" ) ) ;
 		}
 
 		file.close() ;
@@ -257,7 +257,7 @@ void createfile::pbCreate()
 
 				if( !utility::enablePolkit( utility::background_thread::False ) ){
 
-					return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to enable polkit support" ) ) ;
+					return m_label.show( tr( "Failed to enable polkit support" ) ) ;
 				}
 			}
 
@@ -265,7 +265,7 @@ void createfile::pbCreate()
 
 			if( !file.open( QIODevice::WriteOnly ) ){
 
-				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+				return m_label.show( tr( "Failed to create volume file" ) ) ;
 			}
 
 			utility::changePathOwner( file ) ;
@@ -273,7 +273,7 @@ void createfile::pbCreate()
 			if( !file.resize( size ) ){
 
 				QFile::remove( filePath ) ;
-				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+				return m_label.show( tr( "Failed to create volume file" ) ) ;
 			}
 
 			file.close() ;
@@ -282,14 +282,14 @@ void createfile::pbCreate()
 
 			if( r == 5 ){
 
-				msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
+				m_label.show( tr( "Operation terminated per user choice" ) ) ;
 				QFile::remove( filePath ) ;
 
 			}else if( r == 0 ){
 
 				m_function( filePath ) ;
 			}else{
-				msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
+				m_label.show( tr( "Could not open cryptographic back end to generate random data" ) ) ;
 				QFile::remove( filePath ) ;
 			}
 		}else{
@@ -360,13 +360,13 @@ void createfile::createFile( const QString& filePath,qint64 size )
 		m_function( filePath ) ;
 		break ;
 	case  result::fileFail :
-		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Failed to create volume file" ) ) ;
+		m_label.show( tr( "Failed to create volume file" ) ) ;
 		break ;
 	case  result::deviceFail :
-		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Could not open cryptographic back end to generate random data" ) ) ;
+		m_label.show( tr( "Could not open cryptographic back end to generate random data" ) ) ;
 		break ;
 	case result::cancelled :
-		DialogMsg( this ).ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user choice" ) ) ;
+		m_label.show( tr( "Operation terminated per user choice" ) ) ;
 		break ;
 	}
 }

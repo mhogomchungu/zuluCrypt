@@ -65,6 +65,7 @@ private:
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::luksdeletekey * m_ui ;
 	QString m_volumePath ;
+	utility::label m_label ;
 	bool m_isWindowClosable ;
 };
 

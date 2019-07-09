@@ -63,6 +63,8 @@ keyDialog::keyDialog( QWidget * parent,
 {
 	m_ui->setupUi( this ) ;
 
+	m_label.setOptions( m_ui->veraCryptWarning,m_ui->pushButton ) ;
+
 	m_ui->lineEditKey->setMaxLength( 32767 ) ;
 
 	m_ui->checkBoxShareMountPoint->setToolTip( utility::shareMountPointToolTip() ) ;
@@ -479,11 +481,9 @@ void keyDialog::pbOpen()
 
 void keyDialog::encryptedFolderMount()
 {
-	DialogMsg msg( this ) ;
-
 	if( m_key.isEmpty() ){
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Atleast one required field is empty" ) ) ;
+		m_label.show( tr( "Atleast one required field is empty" ) ) ;
 
 		return this->enableAll() ;
 	}
@@ -503,83 +503,82 @@ void keyDialog::encryptedFolderMount()
 
 	case siritask::status::cryfs :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\nWrong password entered" ) ) ;
+		m_label.show( tr( "Failed to unlock a cryfs volume.\nWrong password entered" ) ) ;
 		break;
 
 	case siritask::status::encfs :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nWrong password entered" ) ) ;
+		m_label.show( tr( "Failed to unlock an encfs volume.\nWrong password entered" ) ) ;
 		break;
 
 	case siritask::status::gocryptfs :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a gocryptfs volume.\nWrong password entered" ) ) ;
+		m_label.show( tr( "Failed to unlock a gocryptfs volume.\nWrong password entered" ) ) ;
 		break;
 
 	case siritask::status::ecryptfs :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an ecryptfs volume.\nWrong password entered" ) ) ;
+		m_label.show( tr( "Failed to unlock an ecryptfs volume.\nWrong password entered" ) ) ;
 		break;
 
 	case siritask::status::ecryptfsIllegalPath :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit" ) ) ;
+		m_label.show( tr( "A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit" ) ) ;
 		break;
 
 	case siritask::status::securefs :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a securefs volume.\nWrong password entered" ) ) ;
+		m_label.show( tr( "Failed to unlock a securefs volume.\nWrong password entered" ) ) ;
 		break;
 
 	case siritask::status::cryfsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a cryfs volume.\ncryfs executable could not be found" ) ) ;
+		m_label.show( tr( "Failed to unlock a cryfs volume.\ncryfs executable could not be found" ) ) ;
 		break;
 
 	case siritask::status::securefsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a securefs volume.\nsecurefs executable could not be found" ) ) ;
+		m_label.show( tr( "Failed to unlock a securefs volume.\nsecurefs executable could not be found" ) ) ;
 		break;
 
 	case siritask::status::gocryptfsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock a gocryptfs volume.\ngocryptfs executable could not be found" ) ) ;
+		m_label.show( tr( "Failed to unlock a gocryptfs volume.\ngocryptfs executable could not be found" ) ) ;
 		break;
 
 	case siritask::status::encfsNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an encfs volume.\nencfs executable could not be found" ) ) ;
+		m_label.show( tr( "Failed to unlock an encfs volume.\nencfs executable could not be found" ) ) ;
 		break;
 
 	case siritask::status::ecryptfs_simpleNotFound :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock an ecryptfs volume.\necryptfs-simple executable could not be found" ) ) ;
+		m_label.show( tr( "Failed to unlock an ecryptfs volume.\necryptfs-simple executable could not be found" ) ) ;
 		break;
 
 	case siritask::status::failedToCreateMountPoint :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to create mount point" ) ) ;
+		m_label.show( tr( "Failed to create mount point" ) ) ;
 		break;
 
 	case siritask::status::unknown :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "Failed to unlock the volume.\nNot supported volume encountered" ) ) ;
+		m_label.show( tr( "Failed to unlock the volume.\nNot supported volume encountered" ) ) ;
 		break;
 
 	case siritask::status::ecrypfsBadExePermissions :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "This backend requires root's privileges and an attempt to acquire them has failed." ) ) ;
+		m_label.show( tr( "This backend requires root's privileges and an attempt to acquire them has failed." ) ) ;
 		break;
 
 	case siritask::status::cryfsMigrateFileSystem :
 
-		msg.ShowUIOK( tr( "ERROR" ),tr( "zuluMount Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs That Is Currently In Use.\n\nRun Cryfs With This Volume To Manually Update This Volume's FileSystem." ) ) ;
+		m_label.show( tr( "zuluMount Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs That Is Currently In Use.\n\nRun Cryfs With This Volume To Manually Update This Volume's FileSystem." ) ) ;
 		break;
 
 	case siritask::status::backendFail :
 	default:
-
-		msg.ShowUIOK( tr( "ERROR" ),e.msg() ) ;
+		m_label.show( e.msg() ) ;
 		break;
 	}
 
@@ -601,29 +600,29 @@ bool keyDialog::errorNotFound( int r )
 
 	switch ( r ){
 		case 0 : break ;
-		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;
-		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There seem to be an open volume accociated with given address" ) ) ;				break ;
-		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "No file or device exist on given path" ) ) ; 						break ;
-		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume could not be opened with the presented key" ) ) ;					break ;
-		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to mount the device with given options" ) ) ;				break ;
-		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open device in read write mode or device does not exist" ) ) ;	break ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Only root user can perform this operation" ) ) ;						break ;
-		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "-O and -m options can not be used together" ) ) ;						break ;
-		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create mount point, invalid path or path already taken" ) ) ;			break ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "Shared mount point path aleady taken" ) ) ;							break ;
-		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "There seem to be an opened mapper associated with the device" ) ) ;				break ;
-		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a passphrase from the module" ) ) ;						break ;
-		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get passphrase in silent mode" ) ) ;						break ;
-		case 14: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold passphrase" ) ) ;						break ;
-		case 15: msg.ShowUIOK( tr( "ERROR!" ),tr( "One or more required argument(s) for this operation is missing" ) ) ;			break ;
-		case 16: msg.ShowUIOK( tr( "ERROR!" ),tr( "Invalid path to key file" ) ) ;								break ;
-		case 17: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get enought memory to hold the key file" ) ) ;					break ;
-		case 18: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open key file for reading" ) ) ;					break ;
-		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get a passphrase through a local socket" ) ) ;					break ;
-		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;	break ;
-		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create a lock on /etc/mtab" ) ) ;							break ;
-		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient privilege to open a system volume.\n\nConsult menu->help->permission for more informaion\n" ) ) ;					break ;
-		case 113:msg.ShowUIOK( tr( "ERROR!" ),tr( "A non supported device encountered,device is missing or permission denied\n\
+		case 1 : m_label.show( tr( "Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) ) ; break ;
+		case 2 : m_label.show( tr( "There seem to be an open volume accociated with given address" ) ) ;				break ;
+		case 3 : m_label.show( tr( "No file or device exist on given path" ) ) ; 						break ;
+		case 4 : m_label.show( tr( "Volume could not be opened with the presented key" ) ) ;					break ;
+		case 5 : m_label.show( tr( "Insufficient privilege to mount the device with given options" ) ) ;				break ;
+		case 6 : m_label.show( tr( "Insufficient privilege to open device in read write mode or device does not exist" ) ) ;	break ;
+		case 7 : m_label.show( tr( "Only root user can perform this operation" ) ) ;						break ;
+		case 8 : m_label.show( tr( "-O and -m options can not be used together" ) ) ;						break ;
+		case 9 : m_label.show( tr( "Could not create mount point, invalid path or path already taken" ) ) ;			break ;
+		case 10: m_label.show( tr( "Shared mount point path aleady taken" ) ) ;							break ;
+		case 11: m_label.show( tr( "There seem to be an opened mapper associated with the device" ) ) ;				break ;
+		case 12: m_label.show( tr( "Could not get a passphrase from the module" ) ) ;						break ;
+		case 13: m_label.show( tr( "Could not get passphrase in silent mode" ) ) ;						break ;
+		case 14: m_label.show( tr( "Insufficient memory to hold passphrase" ) ) ;						break ;
+		case 15: m_label.show( tr( "One or more required argument(s) for this operation is missing" ) ) ;			break ;
+		case 16: m_label.show( tr( "Invalid path to key file" ) ) ;								break ;
+		case 17: m_label.show( tr( "Could not get enought memory to hold the key file" ) ) ;					break ;
+		case 18: m_label.show( tr( "Insufficient privilege to open key file for reading" ) ) ;					break ;
+		case 19: m_label.show( tr( "Could not get a passphrase through a local socket" ) ) ;					break ;
+		case 20: m_label.show( tr( "Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;	break ;
+		case 21: m_label.show( tr( "Could not create a lock on /etc/mtab" ) ) ;							break ;
+		case 22: m_label.show( tr( "Insufficient privilege to open a system volume.\n\nConsult menu->help->permission for more informaion\n" ) ) ;					break ;
+		case 113:m_label.show( tr( "A non supported device encountered,device is missing or permission denied\n\
 Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The device has LVM or MDRAID signature" ) ) ;					break ;
 		default: return true ;
 	}
@@ -670,8 +669,7 @@ void keyDialog::openVolume()
 
 		 if( keyType == keyDialog::plugin ){
 
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR" ),tr( "Plug in name field is empty" ) ) ;
+			m_label.show( tr( "Plug in name field is empty" ) ) ;
 
 			m_ui->lineEditKey->setFocus() ;
 
@@ -679,8 +677,7 @@ void keyDialog::openVolume()
 
 		}else if( keyType == keyDialog::keyfile ){
 
-			DialogMsg msg( this ) ;
-			msg.ShowUIOK( tr( "ERROR" ),tr( "Keyfile field is empty" ) ) ;
+			m_label.show( tr( "Keyfile field is empty" ) ) ;
 
 			m_ui->lineEditKey->setFocus() ;
 
@@ -692,8 +689,7 @@ void keyDialog::openVolume()
 
 	if( test_name.contains( "/" ) ){
 
-		DialogMsg msg( this ) ;
-		msg.ShowUIOK( tr( "ERROR" ),tr( "\"/\" character is not allowed in the mount name field" ) ) ;
+		m_label.show( tr( "\"/\" character is not allowed in the mount name field" ) ) ;
 
 		m_ui->lineEditKey->setFocus() ;
 
@@ -713,7 +709,7 @@ void keyDialog::openVolume()
 
 			utility::keySend( addr,s.value() ) ;
 		}else{
-			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+			m_label.show( tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
 			return this->enableAll() ;
 		}
 
@@ -905,9 +901,7 @@ void keyDialog::openVolume()
 
 				z.replace( tr( "ERROR: " ),"" ) ;
 
-				DialogMsg msg( this ) ;
-
-				msg.ShowUIOK( tr( "ERROR" ),z ) ;
+				m_label.show( z ) ;
 			}
 
 			auto m = m_ui->cbKeyType->currentIndex() ;

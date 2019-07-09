@@ -115,6 +115,7 @@ private :
 	int m_veraCryptPIMValue = 0 ;
 	std::function< void() > m_cancel ;
 	std::function< void( const QString& ) > m_success ;
+	utility::label m_label ;
 };
 
 #endif // KEYDIALOG_H
