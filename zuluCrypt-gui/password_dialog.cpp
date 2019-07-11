@@ -185,12 +185,12 @@ void passwordDialog::cbVolumeType( int e )
 	if( e == 0 ){
 
 		/*
-		 * LUKS,TrueCrypt
+		 * LUKS,TrueCrypt,BitLocker
 		 */
 		m_ui->labelVolumeProperty->clear() ;
 		m_ui->lineEditVolumeProperty->setEnabled( false ) ;
 
-	}else if( e == 1 ){
+	}else if( e == 1 || e == 2 ){
 
 		/*
 		 * VeraCrypt volume
@@ -198,7 +198,7 @@ void passwordDialog::cbVolumeType( int e )
 		m_ui->labelVolumeProperty->setText( tr( "PIM Value" ) ) ;
 		m_ui->lineEditVolumeProperty->setEnabled( true ) ;
 
-	}else if( e == 2 ){
+	}else if( e == 3 ){
 
 		/*
 		 * PLAIN dm-crypt with offset
@@ -676,18 +676,14 @@ void passwordDialog::openVolume()
 
 	if( m_point.isEmpty() || m_device.isEmpty() ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+		m_label.show( tr( "Atleast one required field is empty" ) ) ;
 
 		return this->enableAll() ;
 	}
 
 	if( m_point.contains( "/" ) ){
 
-		DialogMsg msg( this ) ;
-
-		msg.ShowUIOK( tr( "ERROR!" ),tr( "\"/\" character is not allowed in mount name field" ) ) ;
+		m_label.show( tr( "\"/\" character is not allowed in mount name field" ) ) ;
 
 		m_ui->OpenVolumePath->setFocus() ;
 
@@ -713,9 +709,7 @@ void passwordDialog::openVolume()
 
 		if( m_key.isEmpty() ){
 
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+			m_label.show( tr( "Atleast one required field is empty" ) ) ;
 
 			return this->enableAll() ;
 		}else{
@@ -735,9 +729,7 @@ void passwordDialog::openVolume()
 
 		if( m_key.isEmpty() ){
 
-			DialogMsg msg( this ) ;
-
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+			m_label.show( tr( "Atleast one required field is empty" ) ) ;
 
 			return this->enableAll() ;
 		}else{
@@ -773,9 +765,7 @@ void passwordDialog::openVolume()
 
 				if( q.size() < 2 ){
 
-					DialogMsg msg( this ) ;
-
-					msg.ShowUIOK( tr( "ERROR!" ),tr( "Volume is not a LUKS volume" ) ) ;
+					m_label.show( tr( "Volume is not a LUKS volume" ) ) ;
 
 					m_ui->OpenVolumePath->setFocus() ;
 
@@ -794,9 +784,7 @@ void passwordDialog::openVolume()
 
 						this->sendKey( keyPath ) ;
 					}else{
-						DialogMsg msg( this ) ;
-
-						msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to get a key from the network" ) ) ;
+						m_label.show( tr( "Failed to get a key from the network" ) ) ;
 
 						m_ui->OpenVolumePath->setFocus() ;
 						return this->enableAll() ;
@@ -849,7 +837,7 @@ void passwordDialog::openVolume()
 		}
 	}
 
-	if( m_veraCryptVolume ){
+	if( m_ui->cbVolumeType->currentIndex() == 1 ){
 
 		auto e = m_ui->lineEditVolumeProperty->text() ;
 
@@ -859,17 +847,27 @@ void passwordDialog::openVolume()
 		}else {
 			exe += " -t vcrypt." + e ;
 		}
-	}else{
-		if( m_ui->cbVolumeType->currentIndex() == 2 ){
 
-			auto e = m_ui->lineEditVolumeProperty->text() ;
+	}else if( m_ui->cbVolumeType->currentIndex() == 2 ){
 
-			if( e.isEmpty() ){
+		auto e = m_ui->lineEditVolumeProperty->text() ;
 
-				exe += " -t " + m_plainDmCryptProperty + ".0" ;
-			}else {
-				exe += " -t " + m_plainDmCryptProperty + "." + e ;
-			}
+		if( e.isEmpty() ){
+
+			exe += " -t vcrypt-sys" ;
+		}else {
+			exe += " -t vcrypt-sys." + e ;
+		}
+
+	}else if( m_ui->cbVolumeType->currentIndex() == 3 ){
+
+		auto e = m_ui->lineEditVolumeProperty->text() ;
+
+		if( e.isEmpty() ){
+
+			exe += " -t " + m_plainDmCryptProperty + ".0" ;
+		}else {
+			exe += " -t " + m_plainDmCryptProperty + "." + e ;
 		}
 	}
 

@@ -119,7 +119,7 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opts )
 
 			tc_api_task_set( task,"dev",device ) ;
 
-			if( opts->tcrypt_system ){
+			if( opts->system_volume ){
 
 				/*
 				 * zuluCryptSystemVeraCryptPIM() is defined in create_tcrypt.c
@@ -175,12 +175,17 @@ static int _open_tcrypt_volume_1( const char * device,const resolve_path_t * opt
 	if( r == 0 ){
 
 		return r ;
-	}else{
+	}else{		
 		memcpy( &opts,opt->args,sizeof( opts ) ) ;
 
-		opts.use_backup_header = 1 ;
+		if( opts.trueCrypt_volume ){
 
-		return _open_tcrypt_volume( device,&opts ) ;
+			opts.use_backup_header = 1 ;
+
+			return _open_tcrypt_volume( device,&opts ) ;
+		}else{
+			return r ;
+		}
 	}
 }
 

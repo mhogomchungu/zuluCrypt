@@ -226,7 +226,7 @@ socket_t SocketNetWithOptions( const char * address,int port,int type,int protoc
 		if( s != SocketVoid ){
 			e = s->socket ;
 			memcpy( e,info->ai_addr,info->ai_addrlen ) ;
-			e->sin_port = htons( port ) ;
+			e->sin_port = htons( (uint16_t)port ) ;
 		}
 
 		freeaddrinfo( info ) ;
@@ -259,7 +259,7 @@ socket_t SocketNetWithOptions6( const char * address,int port,int type,int proto
 		if( s != SocketVoid ){
 			e = s->socket ;
 			memcpy( e,info->ai_addr,info->ai_addrlen ) ;
-			e->sin6_port = htons( port ) ;
+			e->sin6_port = htons( (uint16_t) port ) ;
 		}
 
 		freeaddrinfo( info ) ;
@@ -346,6 +346,8 @@ int SocketBind( socket_t s )
 	struct sockaddr * e ;
 	struct sockaddr_un * f ;
 
+	size_t m ;
+
 	char buffer[ sizeof( f->sun_path ) + 1 ] ;
 
 	if( s == SocketVoid ){
@@ -355,9 +357,10 @@ int SocketBind( socket_t s )
 	e = s->socket ;
 
 	if( s->domain == AF_UNIX ){
+		m = sizeof( f->sun_path ) ;
 		s->socket_server = 1 ;
 		f = s->socket ;
-		strncpy( buffer,f->sun_path,sizeof( f->sun_path ) ) ;
+		strncpy( buffer,f->sun_path,m ) ;
 		*( buffer + sizeof( f->sun_path ) ) = '\0' ;
 		unlink( buffer ) ;
 		return bind( s->fd,e,s->size ) == 0 ;
@@ -380,6 +383,8 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 	size_t size = sizeof( struct sockaddr_un ) ;
 	socket_t x = malloc( sizeof( struct SocketType_t ) ) ;
 
+	size_t m ;
+
 	if( x == NULL ){
 		return _SocketError() ;
 	}else{
@@ -391,7 +396,7 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 			free( x ) ;
 			x = _SocketError() ;
 		}else{
-			x->size = size ;
+			x->size = (unsigned int)size ;
 			memset( x->socket,'\0',size ) ;
 			f = x->socket ;
 			x->fd = accept( s->fd,f,&x->size ) ;
@@ -400,9 +405,10 @@ static inline socket_t _SocketAcceptLocal( socket_t s )
 				free( x ) ;
 				x = SocketVoid ;
 			}else{
+				m = sizeof( z->sun_path ) ;
 			  	e = s->socket ;
 				z = x->socket ;
-				strncpy( z->sun_path,e->sun_path,sizeof( e->sun_path ) ) ;
+				strncpy( z->sun_path,e->sun_path,m ) ;
 				x->inetAddress = NULL ;
 				x->domain = s->domain ;
 				x->type = s->type ;
@@ -432,7 +438,7 @@ static inline socket_t _SocketAcceptNet( socket_t s )
 			free( x ) ;
 			x = _SocketError() ;
 		}else{
-			x->size = size ;
+			x->size = (unsigned int)size ;
 			memset( x->socket,'\0',size ) ;
 			f = x->socket ;
 			x->fd = accept( s->fd,f,&x->size ) ;
@@ -470,7 +476,7 @@ static inline socket_t _SocketAcceptNet6( socket_t s )
 			free( x ) ;
 			x = _SocketError() ;
 		}else{
-			x->size = size ;
+			x->size = (unsigned int)size ;
 			memset( x->socket,'\0',size ) ;
 			f = x->socket ;
 			x->fd = accept( s->fd,f,&x->size ) ;
@@ -743,7 +749,7 @@ ssize_t SocketGetData( socket_t s,char ** e )
 					}
 				}
 			}else{
-				d = __expandBuffer( f,total + result,&buff_size ) ;
+				d = __expandBuffer( f,total + (size_t)result,&buff_size ) ;
 
 				if( d == NULL ){
 					free( f ) ;
@@ -751,8 +757,8 @@ ssize_t SocketGetData( socket_t s,char ** e )
 					return -1 ;
 				}else{
 					f = d ;
-					memcpy( f + total,buffer,result ) ;
-					total = total + result ;
+					memcpy( f + total,buffer,(size_t)result ) ;
+					total = total + (size_t)result ;
 				}
 			}
 		}
@@ -771,7 +777,7 @@ ssize_t SocketGetData( socket_t s,char ** e )
 			free( f ) ;
 		}
 
-		return total ;
+		return (ssize_t)total ;
 	}
 }
 
@@ -813,7 +819,7 @@ ssize_t SocketGetData_1( socket_t s,char ** e,size_t len )
 					}
 				}
 			}else{
-				d = __expandBuffer( f,total + result,&buff_size ) ;
+				d = __expandBuffer( f,total + (size_t)result,&buff_size ) ;
 
 				if( d == NULL ){
 					free( f ) ;
@@ -822,8 +828,8 @@ ssize_t SocketGetData_1( socket_t s,char ** e,size_t len )
 				}else{
 					f = d ;
 
-					memcpy( f + total,buffer,result ) ;
-					total = total + result ;
+					memcpy( f + total,buffer,(size_t)result ) ;
+					total = total +(size_t)result ;
 
 					if( total >= len ){
 						total = len ;
@@ -847,7 +853,7 @@ ssize_t SocketGetData_1( socket_t s,char ** e,size_t len )
 			free( f ) ;
 		}
 
-		return total ;
+		return (ssize_t)total ;
 	}
 }
 

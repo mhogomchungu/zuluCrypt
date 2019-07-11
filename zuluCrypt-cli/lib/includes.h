@@ -85,7 +85,7 @@ typedef struct{
 	int veraCrypt_volume ;
 	int trueCrypt_volume ;
 	int bitlocker_volume ;
-	int tcrypt_system ;
+	int system_volume ;
 	const char * const * tcrypt_keyfiles ;
 	unsigned long m_flags ;
 	int use_backup_header ;

@@ -109,22 +109,19 @@ verify_hdr(int veracrypt_mode, struct tchdr_dec *hdr)
 		return 0;
 	}
 
-	switch(hdr->tc_ver) {
-	case 1:
-	case 2:
+	if (hdr->tc_ver == 1 || hdr->tc_ver == 2) {
 		/* Unsupported header version */
 		tc_log(1, "Header version %d unsupported\n", hdr->tc_ver);
 		return 0;
+	} else if (hdr->tc_ver == 3 || hdr->tc_ver == 4){
 
-	case 3:
-	case 4:
 		if (veracrypt_mode) {
 			/* Unsupported header version in VeraCrypt mode*/
 			tc_log(1, "Header version %d unsupported in VeraCrypt mode\n", hdr->tc_ver);
 			return 0;
 		}
+
 		hdr->sec_sz = 512;
-		break;
 	}
 
 	return 1;
@@ -223,9 +220,9 @@ create_hdr(unsigned char *pass, int passlen, struct pbkdf_prf_algo *prf_algo,
 	dhdr->sz_vol = blocks * sec_sz;
 	if (hidden)
 		dhdr->sz_hidvol = dhdr->sz_vol;
-	dhdr->off_mk_scope = offset * sec_sz;
+	dhdr->off_mk_scope = (unsigned long)offset * sec_sz;
 	dhdr->sz_mk_scope = blocks * sec_sz;
-	dhdr->sec_sz = sec_sz;
+	dhdr->sec_sz = (unsigned int)sec_sz;
 	dhdr->flags = 0;
 
 	HOST_TO_BE(16, dhdr->tc_ver);

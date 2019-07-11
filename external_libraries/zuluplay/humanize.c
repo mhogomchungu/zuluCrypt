@@ -76,6 +76,7 @@ _dehumanize_number(const char *buf, uint64_t *dest)
 	uint64_t n, n_check, d;
 	uint64_t multiplier;
 	size_t len;
+	int c;
 
 	if (*buf == '\0') {
 		errno = EINVAL;
@@ -88,25 +89,11 @@ _dehumanize_number(const char *buf, uint64_t *dest)
 
 	multiplier = 1;
 
-	switch (tolower(buf[len-1])) {
-	case 'y':
-		multiplier *= 1024; /*Falls through*/
-	case 'z':
-		multiplier *= 1024; /*Falls through*/
-	case 'e':
-		multiplier *= 1024; /*Falls through*/
-	case 'p':
-		multiplier *= 1024; /*Falls through*/
-	case 't':
-		multiplier *= 1024; /*Falls through*/
-	case 'g':
-		multiplier *= 1024; /*Falls through*/
-	case 'm':
-		multiplier *= 1024; /*Falls through*/
-	case 'k':
+	c = tolower(buf[len-1]);
+
+	if (c=='y' || c=='z' || c=='e' || c =='p' || c == 't' || c == 'g' || c == 'm' || c == 'k') {
 		multiplier *= 1024;
-		break;
-	default:
+	} else {
 		/*
 		 * only set error if string ends in a character that
 		 * is not a valid unit.

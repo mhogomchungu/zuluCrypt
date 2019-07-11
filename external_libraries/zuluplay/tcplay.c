@@ -43,6 +43,7 @@
 #include <errno.h>
 #include <string.h>
 #include <err.h>
+#include <fcntl.h>
 #include <time.h>
 #if defined(__linux__)
 #include <libdevmapper.h>
@@ -147,6 +148,24 @@ struct tc_crypto_algo tc_crypto_algos[] = {
 	{ NULL,			NULL,			0,	0 }
 };
 
+static void  _repair_tc_crypto_algo(void)
+{
+	struct tc_crypto_algo wtf[] = {
+	#if 0
+		/* XXX: turns out TC doesn't support AES-128-XTS */
+		{ "AES-128-XTS",	"aes-xts-plain",	32,	8 },
+		{ "TWOFISH-128-XTS",	"twofish-xts-plain",	32,	8 },
+		{ "SERPENT-128-XTS",	"serpent-xts-plain",	32,	8 },
+	#endif
+		{ "AES-256-XTS",	"aes-xts-plain64",	64,	8 },
+		{ "TWOFISH-256-XTS",	"twofish-xts-plain64",	64,	8 },
+		{ "SERPENT-256-XTS",	"serpent-xts-plain64",	64,	8 },
+		{ NULL,			NULL,			0,	0 }
+	};
+
+	memcpy(&tc_crypto_algos, &wtf, sizeof(wtf));
+}
+
 const char *valid_cipher_chains[][MAX_CIPHER_CHAINS] = {
 	{ "AES-256-XTS", NULL },
 	{ "TWOFISH-256-XTS", NULL },
@@ -194,12 +213,6 @@ void tc_set_iteration_count(int iteration_count)
 }
 
 struct tc_cipher_chain *tc_cipher_chains[MAX_CIPHER_CHAINS];
-
-static int _string_starts_with(const char *a, const char *b)
-{
-	return strncmp(a, b, strlen(b)) == 0;
-}
-
 
 static
 int
@@ -362,6 +375,55 @@ tc_cipher_chain_sprint(char *buf, size_t bufsz, struct tc_cipher_chain *chain)
 	return buf;
 }
 
+static
+off_t
+_find_partition_offset(const char *dev)
+{
+	int m;
+	int fd;
+	char buffer[PATH_MAX*3];
+	char buffer1[PATH_MAX];
+	char *e;
+	char c;
+
+	dev = dev + 5;
+	strcpy(buffer1, dev);
+
+	e = buffer1;
+
+	while (*e){
+		if(*e>='0' && *e<='9'){
+			*e = '\0';
+			break;
+		}
+		e++;
+	}
+
+	snprintf(buffer, sizeof(buffer), "/sys/block/%s/%s/start", buffer1, dev);
+
+	fd = open(buffer,O_RDONLY);
+
+	if (fd == -1){
+		tc_log(1, "failed to open path: %s\n", buffer);
+		return 0;
+	}else{
+		m = 0;
+		while (1) {
+			if (read(fd, &c, 1)<1){
+				tc_log(1, "failed to read a character from: %s\n", buffer);
+				close(fd);
+				return 0;
+			}
+			if (c=='\n'){
+				close(fd);
+				return atoll(buffer);
+			}
+			*(buffer + m) = c;
+			m++;
+		}
+	}
+}
+
 #ifdef DEBUG
 static void
 print_hex(unsigned char *buf, off_t start, size_t len)
@@ -415,15 +477,6 @@ print_info(struct tcplay_info *info)
 }
 
 static
-int
-_not_a_device_with_partitions(const char *dev)
-{
-	if (_string_starts_with(dev, "/dev/sd") || _string_starts_with(dev, "/dev/hd"))
-		return 0 ;
-	return 1 ;
-}
-
-static
 struct tcplay_info *
 new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
     struct pbkdf_prf_algo *prf, struct tchdr_dec *hdr, off_t start)
@@ -452,41 +505,16 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 
 	if (TC_FLAG_SET(flags, SYS)){
 
-		if (_not_a_device_with_partitions(info->dev)){
+		info->offset = 0; /* offset is 0 for system volumes */
 
-			/*
-			 * This device could be loop device or an lvm volume or a raid device or
-			 * any other device that does not spell out partition information.
-			 */
-
-			/*
-			 * this is a tricky device since it has no visible partitions and we
-			 * handle it by simply mapping starting at the beginning of the first partition.
-			 */
-			info->offset = 63;
-
-			/*
-			 * here,we are supposed to set the size of the first partition but we dont have it
-			 * so we set wrong info by setting the size of the disk as it was read from the header.
-			 * Net result is that the created mapper will be of size larger than what it was supposed to be.
-			 */
-			info->size = hdr->sz_mk_scope / hdr->sec_sz;
-		} else {
-
-			/*
-			 * We have a device that has old fashioned partitions
-			 */
-
-			info->offset = 0; /* offset is 0 for system volumes */
-
-			/*
-			 * probe the partition itself to get its size.
-			 */
-			if (get_disk_info(dev, &info->size, NULL) != 0) {
-				tc_log(1, "could not get disk information\n");
-				free_safe_mem(info);
-				return NULL;
-			}
+		info->skip = _find_partition_offset(dev);
+		/*
+		 * probe the partition itself to get its size.
+		 */
+		if (get_disk_info(dev, &info->size, NULL) != 0) {
+			tc_log(1, "could not get disk information\n");
+			free_safe_mem(info);
+			return NULL;
 		}
 	} else {
 		info->offset = hdr->off_mk_scope / hdr->sec_sz;	/* block offset */
@@ -605,6 +633,8 @@ process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int 
 		print_hex(key, 0, MAX_KEYSZ);
 #endif
 
+		_repair_tc_crypto_algo();
+
 		for (j = 0; !found && tc_cipher_chains[j] != NULL; j++) {
 			cipher_chain = tc_dup_cipher_chain(tc_cipher_chains[j]);
 #ifdef DEBUG
@@ -671,6 +701,8 @@ create_volume(struct tcplay_opts *opts)
 	ehdr = hehdr = NULL;
 	ehdr_backup = hehdr_backup = NULL;
 	ret = -1; /* Default to returning error */
+
+	_repair_tc_crypto_algo();
 
 	if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE))
 		veracrypt_mode = 1;
@@ -1864,7 +1896,8 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 	struct dm_task *dmt = NULL;
 	struct dm_info dmi;
 	char *params = NULL;
-	char *uu, *uu_temp;
+	size_t paramsSIZE = 4096;
+	char *uu_temp;
 	char *uu_stack[64];
 	int uu_stack_idx;
 #if defined(__DragonFly__)
@@ -1875,11 +1908,13 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 	off_t start, offset;
 	char dev[PATH_MAX];
 	char map[PATH_MAX];
+	char uu[PATH_MAX*2];
+
 	uint32_t cookie;
 
 	dm_udev_set_sync_support(1);
 
-	if ((params = alloc_safe_mem(512)) == NULL) {
+	if ((params = alloc_safe_mem(paramsSIZE)) == NULL) {
 		tc_log(1, "could not allocate safe parameters memory");
 		return ENOMEM;
 	}
@@ -1958,30 +1993,19 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 			goto out;
 		}
 #endif
-
-		if ((uu = malloc(1024)) == NULL) {
-			free(uu_temp);
-			tc_log(1, "uuid second malloc failed\n");
-			ret = -1;
-			goto out;
-		}
-
 		if (TC_FLAG_SET(info->flags, VERACRYPT_MODE)){
-			snprintf(uu, 1024, "CRYPT-VCRYPT-%s-%s", uu_temp ,map);
+			snprintf(uu, sizeof(uu), "CRYPT-VCRYPT-%s-%s", uu_temp ,map);
 		} else {
-			snprintf(uu, 1024, "CRYPT-TCRYPT-%s-%s", uu_temp,map);
+			snprintf(uu, sizeof(uu), "CRYPT-TCRYPT-%s-%s", uu_temp,map);
 		}
 
 		free(uu_temp);
 
 		if ((dm_task_set_uuid(dmt, uu)) == 0) {
-			free(uu);
 			tc_log(1, "dm_task_set_uuid failed\n");
 			ret = -1;
 			goto out;
 		}
-
-		free(uu);
 
 		if (TC_FLAG_SET(info->flags, READ_ONLY_MODE))
 			dm_task_set_ro(dmt);
@@ -1995,7 +2019,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 
 			/*  /dev/ad0s0a              0 */
 			/* dev---^       block off --^ */
-			snprintf(params, 512, "%s 0", dev);
+			snprintf(params, paramsSIZE, "%s 0", dev);
 
 			if ((dm_task_add_target(dmt, 0,
 				INFO_TO_DM_BLOCKS(info, offset),
@@ -2010,7 +2034,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 
 		/* aes-cbc-essiv:sha256 7997f8af... 0 /dev/ad0s0a 8 <opts> */
 		/*			   iv off---^  block off--^ <opts> */
-		snprintf(params, 512, "%s %s %"PRIu64 " %s %"PRIu64 " %s",
+		snprintf(params, paramsSIZE, "%s %s %"PRIu64 " %s %"PRIu64 " %s",
 		    cipher_chain->cipher->dm_crypt_str, cipher_chain->dm_key,
 		    (uint64_t)INFO_TO_DM_BLOCKS(info, skip), dev,
 		    (uint64_t)offset,

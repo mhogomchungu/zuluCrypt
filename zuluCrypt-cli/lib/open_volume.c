@@ -166,16 +166,17 @@ static int _open_tcrypt( open_struct_t * opts )
 {
 	int r ;
 
-	opts->tcrypt_system = 0 ;
-	/*
-	 * zuluCryptOpenTcrypt_1() is defined in open_tcrypt.c
-	 */
-	r = zuluCryptOpenTcrypt_1( opts ) ;
+	if( opts->trueCrypt_volume ){
 
-	if( r != 0 ){
+		r = zuluCryptOpenTcrypt_1( opts ) ;
 
-		opts->tcrypt_system = 1 ;
+		if( r != 0 ){
 
+			opts->system_volume = 1 ;
+
+			r = zuluCryptOpenTcrypt_1( opts ) ;
+		}
+	}else{
 		r = zuluCryptOpenTcrypt_1( opts ) ;
 	}
 

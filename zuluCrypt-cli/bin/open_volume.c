@@ -547,8 +547,30 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	volume.iteration_count = v_info.iteration_count ;
 
-	volume.veraCrypt_volume = StringAtLeastOneMatch( v_info.type,"vcrypt","veracrypt","vera",NULL ) ;
-	volume.trueCrypt_volume = StringAtLeastOneMatch( v_info.type,"tcrypt","truecrypt",NULL ) ;
+	if( StringAtLeastOneMatch( v_info.type,"tcrypt","truecrypt",NULL ) ){
+
+		volume.trueCrypt_volume = 1 ;
+
+	}else if( StringAtLeastOneMatch( v_info.type,"vcrypt","veracrypt","vera",NULL ) ){
+
+		volume.veraCrypt_volume = 1 ;
+
+	}else if( StringAtLeastOneMatch( v_info.type,"vcrypt-sys","veracrypt-sys","vera-sys",NULL ) ){
+
+		volume.veraCrypt_volume = 1 ;
+		volume.system_volume = 1 ;
+
+	}else if( StringAtLeastOneMatch( v_info.type,"vcrypt-hbk","veracrypt-hbk","vera-hbk",NULL ) ){
+
+		volume.veraCrypt_volume = 1 ;
+		volume.use_backup_header = 1 ;
+
+	}else if( StringAtLeastOneMatch( v_info.type,"vcrypt-sys-hbk","veracrypt-sys-hbk","vera-sys-hbk",NULL ) ){
+
+		volume.veraCrypt_volume = 1 ;
+		volume.system_volume = 1 ;
+		volume.use_backup_header = 1 ;
+	}
 
 	if( !volume.veraCrypt_volume && !volume.trueCrypt_volume ){
 
