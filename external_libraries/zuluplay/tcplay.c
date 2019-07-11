@@ -1648,7 +1648,7 @@ dm_get_table(const char *name)
 		    &target_type, &params);
 
 		tc_table->size += (size_t)length;
-		strncpy(tc_table->target, target_type,
+		memcpy(tc_table->target, target_type,
 		    sizeof(tc_table->target));
 
 		/* Skip any leading whitespace */
@@ -1664,7 +1664,7 @@ dm_get_table(const char *name)
 				/* Process p1 */
 				if (c == 0) {
 					/* cipher */
-					strncpy(tc_table->cipher, p1,
+					memcpy(tc_table->cipher, p1,
 					    sizeof(tc_table->cipher));
 				} else if (c == 2) {
 					/* iv offset */
@@ -1727,7 +1727,7 @@ dm_info_map(const char *map_name)
 	struct tcplay_dm_table *dm_table[3];
 	struct tc_crypto_algo *crypto_algo;
 	struct tcplay_info *info;
-	char map[PATH_MAX];
+	char map[PATH_MAX+1];
 	char ciphers[512];
 	int i, outermost = -1;
 
@@ -1896,7 +1896,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 	struct dm_task *dmt = NULL;
 	struct dm_info dmi;
 	char *params = NULL;
-	size_t paramsSIZE = 4096;
+	size_t paramsSIZE = 8192 ;
 	char *uu_temp;
 	char *uu_stack[64];
 	int uu_stack_idx;
