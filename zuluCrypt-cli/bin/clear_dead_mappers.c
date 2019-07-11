@@ -107,19 +107,15 @@ static void _zuluCryptDeleteDeadMountPoints( stringList_t stl,const char * m )
 
 void zuluCryptDeleteDeadMountPoints( uid_t uid,stringList_t stl )
 {
-	if( uid ){}
-	if( stl ){}
-#if 0
 	string_t st = zuluCryptGetUserName( uid ) ;
 
 	_zuluCryptDeleteDeadMountPoints( stl,StringPrepend( st,"/run/media/private/" ) ) ;
 	_zuluCryptDeleteDeadMountPoints( stl,"/run/media/public" ) ;
 
 	StringDelete( &st ) ;
-#endif
 }
 
-void zuluCryptClearDeadMappers( uid_t uid )
+void zuluCryptClearDeadMappers( uid_t uid,int s )
 {
 	struct crypt_device * cd ;
 	const char * dir_path = crypt_get_dir() ;
@@ -210,7 +206,11 @@ void zuluCryptClearDeadMappers( uid_t uid )
 		}
 	}
 
-	zuluCryptDeleteDeadMountPoints( uid,stl ) ;
+	if( s ){
+
+		zuluCryptDeleteDeadMountPoints( uid,stl ) ;
+	}
+
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in security.c
 	 */

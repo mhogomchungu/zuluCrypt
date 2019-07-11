@@ -191,7 +191,7 @@ char * zuluCryptRealPath( const char * path ) ;
 /*
  * this function is defined in clear_dead_mapper.c
  */
-void zuluCryptClearDeadMappers( uid_t uid ) ;
+void zuluCryptClearDeadMappers( uid_t uid,int ) ;
 
 /*
  * this function is defined in clear_dead_mapper.c

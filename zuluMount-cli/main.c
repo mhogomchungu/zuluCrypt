@@ -616,6 +616,11 @@ int main( int argc,char * argv[] )
 			printf( "%s\n",zuluCryptVersion() );
 			return 0 ;
 		}
+		if( StringsAreEqual( action,"clear-dead-mount-points" ) ){
+
+			zuluCryptClearDeadMappers( uid,1 ) ;
+			return 0 ;
+		}
 	}
 
 	memset( &args,'\0',sizeof( args ) ) ;
@@ -662,7 +667,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptClearDeadMappers() is defined in ../zuluCrypt-cli/bin/clear_dead_mapper.c
 	 */
-	zuluCryptClearDeadMappers( uid ) ;
+	zuluCryptClearDeadMappers( uid,0 ) ;
 
 	/*
 	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ../zuluCrypt-cli/bin/security.c

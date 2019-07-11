@@ -326,7 +326,7 @@ static int _clear_dead_mappers( uid_t uid )
 	/*
 	 * zuluCryptClearDeadMappers() is defined in ../zuluCrypt-cli/bin/clear_dead_mappers.c
 	 */
-	zuluCryptClearDeadMappers( uid ) ;
+	zuluCryptClearDeadMappers( uid,0 ) ;
 	return 0 ;
 }
 
@@ -480,6 +480,11 @@ int main( int argc,char * argv[] )
 
 			printf( "%s\n",zuluCryptVersion() );
 
+			return 0 ;
+		}
+		if( StringsAreEqual( ac,"clear-dead-mount-points" ) ){
+
+			zuluCryptClearDeadMappers( uid,1 ) ;
 			return 0 ;
 		}
 	}

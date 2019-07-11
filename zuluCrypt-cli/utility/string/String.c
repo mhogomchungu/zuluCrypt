@@ -39,7 +39,7 @@
 /*
  * a string memory block gows by below factor when it expands
  */
-#define FACTOR 1.5
+#define FACTOR 2
 
 /*
  * when an empty string is initialized,star it with below buffer size
