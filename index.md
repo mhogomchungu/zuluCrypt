@@ -123,7 +123,7 @@ Older versions can be downloaded from <a href="https://github.com/mhogomchungu/z
 
 ## BitLocker
 
-BitLocker is a full volume encryption feature included with Microsoft Windows versions starting with Windows Vista.<a href="https://github.com/mhogomchungu/dislocker"> Disclocker</a> backend is required for zuluCrypt to gain support for bitlocker volumes.
+BitLocker is a full volume encryption feature included with Microsoft Windows versions starting with Windows Vista.<a href="https://github.com/Aorimn/dislocker"> Disclocker</a> backend is required for zuluCrypt to gain support for bitlocker volumes.
 
 ## Where did the name come from?
 
