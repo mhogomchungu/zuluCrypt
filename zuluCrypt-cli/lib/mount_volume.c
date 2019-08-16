@@ -254,7 +254,6 @@ static string_t set_mount_options( m_struct * mst )
 				StringAppend( opt,",shortname=mixed" ) ;
 			}
 		}
-
 		if( StringsAreEqual( mst->fs,"ntfs" ) ){
 
 			if( StringDoesNotContain( opt,"big_writes" ) ){
