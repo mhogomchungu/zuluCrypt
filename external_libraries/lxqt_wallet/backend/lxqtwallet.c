@@ -710,9 +710,9 @@ lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t * wallet,const char * password
 
 			fstat( fd,&st ) ;
 
-			len = st.st_size - ( SALT_SIZE + IV_SIZE + MAGIC_STRING_BUFFER_SIZE + BLOCK_SIZE ) ;
+			len = (uint64_t)( st.st_size - ( SALT_SIZE + IV_SIZE + MAGIC_STRING_BUFFER_SIZE + BLOCK_SIZE ) ) ;
 
-			if( len <= 0 ){
+			if( (int64_t)len <= 0 ){
 				/*
 				 * empty wallet
 				 */
@@ -721,11 +721,23 @@ lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t * wallet,const char * password
 			}else{
 				_get_load_information( w,buffer ) ;
 
+				if( w->wallet_data_size > len ){
+
+					/*
+					 * Wallet is corrupt somehow,lets clear it.
+					 */
+					w->wallet_data_size = 0 ;
+					w->wallet_data_entry_count = 0 ;
+					w->wallet_modified = 1 ;
+				}
+
 				e = malloc( len ) ;
 
 				if( e != NULL ){
+
 					mlock( e,len ) ;
 					_read( fd,e,len ) ;
+
 					r = gcry_cipher_decrypt( handle,e,len,NULL,0 ) ;
 					if( _passed( r ) ){
 						w->wallet_data = e ;
