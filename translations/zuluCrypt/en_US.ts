@@ -392,6 +392,8 @@ zuluPolkit executable could not be found
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="50"/>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="382"/>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1187"/>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1971"/>
@@ -414,30 +416,21 @@ zuluPolkit executable could not be found
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="128"/>
-        <source>
-Installed Version Is : %1.
-Latest Version Is : %2.
-</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>checkForUpdates</name>
-    <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="48"/>
         <source>Network Request Failed To Respond Within %1 Seconds.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="50"/>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
-        <source>ERROR</source>
+        <source>Failed To Check For Update.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
-        <source>Failed To Check For Update.</source>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="128"/>
+        <source>
+Installed Version Is : %1.
+Latest Version Is : %2.
+</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

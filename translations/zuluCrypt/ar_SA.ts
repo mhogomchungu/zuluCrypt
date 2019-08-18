@@ -410,6 +410,8 @@ zuluPolkit executable could not be found
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="50"/>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="382"/>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1187"/>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1971"/>
@@ -432,6 +434,16 @@ zuluPolkit executable could not be found
         <translation>لم يمكن تحديد ملف pgp التنفيذي في  &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; and &quot;/usr/sbin&quot;</translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="48"/>
+        <source>Network Request Failed To Respond Within %1 Seconds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
+        <source>Failed To Check For Update.</source>
+        <translation type="unfinished">فشل في التأكد من التحديثات</translation>
+    </message>
+    <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="128"/>
         <source>
 Installed Version Is : %1.
@@ -440,34 +452,15 @@ Latest Version Is : %2.
         <translation>النسخة المثبتة هي: 1%.
 النسخة الأخيرة هي: 2%.</translation>
     </message>
-</context>
-<context>
-    <name>checkForUpdates</name>
-    <message>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="48"/>
-        <source>Network Request Failed To Respond Within %1 Seconds.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="50"/>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
-        <source>ERROR</source>
-        <translation>خطأ</translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
-        <source>Failed To Check For Update.</source>
-        <translation>فشل في التأكد من التحديثات</translation>
-    </message>
     <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="135"/>
         <source>Update Available</source>
-        <translation>يوجد تحديث</translation>
+        <translation type="unfinished">يوجد تحديث</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="138"/>
         <source>Version Info</source>
-        <translation>معلومات الإصدار</translation>
+        <translation type="unfinished">معلومات الإصدار</translation>
     </message>
 </context>
 <context>

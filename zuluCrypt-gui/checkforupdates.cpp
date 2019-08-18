@@ -45,9 +45,9 @@ void checkForUpdates::check( bool s )
 	},[ this ](){
 
 		auto s = QString::number( _timeOut ) ;
-		auto e = tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
+		auto e = QObject::tr( "Network Request Failed To Respond Within %1 Seconds." ).arg( s ) ;
 
-		DialogMsg( m_widget ).ShowUIOK( tr( "ERROR" ),e ) ;
+		DialogMsg( m_widget ).ShowUIOK( QObject::tr( "ERROR" ),e ) ;
 	} ) ;
 }
 
@@ -120,7 +120,7 @@ void checkForUpdates::showResult( const QString& l )
 
 		if( !m_autocheck ){
 
-			msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Check For Update." ) ) ;
+			msg.ShowUIOK( QObject::tr( "ERROR" ),QObject::tr( "Failed To Check For Update." ) ) ;
 		}
 	}else{
 		auto _tr = []( const QString& a,const QString& b ){
@@ -132,10 +132,10 @@ void checkForUpdates::showResult( const QString& l )
 
 			if( l != THIS_VERSION ){
 
-				msg.ShowUIOK( tr( "Update Available" ),_tr( THIS_VERSION,l ) ) ;
+				msg.ShowUIOK( QObject::tr( "Update Available" ),_tr( THIS_VERSION,l ) ) ;
 			}
 		}else{
-			msg.ShowUIOK( tr( "Version Info" ),_tr( THIS_VERSION,l ) ) ;
+			msg.ShowUIOK( QObject::tr( "Version Info" ),_tr( THIS_VERSION,l ) ) ;
 		}
 	}
 }

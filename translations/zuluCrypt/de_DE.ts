@@ -424,6 +424,8 @@ zuluPolkit executable could not be found
  or pkexec failed to start zuluPolkit.</translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="50"/>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="382"/>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1187"/>
         <location filename="../../zuluCrypt-gui/utility.cpp" line="1971"/>
@@ -446,6 +448,16 @@ zuluPolkit executable could not be found
         <translation>Die ausführbare Datei &quot;gpg&quot; konnte nicht in &quot;/usr/local/bin&quot;, &quot;/usr/bin&quot; und &quot;/usr/sbin&quot; gefunden werden</translation>
     </message>
     <message>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="48"/>
+        <source>Network Request Failed To Respond Within %1 Seconds.</source>
+        <translation type="unfinished">Netzwerkanfrage konnte nicht innerhalb von %1 Sekunden beantwortet werden.</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
+        <source>Failed To Check For Update.</source>
+        <translation type="unfinished">Die Überprüfung auf Aktualisierung ist fehlgeschlagen.</translation>
+    </message>
+    <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="128"/>
         <source>
 Installed Version Is : %1.
@@ -456,34 +468,15 @@ Installierte Version: %1.
 Neueste Version: %2.
 </translation>
     </message>
-</context>
-<context>
-    <name>checkForUpdates</name>
-    <message>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="48"/>
-        <source>Network Request Failed To Respond Within %1 Seconds.</source>
-        <translation>Netzwerkanfrage konnte nicht innerhalb von %1 Sekunden beantwortet werden.</translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="50"/>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
-        <source>ERROR</source>
-        <translation>FEHLER</translation>
-    </message>
-    <message>
-        <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="123"/>
-        <source>Failed To Check For Update.</source>
-        <translation>Die Überprüfung auf Aktualisierung ist fehlgeschlagen.</translation>
-    </message>
     <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="135"/>
         <source>Update Available</source>
-        <translation>Aktualisierung verfügbar</translation>
+        <translation type="unfinished">Aktualisierung verfügbar</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/checkforupdates.cpp" line="138"/>
         <source>Version Info</source>
-        <translation>Versionsinformation</translation>
+        <translation type="unfinished">Versionsinformation</translation>
     </message>
 </context>
 <context>

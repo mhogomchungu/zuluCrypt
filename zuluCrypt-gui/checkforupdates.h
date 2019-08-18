@@ -31,7 +31,7 @@
 #include <utility>
 #include <array>
 
-class checkForUpdates : public QObject
+class checkForUpdates
 {
 public:
 	void run( const QString& ) ;

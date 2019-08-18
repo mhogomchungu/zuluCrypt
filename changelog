@@ -298,5 +298,5 @@ version 5.6.0
 -- Add ability to create volume keys using YubiKey's challenge-response feature.
 -- Add GUI options to clear dead mount points(these are unused mount folders located
    at /run/media/private/$USER). CLI users should call CLI components with "--clear-dead-mount-points"
---fix a race condition bug introduced in version 5.5.0 that prevented volumes from getting mounted
+-- Fix a race condition bug introduced in version 5.5.0 that prevented volumes from getting mounted
   under certain circumstances.
