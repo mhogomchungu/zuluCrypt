@@ -75,6 +75,8 @@ private:
 	Ui::luksaddkey * m_ui ;
 	QString m_volumePath ;
 	bool m_isWindowClosable ;
+	bool m_yubikeyExistingKey ;
+	bool m_yubekeyNewKey ;
 	keystrength m_keystrength ;
 	utility::veraCryptWarning m_veraCryptWarning ;
 	utility::label m_label ;

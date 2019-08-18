@@ -41,6 +41,7 @@
 #include "task.hpp"
 #include "dialogmsg.h"
 #include "plugin.h"
+#include "utility.h"
 
 luksaddkey::luksaddkey( QWidget * parent ) : QDialog( parent )
 {
@@ -183,6 +184,8 @@ void luksaddkey::cbVolumeType( int e )
 
 void luksaddkey::cbExistingKey( int e )
 {
+	m_yubikeyExistingKey = false ;
+
 	auto _key_ui = [ this ](){
 
 		m_ui->textEditExistingPassphrase->setToolTip( tr( "Enter A Key" ) ) ;
@@ -209,7 +212,9 @@ void luksaddkey::cbExistingKey( int e )
 		m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 		m_ui->textEditExistingPassphrase->setFocus() ;
 		m_ui->textEditExistingPassphrase->setEnabled( true ) ;
-	}else{
+
+	}else if( e == 2 ){
+
 		_key_ui() ;
 
 		m_ui->textEditExistingPassphrase->setEnabled( false ) ;
@@ -224,11 +229,16 @@ void luksaddkey::cbExistingKey( int e )
 				this->cbExistingKey( 0 ) ;
 			}
 		} ) ;
+	}else{
+		_key_ui() ;
+		m_yubikeyExistingKey = true ;
 	}
 }
 
 void luksaddkey::cbNewKey( int e )
 {
+	m_yubekeyNewKey = false ;
+
 	auto _key_ui = [ this ](){
 
 		m_ui->textEditPassphraseToAdd->setToolTip( tr( "Enter a key" ) ) ;
@@ -261,7 +271,9 @@ void luksaddkey::cbNewKey( int e )
 		m_ui->pushButtonOpenNewKeyFile->setIcon( QIcon( ":/keyfile.png" ) ) ;
 		m_ui->textEditPassphraseToAdd->setFocus() ;
 		m_ui->textEditPassphraseToAdd->setEnabled( true ) ;
-	}else{
+
+	}else if( e == 2 ){
+
 		_key_ui() ;
 
 		m_ui->textEditPassphraseToAdd->setEnabled( false ) ;
@@ -283,6 +295,12 @@ void luksaddkey::cbNewKey( int e )
 				}
 			}
 		} ) ;
+	}else{
+		m_yubekeyNewKey = true ;
+		m_ui->lineEditReEnterPassphrase->setEnabled( false ) ;
+		m_ui->lineEditReEnterPassphrase->clear() ;
+		m_ui->textEditPassphraseToAdd->clear() ;
+		m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Password ) ;
 	}
 }
 
@@ -335,6 +353,9 @@ void luksaddkey::pbAdd( void )
 {
 	DialogMsg msg( this ) ;
 
+	std::function< void() > sendNewKey = [](){} ;
+	std::function< void() > sendExistingKey = [](){} ;
+
 	this->disableAll() ;
 
 	utility::raii raii( [ this ](){ this->enableAll() ; } ) ;
@@ -379,15 +400,18 @@ void luksaddkey::pbAdd( void )
 			return msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
 		}
 	}else{
-		if( NewKey != NewKey_1 ){
+		if( !m_yubekeyNewKey ){
 
-			msg.ShowUIOK( tr( "ERROR!" ),tr( "Keys do not match" ) ) ;
+			if( NewKey != NewKey_1 ){
 
-			m_ui->textEditPassphraseToAdd->clear() ;
-			m_ui->lineEditReEnterPassphrase->clear() ;
-			m_ui->textEditPassphraseToAdd->setFocus() ;
+				msg.ShowUIOK( tr( "ERROR!" ),tr( "Keys do not match" ) ) ;
 
-			return ;
+				m_ui->textEditPassphraseToAdd->clear() ;
+				m_ui->lineEditReEnterPassphrase->clear() ;
+				m_ui->textEditPassphraseToAdd->setFocus() ;
+
+				return ;
+			}
 		}
 	}
 
@@ -398,12 +422,28 @@ void luksaddkey::pbAdd( void )
 		ExistingKey = utility::resolvePath( ExistingKey ).replace( "\"","\"\"\"" ) ;
 		existingPassType = "-u" ;
 	}else{
+		auto k = m_ui->textEditExistingPassphrase->text() ;
+
+		if( m_yubikeyExistingKey ){
+
+			auto m = utility::yubiKey( k ) ;
+
+			if( m.has_value() ){
+
+				k = m.value() ;
+			}else{
+				this->cbExistingKey( 0 ) ;
+				return m_label.show( tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+			}
+		}
+
 		existingPassType = "-u" ;
 		ExistingKey = utility::keyPath() + "-existingKey" ;
 
-		auto k = m_ui->textEditExistingPassphrase->text() ;
+		sendExistingKey = [ = ](){
 
-		utility::keySend( ExistingKey,k ) ;
+			utility::keySend( ExistingKey,k ) ;
+		} ;
 	}
 
 	QString newPassType ;
@@ -413,13 +453,29 @@ void luksaddkey::pbAdd( void )
 		NewKey = utility::resolvePath( NewKey ).replace( "\"","\"\"\"" ) ;
 		newPassType = "-n" ;
 	}else{
+		auto k = m_ui->textEditPassphraseToAdd->text() ;
+
+		if( m_yubekeyNewKey ){
+
+			auto m = utility::yubiKey( k ) ;
+
+			if( m.has_value() ){
+
+				k = m.value() ;
+			}else{
+				this->cbNewKey( 0 ) ;
+				return m_label.show( tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+			}
+		}
+
 		newPassType = "-n" ;
 
 		NewKey = utility::keyPath() + "-newKey" ;
 
-		QString k = m_ui->textEditPassphraseToAdd->text() ;
+		sendNewKey = [ = ](){
 
-		utility::keySend( NewKey,k ) ;
+			utility::keySend( NewKey,k ) ;
+		} ;
 	}
 
 	const QString& a = QString( ZULUCRYPTzuluCrypt ) ;
@@ -454,6 +510,9 @@ void luksaddkey::pbAdd( void )
 	m_veraCryptWarning.show( m_ui->cbVolumeType->currentIndex() == 2 ) ;
 
 	raii.cancel() ;
+
+	sendNewKey() ;
+	sendExistingKey() ;
 
 	this->taskFinished( utility::Task::run( exe ).await() ) ;
 }
