@@ -371,6 +371,11 @@ void zuluCrypt::setupConnections()
 		}
 	} ) ;
 
+	connect( m_ui->actionClear_Dead_Mount_Points,&QAction::triggered,[](){
+
+		utility::Task::run( ZULUCRYPTzuluCrypt" --clear-dead-mount-points" ).await() ;
+	} ) ;
+
 	connect( this,SIGNAL( updateVolumeListSignal( QString,QString ) ),this,SLOT( updateVolumeList( QString,QString ) ),Qt::QueuedConnection ) ;
 	connect( m_ui->actionEncrypted_Container_In_A_File,SIGNAL( triggered() ),this,SLOT( createVolumeInFile() ) ) ;
 	connect( m_ui->tableWidget,SIGNAL( itemEntered( QTableWidgetItem * ) ),this,SLOT( itemEntered( QTableWidgetItem * ) ) ) ;

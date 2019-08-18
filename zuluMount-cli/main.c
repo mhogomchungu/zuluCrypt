@@ -616,7 +616,7 @@ int main( int argc,char * argv[] )
 			printf( "%s\n",zuluCryptVersion() );
 			return 0 ;
 		}
-		if( StringsAreEqual( action,"clear-dead-mount-points" ) ){
+		if( StringsAreEqual( action,"--clear-dead-mount-points" ) ){
 
 			zuluCryptClearDeadMappers( uid,1 ) ;
 			return 0 ;

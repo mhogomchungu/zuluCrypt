@@ -482,7 +482,7 @@ int main( int argc,char * argv[] )
 
 			return 0 ;
 		}
-		if( StringsAreEqual( ac,"clear-dead-mount-points" ) ){
+		if( StringsAreEqual( ac,"--clear-dead-mount-points" ) ){
 
 			zuluCryptClearDeadMappers( uid,1 ) ;
 			return 0 ;

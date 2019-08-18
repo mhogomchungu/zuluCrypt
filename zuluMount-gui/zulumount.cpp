@@ -58,6 +58,7 @@
 #include "task.hpp"
 #include "../zuluCrypt-gui/checkforupdates.h"
 #include "../zuluCrypt-gui/favorites.h"
+#include "bin_path.h"
 
 #include <memory>
 
@@ -229,6 +230,20 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 		ac->setChecked( m_autoOpenFolderOnMount ) ;
 
 		connect( ac,SIGNAL( toggled( bool ) ),this,SLOT( autoOpenFolderOnMount( bool ) ) ) ;
+
+		return ac ;
+	}() ) ;
+
+	trayMenu->addAction( [ this ](){
+
+		auto ac = new QAction( tr( "Clear Dead Mount Points" ),this ) ;
+
+		m_actionPair.append( { ac,"Clear Dead Mount Points" } ) ;
+
+		connect( ac,&QAction::triggered,[](){
+
+			utility::Task::run( zuluMountPath" --clear-dead-mount-points" ).await() ;
+		} ) ;
 
 		return ac ;
 	}() ) ;

@@ -175,6 +175,8 @@
     <addaction name="separator"/>
     <addaction name="actionShow_Debug_Window"/>
     <addaction name="separator"/>
+    <addaction name="actionClear_Dead_Mount_Points"/>
+    <addaction name="separator"/>
     <addaction name="action_close"/>
    </widget>
    <addaction name="menu_zc"/>
@@ -569,6 +571,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+J</string>
+   </property>
+  </action>
+  <action name="actionClear_Dead_Mount_Points">
+   <property name="text">
+    <string>Clear Dead Mount Points</string>
    </property>
   </action>
  </widget>
