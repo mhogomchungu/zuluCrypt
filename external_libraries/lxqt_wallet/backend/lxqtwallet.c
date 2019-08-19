@@ -710,7 +710,7 @@ lxqt_wallet_error lxqt_wallet_open( lxqt_wallet_t * wallet,const char * password
 
 			fstat( fd,&st ) ;
 
-			len = (uint64_t)( st.st_size - ( SALT_SIZE + IV_SIZE + MAGIC_STRING_BUFFER_SIZE + BLOCK_SIZE ) ) ;
+			len = (u_int64_t)( st.st_size - ( SALT_SIZE + IV_SIZE + MAGIC_STRING_BUFFER_SIZE + BLOCK_SIZE ) ) ;
 
 			if( (int64_t)len <= 0 ){
 				/*
