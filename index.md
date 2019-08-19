@@ -83,6 +83,8 @@ read the README file for further instructions.
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.6.0/zuluCrypt-5.6.0-debian-9-Stretch.tar.xz">zuluCrypt-5.6.0-debian-9-Stretch.tar.xz</a>
 
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.6.0/zuluCrypt-5.6.0-debian-10-Buster.tar.xz">zuluCrypt-5.6.0-debian-10-Buster.tar.xz</a>
+
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.6.0/zuluCrypt-5.6.0-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-5.6.0-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.6.0/zuluCrypt-5.6.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.6.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
