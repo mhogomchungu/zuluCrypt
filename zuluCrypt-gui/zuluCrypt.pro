@@ -52,6 +52,7 @@ SOURCES += main.cpp\
     filetask.cpp \
     erasetask.cpp \
     crypttask.cpp \
+    createvolumeinexistingfile.cpp \
     walletconfig.cpp \
     walletconfiginput.cpp \
     createvolumedialog.cpp \
@@ -71,6 +72,7 @@ HEADERS  += zulucrypt.h \
     openvolume.h \
     luksaddkey.h \
     luksdeletekey.h \
+    createvolumeinexistingfile.h \
     createvolume.h \
     createfile.h \
     createkeyfile.h \
@@ -128,6 +130,7 @@ FORMS    += zulucrypt.ui password.ui \
     cryptoinfo.ui \
     erasedevice.ui \
     cryptfiles.ui \
+    createvolumeinexistingfile.ui \
     createvolumedialog.ui \
     warnwhenextendingcontainerfile.ui \
     dialogmsg.ui \

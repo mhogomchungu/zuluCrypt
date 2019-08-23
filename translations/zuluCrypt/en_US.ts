@@ -486,6 +486,114 @@ You can stop the random data writing process anytime you want if it takes too lo
     </message>
 </context>
 <context>
+    <name>createVolumeInExistingFIle</name>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="14"/>
+        <source>Create Volume In Existing File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="41"/>
+        <source>Select Cover File (Video files like mp4 and mkv)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="83"/>
+        <source>Container Size (MB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="112"/>
+        <source>Volume Properties</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="141"/>
+        <source>&amp;Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="154"/>
+        <source>C&amp;reate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="167"/>
+        <source>Volume OffSet
+(Auto calculated)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="202"/>
+        <source>Create A Plain dm-crypt Container Hidden Inside Cover File (Steganography)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="235"/>
+        <source>Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="283"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="174"/>
+        <source>Extending A Host File Size.
+Percentage Completed: %1%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="194"/>
+        <source>Enter Path To Existing File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="266"/>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="277"/>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="284"/>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="288"/>
+        <source>ERROR</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="266"/>
+        <source>AtLeast One Required Field Is Empty</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="277"/>
+        <source>Illegal Character Found In The Container Size Field</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="284"/>
+        <source>Failed To Open File In Write Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="288"/>
+        <source>Failed To Open &quot;/dev/urandom&quot; Device In Read Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="303"/>
+        <source>Creating A Plain DM-Crypt Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="307"/>
+        <source>Volume Created Successfully</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="309"/>
+        <source>Failed To Create A Volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>createfile</name>
     <message>
         <location filename="../../zuluCrypt-gui/createfile.ui" line="17"/>

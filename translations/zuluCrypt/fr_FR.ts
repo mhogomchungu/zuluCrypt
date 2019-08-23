@@ -524,6 +524,116 @@ Vous pouvez arrêter l&apos;écriture de données aléatoires à n&apos;importe 
     </message>
 </context>
 <context>
+    <name>createVolumeInExistingFIle</name>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="14"/>
+        <source>Create Volume In Existing File</source>
+        <translation>Créer le volume dans un fichier déjà existant</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="41"/>
+        <source>Select Cover File (Video files like mp4 and mkv)</source>
+        <translation>Sélectionner le fichier de couverture (Fichier Vidéo de format mp4 ou mkv)</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="83"/>
+        <source>Container Size (MB)</source>
+        <translation>Taille du Conteneur (MB)</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="112"/>
+        <source>Volume Properties</source>
+        <translation>Propriétés du volume</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="141"/>
+        <source>&amp;Cancel</source>
+        <translation>&amp;Annuler</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="154"/>
+        <source>C&amp;reate</source>
+        <translation>C&amp;réer</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="167"/>
+        <source>Volume OffSet
+(Auto calculated)</source>
+        <translation>Offset du volume
+(calculé automatiquement)</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="202"/>
+        <source>Create A Plain dm-crypt Container Hidden Inside Cover File (Steganography)</source>
+        <translation>Créer un conteneur plain dm-crypt caché dans le fichier de couverture (Stéganographie)</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="235"/>
+        <source>Password</source>
+        <translation>Mot de Passe</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.ui" line="283"/>
+        <source>TextLabel</source>
+        <translation>Etiquette de texte</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="174"/>
+        <source>Extending A Host File Size.
+Percentage Completed: %1%</source>
+        <translation>Extension de la taille du fichier hôte.
+Pourcentage accompli : %1%</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="194"/>
+        <source>Enter Path To Existing File</source>
+        <translation>Entrer le chemin de la localisation du fichier</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="266"/>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="277"/>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="284"/>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="288"/>
+        <source>ERROR</source>
+        <translation>ERREUR</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="266"/>
+        <source>AtLeast One Required Field Is Empty</source>
+        <translation>Au moins un des champs qui est requis est vide</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="277"/>
+        <source>Illegal Character Found In The Container Size Field</source>
+        <translation>Caractère interdit dans le champ de taille du conteneur</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="284"/>
+        <source>Failed To Open File In Write Mode</source>
+        <translation>Impossible d&apos;ouvrir le volume en mode écriture</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="288"/>
+        <source>Failed To Open &quot;/dev/urandom&quot; Device In Read Mode</source>
+        <translation>Impossible d&apos;ouvrir le périphérique &quot;/dev/urandom&quot; en mode de lecture</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="303"/>
+        <source>Creating A Plain DM-Crypt Volume</source>
+        <translation>Créer un volume Plain DM-Crypt</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="307"/>
+        <source>Volume Created Successfully</source>
+        <translation>Volume créé avec succès</translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/createvolumeinexistingfile.cpp" line="309"/>
+        <source>Failed To Create A Volume</source>
+        <translation>Echec de la création du volume</translation>
+    </message>
+</context>
+<context>
     <name>createfile</name>
     <message>
         <location filename="../../zuluCrypt-gui/createfile.ui" line="129"/>
