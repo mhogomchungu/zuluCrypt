@@ -44,12 +44,10 @@ int zuluMountCryptoUMount( ARGS * args )
 			if( path == NULL ){
 
 				return 20 ;
-			}else{
-				device = path ;
 			}
 		}
 
-		mapping_name = device + StringLastIndexOfChar_1( device,'/' ) + 1 ;
+		mapping_name = path + StringLastIndexOfChar_1( path,'/' ) + 1 ;
 	}else{
 		str = String( UUID ) ;
 		StringRemoveString( str,"\"" ) ;

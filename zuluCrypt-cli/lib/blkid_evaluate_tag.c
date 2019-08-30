@@ -136,31 +136,41 @@ static string_t _zulucrypt_getloopfs( const char * device )
 
 string_t zuluCryptGetFileSystemFromDevice( const char * device )
 {
-	char * e ;
-
-	string_t st ;
-
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
-
-		e = zuluCryptLoopDeviceAddress( device ) ;
-
-		if( e ){
-
-			st = _zulucrypt_getloopfs( e ) ;
-
-			StringFree( e ) ;
-
-			return st ;
-		}else{
-			return StringVoid ;
-		}
-
-	}else if( StringPrefixEqual( device,"/dev/" ) ){
+	if( StringPrefixEqual( device,"/dev/" ) ){
 
 		return zulucryptGetBlkidFileSystem( device ) ;
 	}else{
 		return _zulucrypt_getloopfs( device ) ;
 	}
+}
+
+int zuluCryptNoPartitionLoopDevice( const char * e )
+{
+	if( StringPrefixEqual( e,"/dev/loop" ) ){
+
+		if( StringCharCount( e,'p' ) > 1 ){
+
+			/*
+			 * This loop device will be in "/dev/loopXpY" format, it is partitioned.
+			 */
+			return 0 ;
+		}else{
+			/*
+			 * This loop device will be in "/dev/loopX, it is not partitioned.
+			 */
+			return 1 ;
+		}
+	}else{
+		/*
+		 * Not a loop device
+		 */
+		return 0 ;
+	}
+}
+
+int zuluCryptMultiPartitionLoopDevice( const char * e )
+{
+	return StringCharCount( e,'p' ) > 1 ;
 }
 
 int zuluCryptDeviceHasAgivenFileSystem( const char * device,const char * fs )

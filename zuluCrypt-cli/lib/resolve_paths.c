@@ -260,10 +260,16 @@ char * zuluCryptResolvePath( const char * path )
 		return zuluCryptResolveDMPath( path ) ;
 
 	}else if( StringPrefixEqual( path,"/dev/loop" ) ){
-		/*
-		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
-		 */
-		return zuluCryptLoopDeviceAddress( path ) ;
+
+		if( zuluCryptMultiPartitionLoopDevice( path ) ){
+
+			return StringCopy_2( path ) ;
+		}else{
+			/*
+			 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
+			 */
+			return zuluCryptLoopDeviceAddress( path ) ;
+		}
 	}else{
 		return StringCopy_2( path ) ;
 	}
@@ -277,7 +283,7 @@ string_t zuluCryptResolvePath_1( const char * path )
 
 string_t zuluCryptResolvePath_2( const char * path )
 {
-	if( StringPrefixEqual( path,"/dev/loop" ) ){
+	if( zuluCryptNoPartitionLoopDevice( path ) ){
 
 		return String( path ) ;
 	}else{
@@ -287,7 +293,8 @@ string_t zuluCryptResolvePath_2( const char * path )
 
 char * zuluCryptResolvePath_3( const char * path )
 {
-	if( StringPrefixEqual( path,"/dev/loop" ) ){
+	if( zuluCryptNoPartitionLoopDevice( path ) ){
+
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in create_loop_device.c
 		 */

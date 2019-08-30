@@ -935,6 +935,32 @@ static __inline__ ssize_t StringHasComponent_1( const char * x,const char * y )
 	}
 }
 
+static __inline__ size_t StringCharCount( const char * x,char y )
+{
+	size_t s = 0 ;
+	char m ;
+
+	if( x != NULL ){
+
+		while( 1 ){
+
+			m = *x ;
+			x++ ;
+
+			if( m == y ){
+
+				s++ ;
+
+			}else if( m == '\0' ){
+
+				break ;
+			}
+		}
+	}
+
+	return s ;
+}
+
 static __inline__ int StringHasComponent( const char * x,const char * y )
 {
 	if( x == NULL || y == NULL ){

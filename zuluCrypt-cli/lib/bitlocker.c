@@ -47,7 +47,7 @@ string_t zuluCryptBitLockerMapperName( const char * e )
 {
 	string_t st ;
 
-	if( StringPrefixEqual( e,"/dev/loop" ) ){
+	if( zuluCryptNoPartitionLoopDevice( e ) ){
 
 		st = zuluCryptLoopDeviceAddress_2( e ) ;
 	}else{

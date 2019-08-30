@@ -336,14 +336,19 @@ static void _device_info( string_t p,const char * device )
 
 	}else if( StringPrefixEqual( device,"/dev/loop" ) ){
 
-		path = zuluCryptLoopDeviceAddress_1( device ) ;
+		if( zuluCryptMultiPartitionLoopDevice( device ) ){
 
-		if( path != NULL ){
-
-			StringMultipleAppend( p,"\n device:   \t",device,"\n loop:   \t",path,NULL ) ;
-			StringFree( path ) ;
+			StringMultipleAppend( p,"\n device:   \t",device,"\n loop:   \t",device,NULL ) ;
 		}else{
-			StringMultipleAppend( p,"\n device:   \t",device,"\n loop:   \tNil",NULL ) ;
+			path = zuluCryptLoopDeviceAddress_1( device ) ;
+
+			if( path != NULL ){
+
+				StringMultipleAppend( p,"\n device:   \t",device,"\n loop:   \t",path,NULL ) ;
+				StringFree( path ) ;
+			}else{
+				StringMultipleAppend( p,"\n device:   \t",device,"\n loop:   \tNil",NULL ) ;
+			}
 		}
 	}else{
 		/*

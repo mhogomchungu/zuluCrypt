@@ -282,6 +282,7 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 	stringList_t stl   = StringListVoid ;
 	stringList_t stl_1 = StringListVoid ;
 
+	string_t xt ;
 	string_t st = StringGetFromVirtualFile( "/proc/partitions" ) ;
 	string_t st_1 = String( "/dev/" ) ;
 
@@ -310,42 +311,80 @@ static stringList_t _zuluCryptVolumeList_0( int resolve_loop_devices )
 
 		index = StringLastIndexOfChar( st,' ' ) ;
 
-		if( index != -1 ){
+		if( index == -1 ){
 
-			e = StringContent( st ) + index + 1 ;
-			device = StringAppendAt( st_1,5,e ) ;
+			continue ;
+		}
 
-			if( _supported_device( device ) ){
+		e = StringContent( st ) + index + 1 ;
+		device = StringAppendAt( st_1,5,e ) ;
 
-				if( StringPrefixEqual( device,"/dev/loop" ) ){
+		if( _supported_device( device ) ){
 
-					/*
-					 * zuluCryptLoopDeviceAddress_1() id defined in ../lib/create_loop_device.c
-					 */
+			if( StringPrefixEqual( device,"/dev/loop" ) ){
 
-					e = zuluCryptLoopDeviceAddress_1( device ) ;
+				if( it != end ){
 
-					if( !zuluCryptBitLockerVolume( e ) && StringListHasNoEntry( stz,e ) ){
+					xt = *it ;
 
-						/*
-						 * Here we only keep one loop device if the volume file has
-						 * more than one loop device
-						 */
+					index = StringLastIndexOfChar( xt,' ' ) ;
 
-						if( resolve_loop_devices ){
+					if( index != -1 ){
 
-							stl_1 = StringListAppend( stl_1,e ) ;
-						}else{
-							stl_1 = StringListAppend( stl_1,device ) ;
+						e = StringContent( xt ) + index + 1 ;
+
+						if( StringPrefixEqual( e,device + 5 ) ){
+
+							/*
+							 * We will get here if the current entry has something
+							 * like "/dev/loop0" and the next entry has something
+							 * like "/dev/loop0p1. This means the current loop device
+							 * is a root loop path of a partitioned loop device and
+							 * we are skipping it because it doesnt have any useful
+							 * content. All the useful contents is in the loop partitions.
+							 */
+
+							continue ;
 						}
+					}
+				}else{
 
-						stz = StringListAppend( stz,e ) ;
+				}
+
+				/*
+				 * zuluCryptLoopDeviceAddress_1() id defined in ../lib/create_loop_device.c
+				 */
+
+				e = zuluCryptLoopDeviceAddress_1( device ) ;
+
+				if( !zuluCryptBitLockerVolume( e ) ){
+
+					if( zuluCryptMultiPartitionLoopDevice( device ) ){
+
+						stl_1 = StringListAppend( stl_1,device ) ;
+					}else{
+						if( StringListHasNoEntry( stz,e ) ){
+
+							/*
+							 * Here we only keep one loop device if the volume file has
+							 * more than one loop device
+							 */
+
+							if( resolve_loop_devices ){
+
+								stl_1 = StringListAppend( stl_1,e ) ;
+							}else{
+								stl_1 = StringListAppend( stl_1,device ) ;
+							}
+						}
 					}
 
-					StringFree( e ) ;
-				}else{
-					stl_1 = StringListAppendIfAbsent( stl_1,device ) ;
+					stz = StringListAppend( stz,e ) ;
 				}
+
+				StringFree( e ) ;
+			}else{
+				stl_1 = StringListAppendIfAbsent( stl_1,device ) ;
 			}
 		}
 	}
@@ -710,7 +749,7 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 
 	if( StringsAreNotEqual( e,"btrfs" ) ){
 
-		r = blkid_probe_get_size( blkid ) ;
+		r = (u_int64_t)blkid_probe_get_size( blkid ) ;
 
 		blkid_free_probe( blkid ) ;
 
@@ -761,7 +800,7 @@ u_int64_t zuluCryptGetVolumeSize( const char * device )
 
 						if( StringsAreEqual_2( xt,e ) ){
 
-							r += blkid_probe_get_size( blkid ) ;
+							r += (u_int64_t)blkid_probe_get_size( blkid ) ;
 						}
 					}
 
@@ -788,7 +827,7 @@ void zuluCryptPrintPartitionProperties( const char * device )
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
+	if( zuluCryptNoPartitionLoopDevice( device ) ){
 
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c
@@ -891,7 +930,7 @@ static void _print_list( stringList_t stl )
 
 		it++ ;
 
-		if( StringPrefixEqual( e,"/dev/loop" ) ){
+		if( zuluCryptNoPartitionLoopDevice( e ) ){
 
 			/*
 			 * zuluCryptLoopDeviceAddress_1() is defined in ../lib/create_loop_device.c

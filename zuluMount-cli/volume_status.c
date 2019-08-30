@@ -116,7 +116,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 
 		printf( "%s\t",UUID ) ;
 	}else{
-		if( StringPrefixEqual( dev,"/dev/loop" ) ){
+		if( zuluCryptNoPartitionLoopDevice( dev ) ){
 			/*
 			 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			 */
@@ -668,7 +668,13 @@ int zuluMountPrintDeviceProperties( const char * device,const char * UUID,uid_t 
 			 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 			 */
 
-			dev = zuluCryptLoopDeviceAddress( device ) ;
+			if( zuluCryptMultiPartitionLoopDevice( device ) ){
+
+				dev = StringCopy_2( device ) ;
+			}else{
+				dev = zuluCryptLoopDeviceAddress( device ) ;
+			}
+
 			device_1 = dev ;
 
 			z = String( dev ) ;
@@ -818,7 +824,7 @@ int zuluMountUnEncryptedVolumeStatus( const char * device,const char * fs,const 
 		p = String( "\n type:   \tNil\n cipher:   \tNil\n keysize:   \tNil\n offset:    \tNil\n" ) ;
 	}
 
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
+	if( zuluCryptNoPartitionLoopDevice( device ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress_1() is defined in ../zuluCrypt-cli/lib/create_loop_device.c
 		 */
@@ -955,7 +961,7 @@ int zuluMountPrintBitLockerProperties( const char * device,uid_t uid )
 
 	const char * e ;
 
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
+	if( zuluCryptNoPartitionLoopDevice( device ) ){
 
 		xt = zuluCryptLoopDeviceAddress_2( device ) ;
 		mt = StringCopy( xt ) ;

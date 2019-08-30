@@ -334,6 +334,16 @@ const char * zuluCryptVolumeType( blkid_probe blkid,const char * device ) ;
 int zuluCryptDeviceHasAgivenFileSystem( const char * device,const char * fs ) ;
 
 /*
+ * this function is defined in ./blkid_evaluate_tag.c
+ */
+int zuluCryptMultiPartitionLoopDevice( const char * e ) ;
+
+/*
+ * this function is defined in ./blkid_evaluate_tag.c
+ */
+int zuluCryptNoPartitionLoopDevice( const char * e ) ;
+
+/*
  * this function is defined in ./create_loop_device.c
  */
 char * zuluCryptLoopDeviceAddress( const char * device ) ;
