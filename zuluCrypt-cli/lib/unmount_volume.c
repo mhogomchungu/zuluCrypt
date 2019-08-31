@@ -149,7 +149,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 	string_t st ;
 	string_t xt ;
 
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
+	if( zuluCryptNoPartitionLoopDevice( device ) ){
 
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c

@@ -259,17 +259,11 @@ char * zuluCryptResolvePath( const char * path )
 
 		return zuluCryptResolveDMPath( path ) ;
 
-	}else if( StringPrefixEqual( path,"/dev/loop" ) ){
-
-		if( zuluCryptMultiPartitionLoopDevice( path ) ){
-
-			return StringCopy_2( path ) ;
-		}else{
-			/*
-			 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
-			 */
-			return zuluCryptLoopDeviceAddress( path ) ;
-		}
+	}else if( zuluCryptNoPartitionLoopDevice( path ) ){
+		/*
+		 * zuluCryptLoopDeviceAddress() is defined in create_loop_device.c
+		 */
+		return zuluCryptLoopDeviceAddress( path ) ;
 	}else{
 		return StringCopy_2( path ) ;
 	}

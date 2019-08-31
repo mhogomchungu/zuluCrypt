@@ -34,7 +34,7 @@ int zuluMountUMount( ARGS * args )
 ERROR: You can not umount volumes out of \"%s\" since you are not root and do not belong to group \"zulumount\"\n" ) ;
 	string_t xt ;
 
-	if( StringPrefixEqual( device,"/dev/loop" ) ){
+	if( zuluCryptNoPartitionLoopDevice( device ) ){
 		/*
 		 * zuluCryptLoopDeviceAddress() is defined in ../zuluCrypt-cli/lib/create_loop_devices.c
 		 */
@@ -104,7 +104,6 @@ ERROR: You can not umount volumes out of \"%s\" since you are not root and do no
 		case 5 : return _zuluExit( 109,st,m_point,gettext( "ERROR: Shared mount point appear to be in an ambiguous state,advice to unmount manually" ) ) ;
 		default: ;
 	}
-
 
 	/*
 	 * zuluCryptSecurityGainElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
