@@ -501,6 +501,11 @@ int zuluCryptBitLockerVolume( const char * e ) ;
 /*
  * this function is defined in bitlocker.c
  */
+char * zuluCryptBitLockerUnmountPath( const char * e ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
 string_t zuluCryptBitLockerVolumeFS( const char * e ) ;
 
 /*

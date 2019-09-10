@@ -108,6 +108,24 @@ int zuluCryptBitLockerVolume( const char * e )
 	return StringEndsWith_1( e,"/dislocker-file" ) ;
 }
 
+char * zuluCryptBitLockerUnmountPath( const char * e )
+{
+	/*
+	 * e will contain something like "/woof/bar/meaw/dislocker-file"
+	 * and we want to remove the "/dislocker-file" part.
+	 */
+	char * m = StringCopy_2( e ) ;
+
+	ssize_t s = StringLastIndexOfChar_1( m,'/' ) ;
+
+	if( s != -1 ){
+
+		*( m + s ) = '\0' ;
+	}
+
+	return m ;
+}
+
 int zuluCryptBitLockerVolume_1( const char * e )
 {
 	stringList_t stl = StringListSplit( e,' ' ) ;

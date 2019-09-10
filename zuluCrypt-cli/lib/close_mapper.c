@@ -23,13 +23,6 @@
 #include "includes.h"
 #include "zuluplay_support.h"
 
-typedef struct{
-
-	const char * mapper ;
-	int ( * function )( const char * mapper ) ;
-
-}mapper_closer ;
-
 static int _close_cryptsetup( const char * mapper )
 {
 	int r = 1 ;
@@ -48,36 +41,32 @@ static int _close_cryptsetup( const char * mapper )
 
 static int _close_dislocker( const char * mapper )
 {
-	int r ;
-
-	string_t st = String( mapper ) ;
-
-	const char * m = StringRemoveString( st,"/dislocker-file" ) ;
+	char * m = zuluCryptBitLockerUnmountPath( mapper ) ;
 
 	/*
 	 * doing it this way over calling umount() function is better
 	 * because the mount tool cleans up /etc/mtab
 	 */
-	r = ProcessExecute( ZULUCRYPTumount,m,NULL ) ;
+	int r = ProcessExecute( ZULUCRYPTumount,m,NULL ) ;
 
 	if( r == 0 ){
 
 		rmdir( m ) ;
 	}
 
-	StringDelete( &st ) ;
+	StringFree( m ) ;
 
 	return r ;
 }
 
-static int _close_mapper( const mapper_closer * m )
+static int _close_mapper( const char * mapper,int( *function )( const char * ) )
 {
 	int i ;
 	int k = 1 ;
 
 	for( i = 0 ; i < 5 ; i++ ){
 
-		k = m->function( m->mapper ) ;
+		k = function( mapper ) ;
 
 		if( k == 0 ){
 
@@ -87,33 +76,29 @@ static int _close_mapper( const mapper_closer * m )
 		}
 	}
 
-	fprintf( stderr,"Trouble ahead, failed to remove encryption mapper: %s\n",m->mapper ) ;
+	fprintf( stderr,"Trouble ahead, failed to remove encryption mapper: %s\n",mapper ) ;
 
 	return k ;
 }
 
 int zuluCryptCloseMapper( const char * mapper )
 {
-	mapper_closer m = { mapper,NULL } ;
-
-	if( zuluCryptPathIsNotValid( m.mapper ) ){
+	if( zuluCryptPathIsNotValid( mapper ) ){
 
 		/*
 		 * Why are we getting here???
 		 */
 		return 0 ;
 	}else{
-		if( zuluCryptTrueCryptOrVeraCryptVolume( m.mapper ) ){
+		if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
 
-			m.function = tc_api_close_mapper ;
+			return _close_mapper( mapper,tc_api_close_mapper ) ;
 
-		}else if( zuluCryptBitLockerVolume( m.mapper ) ){
+		}else if( zuluCryptBitLockerVolume( mapper ) ){
 
-			m.function = _close_dislocker ;
+			return _close_mapper( mapper,_close_dislocker ) ;
 		}else{
-			m.function = _close_cryptsetup ;
+			return _close_mapper( mapper,_close_cryptsetup ) ;
 		}
-
-		return _close_mapper( &m ) ;
 	}
 }

@@ -1546,6 +1546,8 @@ void zuluMount::unmount( const QString& e )
 {
 	this->disableAll() ;
 
+	utility::Task::suspendForOneSecond() ;
+
 	auto row = m_ui->tableWidget->currentRow() ;
 
 	auto path      = m_ui->tableWidget->item( row,0 )->text() ;
@@ -1558,8 +1560,7 @@ void zuluMount::unmount( const QString& e )
 
 			siritask::deleteMountFolder( mountPath ) ;
 		}else{
-			DialogMsg m( this ) ;
-			m.ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount volume" ) ) ;
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed to unmount volume" ) ) ;
 			this->enableAll() ;
 		}
 	}else{
