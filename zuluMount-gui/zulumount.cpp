@@ -102,6 +102,7 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 	m_ui->pbmenu->setMinimumHeight( 31 ) ;
 	m_ui->pbmount->setMinimumHeight( 31 ) ;
 	m_ui->pbupdate->setMinimumHeight( 31 ) ;
+	m_ui->pbfavorites->setMinimumHeight( 31 ) ;
 
 	auto f = utility::getWindowDimensions( "zuluMount" ) ;
 
