@@ -145,9 +145,15 @@ The list of most frequently asked questions can be found <a href="https://github
 
 ## zuluCrypt screenshots
 
-<a href="http://tinypic.com?ref=10n6hlc" target="_blank"><img src="http://i64.tinypic.com/10n6hlc.jpg" border="0" alt="Image and video hosting by TinyPic"></a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_121900.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_121900.png"></a>
 
-<a href="http://tinypic.com?ref=1ak4i" target="_blank"><img src="http://i65.tinypic.com/1ak4i.png" border="0" alt="Image and video hosting by TinyPic"></a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_121934.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_121934.png"></a>
+
+<a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122017.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122017.png"></a>
+
+<a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122040.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122040.png"></a>
+
+<a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122108.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122108.png"></a>
 
 ## zuluMount screenshot
 
@@ -219,4 +225,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 
 ```
 
-last update: Mon 19 Aug 2019 09:14:44 AM EAT
+last update: Thu 12 Sep 2019 12:29:31 PM EAT
