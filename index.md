@@ -151,14 +151,12 @@ The list of most frequently asked questions can be found <a href="https://github
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122017.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122017.png"></a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122040.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122040.png"></a>
-
-<a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122108.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122108.png"></a>
 
 ## zuluMount screenshot
 
-<a href="http://tinypic.com?ref=im3t6f" target="_blank"><img src="http://i68.tinypic.com/im3t6f.png" border="0" alt="Image and video hosting by TinyPic"></a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122040.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122040.png"></a>
 
+<a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122108.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122108.png"></a>
 ## Contact info:
 
 ```
