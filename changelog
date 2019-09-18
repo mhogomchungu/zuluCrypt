@@ -300,3 +300,7 @@ version 5.6.0
    at /run/media/private/$USER). CLI users should call CLI components with "--clear-dead-mount-points"
 -- Fix a race condition bug introduced in version 5.5.0 that prevented volumes from getting mounted
   under certain circumstances.
+
+version 5.7.0
+-- Fix a bug introduced in 5.6.0 that prevents unlocking PLAIN dm-crypt volume that use non default
+   crypto options because the selection button in is zuluCrypt-gui always disabled.
