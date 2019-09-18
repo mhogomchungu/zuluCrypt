@@ -242,7 +242,7 @@ const char * zuluCryptVolumeType( blkid_probe blkid,const char * device )
 
 		if( fd != -1 ){
 
-			read( fd,buffer,11 ) ;
+			if( read( fd,buffer,11 ) ){}
 
 			close( fd ) ;
 

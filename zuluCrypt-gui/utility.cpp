@@ -779,31 +779,6 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 	} ) ;
 }
 
-void utility::dropPrivileges( int uid )
-{
-	if( uid == -1 ){
-
-		uid = utility::getUserID() ;
-	}
-
-	if( uid != -1 ){
-
-		auto id = getpwuid( static_cast< uid_t >( uid ) ) ;
-
-		if( id ){
-
-			setenv( "LOGNAME",id->pw_name,1 ) ;
-			setenv( "HOME",id->pw_dir,1 ) ;
-			setenv( "USER",id->pw_name,1 ) ;
-		}
-
-		Q_UNUSED( setgid( static_cast< gid_t >( uid ) ) ) ;
-		Q_UNUSED( setgroups( 1,reinterpret_cast< const gid_t * >( &uid ) ) ) ;
-		Q_UNUSED( setegid( static_cast< gid_t >( uid ) ) ) ;
-		Q_UNUSED( setuid( static_cast< gid_t >( uid ) ) ) ;
-	}
-}
-
 ::Task::future<bool>& utility::openPath( const QString& path,const QString& opener )
 {
 	return ::Task::run( [ = ](){

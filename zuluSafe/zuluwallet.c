@@ -1230,8 +1230,8 @@ void lxqt_wallet_application_wallet_path( char * path,u_int32_t path_buffer_size
 
 static char * _wallet_full_path( char * path_buffer,u_int32_t path_buffer_size,const char * wallet_name,const char * application_name )
 {
-	char path_1[ PATH_MAX ] ;
-	lxqt_wallet_application_wallet_path( path_1,PATH_MAX,application_name ) ;
+	char path_1[ PATH_MAX - 16 ] ;
+	lxqt_wallet_application_wallet_path( path_1,sizeof( path_1 ),application_name ) ;
 	snprintf( path_buffer,path_buffer_size,"%s/%s%s",path_1,wallet_name,WALLET_EXTENSION ) ;
 	return path_buffer ;
 }

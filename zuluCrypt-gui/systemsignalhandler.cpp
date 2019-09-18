@@ -43,7 +43,7 @@ static void setup_unix_signal_handlers()
 
 		char a = 1 ;
 
-		::write( sighupFd[ 0 ],&a,sizeof( a ) ) ;
+		if( ::write( sighupFd[ 0 ],&a,sizeof( a ) ) ){}
 	} ;
 
 	sigemptyset( &hup.sa_mask ) ;
@@ -58,7 +58,7 @@ static void setup_unix_signal_handlers()
 
 		char a = 1 ;
 
-		::write( sigtermFd[ 0 ],&a,sizeof( a ) ) ;
+		if( ::write( sigtermFd[ 0 ],&a,sizeof( a ) ) ){}
 	} ;
 
 	sigemptyset( &term.sa_mask ) ;

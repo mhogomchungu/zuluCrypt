@@ -441,7 +441,6 @@ namespace utility
 	bool canCreateFile( const QString& ) ;
 	bool useZuluPolkit( void ) ;
 	void startHelperExecutable( QObject *,const QString&,const QString&,const char *,const char * ) ;
-	void dropPrivileges( int = -1 ) ;
 	void setDebugWindow( debugWindow * w ) ;
 	QString fileManager( void ) ;
 	QString loopDevicePath( const QString& ) ;
