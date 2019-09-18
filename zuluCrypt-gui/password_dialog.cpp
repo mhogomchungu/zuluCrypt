@@ -94,17 +94,6 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	m_pluginMenu = new QMenu( this ) ;
 	m_pluginMenu->setFont( this->font() ) ;
 
-	m_veraCryptVolume = utility::autoSetVolumeAsVeraCrypt( "zuluCrypt-gui" ) ;
-
-	if( m_veraCryptVolume ){
-
-		m_ui->cbVolumeType->setCurrentIndex( 1 ) ;
-		this->cbVolumeType( 1 ) ;
-	}else{
-		m_ui->cbVolumeType->setCurrentIndex( 0 ) ;
-		this->cbVolumeType( 0 ) ;
-	}
-
 	connect( m_ui->PushButtonCancel,SIGNAL( clicked() ),this,SLOT( HideUI() ) ) ;
 	connect( m_ui->PushButtonOpen,SIGNAL( clicked() ),this,SLOT( buttonOpenClicked() ) ) ;
 	connect( m_ui->PushButtonMountPointPath,SIGNAL( clicked() ),this,SLOT( mount_point() ) ) ;
@@ -121,6 +110,9 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 		utility::mountWithSharedMountPoint( s == Qt::Checked ) ;
 	} ) ;
+
+	m_ui->cbVolumeType->setCurrentIndex( utility::defaultUnlockingVolumeType() ) ;
+	this->cbVolumeType( utility::defaultUnlockingVolumeType() ) ;
 
 	m_ui->PushButtonMountPointPath->setVisible( false ) ;
 	m_ui->pushButtonPassPhraseFromFile->setVisible( false ) ;
@@ -172,12 +164,6 @@ void passwordDialog::plainDmCryptOption( QAction * ac )
 
 void passwordDialog::cbVolumeType( int e )
 {
-	m_veraCryptVolume = ( e == 1 ) ;
-
-	utility::autoSetVolumeAsVeraCrypt( "zuluCrypt-gui",m_veraCryptVolume ) ;
-
-	m_ui->pushButtonPlainDmCryptOptions->setEnabled( e == 2 ) ;
-
 	m_ui->lineEditVolumeProperty->clear() ;
 
 	m_ui->lineEditVolumeProperty->setToolTip( QString() ) ;
@@ -189,6 +175,8 @@ void passwordDialog::cbVolumeType( int e )
 		 */
 		m_ui->labelVolumeProperty->clear() ;
 		m_ui->lineEditVolumeProperty->setEnabled( false ) ;
+		m_ui->pushButtonPlainDmCryptOptions->setEnabled( false ) ;
+		m_veraCryptVolume = false ;
 
 	}else if( e == 1 || e == 2 ){
 
@@ -197,16 +185,22 @@ void passwordDialog::cbVolumeType( int e )
 		 */
 		m_ui->labelVolumeProperty->setText( tr( "PIM Value" ) ) ;
 		m_ui->lineEditVolumeProperty->setEnabled( true ) ;
+		m_ui->pushButtonPlainDmCryptOptions->setEnabled( false ) ;
+		m_veraCryptVolume = true ;
 
 	}else if( e == 3 ){
 
 		/*
-		 * PLAIN dm-crypt with offset
+		 * PLAIN dm-crypt
 		 */
+		m_ui->pushButtonPlainDmCryptOptions->setEnabled( true ) ;
 		m_ui->labelVolumeProperty->setText( tr( "Offset" ) ) ;
 		m_ui->lineEditVolumeProperty->setEnabled( true ) ;
 		m_ui->lineEditVolumeProperty->setToolTip( tr( "Offset Will Be In Sectors If The Entry Is Made Up Of Only Digits\nAnd In Bytes If The Entry Ends With \"b\"\nAnd In Kilobytes If The Entry Ends With \"k\"\nAnd In Megabytes If The Entry Ends With \"m\"\nAnd In Terabytes If The Entry Ends With \"t\"" ) ) ;
+		m_veraCryptVolume = false ;
 	}
+
+	utility::defaultUnlockingVolumeType( e ) ;
 }
 
 bool passwordDialog::eventFilter( QObject * watched,QEvent * event )

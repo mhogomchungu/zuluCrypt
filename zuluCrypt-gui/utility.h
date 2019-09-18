@@ -399,6 +399,9 @@ namespace utility
 	bool autoSetVolumeAsVeraCrypt( const QString& ) ;
 	void autoSetVolumeAsVeraCrypt( const QString&,bool ) ;
 
+	int defaultUnlockingVolumeType() ;
+	void defaultUnlockingVolumeType( int ) ;
+
 	void autoOpenFolderOnMount( const QString&,bool ) ;
 	bool autoOpenFolderOnMount( const QString& ) ;
 

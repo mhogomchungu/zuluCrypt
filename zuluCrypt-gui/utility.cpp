@@ -2265,6 +2265,22 @@ void utility::autoSetVolumeAsVeraCrypt( const QString& app,bool set )
 	_settings->setValue( "AutoSetVolumeAsVeraCrypt",set ) ;
 }
 
+int utility::defaultUnlockingVolumeType()
+{
+	if( !_settings->contains( "DefaultUnlockingVolumeType" ) ){
+
+		_settings->setValue( "DefaultUnlockingVolumeType",0 ) ;
+	}
+
+	return _settings->value( "DefaultUnlockingVolumeType" ).toInt() ;
+}
+
+void utility::defaultUnlockingVolumeType( int e )
+{
+	_settings->setValue( "DefaultUnlockingVolumeType",e ) ;
+
+}
+
 void utility::autoOpenFolderOnMount( const QString& app,bool e )
 {
 	Q_UNUSED( app ) ;
