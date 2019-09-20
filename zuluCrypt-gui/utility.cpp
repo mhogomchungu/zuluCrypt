@@ -2364,20 +2364,19 @@ QStringList utility::plainDmCryptOptions()
 			{ "aes.cbc-essiv:sha256.256.sha256" },
 			{ "aes.cbc-essiv:sha256.256.sha512" },
 			{ "aes.cbc-essiv:sha256.256.sha1" },
-			{ "aes.cbc-essiv:sha256.512.ripemd160" },
+			{ "aes.cbc-essiv:sha256.256.ripemd160" },
 			{ "aes.cbc-essiv:sha256.512.sha256" },
 			{ "aes.cbc-essiv:sha256.512.sha512" },
 			{ "aes.cbc-essiv:sha256.512.sha1" },
-			{ "aes.xts-plain64.256.ripemd160" },
+			{ "aes.cbc-essiv:sha256.512.ripemd160" },
 			{ "aes.xts-plain64.256.sha256" },
 			{ "aes.xts-plain64.256.sha512" },
-			{ "aes.xts-plain64.256.sha512" },
 			{ "aes.xts-plain64.256.sha1" },
-			{ "aes.xts-plain64.256.sha1" },
-			{ "aes.xts-plain64.512.ripemd160" },
+			{ "aes.xts-plain64.256.ripemd160" },
 			{ "aes.xts-plain64.512.sha256" },
 			{ "aes.xts-plain64.512.sha512" },
-			{ "aes.xts-plain64.512.sha1" }
+			{ "aes.xts-plain64.512.sha1" },
+			{ "aes.xts-plain64.512.ripemd160" },
 		};
 
 		_settings->setValue( "PlainDmCryptOptions",s ) ;
