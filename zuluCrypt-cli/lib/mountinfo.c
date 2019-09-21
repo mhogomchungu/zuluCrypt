@@ -31,6 +31,13 @@ typedef struct{
 
 static int _valid_entry( const vInfo * e )
 {
+	if( StringsAreEqual( e->device,"/dev/fuse" ) ){
+		/*
+		 * We dont support these fuse devices.
+		 */
+		return 0 ;
+	}
+
 	if( StringAtLeastOnePrefixMatch( e->mountPoint,"/var/run/media/public",
 					    "/var/run/media/private",NULL ) ){
 		/*
