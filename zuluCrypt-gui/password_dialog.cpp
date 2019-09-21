@@ -624,7 +624,7 @@ void passwordDialog::enableAll()
 
 	m_ui->labelVolumeProperty->setEnabled( index != 0 ) ;
 	m_ui->lineEditVolumeProperty->setEnabled( index != 0 ) ;
-	m_ui->pushButtonPlainDmCryptOptions->setEnabled( index == 2 ) ;
+	m_ui->pushButtonPlainDmCryptOptions->setEnabled( index == 3 ) ;
 	m_ui->cbVolumeType->setEnabled( true ) ;
 	m_ui->labelVolumeType->setEnabled( true ) ;
 	m_ui->cbShareMountPoint->setEnabled( true ) ;
