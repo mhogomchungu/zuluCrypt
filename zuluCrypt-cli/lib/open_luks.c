@@ -173,10 +173,10 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 		 */
 		return 1 ;
 	}
-	if( luks_header_file_size < 1048576 || luks_header_file_size > 3145728 ){
+	if( luks_header_file_size < 1048576 || luks_header_file_size > 10485760 ){
 		/*
-		 * luks header backup or detached header is expected to be greater than 1MB but less than 2MB,we check
-		 * against 3MB to be generous.
+		 * luks header backup or detached header is expected to be greater than 1MB but less than 5MB,we check
+		 * against 10MB to be generous.
 		 */
 		return 1 ;
 	}
