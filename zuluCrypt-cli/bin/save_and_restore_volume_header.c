@@ -36,6 +36,8 @@
 
 #define ignore_result( x ) if( x ){;}
 
+#define MAX_HEADER_SIZE 10485760
+
 static int zuluExit( int st,const char * dev )
 {
 	switch( st ){
@@ -150,9 +152,10 @@ static int _secure_file_path( const char ** path,const char * source )
 
 	fstat( fd_source,&ststr ) ;
 
-	if( ststr.st_size >= 3145728 ){
+
+	if( ststr.st_size >= MAX_HEADER_SIZE ){
 		/*
-		 * headers are less than 3MB so we obvious have a wrong file
+		 * Lets assume a header can not be larger that 10MB.
 		 */
 		StringDelete( &st_path ) ;
 		return 0 ;
@@ -703,9 +706,9 @@ static int _files_are_equal( const char * file1,const char * file2 )
 	fstat( fd2,&st2 ) ;
 
 	/*
-	 * headers are less than 3MB,anything larger is automatically an error
+	 * headers are less than 10MB,anything larger is automatically an error
 	 */
-	if( st1.st_size < 3145728 && st2.st_size < 3145728 ){
+	if( st1.st_size < MAX_HEADER_SIZE && st2.st_size < MAX_HEADER_SIZE ){
 
 		map1 =  mmap( 0,st1.st_size,PROT_READ,MAP_PRIVATE,fd1,0 ) ;
 

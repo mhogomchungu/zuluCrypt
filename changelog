@@ -306,3 +306,4 @@ version 5.7.0
    crypto options because the selection button in is zuluCrypt-gui always disabled.
 -- Update French translations.
 -- Dont resolve loop device paths to their backing file if they are partitioned.
+-- Fix a bug that prevented restoring a LUKS2 volume header.
