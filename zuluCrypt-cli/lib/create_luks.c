@@ -141,6 +141,8 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 		return 1 ;
 	}
 
+	//crypt_set_log_callback( cd,_debug,NULL ) ;
+
 	if( StringsAreEqual( args->rng,"/dev/random" ) ){
 
 		crypt_set_rng_type( cd,CRYPT_RNG_RANDOM ) ;
@@ -276,6 +278,11 @@ void zuluCryptDisableMetadataLocking( void )
 static void * _luks2( const arguments * args )
 {
 	struct crypt_params_luks2 * params = args->params ;
+
+#if SUPPORT_crypt_get_pbkdf_default
+
+	params->pbkdf = crypt_get_pbkdf_default( CRYPT_LUKS2 ) ;
+#else
 	struct crypt_pbkdf_type   * pbkdf  = args->pbkdf ;
 
 	pbkdf->type             = CRYPT_KDF_ARGON2I ;
@@ -285,6 +292,7 @@ static void * _luks2( const arguments * args )
 	pbkdf->parallel_threads = 4 ;
 
 	params->pbkdf           = pbkdf ;
+#endif
 	params->sector_size     = 512 ;
 
 	return params ;

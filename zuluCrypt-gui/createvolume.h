@@ -37,8 +37,6 @@ class QCloseEvent ;
 
 #include <libcryptsetup.h>
 
-#include "../zuluCrypt-cli/lib/luks2_support.h"
-
 namespace Ui {
     class createvolume;
 }
