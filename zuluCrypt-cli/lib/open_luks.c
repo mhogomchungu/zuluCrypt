@@ -173,10 +173,10 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 		 */
 		return 1 ;
 	}
-	if( luks_header_file_size < 1048576 || luks_header_file_size > 10485760 ){
+	if( luks_header_file_size < 1048576 || luks_header_file_size > ZULUCRYPT_LUKS2_MAX_HEADER_SIZE ){
 		/*
-		 * luks header backup or detached header is expected to be greater than 1MB but less than 5MB,we check
-		 * against 10MB to be generous.
+		 * luks header backup or detached header is expected to be greater than 1MB but less than
+		 * ZULUCRYPT_LUKS2_MAX_HEADER_SIZE
 		 */
 		return 1 ;
 	}

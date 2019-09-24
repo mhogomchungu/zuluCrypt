@@ -42,6 +42,7 @@
 #define ZULUCRYPTmountPath      "/run/media"
 #define ZULUCRYPtmountMiniPath  "/run"
 
+#define ZULUCRYPT_LUKS2_MAX_HEADER_SIZE 33554432
 /*
  * The below numbers are cryptsetup default numbers.
  */
