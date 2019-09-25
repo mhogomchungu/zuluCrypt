@@ -308,3 +308,4 @@ version 5.7.0
 -- Dont resolve loop device paths to their backing file if they are partitioned.
 -- Fix a bug that prevented restoring a LUKS2 volume header.
 -- Identify authenticated luks2 volumes as luks2+.
+-- Add support for creating authenticated luks2 volumes(the support in Currently in zuluCrypt-cli only).

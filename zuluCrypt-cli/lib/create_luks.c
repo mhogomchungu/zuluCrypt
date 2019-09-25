@@ -21,6 +21,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <sys/syscall.h>
 
 #include <libcryptsetup.h>
 
@@ -37,6 +38,7 @@ typedef struct arguments{
 	const char * algo ;
 	const char * cipher ;
 	const char * rng ;
+	const char * integrity ;
 
 	void * params ;
 	void * pbkdf ;
@@ -44,6 +46,7 @@ typedef struct arguments{
 	u_int64_t iterations ;
 
 	void *( *function )( const struct arguments * ) ;
+	int ( *format )( struct crypt_device * ) ;
 
 }arguments ;
 
@@ -51,11 +54,14 @@ static void _debug( int a,const char * b,void * c )
 {
 	if( c ){}
 
-	if( b ){
+	if( a == CRYPT_LOG_ERROR ){
 
-		printf( "log level: %d,log msg: %s",a,b ) ;
-	}else{
-		printf( "log level: %d,log msg: NULL",a ) ;
+		if( b ){
+
+			printf( "log level: %d,log msg: %s",a,b ) ;
+		}else{
+			printf( "log level: %d,log msg: NULL",a ) ;
+		}
 	}
 }
 
@@ -141,7 +147,10 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 		return 1 ;
 	}
 
-	//crypt_set_log_callback( cd,_debug,NULL ) ;
+	if( args->integrity != NULL ){
+
+		zuluCryptPrintLogOutPut( cd ) ;
+	}
 
 	if( StringsAreEqual( args->rng,"/dev/random" ) ){
 
@@ -165,7 +174,17 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 		args->key,args->key_len ) < 0 ){
 		return zuluExit_1( 3,cd ) ;
 	}else{
-		return zuluExit_1( 0,cd ) ;
+		if( args->integrity ){
+
+			if( args->format( cd ) == 0 ){
+
+				return zuluExit_1( 0,cd ) ;
+			}else{
+				return zuluExit_1( 3,cd ) ;
+			}
+		}else{
+			return zuluExit_1( 0,cd ) ;
+		}
 	}
 }
 
@@ -219,7 +238,12 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 
 			if( list_count > 5 ){
 
-				args->iterations = StringConvertToInt( *( list + 5 ) )  ;
+				args->iterations = StringConvertToInt( *( list + 5 ) ) ;
+			}
+
+			if( list_count > 6 ){
+
+				args->integrity = *( list + 6 ) ;
 			}
 		}
 	}else{
@@ -252,6 +276,12 @@ static void * _luks1( const arguments * args )
 	return params ;
 }
 
+static int _format_0( struct crypt_device * cd )
+{
+	if( cd ){}
+	return 0 ;
+}
+
 int zuluCryptCreateLuks( const char * device,const char * key,size_t key_len,const char * options )
 {
 	struct crypt_params_luks1 params ;
@@ -264,11 +294,80 @@ int zuluCryptCreateLuks( const char * device,const char * key,size_t key_len,con
 	args.params   = &params ;
 	args.function = _luks1 ;
 	args.type     = CRYPT_LUKS1 ;
+	args.format   = _format_0 ;
 
 	return _create_luks_0( &args,device,key,key_len,options ) ;
 }
 
 #ifdef CRYPT_LUKS2
+
+static int _tools_wipe_progress( uint64_t size,uint64_t offset,void * usrptr )
+{
+	int * progress = usrptr ;
+
+	int x = ( int )( offset * 100 / size ) ;
+
+	if( x > *progress ){
+
+		printf( "%s complete: %d\n","%",x ) ;
+
+		*progress = x ;
+	}
+
+	return 0 ;
+}
+
+static int _format( struct crypt_device * cd )
+{
+	int progress = 0 ;
+
+	int i ;
+
+	string_t s = String_1( crypt_get_dir(),"/",NULL ) ;
+
+	string_t m = String( "zuluCrypt-wipe-volume-" ) ;
+
+	const char * mapper = StringAppendInt( m,(u_int64_t)syscall( SYS_gettid ) ) ;
+
+	int r = crypt_activate_by_volume_key( cd,
+					      mapper,
+					      NULL,
+					      0,
+					      CRYPT_ACTIVATE_PRIVATE | CRYPT_ACTIVATE_NO_JOURNAL ) ;
+	if( r < 0 ){
+
+		return 3 ;
+	}
+
+	printf( "----Starting to wipe an integrity device----\n" ) ;
+
+	crypt_wipe( cd,
+		    StringAppendString( s,m ),
+		    CRYPT_WIPE_ZERO,
+		    0,
+		    0,
+		    (size_t)crypt_get_sector_size( cd ) * 512,
+		    0,
+		    _tools_wipe_progress,
+		    &progress ) ;
+
+	printf( "----Finish wiping an integrity device----\n" ) ;
+
+	for( i = 0 ; i < 3 ; i++ ){
+
+		if( crypt_deactivate( cd,mapper ) == 0 ){
+
+			break ;
+		}else{
+			sleep( 1 ) ;
+		}
+	}
+
+	StringDelete( &m ) ;
+	StringDelete( &s ) ;
+
+	return 0 ;
+}
 
 void zuluCryptDisableMetadataLocking( void )
 {
@@ -278,6 +377,9 @@ void zuluCryptDisableMetadataLocking( void )
 static void * _luks2( const arguments * args )
 {
 	struct crypt_params_luks2 * params = args->params ;
+
+	params->sector_size     = 512 ;
+	params->integrity       = args->integrity ;
 
 #if SUPPORT_crypt_get_pbkdf_default
 
@@ -293,8 +395,6 @@ static void * _luks2( const arguments * args )
 
 	params->pbkdf           = pbkdf ;
 #endif
-	params->sector_size     = 512 ;
-
 	return params ;
 }
 
@@ -313,6 +413,7 @@ int zuluCryptCreateLuks2( const char * device,const char * key,size_t key_len,co
 	args.params   = &params ;
 	args.function = _luks2 ;
 	args.type     = CRYPT_LUKS2 ;
+	args.format   = _format ;
 
 	return _create_luks_0( &args,device,key,key_len,options ) ;
 }
