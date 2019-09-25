@@ -1194,7 +1194,12 @@ const char * StringPrependMultipleString( string_t st,... )
 
 const char * StringAppendString( string_t st,string_t xt )
 {
-	return StringAppend( st,xt->string ) ;
+	if( xt != StringVoid ){
+
+		return StringAppend( st,xt->string ) ;
+	}else{
+		return StringContent( st ) ;
+	}
 }
 
 const char * StringAppendChar( string_t st,char c )

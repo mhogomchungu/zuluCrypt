@@ -454,10 +454,16 @@ else()
 	file( WRITE ${PROJECT_BINARY_DIR}/support_whirlpool.h "\n#define SUPPORT_WHIRLPOOL 0\n" )
 endif()
 
-if( CRYPTSETUP_VERSION VERSION_GREATER "2.0.2" )
+if( CRYPTSETUP_VERSION VERSION_GREATER_EQUAL "2.0.3" )
 	file( WRITE ${PROJECT_BINARY_DIR}/luks2_support.h "\n#define SUPPORT_crypt_get_pbkdf_default 1\n" )
 else()
 	file( WRITE ${PROJECT_BINARY_DIR}/luks2_support.h "\n#define SUPPORT_crypt_get_pbkdf_default 0\n" )
+endif()
+
+if( CRYPTSETUP_VERSION VERSION_GREATER_EQUAL "2.0.0" )
+	file( APPEND ${PROJECT_BINARY_DIR}/luks2_support.h "\n#define SUPPORT_crypt_get_integrity_info 1\n" )
+else()
+	file( APPEND ${PROJECT_BINARY_DIR}/luks2_support.h "\n#define SUPPORT_crypt_get_integrity_info 0\n" )
 endif()
 
 if( CRYPTSETUP_VERSION VERSION_GREATER "1.6.0" )

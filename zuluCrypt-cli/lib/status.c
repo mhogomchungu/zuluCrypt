@@ -30,6 +30,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "luks2_support.h"
 #include "zuluplay_support.h"
 #include "share_mount_prefix_path.h"
 
@@ -44,6 +45,65 @@
  */
 
 char * zuluCryptGetMountPointFromPath( const char * path ) ;
+
+typedef struct{
+	string_t integrity_hash ;
+	string_t integrity_keysize ;
+}authenticated_luks2 ;
+
+#if SUPPORT_crypt_get_integrity_info
+
+static int _is_authenticated_luks2( struct crypt_device * cd )
+{
+	struct crypt_params_integrity m ;
+
+	memset( &m,'\0',sizeof( m ) ) ;
+
+	if( crypt_get_integrity_info( cd,&m ) == 0 ){
+
+		return m.integrity != NULL ;
+	}else{
+		return 0 ;
+	}
+}
+
+static void _authenticated_luks2( struct crypt_device * cd,authenticated_luks2 * s )
+{
+	char buffer[ 1024 ] ;
+
+	struct crypt_params_integrity m ;
+
+	memset( &m,'\0',sizeof( m ) ) ;
+	memset( buffer,'\0',sizeof( buffer ) ) ;
+
+	if( crypt_get_integrity_info( cd,&m ) == 0 ){
+
+		if( m.integrity != NULL ){
+
+			s->integrity_hash = String_1( "/integrity: ",m.integrity,NULL ) ;
+		}
+
+		if( m.integrity_key_size != 0 ){
+
+			snprintf( buffer,sizeof( buffer ),
+				  "/integrity: %d bits",
+				  ( int )m.integrity_key_size * 8 ) ;
+
+			s->integrity_keysize = String( buffer ) ;
+		}
+	}
+}
+#else
+static void _authenticated_luks2( struct crypt_device * cd,authenticated_luks2 * s )
+{
+	if( s && cd ){}
+}
+static int _is_authenticated_luks2( struct crypt_device * cd )
+{
+	if( cd ){}
+	return 0 ;
+}
+#endif
 
 static void _convert( char * buffer,int buffer_size,const char * s,u_int64_t y,u_int64_t z )
 {
@@ -318,7 +378,13 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 			r = _get_type_from_udev( mapper ) ;
 		}
 	}else{
-		st = String_1( "crypto_",type,NULL ) ;
+		if( _is_authenticated_luks2( cd ) ){
+
+			st = String_1( "crypto_",type,"+",NULL ) ;
+		}else{
+			st = String_1( "crypto_",type,NULL ) ;
+		}
+
 		r = StringDeleteHandle( &st ) ;
 	}
 
@@ -536,6 +602,8 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 	int i = 0 ;
 	int j ;
 
+	authenticated_luks2 auth_luks2 ;
+
 	crypt_status_info info ;
 
 	struct crypt_device * cd ;
@@ -546,6 +614,10 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 
 		return StringVoid ;
 	}
+
+	memset( &auth_luks2,'\0',sizeof( auth_luks2 ) ) ;
+
+	_authenticated_luks2( cd,&auth_luks2 ) ;
 
 	p = String( mapper ) ;
 
@@ -577,7 +649,14 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 		if( type != NULL ){
 
 			q = String( type ) ;
+
 			StringAppend( p,StringToLowerCase( q ) ) ;
+
+			if( StringsAreEqual_2( q,"luks2" ) && auth_luks2.integrity_hash ){
+
+				StringAppend( p,"+" ) ;
+			}
+
 			StringDelete( &q ) ;
 		}else{
 			q = _get_type_from_udev_1( mapper ) ;
@@ -605,8 +684,12 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 			StringAppend( p,"Nil" ) ;
 		}
 
+		StringAppendString( p,auth_luks2.integrity_hash ) ;
+
 		z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
 		StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
+
+		StringAppendString( p,auth_luks2.integrity_keysize ) ;
 
 		e = _crypt_get_data_offset( cd,mapper,type ) ;
 
@@ -652,6 +735,9 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 	}
 
 	crypt_free( cd ) ;
+
+	StringDelete( &auth_luks2.integrity_hash ) ;
+	StringDelete( &auth_luks2.integrity_keysize ) ;
 
 	return p ;
 }
