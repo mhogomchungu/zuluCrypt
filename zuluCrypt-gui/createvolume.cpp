@@ -1151,7 +1151,16 @@ void createvolume::taskFinished_1( const utility::Task& e )
 		}else{
 			std::atomic_bool exit( false ) ;
 
-			if( utility::clearVolume( volumePath,&exit,2 * 1024 * 1024,[]( int r ){ Q_UNUSED( r ) ; } ).await() == 0 ){
+			auto function = []( quint64 size,quint64 offset ){
+
+				Q_UNUSED( size ) ;
+				Q_UNUSED( offset ) ;
+			} ;
+
+			if( utility::clearVolume( volumePath,
+						  &exit,
+						  2 * 1024 * 1024, //2 * 1024 * 1024 is the size of the header
+						  function ).await() == 0 ){
 
 				msg.ShowUIOK( tr( "SUCCESS!" ),tr( "Luks volume created successfully." ) ) ;
 			}else{

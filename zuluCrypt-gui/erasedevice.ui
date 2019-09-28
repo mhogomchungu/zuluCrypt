@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>532</width>
-    <height>102</height>
+    <height>175</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,9 +65,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>40</y>
+     <y>110</y>
      <width>101</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -84,9 +84,9 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>50</y>
+     <y>110</y>
      <width>291</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="value">
@@ -97,7 +97,7 @@
    <property name="geometry">
     <rect>
      <x>190</x>
-     <y>70</y>
+     <y>140</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -113,7 +113,7 @@
    <property name="geometry">
     <rect>
      <x>270</x>
-     <y>70</y>
+     <y>140</y>
      <width>81</width>
      <height>31</height>
     </rect>
@@ -138,13 +138,74 @@
     </rect>
    </property>
   </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>50</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Average Speed</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>86</y>
+     <width>101</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>ETA</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelAverageSpeed">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>50</y>
+     <width>291</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string notr="true">N/A</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelETA">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>80</y>
+     <width>291</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string notr="true">N/A</string>
+   </property>
+  </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>531</width>
-     <height>101</height>
+     <height>171</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -161,7 +222,7 @@
    <property name="geometry">
     <rect>
      <x>220</x>
-     <y>70</y>
+     <y>140</y>
      <width>90</width>
      <height>33</height>
     </rect>

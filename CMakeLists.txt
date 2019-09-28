@@ -354,6 +354,10 @@ if( NOT NOGUI )
 		find_package( Qt5Core REQUIRED )
 		find_package( Qt5Network REQUIRED )
 
+		message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
+		message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
+		message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+
 		set( CMAKE_INCLUDE_CURRENT_DIR ON )
 		include_directories( ${Qt5Widgets_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5Core_INCLUDE_DIRS} )
 

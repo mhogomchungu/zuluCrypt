@@ -921,12 +921,15 @@ static std::function< void( int ) > _closeFunction( const QString& e )
 	} ;
 }
 
-static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
+static bool _writeToVolume( int fd,std::array< char,1024 >& buffer )
 {
-	return write( fd,buffer,bufferSize ) != -1 ;
+	return write( fd,buffer.data(),buffer.size() ) != -1 ;
 }
 
-::Task::future< int >& utility::clearVolume( const QString& volume,std::atomic_bool * exit,size_t volumeSize,std::function< void( int ) > function )
+::Task::future< int >& utility::clearVolume( const QString& volume,
+					     std::atomic_bool * exit,
+					     size_t volumeSize,
+					     std::function< void( quint64 size,quint64 offset ) > function )
 {
 	return ::Task::run( [ volume,exit,volumeSize,function ](){
 
@@ -934,7 +937,9 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 
 		volumePath.replace( "\"","\"\"\"" ) ;
 
-		int r = utility::Task( utility::appendUserUID( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ).exitCode() ;
+		auto a = utility::appendUserUID( "%1 -k -J -d \"%2\"" ).arg( ZULUCRYPTzuluCrypt,volumePath ) ;
+
+		int r = utility::Task( a ).exitCode() ;
 
 		if( r != 0 ){
 
@@ -950,12 +955,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 
 				return 1 ;
 			}else{
-				int i = 0 ;
-				int j = 0 ;
-
-				const int bufferSize = 1024 ;
-
-				char buffer[ bufferSize ] ;
+				std::array< char,1024 > buffer ;
 
 				quint64 size         = _volumeSize( volumeMapperPath,volumeSize ) ;
 				quint64 size_written = 0 ;
@@ -965,7 +965,7 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 					return 0 ;
 				}
 
-				while( _writeToVolume( fd,buffer,bufferSize ) ){
+				while( _writeToVolume( fd,buffer ) ){
 
 					if( *exit ){
 						/*
@@ -973,16 +973,9 @@ static bool _writeToVolume( int fd,const char * buffer,unsigned int bufferSize )
 						 */
 						return 5 ;
 					}else{
-						size_written += bufferSize ;
+						size_written += buffer.size() ;
 
-						i = int( ( size_written * 100 / size ) ) ;
-
-						if( i > j ){
-
-							function( i ) ;
-
-							j = i ;
-						}
+						function( size,size_written ) ;
 
 						if( size_written >= size ){
 

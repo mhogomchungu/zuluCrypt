@@ -278,7 +278,19 @@ void createfile::pbCreate()
 
 			file.close() ;
 
-			int r = utility::clearVolume( filePath,&m_exit,0,[ this ]( int i ){ emit sendProgress( i ) ; } ).await() ;
+			int progress = 0 ;
+
+			int r = utility::clearVolume( filePath,&m_exit,0,[ & ]( quint64 size,quint64 offset ){
+
+					int i = int( ( offset * 100 / size ) ) ;
+
+					if( i > progress ){
+
+						emit sendProgress( i ) ;
+
+						progress = i ;
+					}
+			} ).await() ;
 
 			if( r == 5 ){
 

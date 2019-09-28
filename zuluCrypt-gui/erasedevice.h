@@ -48,7 +48,7 @@ public:
 	void HideUI( void ) ;
 signals:
 	void complete( QString ) ;
-	void sendProgress( int ) ;
+	void sendProgress( QString,QString,QString,QString,int ) ;
 private slots:
 	void enableAll( void ) ;
 	void disableAll( void ) ;
@@ -56,7 +56,7 @@ private slots:
 	void pbCancel( void ) ;
 	void pbFile( void ) ;
 	void pbPartition( void ) ;
-	void setProgress( int ) ;
+	void setProgress( QString,QString,QString,QString,int ) ;
 	void setPath( QString ) ;
 	void taskResult( int ) ;
 private:
@@ -67,6 +67,8 @@ private:
 	std::atomic_bool m_exit ;
 	bool m_running ;
 	utility::label m_label ;
+	QString m_total_time ;
+	QString m_average_speed ;
 };
 
 #endif // ERASEDEVICE_H

@@ -49,7 +49,8 @@ erasedevice::erasedevice( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::e
 	connect( m_ui->pushButtonStart,SIGNAL( clicked() ),this,SLOT( pbStart() ) ) ;
 	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 
-	connect( this,SIGNAL( sendProgress( int ) ),this,SLOT( setProgress( int ) ) ) ;
+	connect( this,SIGNAL( sendProgress( QString,QString,QString,QString,int ) ),
+		 this,SLOT( setProgress( QString,QString,QString,QString,int ) ) ) ;
 
 	m_ui->pushButtonFile->setIcon( QIcon( ":/file.png" ) ) ;
 	m_ui->pushButtonPartition->setIcon( QIcon( ":/partition.png" ) ) ;
@@ -99,7 +100,12 @@ void erasedevice::taskResult( int st )
 	switch( st ){
 
 		case 0: m_ui->progressBar->setValue( 100 ) ;
-			m_label.show( tr( "Data on the device successfully erased" ) )			        ;break ;
+		{
+			QString a = tr( "Average Speed: " ) + m_average_speed + "\n" ;
+			QString b = tr( "Total Time: " ) + m_total_time + "\n\n" ;
+			m_label.show( a + b + tr( "Data on the device successfully erased" ) ) ;
+		}
+		break ;
 		case 1: m_label.show( tr( "Could not create mapper" ) )						;break ;
 		case 2: m_label.show( tr( "Could not resolve device path" ) )					;break ;
 		case 3: m_label.show( tr( "Random data successfully written" ) )				;break ;
@@ -169,43 +175,17 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 
 	m_exit = false ;
 	m_running = true ;
-#if 0
-	/*
-	 * It would have been nice to have progress report on how much longer to wait for the operation
-	 * to complete but tests have shown that the fluctuations between writes is too great and
-	 * estimated time remaining jumps around too much to be useful.More investigation is needed.
-	 */
-	QDateTime time ;
 
-	qint64 previousTime = time.currentMSecsSinceEpoch() ;
+	utility::progress update( 1500,[ this ]( const utility::progress::result& m ){
 
-	qint64 averageTime = 0 ;
+		emit sendProgress( m.current_speed,
+				   m.average_speed,
+				   m.eta,
+				   m.total_time,
+				   m.percentage_done ) ;
+	} ) ;
 
-	auto _update = [ & ]( int i ){
-
-		qint64 currentTime = time.currentMSecsSinceEpoch() ;
-
-		qint64 timeDifference = currentTime - previousTime ;
-
-		previousTime = currentTime ;
-
-		qint64 timeRemaining = ( 100 - i ) * timeDifference ;
-
-		if( i == 1 ){
-			averageTime = timeRemaining ;
-		}else{
-			averageTime = ( averageTime + timeRemaining ) / 2 ;
-		}
-
-		qDebug() << timeRemaining / ( 1000 ) << ":" << averageTime   / ( 1000 ) ;
-
-		emit sendProgress( i ) ;
-	} ;
-#else
-	auto _update = [ & ]( int i ){ emit sendProgress( i ) ;	} ;
-#endif
-
-	auto r = utility::clearVolume( path,&m_exit,0,_update ).await() ;
+	auto r = utility::clearVolume( path,&m_exit,0,update.function() ).await() ;
 
 	m_running = false ;
 
@@ -234,9 +214,15 @@ void erasedevice::disableAll()
 	m_ui->pushButtonStart->setEnabled( false ) ;
 }
 
-void erasedevice::setProgress( int st )
+void erasedevice::setProgress( QString cs,QString av,QString eta,QString tt,int st )
 {
+	Q_UNUSED( cs )
+	m_ui->labelAverageSpeed->setText( av ) ;
+	m_ui->labelETA->setText( eta ) ;
 	m_ui->progressBar->setValue( st ) ;
+
+	m_average_speed = av ;
+	m_total_time = tt ;
 }
 
 void erasedevice::pbCancel()
