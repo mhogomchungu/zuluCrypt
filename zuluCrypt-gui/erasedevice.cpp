@@ -201,6 +201,10 @@ void erasedevice::enableAll()
 	m_ui->pushButtonFile->setEnabled( true ) ;
 	m_ui->pushButtonPartition->setEnabled( true ) ;
 	m_ui->pushButtonStart->setEnabled( true ) ;
+	m_ui->label_3->setEnabled( true ) ;
+	m_ui->label_4->setEnabled( true ) ;
+	m_ui->labelAverageSpeed->setEnabled( true ) ;
+	m_ui->labelETA->setEnabled( true ) ;
 }
 
 void erasedevice::disableAll()
@@ -212,6 +216,10 @@ void erasedevice::disableAll()
 	m_ui->pushButtonFile->setEnabled( false ) ;
 	m_ui->pushButtonPartition->setEnabled( false ) ;
 	m_ui->pushButtonStart->setEnabled( false ) ;
+	m_ui->label_3->setEnabled( false ) ;
+	m_ui->label_4->setEnabled( false ) ;
+	m_ui->labelAverageSpeed->setEnabled( false ) ;
+	m_ui->labelETA->setEnabled( false ) ;
 }
 
 void erasedevice::setProgress( QString cs,QString av,QString eta,QString tt,int st )
