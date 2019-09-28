@@ -67,7 +67,7 @@ void tcrypt::currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * p
 
 void tcrypt::itemClicked( QTableWidgetItem * item )
 {
-	Q_UNUSED( item ) ;
+	Q_UNUSED( item )
 }
 
 bool tcrypt::eventFilter( QObject * watched,QEvent * event )

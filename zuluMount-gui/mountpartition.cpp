@@ -385,7 +385,7 @@ void mountPartition::AutoMount( const volumeProperty& e )
 
 void mountPartition::stateChanged( int i )
 {
-	Q_UNUSED( i ) ;
+	Q_UNUSED( i )
 
 	m_ui->checkBox->setEnabled( false ) ;
 

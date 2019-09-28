@@ -78,7 +78,7 @@ zuluMount::zuluMount( QWidget * parent ) :
 
 	m_signalHandler.setAction( [ this ]( systemSignalHandler::signal s ){
 
-		Q_UNUSED( s ) ;
+		Q_UNUSED( s )
 
 		this->emergencyQuitApplication() ;
 	} ) ;
@@ -154,7 +154,7 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
 
-		Q_UNUSED( s ) ;
+		Q_UNUSED( s )
 
 		auto item = m_ui->tableWidget->currentItem() ;
 
@@ -260,7 +260,7 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 		return ac ;
 	}() ) ;
 
-	m_favorite_menu = [ this,trayMenu ](){
+	m_favorite_menu = [ this ](){
 
 		auto m = new QMenu( tr( "Favorites" ),this ) ;
 
@@ -440,7 +440,7 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 void zuluMount::showTrayIcon( bool e )
 {
-	Q_UNUSED( e ) ;
+	Q_UNUSED( e )
 	m_trayIcon.show() ;
 }
 
@@ -642,7 +642,7 @@ void zuluMount::closeApplication()
 
 void zuluMount::closeApplication( int s )
 {
-	Q_UNUSED( s ) ;
+	Q_UNUSED( s )
 	m_events.stop() ;
 }
 

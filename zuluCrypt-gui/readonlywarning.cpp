@@ -29,7 +29,7 @@
 
 bool readOnlyWarning::getOpenVolumeReadOnlyOption( const QString& app )
 {
-	Q_UNUSED( app ) ;
+	Q_UNUSED( app )
 	return utility::readOnlyOption() ;
 }
 

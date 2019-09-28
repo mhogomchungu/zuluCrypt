@@ -39,7 +39,7 @@ static void setup_unix_signal_handlers()
 
 	hup.sa_handler = []( int q ){
 
-		Q_UNUSED( q ) ;
+		Q_UNUSED( q )
 
 		char a = 1 ;
 
@@ -54,7 +54,7 @@ static void setup_unix_signal_handlers()
 
 	term.sa_handler = []( int q ){
 
-		Q_UNUSED( q ) ;
+		Q_UNUSED( q )
 
 		char a = 1 ;
 

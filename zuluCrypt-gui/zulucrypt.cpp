@@ -88,7 +88,7 @@ zuluCrypt::zuluCrypt( QWidget * parent ) :
 
 	m_signalHandler.setAction( [ this ]( systemSignalHandler::signal s ){
 
-		Q_UNUSED( s ) ;
+		Q_UNUSED( s )
 
 		this->emergencyQuitApplication() ;
 	} ) ;
@@ -361,7 +361,7 @@ void zuluCrypt::setupConnections()
 
 	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
 
-		Q_UNUSED( s ) ;
+		Q_UNUSED( s )
 
 		auto item = m_ui->tableWidget->currentItem() ;
 
@@ -774,7 +774,7 @@ void zuluCrypt::closeApplication()
 
 void zuluCrypt::closeApplication( int s )
 {
-	Q_UNUSED( s ) ;
+	Q_UNUSED( s )
 	m_mountInfo.stop()() ;
 }
 

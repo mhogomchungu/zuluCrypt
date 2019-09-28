@@ -372,7 +372,7 @@ void createvolume::setOptions( int e )
 	 */
 	bool supportWhirlpool = utility::userHasGoodVersionOfWhirlpool() ;
 
-	Q_UNUSED( e ) ;
+	Q_UNUSED( e )
 
 	auto _plain_dmcrypt = [ this ](){
 
@@ -1153,8 +1153,8 @@ void createvolume::taskFinished_1( const utility::Task& e )
 
 			auto function = []( quint64 size,quint64 offset ){
 
-				Q_UNUSED( size ) ;
-				Q_UNUSED( offset ) ;
+				Q_UNUSED( size )
+				Q_UNUSED( offset )
 			} ;
 
 			if( utility::clearVolume( volumePath,

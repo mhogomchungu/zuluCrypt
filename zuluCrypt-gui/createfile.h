@@ -45,7 +45,7 @@ public:
 	explicit createfile( QWidget *,std::function< void( const QString& ) > ) ;
 	~createfile() ;
 signals :
-	void sendProgress( int ) ;
+	void sendProgress( QString,QString,QString,QString,int ) ;
 public slots:
 	void warnAboutRandomData( int ) ;
 	void HideUI( void ) ;
@@ -54,7 +54,7 @@ public slots:
 	void pbCancel( void ) ;
 	void pbCreate( void ) ;
 private slots:
-	void setProgress( int ) ;
+	void setProgress( QString,QString,QString,QString,int ) ;
 	void fileTextChange( QString ) ;
 private:
 	void createFile( const QString&,qint64 ) ;

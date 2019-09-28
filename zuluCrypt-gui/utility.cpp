@@ -1079,7 +1079,7 @@ bool utility::useDmCryptForRandomData()
 
 QString utility::localizationLanguage( const QString& program )
 {
-	Q_UNUSED( program ) ;
+	Q_UNUSED( program )
 
 	if( _settings->contains( "LocalizationLanguage" ) ){
 
@@ -1093,7 +1093,7 @@ QString utility::localizationLanguage( const QString& program )
 
 void utility::setLocalizationLanguage( const QString& program,const QString& language )
 {
-	Q_UNUSED( program ) ;
+	Q_UNUSED( program )
 	_settings->setValue( "LocalizationLanguage",language ) ;
 }
 
@@ -1781,7 +1781,7 @@ utility::array_t utility::getWindowDimensions( const QString& application )
 
 void utility::setWindowDimensions( const QString& application,const std::initializer_list<int>& e )
 {
-	Q_UNUSED( application ) ;
+	Q_UNUSED( application )
 
 	QStringList s ;
 
@@ -2011,7 +2011,7 @@ void utility::showTrayIcon( QAction * ac,QObject * obj,bool show )
 
 void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )
 {
-	Q_UNUSED( zuluCrypt ) ;
+	Q_UNUSED( zuluCrypt )
 
 	if( _settings->contains( "ShowTrayIcon" ) ){
 
@@ -2116,7 +2116,7 @@ void utility::setLocalizationLanguage( bool translate,QMenu * m,const QString& a
 
 void utility::languageMenu( QWidget * w,QMenu * m,QAction * ac,const char * app )
 {
-	Q_UNUSED( w ) ;
+	Q_UNUSED( w )
 
 	auto e = ac->text() ;
 
@@ -2190,7 +2190,7 @@ void utility::setIconMenu( const QString& app,QAction * ac,QWidget * w,
 
 void utility::setIcons( const QString& app,const QString& iconName )
 {
-	Q_UNUSED( app ) ;
+	Q_UNUSED( app )
 	_settings->setValue( "IconName",iconName ) ;
 }
 
@@ -2214,7 +2214,7 @@ QIcon utility::getIcon( const QString& app )
 
 bool utility::autoSetVolumeAsVeraCrypt( const QString& app )
 {
-	Q_UNUSED( app ) ;
+	Q_UNUSED( app )
 
 	if( _settings->contains( "AutoSetVolumeAsVeraCrypt" ) ){
 
@@ -2228,8 +2228,7 @@ bool utility::autoSetVolumeAsVeraCrypt( const QString& app )
 
 void utility::autoSetVolumeAsVeraCrypt( const QString& app,bool set )
 {
-	Q_UNUSED( app ) ;
-
+	Q_UNUSED( app )
 	_settings->setValue( "AutoSetVolumeAsVeraCrypt",set ) ;
 }
 
@@ -2251,13 +2250,13 @@ void utility::defaultUnlockingVolumeType( int e )
 
 void utility::autoOpenFolderOnMount( const QString& app,bool e )
 {
-	Q_UNUSED( app ) ;
+	Q_UNUSED( app )
 	_settings->setValue( "AutoOpenFolderOnMount",e ) ;
 }
 
 bool utility::autoOpenFolderOnMount( const QString& app )
 {
-	Q_UNUSED( app ) ;
+	Q_UNUSED( app )
 
 	if( _settings->contains( "AutoOpenFolderOnMount" ) ){
 
@@ -2394,7 +2393,7 @@ QStringList utility::supportedFileSystems()
 
 std::pair< bool,QByteArray > utility::getKeyFromNetwork( const QString& e )
 {
-	Q_UNUSED( e ) ;
+	Q_UNUSED( e )
 
 	return { false,QByteArray() } ;
 #if 0
@@ -2450,7 +2449,7 @@ std::pair< bool,QByteArray > utility::getKeyFromNetwork( const QString& e )
 
 void utility::setHDPI( const QString& e )
 {
-	Q_UNUSED( e ) ;
+	Q_UNUSED( e )
 
 #if QT_VERSION >= 0x050600
 

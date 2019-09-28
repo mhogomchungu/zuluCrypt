@@ -54,7 +54,8 @@ createfile::createfile( QWidget * parent,std::function< void( const QString& ) >
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
 	connect( m_ui->lineEditFileName,SIGNAL( textChanged( QString ) ),this,SLOT(fileTextChange( QString ) ) ) ;
 
-	connect( this,SIGNAL( sendProgress( int ) ),this,SLOT( setProgress( int ) ) ) ;
+	connect( this,SIGNAL( sendProgress( QString,QString,QString,QString,int ) ),
+		 this,SLOT( setProgress( QString,QString,QString,QString,int ) ) ) ;
 
 	this->installEventFilter( this ) ;
 
@@ -225,7 +226,7 @@ void createfile::pbCreate()
 
 	this->disableAll() ;
 
-	emit sendProgress( 0 ) ;
+	m_ui->progressBar->setValue( 0 ) ;
 
 	m_exit = false ;
 
@@ -278,19 +279,16 @@ void createfile::pbCreate()
 
 			file.close() ;
 
-			int progress = 0 ;
+			utility::progress update( 1500,[ this ]( const utility::progress::result& m ){
 
-			int r = utility::clearVolume( filePath,&m_exit,0,[ & ]( quint64 size,quint64 offset ){
+				emit sendProgress( m.current_speed,
+						   m.average_speed,
+						   m.eta,
+						   m.total_time,
+						   m.percentage_done ) ;
+			} ) ;
 
-					int i = int( ( offset * 100 / size ) ) ;
-
-					if( i > progress ){
-
-						emit sendProgress( i ) ;
-
-						progress = i ;
-					}
-			} ).await() ;
+			int r = utility::clearVolume( filePath,&m_exit,0,update.function() ).await() ;
 
 			if( r == 5 ){
 
@@ -315,15 +313,17 @@ void createfile::pbCreate()
 }
 
 void createfile::createFile( const QString& filePath,qint64 size )
-{
-	int i = 0 ;
-	int j = 0 ;
-
-	std::array< char,1024 > buffer ;
-
-	qint64 size_written = 0 ;
-
+{	
 	enum class result{ success,deviceFail,cancelled,fileFail } ;
+
+	utility::progress update( 1500,[ this ]( const utility::progress::result& m ){
+
+		emit sendProgress( m.current_speed,
+				   m.average_speed,
+				   m.eta,
+				   m.total_time,
+				   m.percentage_done ) ;
+	} ) ;
 
 	auto s = Task::await( [ & ]{
 
@@ -341,6 +341,12 @@ void createfile::createFile( const QString& filePath,qint64 size )
 			return result::fileFail ;
 		}
 
+		auto function = update.function() ;
+
+		std::array< char,1024 > buffer ;
+
+		qint64 size_written = 0 ;
+
 		while( size_written < size ){
 
 			if( m_exit ){
@@ -351,23 +357,16 @@ void createfile::createFile( const QString& filePath,qint64 size )
 
 				size_written += file.write( buffer.data(),s ) ;
 
-				i = int( ( size_written * 100 / size ) ) ;
-
-				if( i > j ){
-
-					emit sendProgress( i ) ;
-
-					j = i ;
-				}
+				function( quint64( size ),quint64( size_written ) ) ;
 			}
 		}
 
 		file.resize( size ) ;
 
-		return  result::success ;
+		return result::success ;
 	} ) ;
 
-	switch ( s ) {
+	switch( s ) {
 		case result::success :
 		m_function( filePath ) ;
 		break ;
@@ -407,9 +406,17 @@ void createfile::HideUI()
 	this->deleteLater() ;
 }
 
-void createfile::setProgress( int p )
+void createfile::setProgress( QString cs,QString av,QString eta,QString tt,int st )
 {
-	m_ui->progressBar->setValue( p ) ;
+	Q_UNUSED( cs )
+	Q_UNUSED( tt )
+
+	QString a = tr( "Average Speed: " ) + av ;
+	QString b = tr( "ETA: " ) + eta ;
+
+	this->setWindowTitle( a + "/" + b ) ;
+
+	m_ui->progressBar->setValue( st ) ;
 }
 
 void createfile::pbOpenFolder()

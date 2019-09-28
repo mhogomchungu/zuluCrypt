@@ -91,7 +91,7 @@ void DialogMsg::ShowUI( const QString& title,const QString& msg )
 
 void DialogMsg::ShowPermissionProblem( const QString& device )
 {
-	Q_UNUSED( device ) ;
+	Q_UNUSED( device )
 	QString msg = tr( "\n\
 \"system volumes\" are volumes that either udev has identify them as such if udev is enabled \
 or have an entry in \"/etc/fstab\",\"/etc/crypttab\" or \"/etc/zuluCrypt/system_volumes.list\".\n\

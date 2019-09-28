@@ -102,7 +102,7 @@ bool luksaddkey::eventFilter( QObject * watched,QEvent * event )
 
 void luksaddkey::keyChanged_1( QString key )
 {
-	Q_UNUSED( key ) ;
+	Q_UNUSED( key )
 	this->setWindowTitle( tr( "Add A Key To A Volume" ) ) ;
 }
 

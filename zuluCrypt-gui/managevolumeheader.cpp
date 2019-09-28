@@ -118,7 +118,7 @@ void managevolumeheader::cbVolumeHeader( int e )
 
 void managevolumeheader::cbVolumeType( int e )
 {
-	Q_UNUSED( e ) ;
+	Q_UNUSED( e )
 }
 
 void managevolumeheader::HideUI()

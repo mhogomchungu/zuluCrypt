@@ -205,7 +205,7 @@ void keyDialog::showOffSetWindowOption()
 {
 	deviceOffset::instance( this,false,[ this ]( const QString& e,const QString& f ){
 
-		Q_UNUSED( f ) ;
+		Q_UNUSED( f )
 		m_deviceOffSet = QString( " -o %1" ).arg( e ) ;
 	} ) ;
 }

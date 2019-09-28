@@ -88,7 +88,7 @@ namespace siritask
 			 const QString& config_file_path,
 			 const QString& volume_type,
 			 bool unlock_in_read_only,
-			 function_t folder_opener = []( const QString& e ){ Q_UNUSED( e ) ; } ) :
+			 function_t folder_opener = []( const QString& e ){ Q_UNUSED( e ) } ) :
 
 			cipherFolder( cipher_folder ),
 			plainFolder( plain_folder ),

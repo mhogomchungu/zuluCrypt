@@ -53,7 +53,7 @@ void checkForUpdates::check( bool s )
 
 void checkForUpdates::run( const QString& e )
 {
-	Q_UNUSED( e ) ;
+	Q_UNUSED( e )
 
 	if( utility::settingsObject().value( "autoChecForkUpdates" ).toBool() ){
 

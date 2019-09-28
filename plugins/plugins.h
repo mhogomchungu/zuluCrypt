@@ -128,13 +128,13 @@ static inline QByteArray hmac_key( const QString& keyFile,const QString& passwor
 
 static inline QByteArray hmac_key_1( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {
-	Q_UNUSED( exe ) ;
+	Q_UNUSED( exe )
 	return hmac_key( keyFile,password ) ;
 }
 
 static inline QByteArray keyKeyFile( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {
-	Q_UNUSED( exe ) ;
+	Q_UNUSED( exe )
 
 	QFile f( keyFile ) ;
 
@@ -145,7 +145,7 @@ static inline QByteArray keyKeyFile( const QVector<QString>& exe,const QString& 
 
 static inline QByteArray luks( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {
-	Q_UNUSED( exe ) ;
+	Q_UNUSED( exe )
 	/*
 	 * we are sending a 4 component structure.
 	 * first  component at offset 0 is a u_int32_t structure holding the size of the passphrase

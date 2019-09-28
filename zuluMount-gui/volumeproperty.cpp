@@ -59,11 +59,11 @@ static void setFsSize( const QString& path,QString * volumeSize,QString * usedPe
 
 static void setFsSize( const QString& path,QString * volumeSize,QString * usedPercentage )
 {
-	Q_UNUSED( path ) ;
+	Q_UNUSED( path )
 
-	Q_UNUSED( volumeSize ) ;
+	Q_UNUSED( volumeSize )
 
-	Q_UNUSED( usedPercentage ) ;
+	Q_UNUSED( usedPercentage )
 }
 
 #endif
