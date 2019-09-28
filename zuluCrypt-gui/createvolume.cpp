@@ -1157,9 +1157,11 @@ void createvolume::taskFinished_1( const utility::Task& e )
 				Q_UNUSED( offset )
 			} ;
 
+			auto s = quint64( QFileInfo( backUp ).size() ) ;
+
 			if( utility::clearVolume( volumePath,
 						  &exit,
-						  2 * 1024 * 1024, //2 * 1024 * 1024 is the size of the header
+						  s != 0 ? s : 2 * 1024 * 1024,
 						  function ).await() == 0 ){
 
 				msg.ShowUIOK( tr( "SUCCESS!" ),tr( "Luks volume created successfully." ) ) ;
@@ -1188,18 +1190,18 @@ void createvolume::taskFinished( const utility::Task& e )
 
 	switch ( e.exitCode() ){
 		case 0 : msg.ShowUIOK( tr( "SUCCESS!" ),x ) ;
-		return this->HideUI() ;													break  ;
+		return this->HideUI() ;
 		case 1 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Presented file system is not supported,see documentation for more information" ) ) ;	break  ;
 		case 2 : msg.ShowUIOK( tr( "ERROR!" ),tr( "insufficient privilege to open a system device in read/write mode,\n\
-only root user or members of group zulucrypt can do that" ) ) ;									break  ;
+only root user or members of group zulucrypt can do that" ) ) ;										break  ;
 		case 3 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not create an encrypted volume" ) ) ;					break  ;
 		case 4 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not open volume for writing" ) ) ;					break  ;
 		case 5 : msg.ShowUIOK( tr( "ERROR!" ),tr( "There seem to be an opened mapper associated with the device" ) ) ;		break  ;
 		case 6 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not create a volume on a mounted device" ) ) ;				break  ;
-		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Container file must be bigger than 3MB" ) ) ;					break  ;
+		case 7 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Container file must be bigger than 3MB" ) ) ;				break  ;
 		case 8 : msg.ShowUIOK( tr( "ERROR!" ),tr( "%1 not found" ).arg( ZULUCRYPTmkfs ) ) ;					break  ;
 		case 9 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold your response" ) ) ;				break  ;
-		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user request" ) ) ; 				break  ;													break  ;
+		case 10: msg.ShowUIOK( tr( "ERROR!" ),tr( "Operation terminated per user request" ) ) ; 				break  ;
 		case 11: msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not get passphrase in silent mode" ) ) ;				break  ;
 		case 12: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold the passphrase" ) ) ;				break  ;
 		case 13: msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;						break  ;
