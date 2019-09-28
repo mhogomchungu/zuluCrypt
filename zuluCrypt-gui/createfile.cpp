@@ -313,7 +313,7 @@ void createfile::pbCreate()
 }
 
 void createfile::createFile( const QString& filePath,qint64 size )
-{	
+{
 	enum class result{ success,deviceFail,cancelled,fileFail } ;
 
 	utility::progress update( 1500,[ this ]( const utility::progress::result& m ){
@@ -414,7 +414,7 @@ void createfile::setProgress( QString cs,QString av,QString eta,QString tt,int s
 	QString a = tr( "Average Speed: " ) + av ;
 	QString b = tr( "ETA: " ) + eta ;
 
-	this->setWindowTitle( a + "/" + b ) ;
+	this->setWindowTitle( a + " : " + b ) ;
 
 	m_ui->progressBar->setValue( st ) ;
 }
