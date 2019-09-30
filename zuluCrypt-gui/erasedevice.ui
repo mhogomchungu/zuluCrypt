@@ -196,7 +196,10 @@
     </rect>
    </property>
    <property name="text">
-    <string notr="true">N/A</string>
+    <string>N/A</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">

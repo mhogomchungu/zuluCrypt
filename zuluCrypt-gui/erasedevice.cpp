@@ -101,8 +101,8 @@ void erasedevice::taskResult( int st )
 
 		case 0: m_ui->progressBar->setValue( 100 ) ;
 		{
-			QString a = tr( "Average Speed: " ) + m_average_speed + "\n" ;
-			QString b = tr( "Total Time: " ) + m_total_time + "\n\n" ;
+			QString a = tr( "Average Speed:" ) + " " + m_average_speed + "\n" ;
+			QString b = tr( "Total Time:" ) + " " + m_total_time + "\n\n" ;
 			m_label.show( a + b + tr( "Data on the device successfully erased" ) ) ;
 		}
 		break ;
@@ -185,7 +185,7 @@ Are you really sure you want to write random data to \"%1\" effectively destroyi
 				   m.percentage_done ) ;
 	} ) ;
 
-	auto r = utility::clearVolume( path,&m_exit,0,update.function() ).await() ;
+	auto r = utility::clearVolume( path,&m_exit,0,update.updater_quint() ).await() ;
 
 	m_running = false ;
 

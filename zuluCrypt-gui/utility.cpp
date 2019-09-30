@@ -2962,3 +2962,147 @@ utility::result<QByteArray> utility::yubiKey( const QString& challenge )
 
 	return {} ;
 }
+
+utility::progress::progress( int s,std::function< void( const utility::progress::result& )> function ) :
+	m_offset_last( 0 ),
+	m_total_time( 0 ),
+	m_function( std::move( function ) ),
+	m_duration( s ),
+	m_time( m_duration.timer() ),
+	m_previousTime( m_time.currentMSecsSinceEpoch() )
+{
+}
+
+void utility::progress::update_progress( quint64 size,quint64 offset )
+{
+	int i = int( ( offset * 100 / size ) ) ;
+
+	auto time_expired = m_duration.passed() ;
+
+	if( !time_expired ){
+
+		m_duration.reset() ;
+	}
+
+	if( i > m_progress || time_expired ){
+
+		m_progress = i ;
+
+		double currentTime = m_time.currentMSecsSinceEpoch() ;
+
+		double time_diff = ( currentTime - m_previousTime ) / 1000 ;
+		double offset_diff = offset - m_offset_last ;
+
+		m_total_time = m_total_time + time_diff ;
+
+		QString current_speed = this->speed( offset_diff,time_diff ) ;
+
+		QString average_speed = this->speed( offset,m_total_time ) ;
+
+		double avg_speed = offset / m_total_time ;
+
+		double remaining_data = size - offset ;
+
+		QString eta = this->time( remaining_data / avg_speed ) ;
+
+		m_function( { current_speed,
+			      average_speed,
+			      eta,
+			      this->time( m_total_time ),
+			      i } ) ;
+
+		m_offset_last = offset ;
+		m_previousTime = currentTime ;
+	}
+}
+
+std::function< void( quint64 size,quint64 offset ) > utility::progress::updater_quint()
+{
+	return [ this ]( quint64 size,quint64 offset ){
+
+		this->update_progress( size,offset ) ;
+	} ;
+}
+
+std::function< void( qint64 size,qint64 offset ) > utility::progress::updater_qint()
+{
+	return [ this ]( qint64 size,qint64 offset ){
+
+		this->update_progress( quint64( size ),quint64( offset ) ) ;
+	} ;
+}
+
+QString utility::progress::time( double s )
+{
+	int milliseconds = int( s ) * 1000 ;
+	int seconds      = milliseconds / 1000;
+	milliseconds     = milliseconds % 1000;
+	int minutes      = seconds / 60;
+	seconds          = seconds % 60;
+	int hours        = minutes / 60;
+	minutes          = minutes % 60;
+
+	QTime time;
+	time.setHMS( hours,minutes,seconds,milliseconds ) ;
+	return time.toString( "hh:mm:ss" ) ;
+}
+
+QString utility::progress::speed( double size,double time )
+{
+	QString s ;
+
+	if( size < 1024 ){
+
+		s = "B" ;
+
+	}else if( size <= 1024 * 1024 ){
+
+		s = "KB" ;
+		size = size / 1024 ;
+
+	}else if( size <= 1024 * 1024 * 1024 ){
+
+		s = "MB" ;
+		size = size / ( 1024 * 1024 ) ;
+
+	}else if( size <= 1024 * 1024 * 1024 * 1024ll ){
+
+		s = "GB" ;
+		size = size / ( 1024 * 1024 * 1024 ) ;
+	}else{
+		s = "B" ;
+	}
+
+	size = size / time ;
+
+	return QString::number( size,'f',2 ) + " " + s + "/s" ;
+}
+
+utility::duration::duration( long miliseconds ) : m_milliseconds( miliseconds )
+{
+	this->reset() ;
+}
+
+bool utility::duration::passed()
+{
+	auto now = m_time.currentMSecsSinceEpoch() ;
+
+	if( now - m_start_time >= m_milliseconds ){
+
+		this->reset() ;
+
+		return true ;
+	}else{
+		return false ;
+	}
+}
+
+void utility::duration::reset()
+{
+	m_start_time = m_time.currentMSecsSinceEpoch() ;
+}
+
+QDateTime& utility::duration::timer()
+{
+	return m_time ;
+}

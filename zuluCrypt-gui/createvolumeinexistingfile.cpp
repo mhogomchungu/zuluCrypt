@@ -98,14 +98,13 @@ public:
 
 		qint64 size_written = 0 ;
 
-		int i ;
-		int j = 0 ;
-
 		containerSize = containerSize + offSet - m_file.size() ;
 
-		Task::await( [ & ](){
+		utility::progress update( 1500,std::move( function ) ) ;
 
-			utility::duration time( 250 ) ;
+		auto pgr = update.updater_qint() ;
+
+		Task::await( [ & ](){
 
 			while( true ){
 
@@ -113,18 +112,16 @@ public:
 
 				auto s = m_file.write( buffer.data(),buffer.size() ) ;
 
+				if( s == -1 ){
+
+					//WTF!!
+				}
+
 				m_file.flush() ;
 
 				size_written += s ;
 
-				i = int( ( size_written * 100 / containerSize ) ) ;
-
-				if( i > j ){
-
-					time.passed( [ & ](){ function( i ) ; } ) ;
-
-					j = i ;
-				}
+				pgr( containerSize,size_written ) ;
 
 				/*
 				 * This simple test makes sure the end result is atleast as big as we expect it
@@ -171,7 +168,7 @@ createVolumeInExistingFIle::createVolumeInExistingFIle( QWidget * parent ) :
 
 	m_ui->lineEditPassword->setMaxLength( 32767 ) ;
 
-	m_warning = tr( "Extending A Host File Size.\nPercentage Completed: %1%" ) ;
+	m_warning = tr( "Extending A Host File Size." ) ;
 
 	this->setFixedSize( this->size() ) ;
 
@@ -234,9 +231,16 @@ createVolumeInExistingFIle::~createVolumeInExistingFIle()
 	delete m_ui ;
 }
 
-void createVolumeInExistingFIle::updateProgress( int s )
+void createVolumeInExistingFIle::updateProgress( QString cs,QString av,QString eta,QString tt,int s )
 {
-	m_ui->labelWarning->setText( m_warning.arg( QString::number( s ) ) ) ;
+	Q_UNUSED( cs )
+	Q_UNUSED( tt )
+
+	QString a = tr( "Average Speed:" ) + " " + av + "\n" ;
+	QString b = tr( "ETA:" ) + " " + eta + "\n" ;
+	QString c = tr( "Percentage Completed: %1%" ).arg( QString::number( s ) ) ;
+
+	m_ui->labelWarning->setText( m_warning + "\n\n" + a + b + c ) ;
 }
 
 void createVolumeInExistingFIle::enableAll()
@@ -288,13 +292,17 @@ void createVolumeInExistingFIle::create()
 		return DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Open \"/dev/urandom\" Device In Read Mode" ) ) ;
 	}
 
-	this->updateProgress( 0 ) ;
-
 	this->displayWarning( true ) ;
 
-	volume.resize( containerSize,m_volumeOffset.first,[ this ]( int s ){
+	volume.resize( containerSize,m_volumeOffset.first,[ this ]( const utility::progress::result& m ){
 
-		QMetaObject::invokeMethod( this,"updateProgress",Qt::QueuedConnection,Q_ARG( int,s ) ) ;
+		QMetaObject::invokeMethod( this,
+					   "updateProgress",
+					   Q_ARG( QString,m.current_speed ),
+					   Q_ARG( QString,m.average_speed ),
+					   Q_ARG( QString,m.eta ),
+					   Q_ARG( QString,m.total_time ),
+					   Q_ARG( int,m.percentage_done ) ) ;
 	} ) ;
 
 	auto enc = m_ui->cbVolumeProperties->currentText() ;

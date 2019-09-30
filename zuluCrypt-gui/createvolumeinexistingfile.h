@@ -38,7 +38,7 @@ public:
 	explicit createVolumeInExistingFIle( QWidget * parent ) ;
 	~createVolumeInExistingFIle();
 private slots :
-	void updateProgress( int ) ;
+	void updateProgress( QString,QString,QString,QString,int ) ;
 private:
 	void enableAll() ;
 	void disableAll() ;

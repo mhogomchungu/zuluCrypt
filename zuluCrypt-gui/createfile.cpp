@@ -288,7 +288,7 @@ void createfile::pbCreate()
 						   m.percentage_done ) ;
 			} ) ;
 
-			int r = utility::clearVolume( filePath,&m_exit,0,update.function() ).await() ;
+			int r = utility::clearVolume( filePath,&m_exit,0,update.updater_quint() ).await() ;
 
 			if( r == 5 ){
 
@@ -341,7 +341,7 @@ void createfile::createFile( const QString& filePath,qint64 size )
 			return result::fileFail ;
 		}
 
-		auto function = update.function() ;
+		auto function = update.updater_qint() ;
 
 		std::array< char,1024 > buffer ;
 
@@ -355,9 +355,18 @@ void createfile::createFile( const QString& filePath,qint64 size )
 			}else{
 				auto s = rd->getData( buffer.data(),buffer.size() ) ;
 
-				size_written += file.write( buffer.data(),s ) ;
+				auto m =  file.write( buffer.data(),s ) ;
 
-				function( quint64( size ),quint64( size_written ) ) ;
+				if( m == -1 ){
+
+					//WTF!!
+				}
+
+				file.flush() ;
+
+				size_written += m ;
+
+				function( size,size_written ) ;
 			}
 		}
 
@@ -411,8 +420,8 @@ void createfile::setProgress( QString cs,QString av,QString eta,QString tt,int s
 	Q_UNUSED( cs )
 	Q_UNUSED( tt )
 
-	QString a = tr( "Average Speed: " ) + av ;
-	QString b = tr( "ETA: " ) + eta ;
+	QString a = tr( "Average Speed:" ) + " " + av ;
+	QString b = tr( "ETA:" ) + " " + eta ;
 
 	this->setWindowTitle( a + " : " + b ) ;
 

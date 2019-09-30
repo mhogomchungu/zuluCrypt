@@ -976,40 +976,22 @@ namespace utility
 namespace utility {
 	class duration{
 	public:
-		duration( long miliseconds ) : m_milliseconds( miliseconds )
-		{
-			this->reset() ;
-		}
-		bool passed()
-		{
-			auto now = std::chrono::high_resolution_clock::now() ;
-
-			auto seconds = std::chrono::duration_cast< std::chrono::milliseconds >( now - m_start_time ).count() ;
-
-			if( seconds >= m_milliseconds ){
-
-				this->reset() ;
-
-				return true ;
-			}else{
-				return false ;
-			}
-		}
-		void reset()
-		{
-			m_start_time = std::chrono::high_resolution_clock::now() ;
-		}
+		duration( long miliseconds ) ;
+		bool passed() ;
+		void reset() ;
 		template< typename Function >
-		void passed( Function function )
+		void passed( Function&& function )
 		{
 			if( this->passed() ){
 
 				function() ;
 			}
 		}
+		QDateTime& timer() ;
 	private:
 		long m_milliseconds ;
-		decltype( std::chrono::high_resolution_clock::now() ) m_start_time ;
+		qint64 m_start_time ;
+		QDateTime m_time ;
 	};
 }
 
@@ -1025,116 +1007,21 @@ public:
 		int percentage_done ;
 	} ;
 
-	progress( int s,std::function< void( const result& ) > function ) :
-		     m_previousTime( m_time.currentMSecsSinceEpoch() ),
-		     m_offset_last( 0 ),
-		     m_total_time( 0 ),
-		     m_function( std::move( function ) ),
-		     m_duration( s )
-	{
-	}
-	void update_progress( quint64 size,quint64 offset )
-	{
-		int i = int( ( offset * 100 / size ) ) ;
-
-		auto time_expired = m_duration.passed() ;
-
-		if( !time_expired ){
-
-			m_duration.reset() ;
-		}
-
-		if( i > m_progress || time_expired ){
-
-			m_progress = i ;
-
-			double currentTime = m_time.currentMSecsSinceEpoch() ;
-
-			double time_diff = ( currentTime - m_previousTime ) / 1000 ;
-			double offset_diff = offset - m_offset_last ;
-
-			m_total_time = m_total_time + time_diff ;
-
-			QString current_speed = this->speed( offset_diff,time_diff ) ;
-
-			QString average_speed = this->speed( offset,m_total_time ) ;
-
-			double avg_speed = offset / m_total_time ;
-
-			double remaining_data = size - offset ;
-
-			QString eta = this->time( remaining_data / avg_speed ) ;
-
-			m_function( { current_speed,
-				      average_speed,
-				      eta,
-				      this->time( m_total_time ),
-				      i } ) ;
-
-			m_offset_last = offset ;
-			m_previousTime = currentTime ;
-		}
-	}
-	std::function< void( quint64 size,quint64 offset ) > function()
-	{
-		return [ this ]( quint64 size,quint64 offset ){
-
-			this->update_progress( size,offset ) ;
-		} ;
-	}
+	progress( int s,std::function< void( const result& ) > function ) ;
+	void update_progress( quint64 size,quint64 offset ) ;
+	std::function< void( quint64 size,quint64 offset ) > updater_quint() ;
+	std::function< void( qint64 size,qint64 offset ) > updater_qint() ;
 private:
-	QString time( double s )
-	{
-		int milliseconds = int( s ) * 1000 ;
-		int seconds      = milliseconds / 1000;
-		milliseconds     = milliseconds % 1000;
-		int minutes      = seconds / 60;
-		seconds          = seconds % 60;
-		int hours        = minutes / 60;
-		minutes          = minutes % 60;
+	QString time( double s ) ;
+	QString speed( double size,double time ) ;
 
-		QTime time;
-		time.setHMS( hours,minutes,seconds,milliseconds ) ;
-		return time.toString( "hh:mm:ss" ) ;
-	}
-	QString speed( double size, double time )
-	{
-		QString s ;
-
-		if( size < 1024 ){
-
-			s = "B" ;
-
-		}else if( size <= 1024 * 1024 ){
-
-			s = "KB" ;
-			size = size / 1024 ;
-
-		}else if( size <= 1024 * 1024 * 1024 ){
-
-			s = "MB" ;
-			size = size / ( 1024 * 1024 ) ;
-
-		}else if( size <= 1024 * 1024 * 1024 * 1024.0 ){
-
-			s = "GB" ;
-			size = size / ( 1024 * 1024 * 1024 ) ;
-		}else{
-			s = "B" ;
-		}
-
-		size = size / time ;
-
-		return QString::number( size,'f',2 ) + " " + s + "/s" ;
-	}
-
-	QDateTime m_time ;
 	int m_progress = 0 ;
-	double m_previousTime ;
 	quint64 m_offset_last ;
 	double m_total_time ;
 	std::function< void( const result& ) > m_function ;
 	utility::duration m_duration ;
+	QDateTime& m_time ;
+	double m_previousTime ;
 };
 
 }

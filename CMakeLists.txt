@@ -464,12 +464,6 @@ else()
 	file( WRITE ${PROJECT_BINARY_DIR}/luks2_support.h "\n#define SUPPORT_crypt_get_pbkdf_default 0\n" )
 endif()
 
-if( ( CRYPTSETUP_VERSION VERSION_GREATER "2.0.0" ) OR ( CRYPTSETUP_VERSION VERSION_EQUAL "2.0.0" ) )
-	file( APPEND ${PROJECT_BINARY_DIR}/luks2_support.h "\n#define SUPPORT_crypt_get_integrity_info 1\n" )
-else()
-	file( APPEND ${PROJECT_BINARY_DIR}/luks2_support.h "\n#define SUPPORT_crypt_get_integrity_info 0\n" )
-endif()
-
 if( CRYPTSETUP_VERSION VERSION_GREATER "1.6.0" )
 	file( WRITE ${PROJECT_BINARY_DIR}/check_tcrypt.h "\n#define CHECK_TCRYPT 1\n" )
 else()

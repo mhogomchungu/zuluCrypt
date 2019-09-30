@@ -381,7 +381,7 @@ static void * _luks2( const arguments * args )
 	params->sector_size     = 512 ;
 	params->integrity       = args->integrity ;
 
-#if SUPPORT_crypt_get_pbkdf_default
+#if SUPPORT_crypt_get_pbkdf_default //added in cryptsetup 2.0.3
 
 	params->pbkdf = crypt_get_pbkdf_default( CRYPT_LUKS2 ) ;
 #else

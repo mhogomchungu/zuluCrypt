@@ -51,7 +51,7 @@ typedef struct{
 	string_t integrity_keysize ;
 }authenticated_luks2 ;
 
-#if SUPPORT_crypt_get_integrity_info
+#ifdef CRYPT_LUKS2
 
 static int _is_authenticated_luks2( struct crypt_device * cd )
 {
@@ -105,7 +105,7 @@ static int _is_authenticated_luks2( struct crypt_device * cd )
 }
 #endif
 
-static void _convert( char * buffer,int buffer_size,const char * s,u_int64_t y,u_int64_t z )
+static void _convert( char * buffer,size_t buffer_size,const char * s,u_int64_t y,u_int64_t z )
 {
 	snprintf( buffer,buffer_size,"%.1f %s",( double )y/z,s ) ;
 }
@@ -129,10 +129,10 @@ void zuluCryptFormatSize( u_int64_t number,char * buffer,size_t buffer_size )
 		 _convert( buffer,buffer_size,"GB",number,1024 * 1024 * 1024 ) ;
 		 break ;
 	case 13: case 14 : case 15 :
-		 _convert( buffer,buffer_size,"TB",number,1024.0 * 1024 * 1024 * 1024 ) ;
+		 _convert( buffer,buffer_size,"TB",number,1024 * 1024 * 1024 * 1024ll ) ;
 		 break ;
 	default:
-		 _convert( buffer,buffer_size,"TB",number,1024.0 * 1024 * 1024 * 1024 ) ;
+		 _convert( buffer,buffer_size,"TB",number,1024 * 1024 * 1024 * 1024ll ) ;
 		 break ;
 	}
 }
