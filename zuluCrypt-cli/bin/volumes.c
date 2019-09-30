@@ -825,6 +825,8 @@ void zuluCryptPrintPartitionProperties( const char * device )
 	u_int64_t size ;
 	blkid_probe blkid ;
 
+	char * m ;
+
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
 	if( zuluCryptNoPartitionLoopDevice( device ) ){
@@ -871,7 +873,23 @@ void zuluCryptPrintPartitionProperties( const char * device )
 			printf( "Nil\t" ) ;
 		}
 
-		printf( "%s\t",zuluCryptVolumeType( blkid,device ) ) ;
+		e = zuluCryptVolumeType( blkid,device ) ;
+
+		if( StringPrefixEqual( e,"crypto_LUKS" ) ){
+
+			m = zuluCryptGetVolumeType_1( device ) ;
+
+			if( m ){
+
+				printf( "%s\t",m ) ;
+
+				StringFree( m ) ;
+			}else{
+				printf( "%s\t",e ) ;
+			}
+		}else{
+			printf( "%s\t",e ) ;
+		}
 
 		if( blkid_probe_lookup_value( blkid,"UUID",&e,NULL ) == 0 ){
 

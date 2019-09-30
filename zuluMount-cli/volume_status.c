@@ -48,6 +48,8 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 	const char * g ;
 	const char * e ;
 
+	char * m ;
+
 	blkid_probe blkid ;
 
 	struct statvfs vfs ;
@@ -148,7 +150,23 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 
 			printf( "%s\t",fs ) ;
 		}else{
-			printf( "%s\t",zuluCryptVolumeType( blkid,device ) ) ;
+			e = zuluCryptVolumeType( blkid,device ) ;
+
+			if( StringPrefixEqual( e,"crypto_LUKS" ) ){
+
+				m = zuluCryptGetVolumeType_1( device ) ;
+
+				if( m ){
+
+					printf( "%s\t",m ) ;
+
+					StringFree( m ) ;
+				}else{
+					printf( "%s\t",e ) ;
+				}
+			}else{
+				printf( "%s\t",e ) ;
+			}
 		}
 
 		if( blkid_probe_lookup_value( blkid,"LABEL",&g,NULL ) == 0 ){

@@ -45,6 +45,8 @@ int zuluMountCryptoUMount( ARGS * args )
 
 				return 20 ;
 			}
+		}else{
+			path = StringCopy_2( device ) ;
 		}
 
 		mapping_name = path + StringLastIndexOfChar_1( path,'/' ) + 1 ;

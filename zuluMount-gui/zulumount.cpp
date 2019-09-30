@@ -1547,13 +1547,16 @@ void zuluMount::unmount( const QString& e )
 {
 	this->disableAll() ;
 
-	utility::Task::suspendForOneSecond() ;
-
 	auto row = m_ui->tableWidget->currentRow() ;
 
 	auto path      = m_ui->tableWidget->item( row,0 )->text() ;
 	auto mountPath = m_ui->tableWidget->item( row,1 )->text() ;
 	auto type      = m_ui->tableWidget->item( row,2 )->text() ;
+
+	if( !type.startsWith( "crypto_" ) ){
+
+		utility::Task::suspendForOneSecond() ;
+	}
 
 	if( _encrypted_folder( type ) ){
 

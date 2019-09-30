@@ -346,24 +346,12 @@ int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
 	return StringAtLeastOneMatch_1( buffer,"TCRYPT","VCRYPT",NULL ) ;
 }
 
-char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
+static char * _get_type( struct crypt_device * cd,const char * mapper )
 {
-	struct crypt_device * cd ;
-	const char * type ;
 	char * r ;
 	string_t st ;
 
-	if( StringPrefixNotEqual( mapper,crypt_get_dir() ) ){
-
-		return StringCopy_2( "Nil" ) ;
-	}
-
-	if( crypt_init_by_name( &cd,mapper ) < 0 ){
-
-		return StringCopy_2( "Nil" ) ;
-	}
-
-	type = crypt_get_type( cd ) ;
+	const char * type = crypt_get_type( cd ) ;
 
 	if( type == NULL ){
 
@@ -388,7 +376,45 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 		r = StringDeleteHandle( &st ) ;
 	}
 
+	return r ;
+}
+
+char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
+{
+	struct crypt_device * cd ;
+	char * r ;
+
+	if( crypt_init_by_name( &cd,mapper ) < 0 ){
+
+		return StringCopy_2( "Nil" ) ;
+	}
+
+	r = _get_type( cd,mapper ) ;
+
 	crypt_free( cd ) ;
+
+	return r ;
+}
+
+char * zuluCryptGetVolumeType_1( const char * device )
+{
+	struct crypt_device * cd ;
+	char * r ;
+
+	if( crypt_init( &cd,device ) != 0 ){
+
+		return StringCopy_2( "Nil" ) ;
+	}
+	if( crypt_load( cd,NULL,NULL ) != 0 ){
+
+		crypt_free( cd ) ;
+		return StringCopy_2( "Nil" ) ;
+	}
+
+	r = _get_type( cd,"" ) ;
+
+	crypt_free( cd ) ;
+
 	return r ;
 }
 

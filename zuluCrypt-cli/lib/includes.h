@@ -559,6 +559,11 @@ stringList_t zuluCryptGetMountInfoList_1( void ) ;
 char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper ) ;
 
 /*
+ * this function is defined in status.c
+ */
+char * zuluCryptGetVolumeType_1( const char * m ) ;
+
+/*
  * this function is defined in create_volume.c
  */
 int zuluCryptCreateFileSystemInAVolume( const char * fs,const char * device_mapper ) ;
