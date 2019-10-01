@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 Name:           zuluCrypt
-Version:        5.6.0
+Version:        5.7.0
 Release:        0
 Summary:        Qt GUI front end to cryptsetup
 License:        GPL-2.0+
