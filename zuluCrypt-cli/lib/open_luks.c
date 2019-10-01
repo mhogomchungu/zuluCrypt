@@ -143,12 +143,9 @@ static int _open_luks_1( const char * device,const resolve_path_t * opt )
 
 	buffer_size = opts->key_len ;
 
-	if( buffer_size < 1048576 + 8 || buffer_size > 8192000 ){
+	if( buffer_size < 1048576 + 8 || buffer_size > ZULUCRYPT_LUKS2_MAX_HEADER_SIZE * 2 ){
 		/*
 		 * the structure is expected to be atleast 1MB + 8 bytes
-		 */
-		/*
-		 * cryptsetup has an 8MB limit somewhere i cant remember
 		 */
 		return 1 ;
 	}

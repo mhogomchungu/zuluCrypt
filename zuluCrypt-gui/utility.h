@@ -1008,10 +1008,10 @@ public:
 	} ;
 
 	progress( int s,std::function< void( const result& ) > function ) ;
-	void update_progress( quint64 size,quint64 offset ) ;
 	std::function< void( quint64 size,quint64 offset ) > updater_quint() ;
 	std::function< void( qint64 size,qint64 offset ) > updater_qint() ;
 private:
+	void update_progress( quint64 size,quint64 offset ) ;
 	QString time( double s ) ;
 	QString speed( double size,double time ) ;
 
