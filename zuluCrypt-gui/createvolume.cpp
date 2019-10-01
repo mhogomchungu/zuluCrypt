@@ -418,32 +418,26 @@ void createvolume::setOptions( int e )
 		 */
 		auto _add_options = [ & ]( const std::initializer_list<QString>& list ){
 
-			auto _add_option = [ & ]( const QString& algo ){
+			auto _add_option = [ & ]( const QString& algo,const QString& keySize ){
 
-				options->addItem( algo + ".xts-plain64.256.sha256" ) ;
-				options->addItem( algo + ".xts-plain64.256.sha512" ) ;
-				options->addItem( algo + ".xts-plain64.256.sha1" ) ;
-				options->addItem( algo + ".xts-plain64.256.ripemd160" ) ;
-
-				if( supportWhirlpool ){
-
-					options->addItem( algo + ".xts-plain64.256.whirlpool" ) ;
-				}
-
-				options->addItem( algo + ".xts-plain64.512.sha256" ) ;
-				options->addItem( algo + ".xts-plain64.512.sha512" ) ;
-				options->addItem( algo + ".xts-plain64.512.sha1" ) ;
-				options->addItem( algo + ".xts-plain64.512.ripemd160" ) ;
+				options->addItem( algo + ".xts-plain64." + keySize + ".sha256" ) ;
+				options->addItem( algo + ".xts-plain64." + keySize + ".sha512" ) ;
+				options->addItem( algo + ".xts-plain64." + keySize + ".sha1" ) ;
+				options->addItem( algo + ".xts-plain64." + keySize + ".ripemd160" ) ;
 
 				if( supportWhirlpool ){
 
-					options->addItem( algo + ".xts-plain64.512.whirlpool" ) ;
+					options->addItem( algo + ".xts-plain64." + keySize + ".whirlpool" ) ;
 				}
 			} ;
 
 			for( const auto& it : list ){
 
-				_add_option( it ) ;
+				_add_option( it,"512" ) ;
+			}
+			for( const auto& it : list ){
+
+				_add_option( it,"256" ) ;
 			}
 		} ;
 
