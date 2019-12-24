@@ -221,7 +221,7 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 		args->hash     = "sha256" ;
 		args->cipher   = "xts-plain64" ;
 		args->algo     = "aes" ;
-		args->key_size = 32 ;
+		args->key_size = 64 ;
 		args->rng      = *( list + 0 ) ;
 
 	}else if( list_count >= 5 ){

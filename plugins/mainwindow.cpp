@@ -255,9 +255,8 @@ void MainWindow::pbOpen()
 
 	if( m_requireKeyFile ){
 
-		if( m_keyfileAsKey ){
-			;
-		}else{
+		if( !m_keyfileAsKey ){
+
 			if( keyFile.isEmpty() ){
 				return msg.ShowUIOK( tr( "ERROR" ),tr( "Path to %1 keyfile is empty" ).arg( m_appName ) ) ;
 			}

@@ -20,6 +20,7 @@
 #include "password_dialog.h"
 #include "zulucrypt.h"
 #include "lxqt_wallet.h"
+#include "../plugin_path.h"
 
 #include <QMenu>
 #include <Qt>
@@ -210,8 +211,11 @@ bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
 
 void passwordDialog::pbPlugin()
 {
+	//utility::createPlugInMenu( m_pluginMenu,tr( INTERNAL_WALLET ),
+	//			   tr( GNOME_WALLET ),tr( KWALLET ),!utility::useZuluPolkit() ) ;
+
 	utility::createPlugInMenu( m_pluginMenu,tr( INTERNAL_WALLET ),
-				   tr( GNOME_WALLET ),tr( KWALLET ),!utility::useZuluPolkit() ) ;
+				   tr( GNOME_WALLET ),tr( KWALLET ),true ) ;
 
 	m_pluginMenu->addSeparator() ;
 
@@ -729,14 +733,14 @@ void passwordDialog::openVolume()
 		}else{
 			auto r = m_ui->PassPhraseField->text() ;
 
-			if( r == tr( KWALLET ) || r == tr( INTERNAL_WALLET ) || r == tr( GNOME_WALLET ) ){
+			if( utility::equalsAtleastOne( r,tr( KWALLET ),tr( INTERNAL_WALLET ),tr( GNOME_WALLET ) ) ){
 
 				passtype = "-f" ;
 				keyPath = utility::keyPath() ;
 
 				this->sendKey( keyPath ) ;
 
-			}else if( r == "hmac" || r == "gpg" || r == "keykeyfile" ){
+			}else if( utility::equalsAtleastOne( r,"hmac","gpg","keykeyfile" ) ){
 
 				if( utility::pluginKey( m_secrets.parent(),&m_key,r ) ){
 

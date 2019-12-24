@@ -3037,12 +3037,12 @@ QString utility::progress::time( double s )
 	int milliseconds = int( s ) * 1000 ;
 	int seconds      = milliseconds / 1000;
 	milliseconds     = milliseconds % 1000;
-	int minutes      = seconds / 60;
-	seconds          = seconds % 60;
-	int hours        = minutes / 60;
-	minutes          = minutes % 60;
+	int minutes      = seconds / 60 ;
+	seconds          = seconds % 60 ;
+	int hours        = minutes / 60 ;
+	minutes          = minutes % 60 ;
 
-	QTime time;
+	QTime time ;
 	time.setHMS( hours,minutes,seconds,milliseconds ) ;
 	return time.toString( "hh:mm:ss" ) ;
 }
