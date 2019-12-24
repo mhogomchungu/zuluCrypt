@@ -674,4 +674,14 @@ int zuluCryptModifyTcryptHeader( const info_t * info ) ;
  */
 int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;
 
+/*
+ * this function is defined in statuc.c
+ */
+int zuluCryptUseZuluPlayVCRYPT( void ) ;
+
+/*
+ * this function is defined in statuc.c
+ */
+int zuluCryptUseZuluPlayTCRYPT( void ) ;
+
 #endif

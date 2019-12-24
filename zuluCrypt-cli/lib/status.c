@@ -51,6 +51,24 @@ typedef struct{
 	string_t integrity_keysize ;
 }authenticated_luks2 ;
 
+int zuluCryptUseZuluPlayTCRYPT()
+{
+#ifdef CRYPT_TCRYPT
+	return 0 ;
+#else
+	return 1 ;
+#endif
+}
+
+int zuluCryptUseZuluPlayVCRYPT()
+{
+#ifdef CRYPT_TCRYPT_VERA_MODES
+	return 0 ;
+#else
+	return 1 ;
+#endif
+}
+
 #ifdef CRYPT_LUKS2
 
 static int _is_authenticated_luks2( struct crypt_device * cd )
@@ -341,9 +359,19 @@ int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
 {
 	char buffer[ 1024 ] ;
 
-	tc_api_get_volume_type( buffer,sizeof( buffer ),mapper ) ;
+	if( zuluCryptUseZuluPlayTCRYPT() ){
 
-	return StringAtLeastOneMatch_1( buffer,"TCRYPT","VCRYPT",NULL ) ;
+		tc_api_get_volume_type( buffer,sizeof( buffer ),mapper ) ;
+		return StringHasComponent( buffer,"TCRYPT" ) ;
+	}
+
+	if( zuluCryptUseZuluPlayVCRYPT() ){
+
+		tc_api_get_volume_type( buffer,sizeof( buffer ),mapper ) ;
+		return StringHasComponent( buffer,"VCRYPT" ) ;
+	}
+
+	return 0 ;
 }
 
 static char * _get_type( struct crypt_device * cd,const char * mapper )

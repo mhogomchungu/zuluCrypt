@@ -100,9 +100,6 @@ static int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-function"
-
 static int _open_tcrypt_volume_zuluplay( const char * device,const open_struct_t * opts )
 {
 	tc_api_task task ;
@@ -249,23 +246,23 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 	}
 }
 
-#pragma GCC diagnostic pop
-
 static int _open_tcrypt_volume( const char * device,const open_struct_t * opt )
 {
 	if( opt->veraCrypt_volume ){
 
-		#ifdef CRYPT_TCRYPT_VERA_MODES
-			return _open_tcrypt_volume_cryptsetup( device,opt ) ;
-		#else
+		if( zuluCryptUseZuluPlayVCRYPT() ){
+
 			return _open_tcrypt_volume_zuluplay( device,opt ) ;
-		#endif
+		}else{
+			return _open_tcrypt_volume_cryptsetup( device,opt ) ;
+		}
 	}else{
-		#ifdef CRYPT_TCRYPT
-			return _open_tcrypt_volume_cryptsetup( device,opt ) ;
-		#else
+		if( zuluCryptUseZuluPlayTCRYPT() ){
+
 			return _open_tcrypt_volume_zuluplay( device,opt ) ;
-		#endif
+		}else{
+			return _open_tcrypt_volume_cryptsetup( device,opt ) ;
+		}
 	}
 }
 
