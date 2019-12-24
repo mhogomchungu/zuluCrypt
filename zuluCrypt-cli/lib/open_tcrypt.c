@@ -184,8 +184,6 @@ static int _open_tcrypt_volume_zuluplay( const char * device,const open_struct_t
 	return r ;
 }
 
-#pragma GCC diagnostic pop
-
 static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct_t * opt )
 {
 	struct crypt_device * cd ;
@@ -198,11 +196,11 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 
 	m.passphrase      = opt->key ;
 	m.passphrase_size = opt->key_len ;
-	m.keyfiles        = ( const char ** )opt->tcrypt_keyfiles ;
-	m.keyfiles_count  = (unsigned int)opt->tcrypt_keyfiles_count ;
-	m.veracrypt_pim = (unsigned int)opt->iteration_count ;
+	m.keyfiles        = ( const char ** ) opt->tcrypt_keyfiles ;
+	m.keyfiles_count  = ( unsigned int )  opt->tcrypt_keyfiles_count ;
+	m.veracrypt_pim   = ( unsigned int )  opt->iteration_count ;
 
-#ifdef CRYPT_TCRYPT_LEGACY_MODES
+#ifdef CRYPT_TCRYPT
 
 	m.flags = CRYPT_TCRYPT_LEGACY_MODES ;
 
@@ -251,6 +249,8 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 	}
 }
 
+#pragma GCC diagnostic pop
+
 static int _open_tcrypt_volume( const char * device,const open_struct_t * opt )
 {
 	if( opt->veraCrypt_volume ){
@@ -261,7 +261,7 @@ static int _open_tcrypt_volume( const char * device,const open_struct_t * opt )
 			return _open_tcrypt_volume_zuluplay( device,opt ) ;
 		#endif
 	}else{
-		#ifdef CRYPT_TCRYPT_LEGACY_MODES
+		#ifdef CRYPT_TCRYPT
 			return _open_tcrypt_volume_cryptsetup( device,opt ) ;
 		#else
 			return _open_tcrypt_volume_zuluplay( device,opt ) ;
