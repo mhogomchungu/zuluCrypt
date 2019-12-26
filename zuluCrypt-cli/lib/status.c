@@ -357,18 +357,10 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 int zuluCryptVolumeManagedByTcplay( const char * mapper )
 {
-	int r ;
 	string_t st = String( "/dev/disk/by-id/dm-uuid-CRYPT-TCRYPT-" ) ;
-
-	if( zuluCryptPathIsValid( StringAppend( st,mapper + 12 ) ) == 0 ){
-
-		r = 0 ;
-	}else{
-		r = 1 ;
-	}
-
+	int r = zuluCryptPathIsValid( StringAppend( st,mapper + 12 ) ) ;
 	StringDelete( &st ) ;
-	return r ;
+	return r != 1 ;
 }
 
 static char * _get_type( struct crypt_device * cd,const char * mapper )
