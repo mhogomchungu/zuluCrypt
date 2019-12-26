@@ -308,27 +308,19 @@ static int _open_tcrypt_volume_1( const char * device,const resolve_path_t * opt
 
 		return _open_tcrypt_volume( device,&opts ) ;
 	}else{
-		r = _open_tcrypt_volume( device,&opts ) ;
+		if( opts.system_volume || opts.use_hidden_header ){
 
-		if( r == 0 ){
+			return _open_tcrypt_volume( device,&opts ) ;
+		}else{
+			if( _open_tcrypt_volume( device,&opts ) == 0 ){
 
-			return 0 ;
+				return 0 ;
+			}else{
+				opts.use_hidden_header = 1 ;
+
+				return _open_tcrypt_volume( device,&opts ) ;
+			}
 		}
-
-		opts.use_hidden_header = 1 ;
-
-		r = _open_tcrypt_volume( device,&opts ) ;
-
-		if( r == 0 ){
-
-			return 0 ;
-		}
-
-		opts.use_hidden_header = 0 ;
-
-		opts.system_volume = 1 ;
-
-		return _open_tcrypt_volume( device,&opts ) ;
 	}
 }
 
