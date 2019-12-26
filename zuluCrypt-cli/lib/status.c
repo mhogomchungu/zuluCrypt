@@ -355,23 +355,20 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	StringDelete( &q ) ;
 }
 
-int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper )
+int zuluCryptVolumeManagedByTcplay( const char * mapper )
 {
-	char buffer[ 1024 ] ;
+	int r ;
+	string_t st = String( "/dev/disk/by-id/dm-uuid-CRYPT-TCRYPT-" ) ;
 
-	if( zuluCryptUseZuluPlayTCRYPT() ){
+	if( zuluCryptPathIsValid( StringAppend( st,mapper + 12 ) ) == 0 ){
 
-		tc_api_get_volume_type( buffer,sizeof( buffer ),mapper ) ;
-		return StringHasComponent( buffer,"TCRYPT" ) ;
+		r = 0 ;
+	}else{
+		r = 1 ;
 	}
 
-	if( zuluCryptUseZuluPlayVCRYPT() ){
-
-		tc_api_get_volume_type( buffer,sizeof( buffer ),mapper ) ;
-		return StringHasComponent( buffer,"VCRYPT" ) ;
-	}
-
-	return 0 ;
+	StringDelete( &st ) ;
+	return r ;
 }
 
 static char * _get_type( struct crypt_device * cd,const char * mapper )
@@ -802,7 +799,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 
 	string_t p ;
 
-	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
+	if( zuluCryptVolumeManagedByTcplay( mapper ) ){
 
 		p = _get_crypto_info_from_tcplay( mapper ) ;
 	}else{
@@ -853,7 +850,7 @@ char * zuluCryptVolumeDeviceName( const char * mapper )
 
 	const char * e ;
 
-	if( zuluCryptTrueCryptOrVeraCryptVolume( mapper ) ){
+	if( zuluCryptVolumeManagedByTcplay( mapper ) ){
 
 		memset( &m,'\0',sizeof( m ) ) ;
 		memset( &d,'\0',sizeof( d ) ) ;

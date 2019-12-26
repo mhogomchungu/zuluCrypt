@@ -218,7 +218,7 @@ int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,int * fd_loo
 /*
  * this function is defined in status.c
  */
-int zuluCryptTrueCryptOrVeraCryptVolume( const char * mapper ) ;
+int zuluCryptVolumeManagedByTcplay( const char * mapper ) ;
 
 /*
  * this function is defined in status.c

@@ -164,7 +164,7 @@ void zuluCryptClearDeadMappers( uid_t uid,int s )
 			/*
 			 * zuluCryptTrueCryptOrVeraCryptVolume() is defined in ../lib/status.c
 			 */
-			if( zuluCryptTrueCryptOrVeraCryptVolume( e ) ){
+			if( zuluCryptVolumeManagedByTcplay( e ) ){
 
 				/*
 				 * zuluCryptVolumeDeviceName() is defined in ../lib/status.c
