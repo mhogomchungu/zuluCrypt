@@ -349,7 +349,7 @@ static int _zuluMountExe( ARGS * args )
 
 		st = _zuluCryptGetFileSystemFromDevice( device ) ;
 
-		if( StringContains( st,zuluCryptBitLockerType() ) ){
+		if( StringContains( st,zuluCryptBitLockerType() ) && zuluCryptUseDislockerBitLocker() ){
 
 			r = zuluMountPrintBitLockerProperties( device,uid ) ;
 

@@ -56,11 +56,14 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	 struct stat xt ;
 	 const char * mapper ;
 
-	 int r ;
+	 int r = 0 ;
 
 	 zuluCryptSecurityGainElevatedPrivileges() ;
 
-	 r = zuluCryptDeviceHasAgivenFileSystem( dev,zuluCryptBitLockerType() ) ;
+	 if( zuluCryptDeviceHasAgivenFileSystem( dev,zuluCryptBitLockerType() ) ){
+
+		 r = zuluCryptUseDislockerBitLocker() ;
+	 }
 
 	 if( r == 1 ){
 
@@ -77,6 +80,7 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 			 return zuluExit( 1,p ) ;
 		}
 	 }else{
+
 		 zuluCryptSecurityDropElevatedPrivileges() ;
 
 		 /*

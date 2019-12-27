@@ -312,9 +312,11 @@ version 5.7.0
 -- Default to using 512bit keys when creating LUKS volumes.
 
 version 5.7.1
--- Use cryptsetup instead of zuluplay to unlock TrueCrypt volume if installed
+-- Use cryptsetup instead of zuluplay to unlock TrueCrypt volumes if installed
    version of cryptsetup >= 1.6.0(released on January 14,2013).
--- Use cryptsetup instead of zuluplay to unlock VeraCrypt volume if installed
-   version of cryptsetup 1.6.7(released on March 23, 2015).
+-- Use cryptsetup instead of zuluplay to unlock VeraCrypt volumes if installed
+   version of cryptsetup >= 1.6.7(released on March 23, 2015).
 -- The two changes above will hopefully solve long standing problems around
     unlocking TrueCrypt/VeraCrypt volumes that use preboot authentication.
+-- Use cryptsetup instead of dislocker to unlock BitLocker volumes if installed
+   version of cryptsetup supports BitLocker volumes.

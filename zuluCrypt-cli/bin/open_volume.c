@@ -141,6 +141,10 @@ static void _printResult( const char * device,const char * m_point )
 	}else if( StringHasComponent( e,"VCRYPT" ) ){
 
 		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"vcrypt" ) ;
+
+	}else if( StringHasComponent( e,"BITLK" ) ){
+
+		printf( gettext( "SUCCESS: %s volume opened successfully\n" ),"bitlocker" ) ;
 	}else{
 		printf( gettext( "SUCCESS: volume opened successfully\n" ) ) ;
 	}
@@ -266,7 +270,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * code deleting blocks to take into account different exit points.
 	 */
 	stringList_t stl ;
-	string_t * stringArray = StringListArray( &stl,7 ) ;
+	string_t * stringArray = StringListArray( &stl,8 ) ;
 	string_t * passphrase  =  &stringArray[ 0 ] ;
 	string_t * m_name      =  &stringArray[ 1 ] ;
 	string_t * data        =  &stringArray[ 2 ] ;
@@ -274,6 +278,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	string_t * mapper      =  &stringArray[ 4 ] ;
 	string_t * mapper_path =  &stringArray[ 5 ] ;
 	string_t * offset      =  &stringArray[ 6 ] ;
+	string_t * bitlk       =  &stringArray[ 7 ] ;
+
 
 	const char * key = NULL ;
 	const char * mapper_name ;
@@ -392,7 +398,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	if( bitlockerVolume ){
+	if( bitlockerVolume && zuluCryptUseDislockerBitLocker() ){
 
 		*mapper_path = zuluCryptBitLockerMapperPath( uid ) ;
 
@@ -400,10 +406,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 		*m_name = zuluCryptBitLockerMapperName( device ) ;
 
-		zuluCryptSecurityDropElevatedPrivileges() ;
-
 		mapper_name = StringContent( *m_name ) ;
 		path_mapper = StringContent( *mapper_path ) ;
+
+		zuluCryptCreateMountPointPrefix( uid ) ;
+
+		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else{
 		/*
 		 * zuluCryptCreateMapperName() is defined in ../lib/create_mapper_name.c
@@ -416,11 +424,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		*mapper_path = String( zuluCryptMapperPrefix() ) ;
 
 		path_mapper = StringMultipleAppend( *mapper_path,"/",mapper_name,NULL ) ;
-	}
 
-	if( stat( path_mapper,&statstr ) == 0 ){
+		if( stat( path_mapper,&statstr ) == 0 ){
 
-		return zuluExit_1( 11,opts,device,mount_point,stl ) ;
+			return zuluExit_1( 11,opts,device,mount_point,stl ) ;
+		}
 	}
 
 	if( plugin_path != NULL ){
@@ -642,8 +650,17 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		st = 3 ;
 	}
 
-	if( !volume.bitlocker_volume ){
+	if( volume.bitlocker_volume ){
 
+		if(  zuluCryptUseCryptsetupBitLocker() ){
+
+			device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),NULL ) ;
+		}else{
+			*bitlk = zuluCryptBitLockerFullMapperPath( uid,device ) ;
+
+			device = StringContent( *bitlk ) ;
+		}
+	}else{
 		device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),NULL ) ;
 	}
 

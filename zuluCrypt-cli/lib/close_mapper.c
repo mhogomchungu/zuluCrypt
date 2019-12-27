@@ -94,7 +94,7 @@ int zuluCryptCloseMapper( const char * mapper )
 
 			return _close_mapper( mapper,tc_api_close_mapper ) ;
 
-		}else if( zuluCryptBitLockerVolume( mapper ) ){
+		}else if( zuluCryptBitLockerVolume( mapper ) && zuluCryptUseDislockerBitLocker() ){
 
 			return _close_mapper( mapper,_close_dislocker ) ;
 		}else{

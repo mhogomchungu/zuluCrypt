@@ -446,9 +446,13 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	mst.uid = uid ;
 	mst.m_flags = mount_opts ;
 
-	int bitLockerVolume = zuluCryptBitLockerVolume( path ) ;
+	int bitLockerVolume = 0 ;
 
-	if( bitLockerVolume ){
+	if( zuluCryptUseDislockerBitLocker() ){
+
+		bitLockerVolume = zuluCryptBitLockerVolume( path ) ;
+	}
+	if( bitLockerVolume ) {
 
 		fs = zuluCryptBitLockerVolumeFS( path ) ;
 	}else{

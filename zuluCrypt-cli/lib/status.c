@@ -33,6 +33,7 @@
 #include "luks2_support.h"
 #include "zuluplay_support.h"
 #include "share_mount_prefix_path.h"
+#include "use_dislocker.h"
 
 #define SIZE 1024
 
@@ -67,6 +68,20 @@ int zuluCryptUseZuluPlayVCRYPT()
 #else
 	return 1 ;
 #endif
+}
+
+int zuluCryptUseCryptsetupBitLocker()
+{
+#ifdef CRYPT_BITLK
+	return USE_CRYPTSETUP_FOR_BITLOCKER ;
+#else
+	return 0 ;
+#endif
+}
+
+int zuluCryptUseDislockerBitLocker()
+{
+	return !zuluCryptUseCryptsetupBitLocker() ;
 }
 
 #ifdef CRYPT_LUKS2
@@ -355,12 +370,80 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	StringDelete( &q ) ;
 }
 
+static int _string_starts_with( const char * a,const char * b )
+{
+	return strncmp( a,b,strlen( b ) ) == 0 ;
+}
+
+static int _string_ends_with( const char * e,size_t ee,const char * s,size_t ss )
+{
+	if( ee >= ss ){
+		return memcmp( e + ee - ss,s,ss ) == 0 ;
+	}else{
+		return 0 ;
+	}
+}
+
+static int _string_starts_and_ends_with( const char * a,const char * b,const char * c )
+{
+	if( _string_starts_with( a,b ) ){
+
+		return _string_ends_with( a,strlen( a ),c,strlen( c ) ) ;
+	}else{
+		return 0 ;
+	}
+}
+
+static int _created_with_tcplay( const char * map_name )
+{
+	DIR * dir = opendir( "/dev/disk/by-id/" ) ;
+	struct dirent * e ;
+
+	const char * m = strrchr( map_name,'/' ) ;
+
+	if( m != NULL ){
+
+		map_name = m + 1 ;
+	}
+
+	if( dir != NULL ){
+
+		while( ( e = readdir( dir ) ) != NULL ){
+
+			if ( _string_starts_and_ends_with( e->d_name,"dm-uuid-CRYPT-",map_name ) ){
+
+				if ( _string_starts_with( e->d_name,"dm-uuid-CRYPT-TCRYPT" ) ){
+
+					if ( _string_starts_with( e->d_name,"dm-uuid-CRYPT-TCRYPT-zuluCrypt" ) ){
+
+						return 0 ;
+					}else{
+						return 1 ;
+					}
+
+				}else if( _string_starts_with( e->d_name,"dm-uuid-CRYPT-VCRYPT" ) ) {
+
+					return 1 ;
+				}
+
+				break ;
+			}
+		}
+
+		closedir( dir ) ;
+	}
+
+	return 0 ;
+}
+
 int zuluCryptVolumeManagedByTcplay( const char * mapper )
 {
-	string_t st = String( "/dev/disk/by-id/dm-uuid-CRYPT-TCRYPT-" ) ;
-	int r = zuluCryptPathIsValid( StringAppend( st,mapper + 12 ) ) ;
-	StringDelete( &st ) ;
-	return r != 1 ;
+	if( zuluCryptBitLockerVolume( mapper ) ){
+
+		return 0 ;
+	}else{
+		return _created_with_tcplay( mapper ) ;
+	}
 }
 
 static char * _get_type( struct crypt_device * cd,const char * mapper )
@@ -401,6 +484,10 @@ char * zuluCryptGetVolumeTypeFromMapperPath( const char * mapper )
 	struct crypt_device * cd ;
 	char * r ;
 
+	if( zuluCryptBitLockerVolume( mapper ) ){
+
+		return StringCopy_2( zuluCryptBitLockerType() ) ;
+	}
 	if( crypt_init_by_name( &cd,mapper ) < 0 ){
 
 		return StringCopy_2( "Nil" ) ;
@@ -690,9 +777,18 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 		type = crypt_get_type( cd ) ;
 
 		if( type != NULL ){
+#ifdef CRYPT_BITLK
+			if( StringsAreEqual( type,CRYPT_BITLK ) ){
 
+				q = String( zuluCryptBitLockerType() ) ;
+
+				StringReplaceString( q,"crypto_","" ) ;
+			}else{
+				q = String( type ) ;
+			}
+#else
 			q = String( type ) ;
-
+#endif
 			StringAppend( p,StringToLowerCase( q ) ) ;
 
 			if( StringsAreEqual_2( q,"luks2" ) && auth_luks2.integrity_hash ){

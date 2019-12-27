@@ -684,4 +684,14 @@ int zuluCryptUseZuluPlayVCRYPT( void ) ;
  */
 int zuluCryptUseZuluPlayTCRYPT( void ) ;
 
+/*
+ * this function is defined in statuc.c
+ */
+int zuluCryptUseCryptsetupBitLocker( void ) ;
+
+/*
+ * this function is defined in statuc.c
+ */
+int zuluCryptUseDislockerBitLocker( void ) ;
+
 #endif

@@ -250,6 +250,11 @@ stringList_t zuluCryptPartitionList( void ) ;
 string_t zuluCryptCreateMountPoint( const char * device,const char * m_point,const char * m_opts,uid_t uid ) ;
 
 /*
+ * this function is defined in create_mount_point.c
+ */
+void zuluCryptCreateMountPointPrefix( uid_t uid ) ;
+
+/*
  * zuluCryptCreateMountPath() is defined in create_mount_point.c
  */
 void zuluCryptCreateMountPath( const char * path ) ;

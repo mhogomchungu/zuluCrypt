@@ -25,6 +25,13 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdio.h>
+#include <libcryptsetup.h>
+
+static int zuluExit( int st,struct crypt_device * cd )
+{
+	crypt_free( cd ) ;
+	return st ;
+}
 
 const char * zuluCryptBitLockerType()
 {
@@ -105,7 +112,33 @@ string_t zuluCryptBitLockerFullMapperPath( uid_t uid,const char * e )
 
 int zuluCryptBitLockerVolume( const char * e )
 {
-	return StringEndsWith_1( e,"/dislocker-file" ) ;
+	struct crypt_device * cd = NULL ;
+
+	int r ;
+
+	if( StringEndsWith_1( e,"/dislocker-file" ) ){
+
+		return 1 ;
+	}else{
+#ifdef CRYPT_BITLK
+		if( !StringPrefixEqual( e,crypt_get_dir() ) ){
+
+			return 0 ;
+		}
+		if( crypt_init_by_name( &cd,e ) != 0 ){
+
+			return 0 ;
+		}
+
+		r = StringsAreEqual( crypt_get_type( cd ),CRYPT_BITLK ) ;
+
+		crypt_free( cd ) ;
+
+		return r ;
+#else
+		return 0 ;
+#endif
+	}
 }
 
 char * zuluCryptBitLockerUnmountPath( const char * e )
@@ -235,7 +268,7 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 {
 	int r ;
 
-	const char * exe = _dislocker_fuse_path() ;
+	const char * exe ;
 
 	string_t st ;
 
@@ -246,6 +279,46 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 	string_t m ;
 
 	char * env[ 2 ] = { NULL,NULL } ;
+
+	struct crypt_device * cd = NULL ;
+
+	uint32_t flags ;
+
+	if( zuluCryptUseCryptsetupBitLocker() ){
+
+		if( crypt_init( &cd,opts->device ) != 0 ){
+
+			return 4 ;
+		}
+		if( crypt_load( cd,CRYPT_BITLK,NULL ) != 0 ){
+
+			return zuluExit( 4,cd ) ;
+		}
+		if( StringHasComponent( opts->m_opts,"ro" ) ){
+
+			flags = CRYPT_ACTIVATE_READONLY ;
+		}else{
+			flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
+		}
+
+		r = crypt_activate_by_passphrase( cd,
+						  opts->mapper_name,
+						  CRYPT_ANY_SLOT,
+						  opts->key,
+						  opts->key_len,
+						  flags ) ;
+
+		if( r == 0 ){
+
+			*xt = String( opts->mapper_path ) ;
+
+			return zuluExit( 0,cd ) ;
+		}else{
+			return zuluExit( 4,cd ) ;
+		}
+	}
+
+	exe = _dislocker_fuse_path() ;
 
 	if( exe == NULL ){
 

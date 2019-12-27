@@ -32,7 +32,8 @@ int zuluCryptEXEVolumeInfo( const char * mapper,const char * device,uid_t uid )
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 
-	if( zuluCryptDeviceHasAgivenFileSystem( device,zuluCryptBitLockerType() ) ){
+	if( zuluCryptDeviceHasAgivenFileSystem( device,zuluCryptBitLockerType() )
+			&& zuluCryptUseDislockerBitLocker() ){
 
 		xt = zuluMountPrintBitLockerProperties( device,uid ) ;
 	}else{

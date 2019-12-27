@@ -299,7 +299,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 
 			StringFree( f ) ;
 
-		}else if( zuluCryptBitLockerVolume( e ) ){
+		}else if( zuluCryptBitLockerVolume( e ) && zuluCryptUseDislockerBitLocker() ){
 
 			q = zuluCryptBitLockerResolveMapperPath( e,uid ) ;
 

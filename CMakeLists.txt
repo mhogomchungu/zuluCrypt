@@ -186,6 +186,16 @@ file( APPEND ${PROJECT_BINARY_DIR}/plugin_path.h "\n#define ZULUCRYPTTestPlugin 
 set( BUILD_TCPLAY "true" )
 set( TCPLAY_NEW_API "true" )
 
+if( NOT DEFINED USE_CRYPTSETUP_FOR_BITLOCKER )
+	set( USE_CRYPTSETUP_FOR_BITLOCKER "TRUE" )
+endif()
+
+if( USE_DISLOCKER )
+	file( WRITE ${PROJECT_BINARY_DIR}/use_dislocker.h "\n#define USE_CRYPTSETUP_FOR_BITLOCKER 1\n" )
+else()
+	file( WRITE ${PROJECT_BINARY_DIR}/use_dislocker.h "\n#define USE_CRYPTSETUP_FOR_BITLOCKER 0\n" )
+endif()
+
 if( NOT DEFINED INTERNAL_ZULUPLAY )
 	set( INTERNAL_ZULUPLAY "false" )
 endif()

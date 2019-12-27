@@ -356,6 +356,17 @@ static int home_mount_prefix( void )
 	return USE_HOME_PATH_AS_MOUNT_PREFIX ;
 }
 
+void zuluCryptCreateMountPointPrefix( uid_t uid )
+{
+	string_t st = zuluCryptGetUserName( uid ) ;
+
+	const char * e = StringPrepend( st,"/run/media/private/" ) ;
+
+	zuluCryptCreateMountPath( e ) ;
+
+	StringDelete( &st ) ;
+}
+
 string_t zuluCryptCreateMountPoint( const char * device,const char * label,const char * m_opts,uid_t uid )
 {
 	if( home_mount_prefix() ){
