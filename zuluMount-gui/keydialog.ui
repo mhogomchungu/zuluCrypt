@@ -241,15 +241,18 @@
   </widget>
  </widget>
  <tabstops>
-  <tabstop>lineEditKey</tabstop>
   <tabstop>lineEditMountPoint</tabstop>
   <tabstop>pbOpenMountPoint</tabstop>
-  <tabstop>cbKeyType</tabstop>
-  <tabstop>pbkeyOption</tabstop>
   <tabstop>checkBoxOpenReadOnly</tabstop>
   <tabstop>checkBoxShareMountPoint</tabstop>
+  <tabstop>checkBoxVeraCryptVolume</tabstop>
+  <tabstop>cbKeyType</tabstop>
+  <tabstop>lineEditKey</tabstop>
+  <tabstop>pbkeyOption</tabstop>
+  <tabstop>checkBoxVisibleKey</tabstop>
   <tabstop>pbOptions</tabstop>
   <tabstop>pbOpen</tabstop>
+  <tabstop>pushButton</tabstop>
   <tabstop>pbCancel</tabstop>
  </tabstops>
  <resources/>
