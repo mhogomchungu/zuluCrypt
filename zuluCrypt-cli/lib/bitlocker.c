@@ -120,7 +120,6 @@ int zuluCryptBitLockerVolume( const char * e )
 
 		return 1 ;
 	}else{
-#ifdef CRYPT_BITLK
 		if( !StringPrefixEqual( e,crypt_get_dir() ) ){
 
 			return 0 ;
@@ -130,14 +129,11 @@ int zuluCryptBitLockerVolume( const char * e )
 			return 0 ;
 		}
 
-		r = StringsAreEqual( crypt_get_type( cd ),CRYPT_BITLK ) ;
+		r = StringsAreEqual( crypt_get_type( cd ),zuluCryptCryptsetupBitLockerType() ) ;
 
 		crypt_free( cd ) ;
 
 		return r ;
-#else
-		return 0 ;
-#endif
 	}
 }
 

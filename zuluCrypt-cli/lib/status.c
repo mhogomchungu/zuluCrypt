@@ -786,8 +786,8 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 		type = crypt_get_type( cd ) ;
 
 		if( type != NULL ){
-#ifdef CRYPT_BITLK
-			if( StringsAreEqual( type,CRYPT_BITLK ) ){
+
+			if( StringsAreEqual( type,zuluCryptCryptsetupBitLockerType() ) ){
 
 				q = String( zuluCryptBitLockerType() ) ;
 
@@ -795,9 +795,7 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 			}else{
 				q = String( type ) ;
 			}
-#else
-			q = String( type ) ;
-#endif
+
 			StringAppend( p,StringToLowerCase( q ) ) ;
 
 			if( StringsAreEqual_2( q,"luks2" ) && auth_luks2.integrity_hash ){
