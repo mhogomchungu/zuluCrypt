@@ -692,6 +692,11 @@ int zuluCryptUseCryptsetupBitLocker( void ) ;
 /*
  * this function is defined in statuc.c
  */
+const char * zuluCryptCryptsetupBitLockerType() ;
+
+/*
+ * this function is defined in statuc.c
+ */
 int zuluCryptUseDislockerBitLocker( void ) ;
 
 #endif

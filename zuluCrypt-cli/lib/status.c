@@ -70,6 +70,15 @@ int zuluCryptUseZuluPlayVCRYPT()
 #endif
 }
 
+const char * zuluCryptCryptsetupBitLockerType()
+{
+#ifdef CRYPT_BITLK
+	return CRYPT_BITLK ;
+#else
+	return NULL ;
+#endif
+}
+
 int zuluCryptUseCryptsetupBitLocker()
 {
 #ifdef CRYPT_BITLK
