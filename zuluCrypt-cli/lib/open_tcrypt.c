@@ -225,10 +225,14 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 
 		return 2 ;
 	}
+#ifdef CRYPT_TCRYPT
 	if( crypt_load( cd,CRYPT_TCRYPT,&m ) != 0 ){
 
 		return zuluExit( 2,cd ) ;
 	}
+#else
+	return zuluExit( 2,cd ) ;
+#endif
 	if( StringHasComponent( opt->m_opts,"ro" ) ){
 
 		flags = CRYPT_ACTIVATE_READONLY ;
