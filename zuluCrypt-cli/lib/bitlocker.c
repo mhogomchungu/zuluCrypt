@@ -286,6 +286,7 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 
 	if( zuluCryptUseCryptsetupBitLocker() ){
 
+#ifdef CRYPT_BITLK
 		if( crypt_init( &cd,opts->device ) != 0 ){
 
 			return 4 ;
@@ -316,6 +317,9 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 		}else{
 			return zuluExit( 4,cd ) ;
 		}
+#else
+		return 4 ;
+#endif
 	}
 
 	exe = _dislocker_fuse_path() ;
