@@ -69,49 +69,65 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			case( 'b' ) : stopts->action = 'b'      ; break ;
 			case( 'P' ) : stopts->action = 'P'      ; break ;
 
-			case( 'O' ) : stopts->action = 'O' ;
-			stopts->open_mount = 0 ;
-			break ;
-			case( 'T' ) : stopts->print_partition_type = 1 ;
-			break;
-			case( 'M' ) : stopts->share = 1 ;			
-			break ;
-			case( 'Z' ) : stopts->print_partition_type = 2 ;
-			break;
-			case( 'B' ) : stopts->action = 'B' ;
-			stopts->key_source = optarg ;
-			break ;
-			case( 'G' ) : stopts->plugin_path = optarg ;
-			break ;
-			case( 'R' ) : stopts->action = 'R' ;
-			stopts->key_source = optarg ;
-			break ;
-			case( 'k' ) : stopts->ask_confirmation = 0 ;
-			break ;
+			case( 'O' ) :
+				stopts->action = 'O' ;
+				stopts->open_mount = 0 ;
+				break ;
+			case( 'T' ) :
+				stopts->print_partition_type = 1 ;
+				break;
+			case( 'M' ) :
+				stopts->share = 1 ;
+				break ;
+			case( 'Z' ) :
+				stopts->print_partition_type = 2 ;
+				break;
+			case( 'B' ) :
+				stopts->action = 'B' ;
+				stopts->key_source = optarg ;
+				break ;
+			case( 'G' ) :
+				stopts->plugin_path = optarg ;
+				break ;
+			case( 'R' ) :
+				stopts->action = 'R' ;
+				stopts->key_source = optarg ;
+				break ;
+			case( 'k' ) :
+				stopts->ask_confirmation = 0 ;
+				break ;
 			/*
 			 * ZULUCRYPTallPartitions,ZULUCRYPTsystemPartitions and ZULUCRYPTnonSystemPartitions
 			 * are set in ../constants.h
 			 */
-			case( 'A' ) : stopts->partition_number = ZULUCRYPTallPartitions ;
-			stopts->action = 'A' ;
-			break ;
-			case( 'S' ) : stopts->partition_number = ZULUCRYPTsystemPartitions ;
-			stopts->action = 'S' ;
-			break ;
-			case( 'N' ) : stopts->partition_number = ZULUCRYPTnonSystemPartitions ;
-			stopts->action = 'N' ;
-			break ;
-			case( 't' ) : stopts->type = optarg ;
-			break ;
-			case( 'K' ) : stopts->uid = optarg ;
-			break ;
-			case( 'm' ) : stopts->mount_point = optarg ;
-			break ;
-			case( 'd' ) : stopts->device = optarg ;
-			break ;
-			case( 'p' ) : stopts->key_source = "-p" ;
-			stopts->key = optarg ;
-			break ;
+			case( 'A' ) :
+				stopts->partition_number = ZULUCRYPTallPartitions ;
+				stopts->action = 'A' ;
+				break ;
+			case( 'S' ) :
+				stopts->partition_number = ZULUCRYPTsystemPartitions ;
+				stopts->action = 'S' ;
+				break ;
+			case( 'N' ) :
+				stopts->partition_number = ZULUCRYPTnonSystemPartitions ;
+				stopts->action = 'N' ;
+				break ;
+			case( 't' ) :
+				stopts->type = optarg ;
+				break ;
+			case( 'K' ) :
+				stopts->uid = optarg ;
+				break ;
+			case( 'm' ) :
+				stopts->mount_point = optarg ;
+				break ;
+			case( 'd' ) :
+				stopts->device = optarg ;
+				break ;
+			case( 'p' ) :
+				stopts->key_source = "-p" ;
+				stopts->key = optarg ;
+				break ;
 			case( 'F' ) :
 				if( k < TRUECRYPT_MAX_KEYFILES ){
 					/*
@@ -120,28 +136,34 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 					stopts->tcrypt_multiple_keyfiles[ k ] = optarg ;
 					k++ ;
 				}
-			break ;
-			case( 'f' ) : stopts->key_source = "-f" ;
-			stopts->key = optarg ;
-			break ;
+				break ;
+			case( 'f' ) :
+				stopts->key_source = "-f" ;
+				stopts->key = optarg ;
+				break ;
 			case( 'e' ) :
 				stopts->m_opts = optarg ;
 				stopts->tcrypt_hidden_volume_size = optarg ;
-			break ;
-			case( 'Y' ) : stopts->fs_opts = optarg ;
-			break ;
-			case( 'z' ) : stopts->fs = optarg ;
-			stopts->back_up_file_path = optarg ;
-			break ;
-			case( 'g' ) : stopts->rng = optarg ;
-			break ;
-			case( 'y' ) : stopts->existing_key_source = "-p" ;
-			stopts->existing_key = optarg ;
-			break ;
+				break ;
+			case( 'Y' ) :
+				stopts->fs_opts = optarg ;
+				break ;
+			case( 'z' ) :
+				stopts->fs = optarg ;
+				stopts->back_up_file_path = optarg ;
+				stopts->luks_external_header = optarg ;
+				break ;
+			case( 'g' ) :
+				stopts->rng = optarg ;
+				break ;
+			case( 'y' ) :
+				stopts->existing_key_source = "-p" ;
+				stopts->existing_key = optarg ;
+				break ;
 			case( 'u' ) :
 				stopts->existing_key_source = "-f" ;
 				stopts->existing_key = optarg ;
-			break ;
+				break ;
 			case( 'V' ) :
 				if( n < TRUECRYPT_MAX_KEYFILES ){
 					/*
@@ -151,13 +173,15 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 					n++ ;
 				}
 			break ;
-			case( 'l' ) : stopts->new_key_source = "-p" ;
-			stopts->new_key = optarg ;
-			stopts->tcrypt_hidden_volume_key = optarg ;
-			break ;
-			case( 'n' ) : stopts->new_key_source = "-f" ;
-			stopts->new_key = optarg ;
-			break ;
+			case( 'l' ) :
+				stopts->new_key_source = "-p" ;
+				stopts->new_key = optarg ;
+				stopts->tcrypt_hidden_volume_key = optarg ;
+				break ;
+			case( 'n' ) :
+				stopts->new_key_source = "-f" ;
+				stopts->new_key = optarg ;
+				break ;
 			default: printf( "run zuluCrypt-cli --help for help\n" ) ;
 		}
 	}

@@ -124,7 +124,8 @@ static int _open_mapper( const open_struct_t * opts )
 	/*
 	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
 	 */
-	if( opts->luks_detached_header || opts->general_detached_header ){
+
+	if( opts->luks_detached_header ){
 
 		/*
 		 * zuluCryptOpenLuks_1() is defined in open_luks.c

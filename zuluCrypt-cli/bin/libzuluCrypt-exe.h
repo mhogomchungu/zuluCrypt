@@ -55,6 +55,7 @@ typedef struct struct_opts_1{
 	const char * back_up_file_path ;
 	const char * offset ;
 	const char * uid ;
+	const char * luks_external_header ;
 	char * const * env ;
 	char action ;
 	int partition_number ;

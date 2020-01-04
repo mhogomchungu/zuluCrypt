@@ -74,13 +74,13 @@ typedef struct{
 	const char * m_point ;
 	const char * fs_opts ;
 	const char * m_opts ;
+	const char * luks_detached_header ;
+
 	size_t       key_len ;
 	uid_t        uid ;
 	int          volume_type ;
 	int          key_source ;
 	int iteration_count ;
-	int luks_detached_header ;
-	int general_detached_header ;
 	int tcrypt_keyfiles_count ;
 	int veraCrypt_volume ;
 	int trueCrypt_volume ;

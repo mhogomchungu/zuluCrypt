@@ -280,7 +280,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	string_t * offset      =  &stringArray[ 6 ] ;
 	string_t * bitlk       =  &stringArray[ 7 ] ;
 
-
 	const char * key = NULL ;
 	const char * mapper_name ;
 	const char * path_mapper ;
@@ -547,6 +546,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.m_opts      = m_opts ;
 	volume.m_flags     = m_flags ;
 	volume.bitlocker_volume = bitlockerVolume ;
+	volume.luks_detached_header = opts->luks_external_header ;
 
 	/*
 	 * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in this source file.
@@ -604,10 +604,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 		plugin_path = plugin_path + StringLastIndexOfChar_1( plugin_path,'/' ) + 1 ;
 	}
-
-	volume.luks_detached_header = StringHasComponent( plugin_path,"luks" ) ;
-
-	volume.general_detached_header = StringHasComponent( plugin_path,"generic_header" ) ;
 
 	if( tcrypt_keyfile ){
 

@@ -88,6 +88,8 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 	m_ui->PushButtonMountPointPath->setIcon( QIcon( ":/folder.png" ) ) ;
 
+	m_ui->pushButtonLuksExternalHeaderPath->setIcon( QIcon( ":/file.png" ) ) ;
+
 	m_open_with_path = false ;
 
 	m_table = table ;
@@ -151,6 +153,18 @@ passwordDialog::passwordDialog( QTableWidget * table,
 		return m ;
 	}() ) ;
 
+	connect( m_ui->pushButtonLuksExternalHeaderPath,&QPushButton::clicked,[ this ](){
+
+		auto a = tr( "Select External LUKS Header File" ) ;
+
+		auto Z = QFileDialog::getOpenFileName( this,a,utility::homePath() ) ;
+
+		if( !Z.isEmpty() ){
+
+			m_ui->lineEditVolumeProperty->setText( Z ) ;
+		}
+	} ) ;
+
 	m_ui->checkBoxVisibleKey->setToolTip( tr( "Check This Box To Make Password Visible" ) ) ;
 
 	this->setWindowTitle( tr( "Unlock Encrypted Volume" ) ) ;
@@ -174,10 +188,12 @@ void passwordDialog::cbVolumeType( int e )
 		/*
 		 * LUKS,TrueCrypt,BitLocker
 		 */
-		m_ui->labelVolumeProperty->clear() ;
-		m_ui->lineEditVolumeProperty->setEnabled( false ) ;
+		m_ui->labelVolumeProperty->setText( tr( "LUKS External Header Path" ) ) ;
+		m_ui->lineEditVolumeProperty->setEnabled( true ) ;
 		m_ui->pushButtonPlainDmCryptOptions->setEnabled( false ) ;
 		m_veraCryptVolume = false ;
+		m_ui->pushButtonLuksExternalHeaderPath->setEnabled( true ) ;
+		m_ui->lineEditVolumeProperty->setEchoMode( QLineEdit::Normal ) ;
 
 	}else if( e == 1 || e == 2 ){
 
@@ -188,6 +204,8 @@ void passwordDialog::cbVolumeType( int e )
 		m_ui->lineEditVolumeProperty->setEnabled( true ) ;
 		m_ui->pushButtonPlainDmCryptOptions->setEnabled( false ) ;
 		m_veraCryptVolume = true ;
+		m_ui->pushButtonLuksExternalHeaderPath->setEnabled( false ) ;
+		m_ui->lineEditVolumeProperty->setEchoMode( QLineEdit::Password ) ;
 
 	}else if( e == 3 ){
 
@@ -199,6 +217,8 @@ void passwordDialog::cbVolumeType( int e )
 		m_ui->lineEditVolumeProperty->setEnabled( true ) ;
 		m_ui->lineEditVolumeProperty->setToolTip( tr( "Offset Will Be In Sectors If The Entry Is Made Up Of Only Digits\nAnd In Bytes If The Entry Ends With \"b\"\nAnd In Kilobytes If The Entry Ends With \"k\"\nAnd In Megabytes If The Entry Ends With \"m\"\nAnd In Terabytes If The Entry Ends With \"t\"" ) ) ;
 		m_veraCryptVolume = false ;
+		m_ui->pushButtonLuksExternalHeaderPath->setEnabled( false ) ;
+		m_ui->lineEditVolumeProperty->setEchoMode( QLineEdit::Password ) ;
 	}
 
 	utility::defaultUnlockingVolumeType( e ) ;
@@ -620,14 +640,23 @@ void passwordDialog::disableAll()
 	m_ui->pbKeyOption->setEnabled( false ) ;
 	m_ui->cbKeyType->setEnabled( false ) ;
 	m_ui->checkBoxVisibleKey->setEnabled( false ) ;
+	m_ui->lineEditVolumeProperty->setEnabled( false ) ;
+	m_ui->labelVolumeProperty->setEnabled( false ) ;
+	m_ui->pushButtonLuksExternalHeaderPath->setEnabled( false ) ;
 }
 
 void passwordDialog::enableAll()
 {
 	auto index = m_ui->cbVolumeType->currentIndex() ;
 
-	m_ui->labelVolumeProperty->setEnabled( index != 0 ) ;
-	m_ui->lineEditVolumeProperty->setEnabled( index != 0 ) ;
+	if( index == 0 ){
+
+		m_ui->pushButtonLuksExternalHeaderPath->setEnabled( true ) ;
+
+	}
+
+	m_ui->lineEditVolumeProperty->setEnabled( true ) ;
+	m_ui->labelVolumeProperty->setEnabled( true ) ;
 	m_ui->pushButtonPlainDmCryptOptions->setEnabled( index == 3 ) ;
 	m_ui->cbVolumeType->setEnabled( true ) ;
 	m_ui->labelVolumeType->setEnabled( true ) ;
@@ -823,6 +852,16 @@ void passwordDialog::openVolume()
 	}
 
 	auto exe = QString( "%1 -o -d \"%2\" -m \"%3\" -e %4 %5 \"%6\"" ).arg( a,b,c,d,e,f ) ;
+
+	if( m_ui->cbVolumeType->currentIndex() == 0 ){
+
+		auto s = m_ui->lineEditVolumeProperty->text() ;
+
+		if( !s.isEmpty() ){
+
+			exe += " -z " + utility::Task::makePath( s ) ;
+		}
+	}
 
 	if( !m_keyFiles.isEmpty() ){
 
