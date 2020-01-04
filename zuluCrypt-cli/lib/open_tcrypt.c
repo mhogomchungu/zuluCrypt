@@ -186,8 +186,9 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 	struct crypt_device * cd ;
 	uint32_t flags ;
 	int st ;
-	unsigned int * s ;
+	unsigned int * s = NULL ;
 
+#ifdef CRYPT_TCRYPT
 	struct crypt_params_tcrypt m ;
 
 	memset( &m,'\0',sizeof( m ) ) ;
@@ -199,7 +200,9 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 	m.veracrypt_pim   = ( unsigned int )  opt->iteration_count ;
 
 	s = &m.flags ;
-
+#else
+	int m ;
+#endif
 	zuluCryptSetCryptsetupFlags( s,LEGACY_MODES ) ;
 
 	if( opt->system_volume ){

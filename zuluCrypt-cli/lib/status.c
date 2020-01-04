@@ -99,6 +99,8 @@ int zuluCryptUseCryptsetupBitLocker()
 
 static void _set_vera_mode( uint32_t * flags )
 {
+	if( flags ){}
+
 #ifdef CRYPT_TCRYPT_VERA_MODES
 	*flags |= CRYPT_TCRYPT_VERA_MODES ;
 #endif
@@ -106,6 +108,7 @@ static void _set_vera_mode( uint32_t * flags )
 
 void zuluCryptSetCryptsetupFlags( uint32_t * flags,enum zuluCryptCryptsetupFlags flag )
 {
+	if( flags && flag ){}
 #ifdef CRYPT_TCRYPT
 	switch( flag ) {
 		case SYSTEM_HEADER : *flags |= CRYPT_TCRYPT_SYSTEM_HEADER ; break ;
