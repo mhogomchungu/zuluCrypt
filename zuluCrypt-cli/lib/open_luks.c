@@ -52,7 +52,7 @@ static int _open_luks_2( const char * device,const resolve_path_t * opt )
 #if LUKS_EXTERNAL_HEADER
 		if( crypt_init( &cd,opts->luks_detached_header ) != 0 ){
 
-			return zuluExit( 1,cd ) ;
+			return 1 ;
 		}
 
 		if( crypt_load( cd,NULL,NULL ) != 0 ){
