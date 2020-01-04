@@ -124,7 +124,7 @@ typedef struct{
  * read section 8.3  of cryptsetup FAQ for more info.
  */
 
-static inline int zuluCryptWhirlpoolIsSupported()
+static inline int zuluCryptWhirlpoolIsSupported( void )
 {
 #ifdef GCRYPT_VERSION_NUMBER
 	return GCRYPT_VERSION_NUMBER >= 0x010601 && SUPPORT_WHIRLPOOL ;
@@ -692,8 +692,26 @@ int zuluCryptUseCryptsetupBitLocker( void ) ;
 /*
  * this function is defined in statuc.c
  */
-const char * zuluCryptCryptsetupBitLockerType() ;
+const char * zuluCryptCryptsetupBitLockerType( void ) ;
 
+/*
+ * this function is defined in statuc.c
+ */
+const char * zuluCryptCryptsetupTCRYPTType( void ) ;
+
+enum zuluCryptCryptsetupFlags{
+
+	SYSTEM_HEADER,
+	BACKUP_HEADER,
+	HIDDEN_HEADER,
+	VERA_MODES,
+	LEGACY_MODES
+};
+
+/*
+ * this function is defined in statuc.c
+ */
+void zuluCryptSetCryptsetupFlags( uint32_t *,enum zuluCryptCryptsetupFlags ) ;
 /*
  * this function is defined in statuc.c
  */

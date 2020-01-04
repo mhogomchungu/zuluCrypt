@@ -186,6 +186,7 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 	struct crypt_device * cd ;
 	uint32_t flags ;
 	int st ;
+	unsigned int * s ;
 
 	struct crypt_params_tcrypt m ;
 
@@ -197,42 +198,34 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 	m.keyfiles_count  = ( unsigned int )  opt->tcrypt_keyfiles_count ;
 	m.veracrypt_pim   = ( unsigned int )  opt->iteration_count ;
 
-#ifdef CRYPT_TCRYPT
+	s = &m.flags ;
 
-	m.flags = CRYPT_TCRYPT_LEGACY_MODES ;
+	zuluCryptSetCryptsetupFlags( s,LEGACY_MODES ) ;
 
 	if( opt->system_volume ){
 
-		m.flags |= CRYPT_TCRYPT_SYSTEM_HEADER ;
+		zuluCryptSetCryptsetupFlags( s,SYSTEM_HEADER ) ;
 	}
 	if( opt->use_backup_header ){
 
-		m.flags |= CRYPT_TCRYPT_BACKUP_HEADER ;
+		zuluCryptSetCryptsetupFlags( s,BACKUP_HEADER ) ;
 	}
 	if( opt->use_hidden_header ){
 
-		m.flags |= CRYPT_TCRYPT_HIDDEN_HEADER ;
+		zuluCryptSetCryptsetupFlags( s,HIDDEN_HEADER ) ;
 	}
-#endif
-
-#ifdef CRYPT_TCRYPT_VERA_MODES
 	if( opt->veraCrypt_volume ){
 
-		m.flags |= CRYPT_TCRYPT_VERA_MODES ;
+		zuluCryptSetCryptsetupFlags( s,VERA_MODES ) ;
 	}
-#endif
 	if( crypt_init( &cd,device ) != 0 ){
 
 		return 2 ;
 	}
-#ifdef CRYPT_TCRYPT
-	if( crypt_load( cd,CRYPT_TCRYPT,&m ) != 0 ){
+	if( crypt_load( cd,zuluCryptCryptsetupTCRYPTType(),&m ) != 0 ){
 
 		return zuluExit( 2,cd ) ;
 	}
-#else
-	return zuluExit( 2,cd ) ;
-#endif
 	if( StringHasComponent( opt->m_opts,"ro" ) ){
 
 		flags = CRYPT_ACTIVATE_READONLY ;
@@ -422,9 +415,10 @@ int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source
 	}else{
 		params.passphrase      = key ;
 		params.passphrase_size = StringSize( key ) ;
-		params.flags           = CRYPT_TCRYPT_LEGACY_MODES ;
 
-		if( crypt_load( cd,CRYPT_TCRYPT,&params ) == 0 ){
+		zuluCryptSetCryptsetupFlags( &params.flags,LEGACY_MODES ) ;
+
+		if( crypt_load( cd,zuluCryptCryptsetupTCRYPTType(),&params ) == 0 ){
 			return zuluExit( 1,cd ) ;
 		}else{
 			return zuluExit( 0,cd ) ;

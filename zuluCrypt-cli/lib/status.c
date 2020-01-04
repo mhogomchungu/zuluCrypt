@@ -75,7 +75,16 @@ const char * zuluCryptCryptsetupBitLockerType()
 #ifdef CRYPT_BITLK
 	return CRYPT_BITLK ;
 #else
-	return NULL ;
+	return "" ;
+#endif
+}
+
+const char * zuluCryptCryptsetupTCRYPTType()
+{
+#ifdef CRYPT_TCRYPT
+	return CRYPT_TCRYPT ;
+#else
+	return "" ;
 #endif
 }
 
@@ -85,6 +94,26 @@ int zuluCryptUseCryptsetupBitLocker()
 	return USE_CRYPTSETUP_FOR_BITLOCKER ;
 #else
 	return 0 ;
+#endif
+}
+
+static void _set_vera_mode( uint32_t * flags )
+{
+#ifdef CRYPT_TCRYPT_VERA_MODES
+	*flags |= CRYPT_TCRYPT_VERA_MODES ;
+#endif
+}
+
+void zuluCryptSetCryptsetupFlags( uint32_t * flags,enum zuluCryptCryptsetupFlags flag )
+{
+#ifdef CRYPT_TCRYPT
+	switch( flag ) {
+		case SYSTEM_HEADER : *flags |= CRYPT_TCRYPT_SYSTEM_HEADER ; break ;
+		case BACKUP_HEADER : *flags |= CRYPT_TCRYPT_BACKUP_HEADER ; break ;
+		case HIDDEN_HEADER : *flags |= CRYPT_TCRYPT_HIDDEN_HEADER ; break ;
+		case LEGACY_MODES  : *flags |= CRYPT_TCRYPT_LEGACY_MODES  ; break ;
+		case VERA_MODES    : _set_vera_mode( flags )              ; break ;
+	}
 #endif
 }
 
