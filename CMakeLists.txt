@@ -468,6 +468,13 @@ else()
 	file( WRITE ${PROJECT_BINARY_DIR}/support_whirlpool.h "\n#define SUPPORT_WHIRLPOOL 0\n" )
 endif()
 
+if( ( CRYPTSETUP_VERSION VERSION_GREATER "2.0.0" ) OR ( CRYPTSETUP_VERSION VERSION_EQUAL "2.0.0" ) )
+	file( WRITE ${PROJECT_BINARY_DIR}/veracrypt_pim.h "\n#define SUPPORT_VERACRYPT_PIM 1\n" )
+else()
+	file( WRITE ${PROJECT_BINARY_DIR}/veracrypt_pim.h "\n#define SUPPORT_VERACRYPT_PIM 0\n" )
+
+endif()
+
 if( ( CRYPTSETUP_VERSION VERSION_GREATER "2.0.3" ) OR ( CRYPTSETUP_VERSION VERSION_EQUAL "2.0.3" ) )
 	file( WRITE ${PROJECT_BINARY_DIR}/luks2_support.h "\n#define SUPPORT_crypt_get_pbkdf_default 1\n" )
 else()

@@ -34,6 +34,7 @@
 #include "zuluplay_support.h"
 #include "share_mount_prefix_path.h"
 #include "use_dislocker.h"
+#include "veracrypt_pim.h"
 
 #define SIZE 1024
 
@@ -124,8 +125,11 @@ void * zuluCryptCryptsetupTCryptVCrypt( const open_struct_t * opt )
 
 		m->flags |= CRYPT_TCRYPT_HIDDEN_HEADER ;
 	}
-#ifdef CRYPT_TCRYPT_VERA_MODES
+#if SUPPORT_VERACRYPT_PIM
 	m->veracrypt_pim   = ( unsigned int )  opt->iteration_count ;
+#endif
+
+#ifdef CRYPT_TCRYPT_VERA_MODES
 
 	if( opt->veraCrypt_volume ){
 
