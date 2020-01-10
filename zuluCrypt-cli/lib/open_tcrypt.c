@@ -94,8 +94,9 @@ string_t zuluCryptCreateKeyFile_1( string_t st,const char * fileName )
 	return zuluCryptCreateKeyFile( StringContent( st ),StringLength( st ),fileName ) ;
 }
 
-static int zuluExit( int st,struct crypt_device * cd )
+static int zuluExit( int st,struct crypt_device * cd, void * m )
 {
+	free( m ) ;
 	crypt_free( cd ) ;
 	return st ;
 }
@@ -186,48 +187,19 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 	struct crypt_device * cd ;
 	uint32_t flags ;
 	int st ;
-	unsigned int * s = NULL ;
 
-#ifdef CRYPT_TCRYPT
-	struct crypt_params_tcrypt m ;
+	void * m ;
 
-	memset( &m,'\0',sizeof( m ) ) ;
-
-	m.passphrase      = opt->key ;
-	m.passphrase_size = opt->key_len ;
-	m.keyfiles        = ( const char ** ) opt->tcrypt_keyfiles ;
-	m.keyfiles_count  = ( unsigned int )  opt->tcrypt_keyfiles_count ;
-	m.veracrypt_pim   = ( unsigned int )  opt->iteration_count ;
-
-	s = &m.flags ;
-#else
-	int m ;
-#endif
-	zuluCryptSetCryptsetupFlags( s,LEGACY_MODES ) ;
-
-	if( opt->system_volume ){
-
-		zuluCryptSetCryptsetupFlags( s,SYSTEM_HEADER ) ;
-	}
-	if( opt->use_backup_header ){
-
-		zuluCryptSetCryptsetupFlags( s,BACKUP_HEADER ) ;
-	}
-	if( opt->use_hidden_header ){
-
-		zuluCryptSetCryptsetupFlags( s,HIDDEN_HEADER ) ;
-	}
-	if( opt->veraCrypt_volume ){
-
-		zuluCryptSetCryptsetupFlags( s,VERA_MODES ) ;
-	}
 	if( crypt_init( &cd,device ) != 0 ){
 
 		return 2 ;
 	}
-	if( crypt_load( cd,zuluCryptCryptsetupTCRYPTType(),&m ) != 0 ){
 
-		return zuluExit( 2,cd ) ;
+	m = zuluCryptCryptsetupTCryptVCrypt( opt ) ;
+
+	if( crypt_load( cd,zuluCryptCryptsetupTCRYPTType(),m ) != 0 ){
+
+		return zuluExit( 2,cd,m ) ;
 	}
 	if( StringHasComponent( opt->m_opts,"ro" ) ){
 
@@ -240,9 +212,9 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 
 	if( st == 0 ){
 
-		return zuluExit( 0,cd ) ;
+		return zuluExit( 0,cd,m ) ;
 	}else{
-		return zuluExit( 1,cd ) ;
+		return zuluExit( 1,cd,m ) ;
 	}
 }
 
@@ -398,44 +370,41 @@ int zuluCryptOpenTcrypt_1( const open_struct_t * opts )
 	return zuluCryptOpenVolume_0( _open_tcrypt_0,opts ) ;
 }
 
-#if CHECK_TCRYPT
-
 /*
  * 1 is returned if a volume is a truecrypt volume.
  * 0 is returned if a volume is not a truecrypt volume or functionality is not supported
  */
 int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source )
 {
-	struct crypt_device * cd = NULL;
-	struct crypt_params_tcrypt params ;
+	void * m ;
 
-	memset( &params,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
+	open_struct_t s ;
+
+	struct crypt_device * cd = NULL;
+
+	memset( &s,'\0',sizeof( open_struct_t ) ) ;
 
 	if( key_source ){}
 
 	if( crypt_init( &cd,device ) < 0 ){
+
 		return 0 ;
 	}else{
-		params.passphrase      = key ;
-		params.passphrase_size = StringSize( key ) ;
+		s.key     = key ;
+		s.key_len = StringSize( key ) ;
 
-		zuluCryptSetCryptsetupFlags( &params.flags,LEGACY_MODES ) ;
+		m = zuluCryptCryptsetupTCryptVCrypt( &s ) ;
 
-		if( crypt_load( cd,zuluCryptCryptsetupTCRYPTType(),&params ) == 0 ){
-			return zuluExit( 1,cd ) ;
+		if( m == NULL ){
+
+			return 0 ;
+		}
+
+		if( crypt_load( cd,zuluCryptCryptsetupTCRYPTType(),m ) == 0 ){
+
+			return zuluExit( 1,cd,m ) ;
 		}else{
-			return zuluExit( 0,cd ) ;
+			return zuluExit( 0,cd,m ) ;
 		}
 	}
 }
-
-#else
-
-int zuluCryptVolumeIsTcrypt( const char * device,const char * key,int key_source )
-{
-	if( 0 && device && key && key_source ){;}
-
-	return 1 ;
-}
-
-#endif

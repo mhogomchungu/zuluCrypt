@@ -692,6 +692,11 @@ int zuluCryptUseCryptsetupBitLocker( void ) ;
 /*
  * this function is defined in statuc.c
  */
+void * zuluCryptCryptsetupTCryptVCrypt( const open_struct_t * opt ) ;
+
+/*
+ * this function is defined in statuc.c
+ */
 const char * zuluCryptCryptsetupBitLockerType( void ) ;
 
 /*
@@ -699,19 +704,6 @@ const char * zuluCryptCryptsetupBitLockerType( void ) ;
  */
 const char * zuluCryptCryptsetupTCRYPTType( void ) ;
 
-enum zuluCryptCryptsetupFlags{
-
-	SYSTEM_HEADER,
-	BACKUP_HEADER,
-	HIDDEN_HEADER,
-	VERA_MODES,
-	LEGACY_MODES
-};
-
-/*
- * this function is defined in statuc.c
- */
-void zuluCryptSetCryptsetupFlags( uint32_t *,enum zuluCryptCryptsetupFlags ) ;
 /*
  * this function is defined in statuc.c
  */

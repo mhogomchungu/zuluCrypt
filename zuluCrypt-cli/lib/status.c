@@ -97,26 +97,44 @@ int zuluCryptUseCryptsetupBitLocker()
 #endif
 }
 
-static void _set_vera_mode( uint32_t * flags )
+void * zuluCryptCryptsetupTCryptVCrypt( const open_struct_t * opt )
 {
-	if( flags ){}
-
-#ifdef CRYPT_TCRYPT_VERA_MODES
-	*flags |= CRYPT_TCRYPT_VERA_MODES ;
-#endif
-}
-
-void zuluCryptSetCryptsetupFlags( uint32_t * flags,enum zuluCryptCryptsetupFlags flag )
-{
-	if( flags && flag ){}
 #ifdef CRYPT_TCRYPT
-	switch( flag ) {
-		case SYSTEM_HEADER : *flags |= CRYPT_TCRYPT_SYSTEM_HEADER ; break ;
-		case BACKUP_HEADER : *flags |= CRYPT_TCRYPT_BACKUP_HEADER ; break ;
-		case HIDDEN_HEADER : *flags |= CRYPT_TCRYPT_HIDDEN_HEADER ; break ;
-		case LEGACY_MODES  : *flags |= CRYPT_TCRYPT_LEGACY_MODES  ; break ;
-		case VERA_MODES    : _set_vera_mode( flags )              ; break ;
+
+	struct crypt_params_tcrypt * m = malloc( sizeof( struct crypt_params_tcrypt ) ) ;
+
+	memset( m,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
+
+	m->passphrase      = opt->key ;
+	m->passphrase_size = opt->key_len ;
+	m->keyfiles        = ( const char ** ) opt->tcrypt_keyfiles ;
+	m->keyfiles_count  = ( unsigned int )  opt->tcrypt_keyfiles_count ;
+
+	m->flags = CRYPT_TCRYPT_LEGACY_MODES ;
+
+	if( opt->system_volume ){
+
+		m->flags |= CRYPT_TCRYPT_SYSTEM_HEADER ;
 	}
+	if( opt->use_backup_header ){
+
+		m->flags |= CRYPT_TCRYPT_BACKUP_HEADER ;
+	}
+	if( opt->use_hidden_header ){
+
+		m->flags |= CRYPT_TCRYPT_HIDDEN_HEADER ;
+	}
+#ifdef CRYPT_TCRYPT_VERA_MODES
+	m->veracrypt_pim   = ( unsigned int )  opt->iteration_count ;
+
+	if( opt->veraCrypt_volume ){
+
+		m->flags |= CRYPT_TCRYPT_VERA_MODES ;
+	}
+#endif
+	return m ;
+#else
+	return NULL ;
 #endif
 }
 
