@@ -675,37 +675,37 @@ int zuluCryptModifyTcryptHeader( const info_t * info ) ;
 int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;
 
 /*
- * this function is defined in statuc.c
+ * this function is defined in open_tcrypt.c
  */
 int zuluCryptUseZuluPlayVCRYPT( void ) ;
 
 /*
- * this function is defined in statuc.c
+ * this function is defined in open_tcrypt.c
  */
 int zuluCryptUseZuluPlayTCRYPT( void ) ;
 
 /*
- * this function is defined in statuc.c
+ * this function is defined in open_tcrypt.c
  */
 int zuluCryptUseCryptsetupBitLocker( void ) ;
 
 /*
- * this function is defined in statuc.c
+ * this function is defined in open_tcrypt.c
  */
 void * zuluCryptCryptsetupTCryptVCrypt( const open_struct_t * opt ) ;
 
 /*
- * this function is defined in statuc.c
+ * this function is defined in open_tcrypt.c
  */
 const char * zuluCryptCryptsetupBitLockerType( void ) ;
 
 /*
- * this function is defined in statuc.c
+ * this function is defined in open_tcrypt.c
  */
 const char * zuluCryptCryptsetupTCRYPTType( void ) ;
 
 /*
- * this function is defined in statuc.c
+ * this function is defined in open_tcrypt.c
  */
 int zuluCryptUseDislockerBitLocker( void ) ;
 

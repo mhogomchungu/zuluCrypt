@@ -33,8 +33,6 @@
 #include "luks2_support.h"
 #include "zuluplay_support.h"
 #include "share_mount_prefix_path.h"
-#include "use_dislocker.h"
-#include "veracrypt_pim.h"
 
 #define SIZE 1024
 
@@ -52,100 +50,6 @@ typedef struct{
 	string_t integrity_hash ;
 	string_t integrity_keysize ;
 }authenticated_luks2 ;
-
-int zuluCryptUseZuluPlayTCRYPT()
-{
-#ifdef CRYPT_TCRYPT
-	return 0 ;
-#else
-	return 1 ;
-#endif
-}
-
-int zuluCryptUseZuluPlayVCRYPT()
-{
-#ifdef CRYPT_TCRYPT_VERA_MODES
-	return 0 ;
-#else
-	return 1 ;
-#endif
-}
-
-const char * zuluCryptCryptsetupBitLockerType()
-{
-#ifdef CRYPT_BITLK
-	return CRYPT_BITLK ;
-#else
-	return "" ;
-#endif
-}
-
-const char * zuluCryptCryptsetupTCRYPTType()
-{
-#ifdef CRYPT_TCRYPT
-	return CRYPT_TCRYPT ;
-#else
-	return "" ;
-#endif
-}
-
-int zuluCryptUseCryptsetupBitLocker()
-{
-#ifdef CRYPT_BITLK
-	return USE_CRYPTSETUP_FOR_BITLOCKER ;
-#else
-	return 0 ;
-#endif
-}
-
-void * zuluCryptCryptsetupTCryptVCrypt( const open_struct_t * opt )
-{
-#ifdef CRYPT_TCRYPT
-
-	struct crypt_params_tcrypt * m = malloc( sizeof( struct crypt_params_tcrypt ) ) ;
-
-	memset( m,'\0',sizeof( struct crypt_params_tcrypt ) ) ;
-
-	m->passphrase      = opt->key ;
-	m->passphrase_size = opt->key_len ;
-	m->keyfiles        = ( const char ** ) opt->tcrypt_keyfiles ;
-	m->keyfiles_count  = ( unsigned int )  opt->tcrypt_keyfiles_count ;
-
-	m->flags = CRYPT_TCRYPT_LEGACY_MODES ;
-
-	if( opt->system_volume ){
-
-		m->flags |= CRYPT_TCRYPT_SYSTEM_HEADER ;
-	}
-	if( opt->use_backup_header ){
-
-		m->flags |= CRYPT_TCRYPT_BACKUP_HEADER ;
-	}
-	if( opt->use_hidden_header ){
-
-		m->flags |= CRYPT_TCRYPT_HIDDEN_HEADER ;
-	}
-#if SUPPORT_VERACRYPT_PIM
-	m->veracrypt_pim   = ( unsigned int )  opt->iteration_count ;
-#endif
-
-#ifdef CRYPT_TCRYPT_VERA_MODES
-
-	if( opt->veraCrypt_volume ){
-
-		m->flags |= CRYPT_TCRYPT_VERA_MODES ;
-	}
-#endif
-	return m ;
-#else
-	return NULL ;
-#endif
-}
-
-int zuluCryptUseDislockerBitLocker()
-{
-	return !zuluCryptUseCryptsetupBitLocker() ;
-}
 
 #ifdef CRYPT_LUKS2
 
