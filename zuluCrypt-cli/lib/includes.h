@@ -86,6 +86,7 @@ typedef struct{
 	int trueCrypt_volume ;
 	int bitlocker_volume ;
 	int system_volume ;
+	int use_cryptsetup_for_bitlocker ;
 	const char * const * tcrypt_keyfiles ;
 	unsigned long m_flags ;
 	int use_backup_header ;
@@ -685,9 +686,14 @@ int zuluCryptUseZuluPlayVCRYPT( void ) ;
 int zuluCryptUseZuluPlayTCRYPT( void ) ;
 
 /*
- * this function is defined in open_tcrypt.c
+ * this function is defined in bitlocker.c
  */
-int zuluCryptUseCryptsetupBitLocker( void ) ;
+int zuluCryptUseCryptsetupBitLocker( int ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+int zuluCryptUseDislockerBitLocker( int ) ;
 
 /*
  * this function is defined in open_tcrypt.c
@@ -695,7 +701,7 @@ int zuluCryptUseCryptsetupBitLocker( void ) ;
 void * zuluCryptCryptsetupTCryptVCrypt( const open_struct_t * opt ) ;
 
 /*
- * this function is defined in open_tcrypt.c
+ * this function is defined in bitlocker.c
  */
 const char * zuluCryptCryptsetupBitLockerType( void ) ;
 
@@ -705,8 +711,13 @@ const char * zuluCryptCryptsetupBitLockerType( void ) ;
 const char * zuluCryptCryptsetupTCRYPTType( void ) ;
 
 /*
- * this function is defined in open_tcrypt.c
+ * this function is defined in bitlocker.c
  */
-int zuluCryptUseDislockerBitLocker( void ) ;
+int zuluCryptIsDislockerMapperPath( const char * ) ;
+
+/*
+ * this function is defined in bitlocker.c
+ */
+int zuluCryptDeviceManagedByDislocker( const char * device,uid_t ) ;
 
 #endif

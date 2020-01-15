@@ -446,13 +446,9 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	mst.uid = uid ;
 	mst.m_flags = mount_opts ;
 
-	int bitLockerVolume = 0 ;
+	int bitLockerVolumeUsingDislocker = zuluCryptIsDislockerMapperPath( path ) ;
 
-	if( zuluCryptUseDislockerBitLocker() ){
-
-		bitLockerVolume = zuluCryptBitLockerVolume( path ) ;
-	}
-	if( bitLockerVolume ) {
+	if( bitLockerVolumeUsingDislocker ) {
 
 		fs = zuluCryptBitLockerVolumeFS( path ) ;
 	}else{
@@ -491,7 +487,7 @@ int zuluCryptMountVolume( const char * path,const char * m_point,unsigned long m
 	mst.fs = StringContent( fs ) ;
 	opts = set_mount_options( &mst ) ;
 
-	if( StringPrefixNotEqual( path,"/dev/" ) || bitLockerVolume ){
+	if( StringPrefixNotEqual( path,"/dev/" ) || bitLockerVolumeUsingDislocker ){
 		/*
 		 * zuluCryptAttachLoopDeviceToFile() is defined in ./create_loop_device.c
 		 */

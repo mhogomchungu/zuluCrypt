@@ -56,16 +56,10 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 	 struct stat xt ;
 	 const char * mapper ;
 
-	 int r = 0 ;
-
 	 zuluCryptSecurityGainElevatedPrivileges() ;
 
-	 if( zuluCryptDeviceHasAgivenFileSystem( dev,zuluCryptBitLockerType() ) ){
-
-		 r = zuluCryptUseDislockerBitLocker() ;
-	 }
-
-	 if( r == 1 ){
+	 if( zuluCryptDeviceHasAgivenFileSystem( dev,zuluCryptBitLockerType() ) &&
+			 zuluCryptDeviceManagedByDislocker( dev,uid ) ){
 
 		 p = zuluCryptBitLockerFullMapperPath( uid,dev ) ;
 
@@ -75,12 +69,11 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 
 		 zuluCryptSecurityDropElevatedPrivileges() ;
 
-		if( i != 0 ){
+		 if( i != 0 ){
 
-			 return zuluExit( 1,p ) ;
-		}
+			  return zuluExit( 1,p ) ;
+		 }
 	 }else{
-
 		 zuluCryptSecurityDropElevatedPrivileges() ;
 
 		 /*
@@ -110,13 +103,8 @@ int zuluCryptEXECloseVolume( const char * dev,const char * mapping_name,uid_t ui
 
 	 zuluCryptSecurityGainElevatedPrivileges() ;
 
-	 /*
-	  * zuluCryptCloseVolume() is defined in ../lib/close_volume.c
-	  *
-	  * zuluCryptReuseMountPoint() is defined in create_mount_point.c
-	  */
+	 if( zuluCryptIsDislockerMapperPath( StringContent( p ) ) ){
 
-	 if( r == 1 ){
 		 if( zuluCryptReuseMountPoint() ){
 
 			 st = zuluCryptBitLockerlock( p,NULL ) ;

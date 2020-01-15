@@ -34,6 +34,13 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 
 	stopts->open_mount = 1 ;
 	stopts->ask_confirmation = 1 ;
+
+	if( zuluCryptPathIsValid( "/etc/zuluCrypt/dislocker" ) ){
+
+		stopts->use_cryptsetup_for_bitlocker = 0 ;
+	}else{
+		stopts->use_cryptsetup_for_bitlocker = 1 ;
+	}
 }
 
 void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )

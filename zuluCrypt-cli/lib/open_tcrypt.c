@@ -30,7 +30,6 @@
 #include "zuluplay_support.h"
 #include "check_tcrypt.h"
 
-#include "use_dislocker.h"
 #include "veracrypt_pim.h"
 
 static void _chown( const char * x,uid_t y,gid_t z )
@@ -68,15 +67,6 @@ int zuluCryptUseZuluPlayVCRYPT()
 #endif
 }
 
-const char * zuluCryptCryptsetupBitLockerType()
-{
-#ifdef CRYPT_BITLK
-	return CRYPT_BITLK ;
-#else
-	return "" ;
-#endif
-}
-
 const char * zuluCryptCryptsetupTCRYPTType()
 {
 #ifdef CRYPT_TCRYPT
@@ -84,20 +74,6 @@ const char * zuluCryptCryptsetupTCRYPTType()
 #else
 	return "" ;
 #endif
-}
-
-int zuluCryptUseCryptsetupBitLocker()
-{
-#ifdef CRYPT_BITLK
-	return USE_CRYPTSETUP_FOR_BITLOCKER ;
-#else
-	return 0 ;
-#endif
-}
-
-int zuluCryptUseDislockerBitLocker()
-{
-	return !zuluCryptUseCryptsetupBitLocker() ;
 }
 
 void * zuluCryptCryptsetupTCryptVCrypt( const open_struct_t * opt )
@@ -127,6 +103,7 @@ void * zuluCryptCryptsetupTCryptVCrypt( const open_struct_t * opt )
 
 		m->flags |= CRYPT_TCRYPT_HIDDEN_HEADER ;
 	}
+
 #if SUPPORT_VERACRYPT_PIM
 
 	m->veracrypt_pim   = ( unsigned int )  opt->iteration_count ;

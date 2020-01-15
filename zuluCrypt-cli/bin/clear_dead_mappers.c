@@ -105,12 +105,78 @@ static void _zuluCryptDeleteDeadMountPoints( stringList_t stl,const char * m )
 	}
 }
 
+static void _unmount_dead_mount_points( uid_t uid )
+{
+	if( uid ){}
+#if 0
+	stringList_t stl = zuluCryptPartitions( ZULUCRYPTallPartitions,uid ) ;
+
+	stringList_t stx = zuluCryptGetAListOfMountedVolumes() ;
+
+	StringListIterator it ;
+	StringListIterator end ;
+
+	string_t st ;
+
+	char * mout_point = NULL ;
+
+	char * m_point = NULL ;
+
+	const char * device ;
+
+	StringListGetIterators( stl,&it,&end ) ;
+
+	while( it != end ){
+
+		st = *it ;
+
+		it++ ;
+
+		StringListRemoveIfPresent_1( stx,st ) ;
+	}
+
+	StringListGetIterators( stx,&it,&end ) ;
+
+	while( it != end ){
+
+		st = *it ;
+
+		it++ ;
+
+		if( StringStartsWith( st,"/dev/" ) ){
+
+			device = StringContent( st ) ;
+
+			mout_point = zuluCryptGetMountPointFromPath( device ) ;
+
+			printf( "unmounting : %s\n",device ) ;
+
+			if( zuluCryptUnmountVolume( device,&m_point ) == 0 ){
+
+				if( m_point ){
+
+					rmdir( m_point ) ;
+					printf( "unmounted : %s:%s\n",device,m_point ) ;
+				}
+			}else{
+				perror( "failed" ) ;
+			}
+		}
+	}
+
+	StringFree( mout_point ) ;
+	StringFree( m_point ) ;
+#endif
+}
+
 void zuluCryptDeleteDeadMountPoints( uid_t uid,stringList_t stl )
 {
 	string_t st = zuluCryptGetUserName( uid ) ;
 
 	_zuluCryptDeleteDeadMountPoints( stl,StringPrepend( st,"/run/media/private/" ) ) ;
 	_zuluCryptDeleteDeadMountPoints( stl,"/run/media/public" ) ;
+
+	_unmount_dead_mount_points( uid ) ;
 
 	StringDelete( &st ) ;
 }

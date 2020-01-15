@@ -334,7 +334,7 @@ static int _zuluMountExe( ARGS * args )
 	const char * action = args->action ;
 	const char * uuid   = args->uuid   ;
 	const char * offset = args->offset ;
-	size_t       uid    = args->uid    ;
+	uid_t        uid    = args->uid    ;
 
 	string_t st ;
 
@@ -349,7 +349,13 @@ static int _zuluMountExe( ARGS * args )
 
 		st = _zuluCryptGetFileSystemFromDevice( device ) ;
 
-		if( StringContains( st,zuluCryptBitLockerType() ) && zuluCryptUseDislockerBitLocker() ){
+		zuluCryptSecurityGainElevatedPrivileges() ;
+
+		r = zuluCryptDeviceManagedByDislocker( device,uid ) ;
+
+		zuluCryptSecurityDropElevatedPrivileges() ;
+
+		if( StringContains( st,zuluCryptBitLockerType() ) && r ){
 
 			r = zuluMountPrintBitLockerProperties( device,uid ) ;
 

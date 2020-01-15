@@ -397,7 +397,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
-	if( bitlockerVolume && zuluCryptUseDislockerBitLocker() ){
+	if( bitlockerVolume && zuluCryptUseDislockerBitLocker( opts->use_cryptsetup_for_bitlocker ) ){
 
 		*mapper_path = zuluCryptBitLockerMapperPath( uid ) ;
 
@@ -547,6 +547,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.m_flags     = m_flags ;
 	volume.bitlocker_volume = bitlockerVolume ;
 	volume.luks_detached_header = opts->luks_external_header ;
+	volume.use_cryptsetup_for_bitlocker = opts->use_cryptsetup_for_bitlocker ;
 
 	/*
 	 * zuluCryptTrueCryptVeraCryptVolumeInfo() is defined in this source file.
@@ -648,7 +649,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	if( volume.bitlocker_volume ){
 
-		if(  zuluCryptUseCryptsetupBitLocker() ){
+		if( zuluCryptUseCryptsetupBitLocker( opts->use_cryptsetup_for_bitlocker ) ){
 
 			device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),NULL ) ;
 		}else{

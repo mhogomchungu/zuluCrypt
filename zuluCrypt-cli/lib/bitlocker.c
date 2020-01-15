@@ -43,6 +43,34 @@ const char * zuluCryptBitLockerFolderPrefix( void )
 	return "cryptoBitlocker" ;
 }
 
+const char * zuluCryptCryptsetupBitLockerType()
+{
+#ifdef CRYPT_BITLK
+	return CRYPT_BITLK ;
+#else
+	return "" ;
+#endif
+}
+
+int zuluCryptUseCryptsetupBitLocker( int r )
+{
+#ifdef CRYPT_BITLK
+	return r ;
+#else
+	return 0 ;
+#endif
+}
+
+int zuluCryptUseDislockerBitLocker( int r )
+{
+	return !zuluCryptUseCryptsetupBitLocker( r ) ;
+}
+
+int zuluCryptIsDislockerMapperPath( const char * e )
+{
+	return StringEndsWith_1( e,"/dislocker-file" ) ;
+}
+
 string_t zuluCryptBitLockerMapperPath( uid_t uid )
 {
 	const char * m = zuluCryptBitLockerFolderPrefix() ;
@@ -110,13 +138,22 @@ string_t zuluCryptBitLockerFullMapperPath( uid_t uid,const char * e )
 	return a ;
 }
 
+int zuluCryptDeviceManagedByDislocker( const char * dev,uid_t uid )
+{
+	struct stat st ;
+	string_t p = zuluCryptBitLockerFullMapperPath( uid,dev ) ;
+	int r = stat( StringContent( p ),&st ) ;
+	StringDelete( &p ) ;
+	return r == 0 ;
+}
+
 int zuluCryptBitLockerVolume( const char * e )
 {
 	struct crypt_device * cd = NULL ;
 
 	int r ;
 
-	if( StringEndsWith_1( e,"/dislocker-file" ) ){
+	if( zuluCryptIsDislockerMapperPath( e ) ){
 
 		return 1 ;
 	}else{
@@ -280,7 +317,7 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 
 	uint32_t flags = 0 ;
 
-	if( zuluCryptUseCryptsetupBitLocker() ){
+	if( zuluCryptUseCryptsetupBitLocker( opts->use_cryptsetup_for_bitlocker ) ){
 
 		if( crypt_init( &cd,opts->device ) != 0 ){
 
