@@ -359,7 +359,10 @@ static int _zuluMountExe( ARGS * args )
 
 			r = zuluMountPrintBitLockerProperties( device,uid ) ;
 
-		}else if( offset != NULL || st == StringVoid || StringStartsWith( st,"crypto_" ) ){
+		}else if( offset != NULL ||
+			  st == StringVoid ||
+			  StringsAreEqual_2( st,"Nil" ) ||
+			  StringStartsWith( st,"crypto_" ) ){
 
 			r = zuluMountVolumeStatus( device,uuid,uid ) ;
 		}else{
