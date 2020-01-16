@@ -297,11 +297,49 @@ static const char * _dislocker_fuse_path()
 	return NULL ;
 }
 
-int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
+static int _cryptsetup_unlock_bitlocker( const open_struct_t * opts,string_t * xt )
 {
 	int r ;
 
-	const char * exe ;
+	struct crypt_device * cd = NULL ;
+
+	uint32_t flags = 0 ;
+
+	if( crypt_init( &cd,opts->device ) != 0 ){
+
+		return 4 ;
+	}
+	if( crypt_load( cd,zuluCryptCryptsetupBitLockerType(),NULL ) != 0 ){
+
+		return zuluExit( 4,cd ) ;
+	}
+	if( StringHasComponent( opts->m_opts,"ro" ) ){
+
+		flags = CRYPT_ACTIVATE_READONLY ;
+	}else{
+		flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
+	}
+
+	r = crypt_activate_by_passphrase( cd,
+					  opts->mapper_name,
+					  CRYPT_ANY_SLOT,
+					  opts->key,
+					  opts->key_len,
+					  flags ) ;
+
+	if( r == 0 ){
+
+		*xt = String( opts->mapper_path ) ;
+
+		return zuluExit( 0,cd ) ;
+	}else{
+		return zuluExit( 4,cd ) ;
+	}
+}
+
+static int _dislocker_unlock_bitlocker( const open_struct_t * opts,string_t * xt )
+{
+	int r ;
 
 	string_t st ;
 
@@ -313,45 +351,7 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 
 	char * env[ 2 ] = { NULL,NULL } ;
 
-	struct crypt_device * cd = NULL ;
-
-	uint32_t flags = 0 ;
-
-	if( zuluCryptUseCryptsetupBitLocker( opts->use_cryptsetup_for_bitlocker ) ){
-
-		if( crypt_init( &cd,opts->device ) != 0 ){
-
-			return 4 ;
-		}
-		if( crypt_load( cd,zuluCryptCryptsetupBitLockerType(),NULL ) != 0 ){
-
-			return zuluExit( 4,cd ) ;
-		}
-		if( StringHasComponent( opts->m_opts,"ro" ) ){
-
-			flags = CRYPT_ACTIVATE_READONLY ;
-		}else{
-			flags = CRYPT_ACTIVATE_ALLOW_DISCARDS ;
-		}
-
-		r = crypt_activate_by_passphrase( cd,
-						  opts->mapper_name,
-						  CRYPT_ANY_SLOT,
-						  opts->key,
-						  opts->key_len,
-						  flags ) ;
-
-		if( r == 0 ){
-
-			*xt = String( opts->mapper_path ) ;
-
-			return zuluExit( 0,cd ) ;
-		}else{
-			return zuluExit( 4,cd ) ;
-		}
-	}
-
-	exe = _dislocker_fuse_path() ;
+	const char * exe = _dislocker_fuse_path() ;
 
 	if( exe == NULL ){
 
@@ -369,7 +369,7 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 	}else{
 		m = String_1( "DISLOCKER_PASSWORD=",opts->key,NULL ) ;
 
-		*env = ( char * )StringContent( m ) ;
+		env[ 0 ] = ( char * )StringContent( m ) ;
 
 		p = Process( exe,opts->device,"-u","--","-oallow_root",mapper_path,NULL ) ;
 
@@ -391,5 +391,15 @@ int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
 			StringDelete( &st ) ;
 			return 4 ;
 		}
+	}
+}
+
+int zuluCryptBitLockerUnlock( const open_struct_t * opts,string_t * xt )
+{
+	if( zuluCryptUseCryptsetupBitLocker( opts->use_cryptsetup_for_bitlocker ) ){
+
+		return _cryptsetup_unlock_bitlocker( opts,xt ) ;
+	}else{
+		return _dislocker_unlock_bitlocker( opts,xt ) ;
 	}
 }
