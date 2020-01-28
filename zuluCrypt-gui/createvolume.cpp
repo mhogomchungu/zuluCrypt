@@ -609,7 +609,7 @@ void createvolume::cbNormalVolume( int r )
 		m_ui->lineEditPassPhrase2->clear() ;
 		m_ui->lineEditPassphrase1->setEchoMode( QLineEdit::Password ) ;
 		m_ui->lineEditPassPhrase2->setEchoMode( QLineEdit::Password ) ;
-		m_ui->labelPassPhrase->setText( tr( "Key" ) ) ;
+		m_ui->labelPassPhrase->setText( tr( "Password" ) ) ;
 
 		m_ui->labelRepeatPassPhrase->setEnabled( true ) ;
 		m_ui->pbOpenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
@@ -686,7 +686,7 @@ void createvolume::cbHiddenVolume( int r )
 		m_ui->lineEditHiddenKey1->clear() ;
 		m_ui->lineEditHiddenKey->setEchoMode( QLineEdit::Password ) ;
 		m_ui->lineEditHiddenKey1->setEchoMode( QLineEdit::Password ) ;
-		m_ui->labelHidden->setText( tr( "Key" ) ) ;
+		m_ui->labelHidden->setText( tr( "Password" ) ) ;
 		m_ui->pbHiddenKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 	} ;
 
