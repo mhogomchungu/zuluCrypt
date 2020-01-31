@@ -701,7 +701,7 @@ void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,c
 			e.removeOne( "kwallet" ) ;
 		}
 
-		e.append( "network" ) ;
+		//e.append( "network" ) ;
 	}
 
 	menu->clear() ;
