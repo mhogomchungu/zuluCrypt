@@ -74,6 +74,7 @@ private:
 	void cancelled( void ) ;
 	Ui::MainWindow * m_ui ;
 	QString m_appName ;
+	bool m_printToStdOut ;
 	bool m_working ;
 	bool m_requireKey ;
 	bool m_requireKeyFile ;

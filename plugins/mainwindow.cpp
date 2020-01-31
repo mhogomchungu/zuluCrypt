@@ -30,8 +30,14 @@
 
 #include "task.hpp"
 
+#include <iostream>
+
 MainWindow::MainWindow( MainWindow::function_t f,QWidget * parent ) :
-	QWidget( parent ),m_ui( new Ui::MainWindow ),m_handle( nullptr ),m_function( std::move( f ) )
+	QWidget( parent ),
+	m_ui( new Ui::MainWindow ),
+	m_printToStdOut( !qgetenv( "zuluCryptPrintToStdOut" ).isEmpty() ),
+	m_handle( nullptr ),
+	m_function( std::move( f ) )
 {
 	m_ui->setupUi( this ) ;
 	this->setFixedSize( this->size() ) ;
@@ -149,7 +155,10 @@ void MainWindow::defaultButton()
 
 void MainWindow::setToken( char * const * e )
 {
-	m_handle = zuluCryptPluginManagerOpenConnection( *( e + 3 ) ) ;
+	if( !m_printToStdOut ){
+
+		m_handle = zuluCryptPluginManagerOpenConnection( *( e + 3 ) ) ;
+	}
 }
 
 void MainWindow::setApplicationName( const QString& appName )
@@ -288,13 +297,19 @@ void MainWindow::pbOpen()
 
 			return false ;
 		}else{
-			if( m_handle ){
+			if( m_printToStdOut ){
 
-				zuluCryptPluginManagerSendKey( m_handle,s.constData(),size_t( s.size() ) ) ;
-
+				std::cout << s.constData() << std::flush ;
 				return true ;
 			}else{
-				return false ;
+				if( m_handle ){
+
+					zuluCryptPluginManagerSendKey( m_handle,s.constData(),size_t( s.size() ) ) ;
+
+					return true ;
+				}else{
+					return false ;
+				}
 			}
 		}
 

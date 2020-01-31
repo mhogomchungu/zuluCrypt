@@ -33,10 +33,10 @@ endif()
 add_subdirectory( gpg )
 add_subdirectory( keykeyfile )
 add_subdirectory( steghide )
-add_subdirectory( luks )
+#add_subdirectory( luks )
 add_subdirectory( tomb )
 add_subdirectory( hmac )
-add_subdirectory( generic_header )
+#add_subdirectory( generic_header )
 
 #add_subdirectory( network_key )
 

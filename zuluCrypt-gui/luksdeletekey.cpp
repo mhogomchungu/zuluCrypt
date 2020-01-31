@@ -87,7 +87,7 @@ void luksdeletekey::Key( int e )
 	auto _key_ui = [ this ](){
 
 		m_ui->lineEditPassphrase->setToolTip( tr( "Enter a key" ) ) ;
-		m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
+		m_ui->labelPassphrase->setText( tr( "Password" ) ) ;
 		m_ui->lineEditPassphrase->setEchoMode( QLineEdit::Password ) ;
 		m_ui->lineEditPassphrase->clear() ;
 		m_ui->pushButtonOpenKeyFile->setEnabled( false ) ;
@@ -145,7 +145,7 @@ void luksdeletekey::ShowUI()
 {
 	this->enableAll() ;
 
-	m_ui->labelPassphrase->setText( tr( "Key" ) ) ;
+	m_ui->labelPassphrase->setText( tr( "Password" ) ) ;
 
 	if( m_ui->lineEditVolumePath->text().isEmpty() ){
 

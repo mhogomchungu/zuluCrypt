@@ -818,8 +818,23 @@ void passwordDialog::openVolume()
 					}
 				}
 			}else{
-				passtype = "-G" ;
-				keyPath  = r ;
+				auto env = QProcessEnvironment::systemEnvironment() ;
+
+				env.insert( "zuluCryptPrintToStdOut","true" ) ;
+
+				m_key = Task::process::run( ZULUCRYPTpluginPath + r,{},-1,"",env ).await().std_out() ;
+
+				if( m_key.isEmpty() ){
+
+					m_label.show( tr( "Failed to get a key from a plugin" ) ) ;
+
+					m_ui->OpenVolumePath->setFocus() ;
+					return this->enableAll() ;
+				}else{
+					passtype = "-f" ;
+					keyPath = utility::keyPath() ;
+					this->sendKey( keyPath ) ;
+				}
 			}
 		}
 	}else if( keySource == passwordDialog::tcryptKeys ){

@@ -191,7 +191,7 @@ void luksaddkey::cbExistingKey( int e )
 		m_ui->textEditExistingPassphrase->setToolTip( tr( "Enter A Key" ) ) ;
 		m_ui->textEditExistingPassphrase->setEchoMode( QLineEdit::Password ) ;
 		m_ui->pushButtonOpenExistingKeyFile->setEnabled( false ) ;
-		m_ui->labelExistingPassphrase->setText( tr( "Key" ) ) ;
+		m_ui->labelExistingPassphrase->setText( tr( "Password" ) ) ;
 		m_ui->textEditExistingPassphrase->clear() ;
 		m_ui->pushButtonOpenExistingKeyFile->setIcon( QIcon( ":/passphrase.png" ) ) ;
 		m_ui->textEditExistingPassphrase->setFocus() ;
@@ -244,7 +244,7 @@ void luksaddkey::cbNewKey( int e )
 		m_ui->textEditPassphraseToAdd->setToolTip( tr( "Enter a key" ) ) ;
 		m_ui->textEditPassphraseToAdd->setEchoMode( QLineEdit::Password ) ;
 		m_ui->pushButtonOpenNewKeyFile->setEnabled( false ) ;
-		m_ui->labelNewPassphrase->setText( tr( "Key" ) ) ;
+		m_ui->labelNewPassphrase->setText( tr( "Password" ) ) ;
 		m_ui->textEditPassphraseToAdd->clear() ;
 		m_ui->lineEditReEnterPassphrase->clear() ;
 		m_ui->lineEditReEnterPassphrase->setEnabled( true ) ;
