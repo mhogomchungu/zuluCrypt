@@ -319,6 +319,6 @@ version 5.7.1
 -- The two changes above will hopefully solve long standing problems around
     unlocking TrueCrypt/VeraCrypt volumes that use preboot authentication.
 -- Use cryptsetup by default instead of dislocker to unlock BitLocker volumes
-   if installed version of cryptsetup >= 2.3.0. Users of cryptsetup >= 2.3.0 who
-   prefer to use dislocker to unlock BitLocker volumes  should create a text file
-   at "/etc/zuluCrypt/dislocker".
+   if installed version of cryptsetup >= 2.3.0(released on February 3,2020.
+   Users of cryptsetup >= 2.3.0 who prefer to use dislocker to unlock
+   BitLocker volumes  should create a text file at "/etc/zuluCrypt/dislocker".
