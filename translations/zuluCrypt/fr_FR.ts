@@ -3537,12 +3537,12 @@ ou en téraoctets si l&apos;entrée se termine par &quot;t&quot;</translation>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="158"/>
         <source>Select External LUKS Header File</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionner un entête de fichier LUKS Externe</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="191"/>
         <source>LUKS External Header Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Chemin de l&apos;entête LUKS Externe</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="452"/>
@@ -3620,7 +3620,7 @@ ou en téraoctets si l&apos;entrée se termine par &quot;t&quot;</translation>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="829"/>
         <source>Failed to get a key from a plugin</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de l&apos;obtention de la clé depuis le plugin</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="969"/>
