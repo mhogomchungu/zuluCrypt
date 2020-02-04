@@ -79,30 +79,32 @@ the generated context menu should have an option to extract it. Extract it and
 read the README file for further instructions.
 ```
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-debian-8-Jessie.tar.xz">zuluCrypt-5.7.0-debian-8-Jessie.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-debian-8-Jessie.tar.xz">zuluCrypt-5.7.1-debian-8-Jessie.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-debian-9-Stretch.tar.xz">zuluCrypt-5.7.0-debian-9-Stretch.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-debian-9-Stretch.tar.xz">zuluCrypt-5.7.1-debian-9-Stretch.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-debian-10-Buster.tar.xz">zuluCrypt-5.7.0-debian-10-Buster.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-debian-10-Buster.tar.xz">zuluCrypt-5.7.1-debian-10-Buster.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-5.7.0-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-5.7.1-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.7.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-5.7.1-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-5.7.0-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-5.7.1-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-5.7.0-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-5.7.1-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-ubuntu-18.04-Bionic_Beaver.tar.xz">zuluCrypt-5.7.0-ubuntu-18.04-Bionic_Beaver.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-ubuntu-18.04-Bionic_Beaver.tar.xz">zuluCrypt-5.7.1-ubuntu-18.04-Bionic_Beaver.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz">zuluCrypt-5.7.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz">zuluCrypt-5.7.1-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0-ubuntu-19.04-Disco_Dingo.tar.xz">zuluCrypt-5.7.0-ubuntu-19.04-Disco_Dingo.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-ubuntu-19.04-Disco_Dingo.tar.xz">zuluCrypt-5.7.1-ubuntu-19.04-Disco_Dingo.tar.xz</a>
+
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1-ubuntu-19.10-Eoan_Ermine.tar.xz">zuluCrypt-5.7.1-ubuntu-19.10-Eoan_Ermine.tar.xz</a>
 
 These archives contains binaries for both 32 bit and 64 bit systems.
 
 
-Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/5.7.0">here</a>.
+Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/5.7.1">here</a>.
 
 Development versions of binary packages together with other generated package files can be obtained from <a href="http://download.opensuse.org/repositories/home:/mhogomchungu/">here</a>.
 
@@ -223,4 +225,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 
 ```
 
-last update: Tue 01 Oct 2019 10:19:40 PM EAT
+last update: Tue 04 Feb 2020 06:36:19 PM EAT
