@@ -45,9 +45,9 @@ Screenshots are at the end of this page.
 
 ## zuluCrypt download page
 
-Latest released version is 5.7.0 and it can be downloaded by clicking below link.
+Latest released version is 5.7.1 and it can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.0/zuluCrypt-5.7.0.tar.xz">zuluCrypt-5.7.0.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/5.7.1/zuluCrypt-5.7.1.tar.xz">zuluCrypt-5.7.1.tar.xz</a>
 
 ## Binary packages
 
