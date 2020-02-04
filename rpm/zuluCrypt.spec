@@ -17,7 +17,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 Name:           zuluCrypt
-Version:        5.7.0
+Version:        5.7.1
 Release:        0
 Summary:        Qt GUI front end to cryptsetup
 License:        GPL-2.0+
@@ -125,8 +125,6 @@ rm -rf $RPM_BUILD_DIR/zuluCrypt
 %{_libdir}/zuluCrypt/zuluCrypt-testKey
 %{_libdir}/zuluCrypt/keykeyfile
 %{_libdir}/zuluCrypt/keydialog-qt
-%{_libdir}/zuluCrypt/luks
-%{_libdir}/zuluCrypt/generic_header
 %{_libdir}/zuluCrypt/steghide
 %{_libdir}/zuluCrypt/tomb
 %{_libdir}/zuluCrypt/gpg
