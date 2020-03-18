@@ -107,8 +107,6 @@ static void _zuluCryptDeleteDeadMountPoints( stringList_t stl,const char * m )
 
 static void _unmount_dead_mount_points( uid_t uid )
 {
-	if( uid ){}
-#if 0
 	stringList_t stl = zuluCryptPartitions( ZULUCRYPTallPartitions,uid ) ;
 
 	stringList_t stx = zuluCryptGetAListOfMountedVolumes() ;
@@ -166,7 +164,6 @@ static void _unmount_dead_mount_points( uid_t uid )
 
 	StringFree( mout_point ) ;
 	StringFree( m_point ) ;
-#endif
 }
 
 void zuluCryptDeleteDeadMountPoints( uid_t uid,stringList_t stl )

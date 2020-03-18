@@ -83,6 +83,15 @@ static int _zuluCryptUnmountVolume_0( string_t st,char ** m_point,char ** m_poin
 		 * Dont know whats going on but FUSE based file systems do not seem to work with umount()
 		 */
 		h = _unmount( _unmount_fuse,mout_point ) ;
+
+		if( h == 32 ){
+
+			/*
+			 * errno value of 32 means "broken pipe, we will get this when trying
+			 * to unmount a file system on a device that is no longer attached
+			 */
+			h = _unmount( _unmount_rest,mout_point ) ;
+		}
 	}else{
 		h = _unmount( _unmount_rest,mout_point ) ;
 	}
