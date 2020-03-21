@@ -27,11 +27,6 @@
 #include <sys/stat.h>
 #include <string.h>
 
-#include "zuluplay_support.h"
-#include "check_tcrypt.h"
-
-#include "veracrypt_pim.h"
-
 static void _chown( const char * x,uid_t y,gid_t z )
 {
 	if( chown( x,y,z ) ){}

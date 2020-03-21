@@ -70,7 +70,6 @@
 #include "about.h"
 #include "help.h"
 #include "createvolumeinexistingfile.h"
-#include "veracrypt_support.h"
 #include "pdf_path.h"
 #include "warnwhenextendingcontainerfile.h"
 

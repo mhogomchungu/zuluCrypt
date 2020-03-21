@@ -21,7 +21,6 @@
 #include <stddef.h>
 #include <libcryptsetup.h>
 #include "includes.h"
-#include "zuluplay_support.h"
 
 static int _close_cryptsetup( const char * mapper )
 {
