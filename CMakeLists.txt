@@ -224,17 +224,9 @@ endif()
 
 if( STATIC_ZULUPLAY )
 	set( ZULUPLAY_STATIC_ONLY "true" )
-	ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/zuluplay )
-	include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/zuluplay )
+	ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/tcplay )
+	include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/tcplay )
 endif()
-
-file( WRITE  ${PROJECT_BINARY_DIR}/truecrypt_support_1.h "\n#define TRUECRYPT_CREATE 1\n#include \"zuluplay_api.h\"\n" )
-file( APPEND ${PROJECT_BINARY_DIR}/truecrypt_support_1.h "\n#define TCPLAY_NEW_API 1\n" )
-file( APPEND ${PROJECT_BINARY_DIR}/truecrypt_support_1.h "\n#define VERACRYPT_CREATE 1\n" )
-
-file( WRITE ${PROJECT_BINARY_DIR}/zuluplay_support.h "\n#define TCPLAY_OPEN 1\n#include \"zuluplay_api.h\"\n" )
-file( WRITE ${PROJECT_BINARY_DIR}/veracrypt_support.h "\n#define VERACRYPT_SUPPORT 1\n" )
-file( WRITE  ${PROJECT_BINARY_DIR}/truecrypt_support.h "\n#define TRUECRYPT_CRYPTSETUP 1\n#define TRUECRYPT_TCPLAY 1" )
 
 if( SHARE_MOUNT_PREFIX )
     if( "${SHARE_MOUNT_PREFIX}" STREQUAL "default" )

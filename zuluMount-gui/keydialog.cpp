@@ -41,8 +41,6 @@
 #include "zulumounttask.h"
 #include "zulumounttask.h"
 #include "siritask.h"
-#include "veracrypt_support.h"
-#include "truecrypt_support.h"
 #include "veracryptpimdialog.h"
 
 #define KWALLET         "kde wallet"

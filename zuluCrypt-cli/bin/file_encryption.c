@@ -37,11 +37,11 @@
 
 static void _write( int x,const void * y,size_t z )
 {
-	if( write( x,y,z ) ){;}
+	if( write( x,y,z ) ){}
 }
 static void _read( int x,void * y,size_t z )
 {
-	if( read( x,y,z ) ){;}
+	if( read( x,y,z ) ){}
 }
 
 /*
@@ -161,7 +161,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	/*
 	 * get the size of encrypted data
 	 */
-	size = atoll( buffer ) ;
+	size = (size_t)atoll( buffer ) ;
 
 	/*
 	 * Make sure the size of the encrypted file is with in expected range.
@@ -172,7 +172,7 @@ int zuluCryptDecryptFile( const char * source,const char * dest,const char * key
 	 */
 	stat( source,&st ) ;
 
-	test = st.st_size - size ;
+	test = (int)st.st_size - (int)size ;
 
 	if( test < SIZE || test >= ( SIZE * 2 ) ){
 		return zuluExit( 2,f_in,f_out,p ) ;
@@ -225,7 +225,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 
 	stat( source,&st ) ;
 
-	size = st.st_size ;
+	size = (size_t)st.st_size ;
 
 	/*
 	 * make sure the encrypted file is a multiple of 512, important because data will be read/written in chunks of 512 bytes.
@@ -273,7 +273,7 @@ int zuluCryptEncryptFile( const char * source,const char * dest,const char * key
 
 	f_out = open( mapper,O_WRONLY ) ;
 
-	q = StringIntToString( st.st_size ) ;
+	q = StringIntToString( (u_int64_t)st.st_size ) ;
 
 	/*
 	 * write the size of plain text file to the encrypted file. This information is important when decrypting the data

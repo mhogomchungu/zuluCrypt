@@ -239,7 +239,7 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 			}
 		}
 		if( r == 0 || r == -1 ){
-			;
+
 		}else{
 			r = 4 ;
 		}

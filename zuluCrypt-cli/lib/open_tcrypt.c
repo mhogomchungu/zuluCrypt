@@ -49,24 +49,6 @@ static void _close( int x )
 	if( close( x ) ){}
 }
 
-int zuluCryptUseZuluPlayTCRYPT()
-{
-#ifdef CRYPT_TCRYPT
-	return 0 ;
-#else
-	return 1 ;
-#endif
-}
-
-int zuluCryptUseZuluPlayVCRYPT()
-{
-#ifdef CRYPT_TCRYPT_VERA_MODES
-	return 0 ;
-#else
-	return 1 ;
-#endif
-}
-
 const char * zuluCryptCryptsetupTCRYPTType()
 {
 #ifdef CRYPT_TCRYPT
@@ -148,7 +130,7 @@ string_t zuluCryptCreateKeyFile( const char * key,size_t key_len,const char * fi
 	}
 
 	st = String_1( "/run/zuluCrypt/",fileName,NULL ) ;
-	file = StringAppendInt( st,syscall( SYS_gettid ) ) ;
+	file = StringAppendInt( st,(u_int64_t)syscall( SYS_gettid ) ) ;
 	fd = open( file,O_WRONLY | O_CREAT,S_IRUSR | S_IWUSR | S_IRGRP |S_IROTH ) ;
 
 	if( fd == -1 ){
@@ -176,88 +158,7 @@ static int zuluExit( int st,struct crypt_device * cd, void * m )
 	return st ;
 }
 
-static int _open_tcrypt_volume_zuluplay( const char * device,const open_struct_t * opts )
-{
-	tc_api_task task ;
-	int r = !TC_OK ;
-
-	size_t i ;
-	size_t k ;
-
-	const char * const * z ;
-
-	const char * e ;
-
-	string_t st = StringVoid ;
-
-	if( opts->use_hidden_header ){
-
-		/*
-		 * We return with an error here because zuluplay automatically check
-		 * for this option.
-		 */
-		return r ;
-	}
-
-	if( tc_api_initialize() ){
-
-		if( tc_api_task_initialize( &task,"map" ) ){
-
-			tc_api_task_set( task,"use_backup_header",opts->use_backup_header ) ;
-			tc_api_task_set( task,"veracrypt_mode",opts->veraCrypt_volume ) ;
-			tc_api_task_set( task,"map_name",opts->mapper_name ) ;
-			tc_api_task_set( task,"read_only",StringHasComponent( opts->m_opts,"ro" ) ) ;
-
-			tc_api_task_set( task,"dev",device ) ;
-
-			if( opts->system_volume ){
-
-				/*
-				 * zuluCryptSystemVeraCryptPIM() is defined in create_tcrypt.c
-				 */
-				tc_api_task_set( task,"iteration_count",
-						 zuluCryptSystemVeraCryptPIM( opts->iteration_count ) ) ;
-
-				if( StringAtLeastOnePrefixMatch( device,"/dev/sd","/dev/hd",NULL ) ){
-
-					st = String( device ) ;
-					e = StringRemoveDigits( st ) ;
-					tc_api_task_set( task,"sys",e ) ;
-				}else{
-					tc_api_task_set( task,"sys",device ) ;
-				}
-			}else{
-				/*
-				 * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
-				 */
-				tc_api_task_set( task,"iteration_count",
-						 zuluCryptVeraCryptPIM( opts->iteration_count ) ) ;
-			}
-
-			tc_api_task_set( task,"passphrase",opts->key ) ;
-
-			k = opts->tcrypt_keyfiles_count ;
-			z = opts->tcrypt_keyfiles ;
-
-			for( i = 0 ; i < k ; i++ ){
-
-				tc_api_task_set( task,"keyfiles",*( z + i ) ) ;
-			}
-
-			r = tc_api_task_do( task ) ;
-
-			tc_api_task_uninit( task ) ;
-
-			StringDelete( &st ) ;
-		}
-
-		tc_api_uninit() ;
-	}
-
-	return r ;
-}
-
-static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct_t * opt )
+static int _open_tcrypt_volume( const char * device,const open_struct_t * opt )
 {
 	struct crypt_device * cd ;
 	uint32_t flags ;
@@ -290,26 +191,6 @@ static int _open_tcrypt_volume_cryptsetup( const char * device,const open_struct
 		return zuluExit( 0,cd,m ) ;
 	}else{
 		return zuluExit( 1,cd,m ) ;
-	}
-}
-
-static int _open_tcrypt_volume( const char * device,const open_struct_t * opt )
-{
-	if( opt->veraCrypt_volume ){
-
-		if( zuluCryptUseZuluPlayVCRYPT() ){
-
-			return _open_tcrypt_volume_zuluplay( device,opt ) ;
-		}else{
-			return _open_tcrypt_volume_cryptsetup( device,opt ) ;
-		}
-	}else{
-		if( zuluCryptUseZuluPlayTCRYPT() ){
-
-			return _open_tcrypt_volume_zuluplay( device,opt ) ;
-		}else{
-			return _open_tcrypt_volume_cryptsetup( device,opt ) ;
-		}
 	}
 }
 

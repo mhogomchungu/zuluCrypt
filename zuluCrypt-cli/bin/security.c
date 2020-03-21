@@ -84,12 +84,12 @@ int zuluCryptSecurityConvertUID( uid_t uid,const char * u_id )
 
 		if( uid == 0 ){
 
-			return StringConvertToInt( u_id ) ;
+			return (int)StringConvertToInt( u_id ) ;
 		}else{
 			return -1 ;
 		}
 	}else{
-		return uid ;
+		return (int)uid ;
 	}
 }
 
@@ -160,8 +160,8 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 
 		if( index >= 0 ){
 
-			unsetenv( StringSubChar( st,index,'\0' ) ) ;
-			StringSubChar( st,index,'=' ) ;
+			unsetenv( StringSubChar( st,(size_t)index,'\0' ) ) ;
+			StringSubChar( st,(size_t)index,'=' ) ;
 		}
 	}
 
@@ -178,7 +178,7 @@ void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * stx )
 
 int zuluCryptSecurityUserOwnTheFile( const char * device,uid_t uid )
 {
-	if( device && uid ){ ; }
+	if( device && uid ){}
 	return 0 ;
 }
 

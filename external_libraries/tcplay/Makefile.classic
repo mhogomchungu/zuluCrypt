@@ -24,8 +24,8 @@ LN?=ln
 # whether to enable debugging or not
 DEBUG?=no
 
-MAJ_VER=2
-MIN_VER=0
+MAJ_VER=3
+MIN_VER=3
 
 
 # I've given up on -Werror for now; many Linux distros have warnings even in

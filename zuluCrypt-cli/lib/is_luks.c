@@ -28,7 +28,7 @@ static int _is_luks( const char * dev,const resolve_path_t * opts )
 	struct crypt_device * cd ;
 	int st ;
 
-	if( opts ){;}
+	if( opts ){}
 
 	if( crypt_init( &cd,dev ) != 0 ){
 

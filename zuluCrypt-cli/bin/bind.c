@@ -31,7 +31,7 @@
 
 static void _chmod( const char * x,mode_t y )
 {
-	if( chmod( x,y ) ){;}
+	if( chmod( x,y ) ){}
 }
 
 static int _zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid_t uid )
@@ -130,7 +130,7 @@ static int _zuluCryptBindUnmountVolume( stringList_t stx,const char * device,uid
 			r = 4 ;
 		}else{
 			index = StringLastIndexOfChar( xt,'/' ) + 1 ;
-			StringRemoveLeft( xt,index ) ;
+			StringRemoveLeft( xt,(size_t)index ) ;
 
 			StringPrepend( xt,SHARE_MOUNT_PREFIX "/" ) ;
 
@@ -254,7 +254,8 @@ int zuluCryptBindMountVolume( const char * device,string_t z_path,unsigned long 
 
 		return 1 ;
 	}
-	if( device ){;}
+
+	if( device ){}
 
 	zuluCryptSecurityGainElevatedPrivileges() ;
 

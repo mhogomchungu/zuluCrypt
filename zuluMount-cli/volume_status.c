@@ -233,7 +233,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 
 			printf( "\tNil\tNil\n" ) ;
 		}else{
-			block_size = vfs.f_frsize ;
+			block_size = (unsigned int)vfs.f_frsize ;
 
 			total = block_size * vfs.f_blocks ;
 
@@ -248,7 +248,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 
 				puts( "\t100%" ) ;
 			}else{
-				snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
+				snprintf( buff,SIZE,"%.2f%%",100 * (double)( ( float ) used / ( float ) total ) ) ;
 				printf( "\t%s\n",buff ) ;
 			}
 		}
@@ -305,14 +305,14 @@ static void _print_device_properties( string_t entry,const char * mapper_path,si
 			if( index != -1 ){
 
 				st = String( q ) ;
-				StringRemoveLeft( st,index + 6 ) ;
+				StringRemoveLeft( st,(size_t)index + 6 ) ;
 				e = StringPrepend( st,"UUID=\"" ) ;
 				index = StringLastIndexOfChar( st,'-' ) ;
 
 				if( index >= 0 ){
 
-					StringSubChar( st,index,'\"' ) ;
-					e = StringSubChar( st,index+1,'\0' ) ;
+					StringSubChar( st,(size_t)index,'\"' ) ;
+					e = StringSubChar( st,(size_t)index+1,'\0' ) ;
 				}
 			}else{
 				e = x ;
@@ -446,7 +446,7 @@ int zuluMountPrintVolumesProperties( uid_t uid )
 	 */
 	stz = zuluCryptGetAListOfAllVolumes() ;
 
-	if( uid ){;}
+	if( uid ){}
 	/*
 	 * zuluCryptMapperPrefix() is defined in ../zuluCrypt-cli/lib/create_mapper_name.c
 	 * it should return something like "/dev/mapper"

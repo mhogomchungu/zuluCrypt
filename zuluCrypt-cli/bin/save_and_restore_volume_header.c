@@ -30,7 +30,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include "truecrypt_support_1.h"
+#include "tcplay_api.h"
 
 #define SIZE 512
 
@@ -108,12 +108,12 @@ static string_t _create_work_directory( void )
 	if( path_does_not_exist( "/run" ) ){
 
 		mkdir( "/run",mode ) ;
-		ignore_result( chown( "/run",0,0 ) ) ;
+		ignore_result( chown( "/run",0,0 ) )
 	}
 	if( path_does_not_exist( temp_path ) ){
 
 		mkdir( temp_path,S_IRWXU ) ;
-		ignore_result( chown( temp_path,0,0 ) ) ;
+		ignore_result( chown( temp_path,0,0 ) )
 	}
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
@@ -136,7 +136,7 @@ static int _secure_file_path( const char ** path,const char * source )
 	string_t st_path = _create_work_directory() ;
 
 	StringAppend( st_path,"0-" ) ;
-	temp_path = StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
+	temp_path = StringAppendInt( st_path,(u_int64_t)syscall( SYS_gettid ) ) ;
 
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
@@ -174,15 +174,15 @@ static int _secure_file_path( const char ** path,const char * source )
 
 	while( 1 ){
 
-		len = read( fd_source,buffer,SIZE ) ;
+		len = (size_t)read( fd_source,buffer,SIZE ) ;
 
 		if( len < SIZE ){
 
-			ignore_result( write( fd_temp,buffer,len ) ) ;
+			ignore_result( write( fd_temp,buffer,len ) )
 
 			break ;
 		}else{
-			ignore_result( write( fd_temp,buffer,len ) ) ;
+			ignore_result( write( fd_temp,buffer,len ) )
 		}
 	}
 
@@ -203,7 +203,7 @@ static const char * _secure_file_path_1( void )
 	string_t st_path = _create_work_directory() ;
 
 	StringAppend( st_path,"1-" ) ;
-	StringAppendInt( st_path,syscall( SYS_gettid ) ) ;
+	StringAppendInt( st_path,(size_t)syscall( SYS_gettid ) ) ;
 
 	return StringDeleteHandle( &st_path ) ;
 }
@@ -240,20 +240,20 @@ static int _secure_copy_file( const char * source,const char * dest,uid_t uid )
 
 		while( 1 ){
 
-			len = read( fd_source,buffer,SIZE ) ;
+			len = (size_t)read( fd_source,buffer,SIZE ) ;
 
 			if( len < SIZE ){				
 
-				ignore_result( write( fd_dest,buffer,len ) ) ;
+				ignore_result( write( fd_dest,buffer,len ) )
 
 				break ;				
 			}else{
-				ignore_result( write( fd_dest,buffer,len ) ) ;
+				ignore_result( write( fd_dest,buffer,len ) )
 			}
 		}
 
-		ignore_result( chmod( dest,S_IRUSR ) ) ;
-		ignore_result( chown( dest,uid,uid ) ) ;
+		ignore_result( chmod( dest,S_IRUSR ) )
+		ignore_result( chown( dest,uid,uid ) )
 
 		st = 0 ;
 	}
@@ -556,7 +556,7 @@ static int _restore_header( const struct_opts * opts,const char * dev,const char
 	const char * warn = gettext( "\
 Are you sure you want to replace a header on device \"%s\" with a backup copy at \"%s\"?\n\
 Type \"YES\" and press Enter to continue: " ) ;
-	if( uid ){;}
+	if( uid ){}
 
 	if( ask_confirmation ){
 		zuluCryptSecurityDropElevatedPrivileges() ;

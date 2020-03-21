@@ -36,8 +36,7 @@ void zuluCryptCheckInvalidKey( const char * device )
 	if( d == NULL ){
 		/*
 		 * we got here because the volume is either not luks based or the path is invalid
-		 */
-		;
+		 */		
 	}else{
 		c = d - 1 ;
 

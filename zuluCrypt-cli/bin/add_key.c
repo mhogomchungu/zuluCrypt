@@ -385,8 +385,6 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 		}
 		if( StringsAreEqual( keyType1,"-f" ) && StringsAreEqual( keyType2,"-f" ) ){
 
-			;
-
 		}else if( StringsAreEqual( keyType1,"-p" ) && StringsAreEqual( keyType2,"-p" ) ){
 
 			key1 = existingKey ;

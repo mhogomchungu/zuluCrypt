@@ -132,7 +132,7 @@ static int _create_volume( const char * device,const resolve_path_t * opts )
 	const arguments * args = opts->args ;
 
 	string_t m = String( "/zuluCrypt-create-volume-" ) ;
-	mapper = StringAppendInt( m,syscall( SYS_gettid ) ) + 1 ;
+	mapper = StringAppendInt( m,(u_int64_t)syscall( SYS_gettid ) ) + 1 ;
 
 	if( StringsAreEqual( args->type,"plain" ) ){
 

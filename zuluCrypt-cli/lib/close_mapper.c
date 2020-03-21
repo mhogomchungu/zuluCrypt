@@ -90,11 +90,7 @@ int zuluCryptCloseMapper( const char * mapper )
 		 */
 		return 0 ;
 	}else{
-		if( zuluCryptVolumeManagedByTcplay( mapper ) ){
-
-			return _close_mapper( mapper,tc_api_close_mapper ) ;
-
-		}else if( zuluCryptIsDislockerMapperPath( mapper ) ){
+		if( zuluCryptIsDislockerMapperPath( mapper ) ){
 
 			return _close_mapper( mapper,_close_dislocker ) ;
 		}else{

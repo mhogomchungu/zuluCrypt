@@ -74,8 +74,6 @@
 #define TC_FLAG_SAVE_TO_FILE	0x0020
 #define TC_FLAG_HDR_FROM_FILE	0x0040
 #define TC_FLAG_H_HDR_FROM_FILE	0x0080
-#define TC_FLAG_VERACRYPT_MODE	0x0100
-#define TC_FLAG_READ_ONLY_MODE	0x0200
 
 #define TC_FLAG_SET(f, x)	((f & TC_FLAG_##x) == TC_FLAG_##x)
 
@@ -95,8 +93,13 @@ typedef uint64_t disksz_t;
 
 struct pbkdf_prf_algo {
 	const char *name;
+	const char *algo;
 	int iteration_count;
+	const char *sig;
+	int sys;
 };
+
+#define DEFAULT_PRF_ALGO_IDX	6
 
 struct tc_crypto_algo {
 	const char *name;
@@ -165,11 +168,6 @@ struct tcplay_info {
 	uuid_t uuid;
 
 	int hidden;
-
-	char type[64];
-	char status[64];
-
-	int read_only;
 };
 
 #define INFO_TO_DM_BLOCKS(info, memb) \
@@ -205,8 +203,6 @@ struct tcplay_opts {
 	int		interactive;
 	int		weak_keys_and_salt;
 
-	int iteration_count;
-
 	/* Options for create */
 	int		hidden;
 	disksz_t	hidden_size_bytes;
@@ -221,6 +217,7 @@ struct tcplay_opts {
 	int		protect_hidden;
 	int		retries;	/* XXX: default to DEFAULT_RETRIES */
 	time_t		timeout;
+	int		prompt_passphrase;
 
 	const char	*hdr_file_in;
 	const char	*h_hdr_file_in;
@@ -281,16 +278,14 @@ int pbkdf2(struct pbkdf_prf_algo *hash, const char *pass, int passlen,
 int apply_keyfiles(unsigned char *pass, size_t pass_memsz, const char *keyfiles[],
     int nkeyfiles);
 
-void tc_set_iteration_count(int);
-
 struct tchdr_enc *create_hdr(unsigned char *pass, int passlen,
     struct pbkdf_prf_algo *prf_algo, struct tc_cipher_chain *cipher_chain,
     size_t sec_sz, disksz_t total_blocks,
-    off_t offset, disksz_t blocks, int veracrypt_mode, int hidden, int weak,
+    off_t offset, disksz_t blocks, int hidden, int weak,
     struct tchdr_enc **backup_hdr);
 struct tchdr_dec *decrypt_hdr(struct tchdr_enc *ehdr,
     struct tc_cipher_chain *cipher_chain, unsigned char *key);
-int verify_hdr(int veracrypt_mode, struct tchdr_dec *hdr);
+int verify_hdr(struct tchdr_dec *hdr, struct pbkdf_prf_algo *prf_algo);
 struct tchdr_enc *copy_reencrypt_hdr(unsigned char *pass, int passlen,
     struct pbkdf_prf_algo *prf_algo, int weak, struct tcplay_info *info,
     struct tchdr_enc **backup_hdr);
@@ -302,7 +297,7 @@ void check_and_purge_safe_mem(void);
 
 struct tc_crypto_algo *check_cipher(const char *cipher, int quiet);
 struct tc_cipher_chain *check_cipher_chain(const char *cipher_chain, int quiet);
-struct pbkdf_prf_algo *check_prf_algo(int veracrypt_mode, const char *algo, int quiet);
+struct pbkdf_prf_algo *check_prf_algo(const char *algo, int sys, int quiet);
 
 int tc_play_init(void);
 void tc_log(int err, const char *fmt, ...);
@@ -313,8 +308,8 @@ char *tc_cipher_chain_sprint(char *buf, size_t bufsz,
 int free_info(struct tcplay_info *info);
 void print_info(struct tcplay_info *info);
 int adjust_info(struct tcplay_info *info, struct tcplay_info *hinfo);
-int process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int passlen,
-    struct tchdr_enc *ehdr, int hidden_header, struct tcplay_info **pinfo);
+int process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
+    struct tchdr_enc *ehdr, struct tcplay_info **pinfo);
 int create_volume(struct tcplay_opts *opts);
 struct tcplay_info *info_map_common(struct tcplay_opts *opts,
     char *passphrase_out);
@@ -331,10 +326,7 @@ typedef void(*summary_fn_t)(void);
 extern int tc_internal_verbose;
 extern char tc_internal_log_buffer[];
 extern summary_fn_t summary_fn;
-extern struct pbkdf_prf_algo pbkdf_prf_algos_boot_tc[];
-extern struct pbkdf_prf_algo pbkdf_prf_algos_standard_tc[];
-extern struct pbkdf_prf_algo pbkdf_prf_algos_boot_vc[];
-extern struct pbkdf_prf_algo pbkdf_prf_algos_standard_vc[];
+extern struct pbkdf_prf_algo pbkdf_prf_algos[];
 extern struct tc_cipher_chain *tc_cipher_chains[MAX_CIPHER_CHAINS];
 
 #define STATE_UNKNOWN		0

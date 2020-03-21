@@ -43,7 +43,6 @@
 #include <errno.h>
 #include <string.h>
 #include <err.h>
-#include <fcntl.h>
 #include <time.h>
 #if defined(__linux__)
 #include <libdevmapper.h>
@@ -54,13 +53,12 @@
 #include <uuid.h>
 #endif
 
-#include <sys/stat.h>
 #include <dirent.h>
 
 #include "crc32.h"
 #include "tcplay.h"
 #include "humanize.h"
-#include "zuluplay_api.h"
+
 
 /* XXX TODO:
  *  - LRW-benbi support? needs further work in dm-crypt and even opencrypto
@@ -72,6 +70,9 @@ summary_fn_t summary_fn = NULL;
 int tc_internal_verbose = 1;
 char tc_internal_log_buffer[LOG_BUFFER_SZ];
 int tc_internal_state = STATE_UNKNOWN;
+
+extern int zuluCryptIterationCount ;
+int zuluCryptIterationCount = 0 ;
 
 void
 tc_log(int is_err, const char *fmt, ...)
@@ -95,44 +96,18 @@ tc_log(int is_err, const char *fmt, ...)
 }
 
 /* Supported algorithms */
-struct pbkdf_prf_algo pbkdf_prf_algos_boot_tc[] = {
-	{ "RIPEMD160",	1000 },
-	{ NULL,		0    }
-};
-
-struct pbkdf_prf_algo pbkdf_prf_algos_standard_tc[] = {
-	{ "RIPEMD160",	2000 },
-	{ "SHA512",	1000 },
-	{ "whirlpool",	1000 },
-	{ NULL,		0    }
-};
-
-struct pbkdf_prf_algo pbkdf_prf_algos_boot_vc[] = {
-	{ "RIPEMD160",	327661 },
-	{ "SHA256",	200000 },
-	{ NULL,		0 }
-};
-
-static const struct pbkdf_prf_algo _original_pbkdf_prf_algos_boot_vc[] = {
-	{ "RIPEMD160",	327661 },
-	{ "SHA256",	200000 },
-	{ NULL,		0    }
-};
-
-struct pbkdf_prf_algo pbkdf_prf_algos_standard_vc[] = {
-	{ "SHA512",	500000 },
-	{ "whirlpool",	500000 },
-	{ "SHA256",	500000 },
-	{ "RIPEMD160",	655331 },
-	{ NULL,		0 }
-};
-
-static const struct pbkdf_prf_algo _original_pbkdf_prf_algos_standard_vc[] = {
-	{ "SHA512",	500000 },
-	{ "whirlpool",	500000 },
-	{ "SHA256",	500000 },
-	{ "RIPEMD160",	655331 },
-	{ NULL,		0    }
+struct pbkdf_prf_algo pbkdf_prf_algos[] = {
+	{ "RIPEMD160",		"RIPEMD160",	2000,	TC_SIG, 0},
+	{ "RIPEMD160",		"RIPEMD160",	1000,	TC_SIG, 1},
+	{ "SHA512",		"SHA512",	1000,	TC_SIG, 0},
+	{ "whirlpool",		"whirlpool",	1000,	TC_SIG, 0},
+	{ "RIPEMD160-VC",	"RIPEMD160",	655331,	VC_SIG, 0},
+	{ "RIPEMD160-VC",	"RIPEMD160",	327661,	VC_SIG, 1},
+	{ "SHA512-VC",		"SHA512",	500000,	VC_SIG, 0},
+	{ "whirlpool-VC",	"whirlpool",	500000,	VC_SIG, 0},
+	{ "SHA256-VC",		"SHA256",	500000,	VC_SIG, 0},
+	{ "SHA256-VC",		"SHA256",	200000,	VC_SIG, 1},
+	{ NULL,			NULL,		0,	NULL,	0}
 };
 
 struct tc_crypto_algo tc_crypto_algos[] = {
@@ -147,24 +122,6 @@ struct tc_crypto_algo tc_crypto_algos[] = {
 	{ "SERPENT-256-XTS",	"serpent-xts-plain64",	64,	8 },
 	{ NULL,			NULL,			0,	0 }
 };
-
-static void  _repair_tc_crypto_algo(void)
-{
-	struct tc_crypto_algo wtf[] = {
-	#if 0
-		/* XXX: turns out TC doesn't support AES-128-XTS */
-		{ "AES-128-XTS",	"aes-xts-plain",	32,	8 },
-		{ "TWOFISH-128-XTS",	"twofish-xts-plain",	32,	8 },
-		{ "SERPENT-128-XTS",	"serpent-xts-plain",	32,	8 },
-	#endif
-		{ "AES-256-XTS",	"aes-xts-plain64",	64,	8 },
-		{ "TWOFISH-256-XTS",	"twofish-xts-plain64",	64,	8 },
-		{ "SERPENT-256-XTS",	"serpent-xts-plain64",	64,	8 },
-		{ NULL,			NULL,			0,	0 }
-	};
-
-	memcpy(&tc_crypto_algos, &wtf, sizeof(wtf));
-}
 
 const char *valid_cipher_chains[][MAX_CIPHER_CHAINS] = {
 	{ "AES-256-XTS", NULL },
@@ -184,33 +141,6 @@ const char *valid_cipher_chains[][MAX_CIPHER_CHAINS] = {
 	{ "SERPENT-256-XTS", "TWOFISH-256-XTS", NULL },
 	{ NULL }
 };
-
-static void _tc_set_iteration_count(struct pbkdf_prf_algo *s,int iteration_count)
-{
-	int i;
-	for( i = 0 ; ; i++ ){
-		s += i;
-		if(s->name == NULL){
-			break;
-		}else{
-			s->iteration_count = iteration_count;
-		}
-	}
-}
-
-void tc_set_iteration_count(int iteration_count)
-{
-	if (iteration_count > 0){
-		_tc_set_iteration_count(pbkdf_prf_algos_boot_vc,iteration_count);
-		_tc_set_iteration_count(pbkdf_prf_algos_standard_vc,iteration_count);
-	}else{
-		memcpy(pbkdf_prf_algos_boot_vc ,_original_pbkdf_prf_algos_boot_vc,
-		       sizeof(_original_pbkdf_prf_algos_boot_vc));
-
-		memcpy(pbkdf_prf_algos_standard_vc ,_original_pbkdf_prf_algos_standard_vc,
-		       sizeof(_original_pbkdf_prf_algos_standard_vc));
-	}
-}
 
 struct tc_cipher_chain *tc_cipher_chains[MAX_CIPHER_CHAINS];
 
@@ -375,55 +305,6 @@ tc_cipher_chain_sprint(char *buf, size_t bufsz, struct tc_cipher_chain *chain)
 	return buf;
 }
 
-static
-off_t
-_find_partition_offset(const char *dev)
-{
-	int m;
-	int fd;
-	char buffer[PATH_MAX*3];
-	char buffer1[PATH_MAX];
-	char *e;
-	char c;
-
-	dev = dev + 5;
-	strcpy(buffer1, dev);
-
-	e = buffer1;
-
-	while (*e){
-		if(*e>='0' && *e<='9'){
-			*e = '\0';
-			break;
-		}
-		e++;
-	}
-
-	snprintf(buffer, sizeof(buffer), "/sys/block/%s/%s/start", buffer1, dev);
-
-	fd = open(buffer,O_RDONLY);
-
-	if (fd == -1){
-		tc_log(1, "failed to open path: %s\n", buffer);
-		return 0;
-	}else{
-		m = 0;
-		while (1) {
-			if (read(fd, &c, 1)<1){
-				tc_log(1, "failed to read a character from: %s\n", buffer);
-				close(fd);
-				return 0;
-			}
-			if (c=='\n'){
-				close(fd);
-				return atoll(buffer);
-			}
-			*(buffer + m) = c;
-			m++;
-		}
-	}
-}
-
 #ifdef DEBUG
 static void
 print_hex(unsigned char *buf, off_t start, size_t len)
@@ -457,6 +338,9 @@ print_info(struct tcplay_info *info)
 	if (info->hdr != NULL) {
 		printf("CRC Key Data:\t\t%#x\n", info->hdr->crc_keys);
 		printf("Sector size:\t\t%d\n", info->hdr->sec_sz);
+		printf("Signature:\t\t%c%c%c%c\n", info->hdr->tc_str[0],
+		       info->hdr->tc_str[1], info->hdr->tc_str[2],
+		       info->hdr->tc_str[3]);
 	} else {
 		printf("Sector size:\t\t512\n");
 	}
@@ -494,7 +378,6 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 	}
 
 	strncpy(info->dev, dev, sizeof(info->dev));
-	info->dev[sizeof(info->dev)-1] = '\0';
 	info->cipher_chain = cipher_chain;
 	info->pbkdf_prf = prf;
 	info->start = start;
@@ -503,37 +386,18 @@ new_info(const char *dev, int flags, struct tc_cipher_chain *cipher_chain,
 	info->size = hdr->sz_mk_scope / hdr->sec_sz;	/* volume size */
 	info->skip = hdr->off_mk_scope / hdr->sec_sz;	/* iv skip */
 
-	if (TC_FLAG_SET(flags, SYS)){
-
-		info->offset = 0; /* offset is 0 for system volumes */
-
-		info->skip = _find_partition_offset(dev);
-		/*
-		 * probe the partition itself to get its size.
-		 */
-		if (get_disk_info(dev, &info->size, NULL) != 0) {
-			tc_log(1, "could not get disk information\n");
-			free_safe_mem(info);
-			return NULL;
-		}
-	} else {
-		info->offset = hdr->off_mk_scope / hdr->sec_sz;	/* block offset */
-
-		/*
-		 * use volume size as reported by the header since the entire device
-		 * is going to be mapped.
-		 */
-		info->size = hdr->sz_mk_scope / hdr->sec_sz;
-	}
-
 	info->volflags = hdr->flags;
 	info->flags = flags;
+
+	if (TC_FLAG_SET(flags, SYS))
+		info->offset = 0; /* offset is 0 for system volumes */
+	else
+		info->offset = hdr->off_mk_scope / hdr->sec_sz;	/* block offset */
 
 	/* Associate a key out of the key pool with each cipher in the chain */
 	error = tc_cipher_chain_populate_keys(cipher_chain, hdr->keys);
 	if (error) {
 		tc_log(1, "could not populate keys in cipher chain\n");
-		free_safe_mem(info);
 		return NULL;
 	}
 
@@ -572,40 +436,20 @@ adjust_info(struct tcplay_info *info, struct tcplay_info *hinfo)
 }
 
 int
-process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int passlen,
-    struct tchdr_enc *ehdr, int hidden_header, struct tcplay_info **pinfo)
+process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
+    struct tchdr_enc *ehdr, struct tcplay_info **pinfo)
 {
 	struct tchdr_dec *dhdr;
 	struct tcplay_info *info;
 	struct tc_cipher_chain *cipher_chain = NULL;
-	struct pbkdf_prf_algo* pbkdf_prf_algos = NULL;
 	unsigned char *key;
-	int i, j, found, error, veracrypt_mode;
-
-	int flags = opts->flags ;
+	int i, j, found, error;
 
 	*pinfo = NULL;
 
 	if ((key = alloc_safe_mem(MAX_KEYSZ)) == NULL) {
 		tc_log(1, "could not allocate safe key memory\n");
 		return ENOMEM;
-	}
-
-	if (TC_FLAG_SET(flags, VERACRYPT_MODE)) {
-		veracrypt_mode = 1;
-	}
-	else {
-		veracrypt_mode = 0;
-	}
-
-	if (((TC_FLAG_SET(flags, SYS)) || (TC_FLAG_SET(flags, FDE))) && !hidden_header) {
-		// use only PRF with iterations count for boot encryption
-		// except in case of hidden operating system which uses normal iterations count
-		pbkdf_prf_algos = veracrypt_mode? pbkdf_prf_algos_boot_vc : pbkdf_prf_algos_boot_tc;
-	}
-	else {
-		// use only PRF with iterations count for standard encryption
-		pbkdf_prf_algos = veracrypt_mode? pbkdf_prf_algos_standard_vc : pbkdf_prf_algos_standard_tc;
 	}
 
 	/* Start search for correct algorithm combination */
@@ -633,8 +477,6 @@ process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int 
 		print_hex(key, 0, MAX_KEYSZ);
 #endif
 
-		_repair_tc_crypto_algo();
-
 		for (j = 0; !found && tc_cipher_chains[j] != NULL; j++) {
 			cipher_chain = tc_dup_cipher_chain(tc_cipher_chains[j]);
 #ifdef DEBUG
@@ -649,13 +491,13 @@ process_hdr(const char *dev, struct tcplay_opts *opts, unsigned char *pass, int 
 				return EINVAL;
 			}
 
-			if (verify_hdr(veracrypt_mode, dhdr)) {
+			if (verify_hdr(dhdr, &pbkdf_prf_algos[i])) {
 #ifdef DEBUG
-				printf("tc_str: %.4s, tc_ver: %d, tc_min_ver: %d.%.2X, "
+				printf("tc_str: %.4s, tc_ver: %d, tc_min_ver: %d, "
 				    "crc_keys: %d, sz_vol: %"PRIu64", "
 				    "off_mk_scope: %"PRIu64", sz_mk_scope: %"PRIu64", "
 				    "flags: %d, sec_sz: %d crc_dhdr: %d\n",
-				    dhdr->tc_str, dhdr->tc_ver, dhdr->tc_min_ver >> 8, dhdr->tc_min_ver & 0x00FF,
+				    dhdr->tc_str, dhdr->tc_ver, dhdr->tc_min_ver,
 				    dhdr->crc_keys, dhdr->sz_vol, dhdr->off_mk_scope,
 				    dhdr->sz_mk_scope, dhdr->flags, dhdr->sec_sz,
 				    dhdr->crc_dhdr);
@@ -695,26 +537,17 @@ create_volume(struct tcplay_opts *opts)
 	struct tchdr_enc *ehdr, *hehdr;
 	struct tchdr_enc *ehdr_backup, *hehdr_backup;
 	uint64_t tmp;
-	int error, r, ret, veracrypt_mode = 0;
+	int error, r, ret;
 
 	pass = h_pass = pass_again = NULL;
 	ehdr = hehdr = NULL;
 	ehdr_backup = hehdr_backup = NULL;
 	ret = -1; /* Default to returning error */
 
-	_repair_tc_crypto_algo();
-
-	if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE))
-		veracrypt_mode = 1;
-
 	if (opts->cipher_chain == NULL)
 		opts->cipher_chain = tc_cipher_chains[0];
-	if (opts->prf_algo == NULL) {
-		if (veracrypt_mode)
-			opts->prf_algo = &pbkdf_prf_algos_standard_vc[0]; // default is SHA512 with 500000 iterations
-		else
-			opts->prf_algo = &pbkdf_prf_algos_standard_tc[0]; // default is RIPEMD160 with 2000 iterations
-	}
+	if (opts->prf_algo == NULL)
+		opts->prf_algo = &pbkdf_prf_algos[DEFAULT_PRF_ALGO_IDX];
 	if (opts->h_cipher_chain == NULL)
 		opts->h_cipher_chain = opts->cipher_chain;
 	if (opts->h_prf_algo == NULL)
@@ -934,17 +767,11 @@ create_volume(struct tcplay_opts *opts)
 	if (opts->state_change_fn)
 		opts->state_change_fn(opts->api_ctx, "create_header", 1);
 
-	if (opts->iteration_count > 0){
-		opts->prf_algo->iteration_count = opts->iteration_count;
-		if (opts->h_prf_algo)
-			opts->h_prf_algo->iteration_count = opts->iteration_count;
-	}
-
 	/* create encrypted headers */
 	ehdr = create_hdr((unsigned char *)pass,
 	    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass),
 	    opts->prf_algo, opts->cipher_chain, blksz, blocks, VOL_RSVD_BYTES_START/blksz,
-	    blocks - (MIN_VOL_BYTES/blksz), veracrypt_mode, 0, opts->weak_keys_and_salt, &ehdr_backup);
+	    blocks - (MIN_VOL_BYTES/blksz), 0, opts->weak_keys_and_salt, &ehdr_backup);
 	if (ehdr == NULL) {
 		tc_log(1, "Could not create header\n");
 		goto out;
@@ -956,7 +783,7 @@ create_volume(struct tcplay_opts *opts)
 		    opts->h_cipher_chain,
 		    blksz, blocks,
 		    blocks - (VOL_RSVD_BYTES_END/blksz) - hidden_blocks,
-		    hidden_blocks, veracrypt_mode, 1, opts->weak_keys_and_salt, &hehdr_backup);
+		    hidden_blocks, 1, opts->weak_keys_and_salt, &hehdr_backup);
 		if (hehdr == NULL) {
 			tc_log(1, "Could not create hidden volume header\n");
 			goto out;
@@ -1051,7 +878,9 @@ info_map_common(struct tcplay_opts *opts, char *passphrase_out)
 	 * Add one retry so we can do a first try without asking for
 	 * a password if keyfiles are passed in.
 	 */
-	if (opts->interactive && (opts->nkeyfiles > 0)) {
+	if (opts->interactive &&
+	    !opts->prompt_passphrase &&
+	    (opts->nkeyfiles > 0)) {
 		try_empty = 1;
 		++retries;
 	}
@@ -1182,9 +1011,9 @@ info_map_common(struct tcplay_opts *opts, char *passphrase_out)
 			hehdr = NULL;
 		}
 
-		error = process_hdr(opts->dev, opts, (unsigned char *)pass,
+		error = process_hdr(opts->dev, opts->flags, (unsigned char *)pass,
 		    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass),
-		    ehdr, 0, &info);
+		    ehdr, &info);
 
 		/*
 		 * Try to process hidden header if we have to protect the hidden
@@ -1193,13 +1022,13 @@ info_map_common(struct tcplay_opts *opts, char *passphrase_out)
 		 */
 		if (hehdr && (error || opts->protect_hidden)) {
 			if (error) {
-				error2 = process_hdr(opts->dev, opts, (unsigned char *)pass,
-				    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass), hehdr, 1,
+				error2 = process_hdr(opts->dev, opts->flags, (unsigned char *)pass,
+				    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass), hehdr,
 				    &info);
 				is_hidden = !error2;
 			} else if (opts->protect_hidden) {
-				error2 = process_hdr(opts->dev, opts, (unsigned char *)h_pass,
-				    (opts->n_hkeyfiles > 0)?MAX_PASSSZ:strlen(h_pass), hehdr, 1,
+				error2 = process_hdr(opts->dev, opts->flags, (unsigned char *)h_pass,
+				    (opts->n_hkeyfiles > 0)?MAX_PASSSZ:strlen(h_pass), hehdr,
 				    &hinfo);
 			}
 		}
@@ -1207,13 +1036,9 @@ info_map_common(struct tcplay_opts *opts, char *passphrase_out)
 		/* We need both to protect a hidden volume */
 		if ((opts->protect_hidden && (error || error2)) ||
 		    (error && error2)) {
-			if (!try_empty) {
-				if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE)) {
-					tc_log(1, "Incorrect password or not a VeraCrypt volume\n");
-				}else{
-					tc_log(1, "Incorrect password or not a TrueCrypt volume\n");
-				}
-			}
+			if (!try_empty)
+				tc_log(1, "Incorrect password or not a TrueCrypt volume\n");
+
 			if (info) {
 				free_info(info);
 				info = NULL;
@@ -1648,7 +1473,7 @@ dm_get_table(const char *name)
 		    &target_type, &params);
 
 		tc_table->size += (size_t)length;
-		memcpy(tc_table->target, target_type,
+		strncpy(tc_table->target, target_type,
 		    sizeof(tc_table->target));
 
 		/* Skip any leading whitespace */
@@ -1664,7 +1489,7 @@ dm_get_table(const char *name)
 				/* Process p1 */
 				if (c == 0) {
 					/* cipher */
-					memcpy(tc_table->cipher, p1,
+					strncpy(tc_table->cipher, p1,
 					    sizeof(tc_table->cipher));
 				} else if (c == 2) {
 					/* iv offset */
@@ -1727,11 +1552,9 @@ dm_info_map(const char *map_name)
 	struct tcplay_dm_table *dm_table[3];
 	struct tc_crypto_algo *crypto_algo;
 	struct tcplay_info *info;
-	char map[PATH_MAX+1];
+	char map[PATH_MAX];
 	char ciphers[512];
 	int i, outermost = -1;
-
-	struct dm_info *info_dm;
 
 	memset(dm_table, 0, sizeof(dm_table));
 
@@ -1788,9 +1611,14 @@ dm_info_map(const char *map_name)
 		goto error;
 	}
 
+	info->cipher_chain = tc_dup_cipher_chain(info->cipher_chain);
+	if (info->cipher_chain == NULL) {
+		tc_log(1, "could not dup cipher chain\n");
+		goto error;
+	}
+
 	/* Copy over the name */
 	strncpy(info->dev, dm_table[outermost]->device, sizeof(info->dev));
-	info->dev[sizeof(info->dev)-1] = '\0';
 
 	/* Other fields */
 	info->hdr = NULL;
@@ -1801,20 +1629,9 @@ dm_info_map(const char *map_name)
 	info->offset = dm_table[outermost]->offset;
 	info->blk_sz = 512;
 
-	info_dm = &dmi[outermost];
-
-	info->read_only = info_dm->read_only;
-
-	if (info_dm->inactive_table)
-		strcpy(info->status, "inactive");
-	else if (info_dm->open_count > 0)
-		strcpy(info->status, "active and is in use");
-	else if (info_dm->open_count == 0)
-		strcpy(info->status, "active");
-	else
-		strcpy(info->status, "invalid");
-
-	tc_api_get_volume_type((char*)&info->type, sizeof(info->type), map_name);
+	for (i = 0; i < 3; i++)
+		if (dm_table[i] != NULL)
+			free_safe_mem(dm_table[i]);
 
 	return info;
 
@@ -1830,12 +1647,6 @@ error:
 	return NULL;
 }
 
-#if 0
-
-/*
- * Disabling this way of checking because it pollutes stdout
- * with entries like "Device /dev/mapper/blablabla not found"
- */
 static
 int
 dm_exists_device(const char *name)
@@ -1851,19 +1662,6 @@ dm_exists_device(const char *name)
 out:
 	return exists;
 }
-
-#else
-
-static
-int
-dm_exists_device(const char *name)
-{
-	struct stat st;
-	return stat(name, &st) == 0;
-}
-
-#endif
-
 
 static
 int
@@ -1896,8 +1694,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 	struct dm_task *dmt = NULL;
 	struct dm_info dmi;
 	char *params = NULL;
-	size_t paramsSIZE = 8192 ;
-	char *uu_temp;
+	char *uu, *uu_temp;
 	char *uu_stack[64];
 	int uu_stack_idx;
 #if defined(__DragonFly__)
@@ -1908,13 +1705,11 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 	off_t start, offset;
 	char dev[PATH_MAX];
 	char map[PATH_MAX];
-	char uu[PATH_MAX*2];
-
 	uint32_t cookie;
 
 	dm_udev_set_sync_support(1);
 
-	if ((params = alloc_safe_mem(paramsSIZE)) == NULL) {
+	if ((params = alloc_safe_mem(512)) == NULL) {
 		tc_log(1, "could not allocate safe parameters memory");
 		return ENOMEM;
 	}
@@ -1993,22 +1788,25 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 			goto out;
 		}
 #endif
-		if (TC_FLAG_SET(info->flags, VERACRYPT_MODE)){
-			snprintf(uu, sizeof(uu), "CRYPT-VCRYPT-%s-%s", uu_temp ,map);
-		} else {
-			snprintf(uu, sizeof(uu), "CRYPT-TCRYPT-%s-%s", uu_temp,map);
+
+		if ((uu = malloc(1024)) == NULL) {
+			free(uu_temp);
+			tc_log(1, "uuid second malloc failed\n");
+			ret = -1;
+			goto out;
 		}
 
+		snprintf(uu, 1024, "CRYPT-TCPLAY-%s", uu_temp);
 		free(uu_temp);
 
 		if ((dm_task_set_uuid(dmt, uu)) == 0) {
+			free(uu);
 			tc_log(1, "dm_task_set_uuid failed\n");
 			ret = -1;
 			goto out;
 		}
 
-		if (TC_FLAG_SET(info->flags, READ_ONLY_MODE))
-			dm_task_set_ro(dmt);
+		free(uu);
 
 		if (TC_FLAG_SET(info->flags, FDE)) {
 			/*
@@ -2019,7 +1817,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 
 			/*  /dev/ad0s0a              0 */
 			/* dev---^       block off --^ */
-			snprintf(params, paramsSIZE, "%s 0", dev);
+			snprintf(params, 512, "%s 0", dev);
 
 			if ((dm_task_add_target(dmt, 0,
 				INFO_TO_DM_BLOCKS(info, offset),
@@ -2034,7 +1832,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 
 		/* aes-cbc-essiv:sha256 7997f8af... 0 /dev/ad0s0a 8 <opts> */
 		/*			   iv off---^  block off--^ <opts> */
-		snprintf(params, paramsSIZE, "%s %s %"PRIu64 " %s %"PRIu64 " %s",
+		snprintf(params, 512, "%s %s %"PRIu64 " %s %"PRIu64 " %s",
 		    cipher_chain->cipher->dm_crypt_str, cipher_chain->dm_key,
 		    (uint64_t)INFO_TO_DM_BLOCKS(info, skip), dev,
 		    (uint64_t)offset,
@@ -2139,11 +1937,6 @@ dm_teardown(const char *mapname, const char *device __unused)
 	return 0;
 }
 
-int tc_api_close_mapper(const char *mapname)
-{
-	return dm_teardown(mapname, NULL);
-}
-
 struct tc_crypto_algo *
 check_cipher(const char *cipher, int quiet)
 {
@@ -2237,13 +2030,14 @@ check_cipher_chain(const char *cipher_chain, int quiet)
 }
 
 struct pbkdf_prf_algo *
-check_prf_algo(int veracrypt_mode, const char *algo, int quiet)
+check_prf_algo(const char *algo, int sys, int quiet)
 {
 	int i, found = 0;
-	struct pbkdf_prf_algo *pbkdf_prf_algos =
-		(veracrypt_mode)? pbkdf_prf_algos_standard_vc : pbkdf_prf_algos_standard_tc;
 
 	for (i = 0; pbkdf_prf_algos[i].name != NULL; i++) {
+		if (sys != pbkdf_prf_algos[i].sys)
+			continue;
+
 		if (strcmp(algo, pbkdf_prf_algos[i].name) == 0) {
 			found = 1;
 			break;
@@ -2252,8 +2046,11 @@ check_prf_algo(int veracrypt_mode, const char *algo, int quiet)
 
 	if (!found && !quiet) {
 		fprintf(stderr, "Valid PBKDF PRF algorithms are: ");
-		for (i = 0; pbkdf_prf_algos[i].name != NULL; i++)
+		for (i = 0; pbkdf_prf_algos[i].name != NULL; i++) {
+			if (sys != pbkdf_prf_algos[i].sys)
+				continue;
 			fprintf(stderr, "%s ", pbkdf_prf_algos[i].name);
+		}
 		fprintf(stderr, "\n");
 		return NULL;
 	}

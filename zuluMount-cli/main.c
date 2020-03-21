@@ -35,12 +35,12 @@
 
 static void _seteuid( uid_t uid )
 {
-	if( seteuid( uid ) ){;}
+	if( seteuid( uid ) ){}
 }
 
 static void _setuid( uid_t uid )
 {
-	if( setuid( uid ) ){;}
+	if( setuid( uid ) ){}
 }
 
 /*
@@ -275,7 +275,7 @@ static int _checkUnmount( const char * device,uid_t uid )
 
 	if( index != -1 ){
 
-		st = StringListStringAt( stx,index ) ;
+		st = StringListStringAt( stx,(size_t)index ) ;
 		stl = StringListStringSplit( st,' ' ) ;
 
 		device = StringListContentAtFirstPlace( stl ) ;
@@ -658,7 +658,7 @@ int main( int argc,char * argv[] )
 		puts( gettext( "ERROR: user is not root privileged" ) ) ;
 		return 255 ;
 	}else{
-		args.uid = uid = i ;
+		args.uid = uid = (uid_t)i ;
 	}
 
 	/*

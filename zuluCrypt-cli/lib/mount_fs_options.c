@@ -221,7 +221,7 @@ int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname )
 
 static inline int _userIsAllowed( uid_t uid,const char * fs )
 {
-	if( fs ){;}
+	if( fs ){}
 
 	if( uid == 0 ){
 		/*

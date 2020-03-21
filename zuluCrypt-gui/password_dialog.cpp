@@ -57,11 +57,6 @@
 #define INTERNAL_WALLET "Internal Wallet"
 #define GNOME_WALLET    "GNOME keyring"
 
-/*
- * this header is created at config time
- */
-#include "truecrypt_support.h"
-
 passwordDialog::passwordDialog( QTableWidget * table,
 				QWidget * parent,
 				secrets& s,

@@ -1,3 +1,22 @@
+2020-03-02 Version 3.3 - Alex Hornung <alex@alexhornung.com>
+
+ * Add new --prompt-passphrase option to reduce unlock time when both a
+   passphrase and keyfiles are required (issue #75).
+
+
+2020-02-27 Version 3.1 - Alex Hornung <alex@alexhornung.com>
+
+ * Various memory leak/use-after-free bugs (issue #67).
+
+ * Minor improvements to CMakeLists.txt to allow for empty LIB_SUFFIX and
+   overriding sbin/ vs bin/.
+
+
+2020-02-27 Version 3.0 - Alex Hornung <alex@alexhornung.com>
+
+ * Added support for VeraCrypt volumes. See man page for more details.
+
+
 2014-03-10 Version 2.0 - Alex Hornung <alex@alexhornung.com>
 
  * Documented SIGINFO/SIGUSR1 behaviour in man page.

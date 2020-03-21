@@ -38,7 +38,7 @@ int zuluCryptGetVolumeType( const char * device,const char * pass,size_t pass_si
 #else
 int zuluCryptGetVolumeType( const char * device,const char * pass,size_t pass_size )
 {
-	if( 0 && pass && pass_size ){;}
+	if(  pass && pass_size ){}
 	/*
 	 * zuluCryptVolumeIsLuks() is defined in is_luks.c
 	 */

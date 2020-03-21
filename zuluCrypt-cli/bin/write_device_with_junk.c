@@ -63,7 +63,7 @@ static int zuluExit( stringList_t stl, int status )
 			 index = StringListHasStartSequence( stl,crypt_get_dir() ) ;
 			 if( index >= 0 ){
 				 printf( gettext( "Opened mapper path: " ) ) ;
-				 StringListPrintLineAt( stl,index ) ;
+				 StringListPrintLineAt( stl,(size_t)index ) ;
 			 }
 			 break ;
 		case 1 : printf( gettext( "ERROR: Could not create mapper\n" ) )					;break ;
@@ -232,8 +232,8 @@ static int open_plain_as_me_1(const struct_opts * opts,const char * mapping_name
 	d = zuluCryptRealPath( cmapper ) ;
 	if( zuluCryptSecurityGainElevatedPrivileges() ){
 		if( d != NULL ){
-			_ignore_result( chown( d,uid,0 ) ) ;
-			_ignore_result( chmod( d,S_IRWXU ) ) ;
+			_ignore_result( chown( d,uid,0 ) )
+			_ignore_result( chmod( d,S_IRWXU ) )
 			StringFree( d ) ;
 		}
 		zuluCryptSecurityDropElevatedPrivileges() ;
@@ -318,7 +318,7 @@ int zuluCryptEXEWriteDeviceWithJunk( const struct_opts * opts,const char * mappi
 
 	k = open( StringContent( *mapper ),O_WRONLY ) ;
 
-	size = ( double ) blkid_get_dev_size( k ) ;
+	size = blkid_get_dev_size( k ) ;
 
 	memset( buffer,0,SIZE ) ;
 

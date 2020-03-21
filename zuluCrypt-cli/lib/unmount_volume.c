@@ -42,7 +42,7 @@ static int _unmount_fuse( const char * m_dir )
 
 static int _unmount( int( *function )( const char * m_dir ),const char * m_dir )
 {
-	int h ;
+	int h = -1 ;
 	int i ;
 
 	/*
@@ -214,7 +214,7 @@ int zuluCryptUnmountVolume( const char * device,char ** m_point )
 			/*
 			 * We got our mount point,take it out of the list to use it last
 			 */
-			st = StringListDetachAt( stl,r ) ;
+			st = StringListDetachAt( stl,(size_t)r ) ;
 
 			StringListGetIterators( stl,&it,&end ) ;
 

@@ -49,6 +49,31 @@
 #define HOST_TO_BE(n, v) v = htobe ## n (v)
 #define HOST_TO_LE(n, v) v = htole ## n (v)
 
+struct sig_hdr_cfg {
+	const char	*sig;
+	uint16_t	min_ver;
+};
+
+struct sig_hdr_cfg sig_hdr_cfgs[] = {
+	{ TC_SIG,	0x0007 },
+	{ VC_SIG,	0x0b01 },
+	{ NULL,		0x0000 }
+};
+
+static
+const
+struct sig_hdr_cfg *hdr_cfg_from_sig(const char *sig)
+{
+	const struct sig_hdr_cfg *cfg;
+
+	for (cfg = &sig_hdr_cfgs[0]; cfg->sig != NULL; cfg++) {
+		if (strcmp(cfg->sig, sig) == 0)
+			return cfg;
+	}
+
+	return NULL;
+}
+
 struct tchdr_dec *
 decrypt_hdr(struct tchdr_enc *ehdr, struct tc_cipher_chain *cipher_chain,
     unsigned char *key)
@@ -73,7 +98,7 @@ decrypt_hdr(struct tchdr_enc *ehdr, struct tc_cipher_chain *cipher_chain,
 	}
 
 	BE_TO_HOST(16, dhdr->tc_ver);
-	BE_TO_HOST(16, dhdr->tc_min_ver);
+	LE_TO_HOST(16, dhdr->tc_min_ver);
 	BE_TO_HOST(32, dhdr->crc_keys);
 	BE_TO_HOST(64, dhdr->vol_ctime);
 	BE_TO_HOST(64, dhdr->hdr_ctime);
@@ -89,12 +114,11 @@ decrypt_hdr(struct tchdr_enc *ehdr, struct tc_cipher_chain *cipher_chain,
 }
 
 int
-verify_hdr(int veracrypt_mode, struct tchdr_dec *hdr)
+verify_hdr(struct tchdr_dec *hdr, struct pbkdf_prf_algo *prf_algo)
 {
 	uint32_t crc;
 
-	if (   (!veracrypt_mode && (memcmp(hdr->tc_str, TC_SIG, sizeof(hdr->tc_str)) != 0))
-		|| ( veracrypt_mode && (memcmp(hdr->tc_str, VC_SIG, sizeof(hdr->tc_str)) != 0))) {
+	if (memcmp(hdr->tc_str, prf_algo->sig, sizeof(hdr->tc_str)) != 0) {
 #ifdef DEBUG
 		fprintf(stderr, "Signature mismatch\n");
 #endif
@@ -109,19 +133,17 @@ verify_hdr(int veracrypt_mode, struct tchdr_dec *hdr)
 		return 0;
 	}
 
-	if (hdr->tc_ver == 1 || hdr->tc_ver == 2) {
+	switch(hdr->tc_ver) {
+	case 1:
+	case 2:
 		/* Unsupported header version */
 		tc_log(1, "Header version %d unsupported\n", hdr->tc_ver);
 		return 0;
-	} else if (hdr->tc_ver == 3 || hdr->tc_ver == 4){
 
-		if (veracrypt_mode) {
-			/* Unsupported header version in VeraCrypt mode*/
-			tc_log(1, "Header version %d unsupported in VeraCrypt mode\n", hdr->tc_ver);
-			return 0;
-		}
-
+	case 3:
+	case 4:
 		hdr->sec_sz = 512;
+		break;
 	}
 
 	return 1;
@@ -131,12 +153,13 @@ struct tchdr_enc *
 create_hdr(unsigned char *pass, int passlen, struct pbkdf_prf_algo *prf_algo,
     struct tc_cipher_chain *cipher_chain, size_t sec_sz,
     disksz_t total_blocks __unused,
-    off_t offset, disksz_t blocks, int veracrypt_mode, int hidden, int weak, struct tchdr_enc **backup_hdr)
+    off_t offset, disksz_t blocks, int hidden, int weak, struct tchdr_enc **backup_hdr)
 {
 	struct tchdr_enc *ehdr, *ehdr_backup;
 	struct tchdr_dec *dhdr;
 	unsigned char *key, *key_backup;
 	unsigned char iv[128];
+	const struct sig_hdr_cfg *hdr_cfg;
 	int error;
 
 	key = key_backup = NULL;
@@ -206,27 +229,25 @@ create_hdr(unsigned char *pass, int passlen, struct pbkdf_prf_algo *prf_algo,
 		goto error;
 	}
 
-	if (veracrypt_mode == 0) {
-		memcpy(dhdr->tc_str, TC_SIG, 4);
-		dhdr->tc_ver = 5;
-		dhdr->tc_min_ver = 0x0700;
+	if ((hdr_cfg = hdr_cfg_from_sig(prf_algo->sig)) == NULL) {
+		tc_log(1, "could not find internal header configuration\n");
+		goto error;
 	}
-	else {
-		memcpy(dhdr->tc_str, VC_SIG, 4);
-		dhdr->tc_ver = 5;
-		dhdr->tc_min_ver = 0x010b;
-	}
+
+	memcpy(dhdr->tc_str, prf_algo->sig, 4);
+	dhdr->tc_ver = 5;
+	dhdr->tc_min_ver = hdr_cfg->min_ver;
 	dhdr->crc_keys = crc32((void *)&dhdr->keys, 256);
 	dhdr->sz_vol = blocks * sec_sz;
 	if (hidden)
 		dhdr->sz_hidvol = dhdr->sz_vol;
-	dhdr->off_mk_scope = (unsigned long)offset * sec_sz;
+	dhdr->off_mk_scope = offset * sec_sz;
 	dhdr->sz_mk_scope = blocks * sec_sz;
-	dhdr->sec_sz = (unsigned int)sec_sz;
+	dhdr->sec_sz = sec_sz;
 	dhdr->flags = 0;
 
 	HOST_TO_BE(16, dhdr->tc_ver);
-	HOST_TO_BE(16, dhdr->tc_min_ver);
+	HOST_TO_LE(16, dhdr->tc_min_ver);
 	HOST_TO_BE(32, dhdr->crc_keys);
 	HOST_TO_BE(64, dhdr->sz_vol);
 	HOST_TO_BE(64, dhdr->sz_hidvol);
@@ -289,6 +310,7 @@ struct tchdr_enc *copy_reencrypt_hdr(unsigned char *pass, int passlen,
 	struct tchdr_enc *ehdr, *ehdr_backup;
 	unsigned char *key, *key_backup;
 	unsigned char iv[128];
+	const struct sig_hdr_cfg *hdr_cfg;
 	int error;
 
 	key = key_backup = NULL;
@@ -346,8 +368,17 @@ struct tchdr_enc *copy_reencrypt_hdr(unsigned char *pass, int passlen,
 		goto error;
 	}
 
+	if ((hdr_cfg = hdr_cfg_from_sig(prf_algo->sig)) == NULL) {
+		tc_log(1, "could not find internal header configuration\n");
+		goto error;
+	}
+
+	/* Update signature and min_ver depending on selected PBKDF2 PRF algo */
+	memcpy(info->hdr->tc_str, prf_algo->sig, 4);
+	info->hdr->tc_min_ver = hdr_cfg->min_ver;
+
 	HOST_TO_BE(16, info->hdr->tc_ver);
-	HOST_TO_BE(16, info->hdr->tc_min_ver);
+	HOST_TO_LE(16, info->hdr->tc_min_ver);
 	HOST_TO_BE(32, info->hdr->crc_keys);
 	HOST_TO_BE(64, info->hdr->vol_ctime);
 	HOST_TO_BE(64, info->hdr->hdr_ctime);

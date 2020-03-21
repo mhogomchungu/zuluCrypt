@@ -26,11 +26,11 @@
 
 static void _add_entry( string_t xt,ssize_t r,char * e )
 {
-	StringSubChar( xt,r,' ' ) ;
+	StringSubChar( xt,(size_t)r,' ' ) ;
 
 	if( e != NULL ){
 
-		StringRemoveLeft( xt,r ) ;
+		StringRemoveLeft( xt,(size_t)r ) ;
 		StringPrepend( xt,e ) ;
 		StringFree( e ) ;
 	}
@@ -49,7 +49,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 
 	const char * entry ;
 
-	if( uid ){;}
+	if( uid ){}
 
 	stl = StringListStringSplit( xt,'\n' ) ;
 
@@ -74,7 +74,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 
 		if( index != -1 ){
 
-			entry = StringSubChar( xt,index,'\0' ) ;
+			entry = StringSubChar( xt,(size_t)index,'\0' ) ;
 
 			if( StringPrefixEqual( entry,"/dev/" ) ){
 
@@ -116,7 +116,7 @@ stringList_t zuluCryptGetFstabList( uid_t uid )
 				_add_entry( xt,index,zuluCryptDeviceFromPARTLABEL( entry + 10 ) ) ;
 
 			}else{
-				entry = StringSubChar( xt,index,' ' ) ;
+				entry = StringSubChar( xt,(size_t)index,' ' ) ;
 			}
 		}
 	}
@@ -131,7 +131,7 @@ string_t zuluCryptGetFstabEntry( const char * device,uid_t uid )
 	stringList_t stl = zuluCryptGetFstabList( uid ) ;
 	ssize_t index = StringListHasStartSequence( stl,StringAppend( xt," " ) ) ;
 	if( index >= 0 ){
-		st = StringListCopyStringAt( stl,index ) ;
+		st = StringListCopyStringAt( stl,(size_t)index ) ;
 	}
 	StringDelete( &xt ) ;
 	StringListDelete( &stl ) ;
@@ -145,7 +145,7 @@ string_t zuluCryptGetMountOptionsFromFstab( const char * device,int pos,uid_t ui
 	if( st != StringVoid ){
 		stl = StringListStringSplit( st,' ' ) ;
 		StringDelete( &st ) ;
-		st = StringListCopyStringAt( stl,pos ) ;
+		st = StringListCopyStringAt( stl,(size_t)pos ) ;
 		StringListDelete( &stl ) ;
 	}
 	return st ;

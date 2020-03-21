@@ -261,10 +261,9 @@ get_disk_info(const char *dev, disksz_t *blocks, size_t *bsize)
 		close(fd);
 		return -1;
 	}
-	if (blocks)
-		*blocks = (disksz_t)pinfo.media_blocks;
-	if (bsize)
-		*bsize = pinfo.media_blksize;
+
+	*blocks = (disksz_t)pinfo.media_blocks;
+	*bsize = pinfo.media_blksize;
 
 	close(fd);
 	return 0;
@@ -291,10 +290,9 @@ get_disk_info(const char *dev, disksz_t *blocks, size_t *bsize)
 		close(fd);
 		return -1;
 	}
-	if (blocks)
-		*blocks = (disksz_t)(nbytes / blocksz);
-	if (bsize)
-		*bsize = (size_t)(blocksz);
+
+	*blocks = (disksz_t)(nbytes / blocksz);
+	*bsize = (size_t)(blocksz);
 
 	close(fd);
 	return 0;

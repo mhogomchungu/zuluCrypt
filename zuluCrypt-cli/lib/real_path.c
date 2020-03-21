@@ -87,6 +87,6 @@ int zuluCryptPathDidNotChange( const char * path )
 
 int zuluCryptPathDeviceIsBlockDevice( const char * device )
 {
-	if( device ){;}
+	if( device ){}
 	return 0 ;
 }

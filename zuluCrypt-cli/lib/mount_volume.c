@@ -281,7 +281,7 @@ static string_t set_mount_options( m_struct * mst )
 		 * ext file systems and raiserfs among others go here
 		 * we dont set any options for them.
 		 */
-		;
+
 	}
 
 	/*
@@ -386,7 +386,7 @@ static int _mount( const m_struct * mst,string_t st )
 {
 	int h = mount( mst->device,mst->m_point,mst->fs,mst->m_flags,mst->opts + 3 ) ;
 
-	if( st ){;}
+	if( st ){}
 
 	if( h == 0 && mst->m_flags != MS_RDONLY ){
 

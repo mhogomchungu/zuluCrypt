@@ -52,7 +52,7 @@ stringList_t zuluCryptCreateKeyFiles( const char * const * list,int s )
 
 			zuluCryptSecurityGainElevatedPrivileges() ;
 
-			e = StringIntToString_1( buffer,buffer_size,i + s ) ;
+			e = StringIntToString_1( buffer,buffer_size,(u_int64_t)i + (u_int64_t)s ) ;
 			/*
 			 * zuluCryptCreateKeyFile_1() is defined in ../lib/open_tcrypt.c
 			 */
@@ -622,7 +622,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 		stz = zuluCryptCreateKeyFiles( tcrypt_keyfiles,0 ) ;
 
-		volume.tcrypt_keyfiles_count = StringListSize( stz ) ;
+		volume.tcrypt_keyfiles_count = (int)StringListSize( stz ) ;
 		volume.tcrypt_keyfiles       = StringListStringArray_0( stz ) ;
 
 		st = _open_volume( &volume ) ;

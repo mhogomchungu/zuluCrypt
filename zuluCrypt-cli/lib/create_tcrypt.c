@@ -28,13 +28,34 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-/*
- * this header is created at config time
- */
-#include "truecrypt_support_1.h"
+#include "tcplay_api.h"
 
 static const int TRUE  = 1 ;
 static const int FALSE = 0 ;
+
+static int _zuluCryptVeraCryptPIM( const char * device,const char * hash,int pim )
+{
+	if( device && hash ){}
+
+	if( pim > 0 ){
+
+		return 15000 + ( pim * 1000 ) ;
+	}else{
+		return 0 ;
+	}
+}
+
+#if 0
+static int _zuluCryptSystemVeraCryptPIM( const char * device,const char * hash,int pim )
+{
+	if( StringHasAtLeastOneComponent_1( hash,"SHA512","whirlpool",NULL ) ){
+
+		return _zuluCryptVeraCryptPIM( device,hash,pim ) ;
+	}else{
+		return pim * 2048 ;
+	}
+}
+#endif
 
 static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 {
@@ -55,7 +76,7 @@ static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 	len = StringLength( m ) ;
 
 	StringAppend( m,"/zuluCrypt-" ) ;
-	device_mapper = StringAppendInt( m,syscall( SYS_gettid ) ) ;
+	device_mapper = StringAppendInt( m,(u_int64_t)syscall( SYS_gettid ) ) ;
 	mapper = device_mapper + len + 1 ;
 
 	opts.volume_type = TCRYPT_NORMAL ;
@@ -69,7 +90,7 @@ static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 	if( e->keyfiles != NULL ){
 
 		opts.tcrypt_keyfiles       = e->keyfiles ;
-		opts.tcrypt_keyfiles_count = e->keyfiles_number ;
+		opts.tcrypt_keyfiles_count = (int)e->keyfiles_number ;
 	}
 
 	opts.veraCrypt_volume = e->veraCrypt_volume ;
@@ -106,7 +127,7 @@ static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 		if( e->keyfiles_h != NULL ){
 
 			opts.tcrypt_keyfiles       = e->keyfiles_h ;
-			opts.tcrypt_keyfiles_count = e->keyfiles_h_number ;
+			opts.tcrypt_keyfiles_count = (int)e->keyfiles_h_number ;
 		}
 
 		r = zuluCryptOpenTcrypt_1( &opts ) ;
@@ -179,11 +200,14 @@ static int _modify_tcrypt_header( const char * device,const resolve_path_t * opt
 	string_t st = StringVoid ;
 
 	if( info->device == NULL ){
+
 		return r ;
 	}
-	if( tc_api_initialize() ){
+	if( tc_api_init( 0 ) == TC_OK ){
 
-		if( tc_api_task_initialize( &task,"modify" ) ){
+		task = tc_api_task_init( "modify" ) ;
+
+		if( task != 0 ){
 
 			if( StringsAreEqual( info->opt,"sys" ) ){
 
@@ -201,12 +225,12 @@ static int _modify_tcrypt_header( const char * device,const resolve_path_t * opt
 				tc_api_task_set( task,"dev",device ) ;
 			}
 
-			tc_api_task_set( task,"veracrypt_mode",info->veraCrypt_volume ) ;
+			//tc_api_task_set( task,"veracrypt_mode",info->veraCrypt_volume ) ;
 			/*
 			 * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
 			 */
 			tc_api_task_set( task,"iteration_count",
-					 zuluCryptVeraCryptPIM( info->iteration_count ) ) ;
+					 _zuluCryptVeraCryptPIM( device,NULL,info->iteration_count ) ) ;
 
 			tc_api_task_set( task,"hidden_size_bytes",( u_int64_t )0 ) ;
 			tc_api_task_set( task,info->header_source,info->tmp_path ) ;
@@ -246,34 +270,6 @@ int zuluCryptModifyTcryptHeader( const info_t * info )
 	return zuluCryptResolveDevicePath( _modify_tcrypt_header,&opts ) ;
 }
 
-static const char * _set_hash( char * const * q )
-{
-	const char * e = *q ;
-
-	if( StringsAreEqual( e,"ripemd160" ) ){
-
-		return "RIPEMD160" ;
-
-	}else if( StringsAreEqual( e,"whirlpool" ) ){
-
-		/*
-		 * zuluCryptWhirlpoolIsSupported() is defined in include.h
-		 */
-		if( zuluCryptWhirlpoolIsSupported() ){
-
-			return "whirlpool" ;
-		}else{
-			return NULL ;
-		}
-
-	}else if( StringsAreEqual( e,"sha512" ) ){
-
-		return "SHA512" ;
-	}else{
-		return NULL ;
-	}
-}
-
 static int _zuluExit( int r,char * const * options,stringList_t stl )
 {
 	StringFree( options ) ;
@@ -281,18 +277,74 @@ static int _zuluExit( int r,char * const * options,stringList_t stl )
 	return r ;
 }
 
-int zuluCryptVeraCryptPIM( int pim )
+static const struct hashes{
+
+	const char * hash ;
+	const char * tcplayHash[ 2 ] ;
+
+}Hashes[] = {
+	{ "ripemd160",{ "RIPEMD160","RIPEMD160-VC" } },
+	{ "whirlpool",{ "whirlpool","whirlpool-VC" } },
+	{ "sha512"   ,{ "SHA512","SHA512-VC" } },
+	{ "sha256"   ,{ "SHA256","SHA256-VC" } },
+	{ NULL       ,{ NULL,NULL } },
+} ;
+
+static const char * _set_hash( int type,const char * e )
 {
-	if( pim > 0 ){
-		return 15000 + ( pim * 1000 ) ;
-	}else{
-		return 0 ;
+	const struct hashes * h = Hashes ;
+
+	if( type > 1 ){
+
+		type = 1 ;
 	}
+
+	if( type < 0 ){
+
+		type = 0 ;
+	}
+
+	for( ; h->hash != NULL ; h++ ){
+
+		if( StringsAreEqual( h->hash,e ) ){
+
+			return h->tcplayHash[ type ] ;
+		}
+	}
+
+	return NULL ;
 }
 
-int zuluCryptSystemVeraCryptPIM( int pim )
+static const struct cipher_chains{
+
+	const char * first ;
+	const char * second ;
+
+}cipherChains[] = {
+	{ "aes"                ,"AES-256-XTS" },
+	{ "twofish"            ,"TWOFISH-256-XTS" },
+	{ "serpent"            ,"SERPENT-256-XTS" },
+	{ "twofish:aes"        ,"TWOFISH-256-XTS,AES-256-XTS" },
+	{ "aes:serpent"        ,"AES-256-XTS,SERPENT-256-XTS" },
+	{ "serpent:twofish"    ,"SERPENT-256-XTS,TWOFISH-256-XTS" },
+	{ "aes:twofish:serpent","AES-256-XTS,TWOFISH-256-XTS,SERPENT-256-XTS" },
+	{ "serpent:twofish:aes","SERPENT-256-XTS,TWOFISH-256-XTS,AES-256-XTS" },
+	{ NULL                 ,NULL }
+} ;
+
+static const char * _set_cipher_chain( const char * e )
 {
-	return pim * 2048 ;
+	const struct cipher_chains * s = cipherChains ;
+
+	for( ; s->first != NULL ; s++ ) {
+
+		if( StringsAreEqual( s->first,e ) ){
+
+			return s->second ;
+		}
+	}
+
+	return NULL ;
 }
 
 /*
@@ -314,8 +366,8 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 	int r = !TC_OK ;
 	size_t i ;
 	size_t k ;
-	const char * const * z ;
 
+	const char * const * z ;
 	const char * cipher_chain ;
 	const char * hash ;
 	const char * rng ;
@@ -345,16 +397,16 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 
 		if( e->veraCrypt_volume ){
 
-			hash = "SHA512" ;
-		}else{
-			hash = "RIPEMD160" ;
+			hash = _set_hash( e->veraCrypt_volume,"sha512" ) ;
+		}else{			
+			hash = _set_hash( e->veraCrypt_volume,"ripemd160" ) ;
 		}
 
 	}else if( options_count >= 5 ){
 
 		rng          = *( options + 0 ) ;
-		cipher_chain = *( options + 1 ) ;
-		hash         = _set_hash( options + 4 ) ;
+		cipher_chain = _set_cipher_chain( *( options + 1 ) ) ;
+		hash         = _set_hash( e->veraCrypt_volume,*( options + 4 ) ) ;
 
 		if( hash == NULL ){
 
@@ -369,16 +421,17 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 		return _zuluExit( !TC_OK,options,stl ) ;
 	}
 
-	if( tc_api_initialize() ){
+	if( tc_api_init( 0 ) == TC_OK ){
 
-		if( tc_api_task_initialize( &task,"create" ) ){
+		task = tc_api_task_init( "create" ) ;
 
-			tc_api_task_set( task,"veracrypt_mode",e->veraCrypt_volume ) ;
-			tc_api_task_set( task,"iteration_count",zuluCryptVeraCryptPIM( iteration_count ) ) ;
+		if( task != 0 ){
+
+			tc_api_task_set( task,"iteration_count",_zuluCryptVeraCryptPIM( device,hash,iteration_count ) ) ;
 			tc_api_task_set( task,"dev",device ) ;
 			tc_api_task_set( task,"secure_erase",FALSE ) ;
 			tc_api_task_set( task,"prf_algo",hash ) ;
-			tc_api_task_set( task,"cipher_chain_1",cipher_chain ) ;
+			tc_api_task_set( task,"cipher_chain",cipher_chain ) ;
 			tc_api_task_set( task,"passphrase",e->passphrase ) ;
 			tc_api_task_set( task,"weak_keys_and_salt",StringsAreEqual( rng,"/dev/urandom" ) ) ;
 
@@ -394,7 +447,7 @@ static int _create_tcrypt_volume( const char * device,const resolve_path_t * opt
 
 				tc_api_task_set( task,"hidden_size_bytes",e->hidden_volume_size ) ;
 				tc_api_task_set( task,"h_prf_algo",hash ) ;
-				tc_api_task_set( task,"h_cipher_chain_1",cipher_chain ) ;
+				tc_api_task_set( task,"h_cipher_chain",cipher_chain ) ;
 				tc_api_task_set( task,"h_passphrase",e->passphrase_h ) ;
 
 				z = e->keyfiles_h ;

@@ -35,8 +35,8 @@ int zuluCryptCheckOpenedMapper( const char * mapper )
 		return 2 ;
 	}
 
-	while( *++c != '-' ) { ; }
-	while( *++c != '-' ) { ; }
+	while( *++c != '-' ) {}
+	while( *++c != '-' ) {}
 
 	while( ( entry = readdir( dir ) ) != NULL ){
 
@@ -44,8 +44,8 @@ int zuluCryptCheckOpenedMapper( const char * mapper )
 
 		if( d != NULL ){
 
-			while( *++d != '-' ) { ; }
-			while( *++d != '-' ) { ; }
+			while( *++d != '-' ) {}
+			while( *++d != '-' ) {}
 
 			if( StringsAreEqual( c,d ) ){
 

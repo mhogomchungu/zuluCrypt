@@ -144,13 +144,11 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	if( flg & MS_NOATIME ){
 		/*
 		 * MS_NOATIME flag is set by user,use it instead of MS_RELATIME
-		 */
-		;
+		 */		
 	}else if( flg & MS_STRICTATIME ){
 		/*
 		 *  MS_STRICTATIME flag is set by user,use it instead of MS_RELATIME
-		 */
-		;
+		 */		
 	}else{
 		/*
 		 * MS_NOATIME flag not set,autoset MS_RELATIME flag as the default flag

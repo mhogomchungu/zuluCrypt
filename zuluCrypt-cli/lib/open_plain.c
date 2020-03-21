@@ -83,7 +83,7 @@ static u_int64_t _offset( const char * offset )
 		}else if( StringEndsWithAtLeastOne( e,"t","TB","tb","Tb","T",NULL ) ){
 
 			r = StringConvertToInt( _remove_letters( e ) ) ;
-			r = 1.0 * 2 * 1024 * 1024 * 1024 * r ;
+			r = (u_int64_t)( 1.0 * 2 * 1024 * 1024 * 1024 * r ) ;
 
 		}else if( StringEndsWithAtLeastOne( e,"k","KB","kb","Kb","K",NULL ) ){
 

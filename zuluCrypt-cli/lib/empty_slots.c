@@ -40,7 +40,7 @@ static char * _empty_slots( const char * device,const resolve_path_t * opts )
 
 	string_t p ;
 
-	if( opts ){;}
+	if( opts ){}
 
 	if( crypt_init( &cd,device ) != 0 ){
 

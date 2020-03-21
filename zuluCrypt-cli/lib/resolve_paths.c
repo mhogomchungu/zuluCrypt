@@ -310,16 +310,15 @@ char * zuluCryptResolvePath_4( const char * path )
 
 typedef struct{
 
-	const resolve_path_t * opts ;
-
 	int result_0 ;
-	int( *function_0 )( const char *,const resolve_path_t * ) ;
 	int error_0 ;
 
 	char * result_1 ;
-	char *( *function_1 )( const char *,const resolve_path_t * ) ;
 	char * error_1 ;
 
+	const resolve_path_t * opts ;
+	int( *function_0 )( const char *,const resolve_path_t * ) ;
+	char *( *function_1 )( const char *,const resolve_path_t * ) ;
 } arguments;
 
 static void _get_result_0( const char * device,arguments * args )

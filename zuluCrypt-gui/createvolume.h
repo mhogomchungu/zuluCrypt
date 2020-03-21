@@ -31,8 +31,6 @@ class QCloseEvent ;
 /*
  * this header is created at config time
  */
-#include "truecrypt_support_1.h"
-
 #include "keystrength.h"
 
 #include <libcryptsetup.h>

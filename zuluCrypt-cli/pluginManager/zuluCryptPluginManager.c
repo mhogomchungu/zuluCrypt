@@ -104,7 +104,7 @@ void zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
 
 				perror( "Failed to read data from socket" ) ;
 			}else{
-				*key = StringInheritWithSize( &buffer,e,e + 1 ) ;
+				*key = StringInheritWithSize( &buffer,(size_t)e,(size_t)e + 1 ) ;
 			}
 
 			SocketClose( &client ) ;
@@ -156,8 +156,8 @@ static void _create_path( const char * path,uid_t uid )
 {
 	if( mkdir( path,0700 ) == 0 ){
 
-		_ignore_result( chmod( path,0700 ) ) ;
-		_ignore_result( chown( path,uid,uid ) ) ;
+		_ignore_result( chmod( path,0700 ) )
+		_ignore_result( chown( path,uid,uid ) )
 	}
 }
 
@@ -201,7 +201,7 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 		_create_path( run_path,uid ) ;
 
 		path = String( run_path ) ;
-		sockpath = StringAppendInt( path,syscall( SYS_gettid ) ) ;
+		sockpath = StringAppendInt( path,(u_int64_t)syscall( SYS_gettid ) ) ;
 
 		*( args + 0 ) = plugin ;
 		*( args + 1 ) = device ;

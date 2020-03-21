@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2011 Alex Hornung <alex@alexhornung.com>.
  * All rights reserved.
  *
@@ -50,25 +50,10 @@
 #define FLAG_LONG_MOD_PRF	0xff10
 #define FLAG_LONG_MOD_NONE	0xff20
 #define FLAG_LONG_MOD_TO_FILE	0xff40
-#define FLAG_LONG_VERACRYPT_MODE	0xff80
-#define FLAG_LONG_VERACRYPT_PIM_VALUE   0xff81
 #define FLAG_LONG_USE_HDR_FILE	0xfe01
 #define FLAG_LONG_USE_HHDR_FILE	0xfe02
 #define FLAG_LONG_NO_RETRIES	0xfabc
 
-static
-int iteration_count(int pim, int sys)
-{
-	if (sys) {
-		return pim * 2048 ;
-	}else{
-		if (pim > 0) {
-			return 15000 + ( pim * 1000 ) ;
-		}else{
-			return 0 ;
-		}
-	}
-}
 
 static
 void
@@ -83,19 +68,19 @@ void
 usage(void)
 {
 	fprintf(stderr,
-	    "usage: tcplay -c -d device [--veracrypt-mode] [--pim] [-g] [-z] [-w] [-a pbkdf_hash] [-b cipher]\n"
+	    "usage: tcplay -c -d device [-g] [-z] [-w] [-a pbkdf_hash] [-b cipher]\n"
 	    "              [-f keyfile_hidden] [-k keyfile] [-x pbkdf_hash] [-y cipher]\n"
-	    "       tcplay -i -d device [--veracrypt-mode] [--pim] [-e] [-f keyfile_hidden] [-k keyfile]\n"
+	    "       tcplay -i -d device [-e] [-p] [-f keyfile_hidden] [-k keyfile]\n"
 	    "              [-s system_device] [--fde] [--use-backup]\n"
 	    "              [--use-hdr-file=hdr_file] [--use-hidden-hdr-file=hdr_file]\n"
-	    "       tcplay -m mapping -d device [--veracrypt-mode] [--pim] [-e] [-f keyfile_hidden] [-k keyfile]\n"
+	    "       tcplay -m mapping -d device [-e] [-p] [-f keyfile_hidden] [-k keyfile]\n"
 	    "              [-s system_device] [--fde] [--use-backup] [--allow-trim]\n"
 	    "              [--use-hdr-file=hdr_file] [--use-hidden-hdr-file=hdr_file]\n"
-	    "       tcplay --modify -d device [--veracrypt-mode] [--pim] [-k keyfile] [--new-keyfile=keyfile]\n"
+	    "       tcplay --modify -d device [-k keyfile] [--new-keyfile=keyfile]\n"
 	    "              [--new-pbkdf-prf=pbkdf_hash] [-s system_device] [--fde]\n"
 	    "              [--use-backup] [--save-hdr-to-file=hdr_file] [-w]\n"
 	    "              [--use-hdr-file=hdr_file] [--use-hidden-hdr-file=hdr_file]\n"
-	    "       tcplay --modify -d device [--veracrypt-mode] [--pim] [-k keyfile] --restore-from-backup-hdr [-w]\n"
+	    "       tcplay --modify -d device [-k keyfile] --restore-from-backup-hdr [-w]\n"
 	    "       tcplay -j mapping\n"
 	    "       tcplay -u mapping\n"
 	    "       tcplay -h | -v\n"
@@ -184,6 +169,8 @@ usage(void)
 	    "Valid options for --info and --map are:\n"
 	    " -e, --protect-hidden\n"
 	    "\t Protect a hidden volume when mounting the outer volume.\n"
+	    " -p, --prompt-passphrase\n"
+	    "\t Immediately prompt for a passphrase even if a keyfile is supplied.\n"
 	    " -s <disk path>, --system-encryption=<disk path>\n"
 	    "\t Specifies that the disk (e.g. /dev/da0) is using system encryption.\n"
 	    " -t, --allow-trim\n"
@@ -211,10 +198,6 @@ usage(void)
 	    " -k <key file>, --keyfile=<key file>\n"
 	    "\t Specifies a key file to use for the password derivation, can appear\n"
 	    "\t multiple times.\n"
-	    " --veracrypt-mode\n"
-	    "\t Use VeraCrypt support mode instead of TrueCrypt.\n"
-	    " --pim\n"
-	    "\t Use VeraCrypt pim value.\n"
 	    );
 
 	exit(EXIT_FAILURE);
@@ -234,6 +217,7 @@ static struct option longopts[] = {
 	{ "keyfile-hidden",	required_argument,	NULL, 'f' },
 	{ "protect-hidden",	no_argument,		NULL, 'e' },
 	{ "device",		required_argument,	NULL, 'd' },
+	{ "prompt-passphrase",	no_argument,		NULL, 'p' },
 	{ "system-encryption",	required_argument,	NULL, 's' },
 	{ "allow-trim",		no_argument,		NULL, 't' },
 	{ "fde",		no_argument,		NULL, FLAG_LONG_FDE },
@@ -251,8 +235,6 @@ static struct option longopts[] = {
 	{ "insecure-erase",	no_argument,		NULL, 'z' },
 	{ "help",		no_argument,		NULL, 'h' },
 	{ "no-retries",         no_argument,            NULL, FLAG_LONG_NO_RETRIES },
-	{ "veracrypt-mode",     no_argument,            NULL, FLAG_LONG_VERACRYPT_MODE },
-	{ "pim",                required_argument,      NULL, FLAG_LONG_VERACRYPT_PIM_VALUE },
 	{ NULL,			0,			NULL, 0   },
 };
 
@@ -271,8 +253,7 @@ main(int argc, char *argv[])
 	int ch, error;
 	int info_vol = 0, map_vol = 0,
 	    unmap_vol = 0, info_map = 0,
-	    create_vol = 0, modify_vol = 0,
-	    veracrypt_mode = 0;
+	    create_vol = 0, modify_vol = 0;
 
 	if ((error = tc_play_init()) != 0) {
 		fprintf(stderr, "Initialization failed, exiting.");
@@ -290,13 +271,13 @@ main(int argc, char *argv[])
 
 	opts->interactive = 1;
 
-	while ((ch = getopt_long(argc, argv, "a:b:cd:ef:ghij:k:m:s:tu:vwx:y:z",
+	while ((ch = getopt_long(argc, argv, "a:b:cd:ef:ghij:k:m:ps:tu:vwx:y:z",
 	    longopts, NULL)) != -1) {
 		switch(ch) {
 		case 'a':
 			if (opts->prf_algo != NULL)
 				usage();
-			if ((opts->prf_algo = check_prf_algo(veracrypt_mode, optarg, 0)) == NULL) {
+			if ((opts->prf_algo = check_prf_algo(optarg, 0, 0)) == NULL) {
 				if (strcmp(optarg, "help") == 0)
 					exit(EXIT_SUCCESS);
 				else
@@ -350,6 +331,9 @@ main(int argc, char *argv[])
 			map_vol = 1;
 			_set_str_opt(map_name);
 			break;
+		case 'p':
+			opts->prompt_passphrase = 1;
+			break;
 		case 's':
 			opts->flags |= TC_FLAG_SYS;
 			_set_str_opt(sys_dev);
@@ -373,7 +357,7 @@ main(int argc, char *argv[])
 		case 'x':
 			if (opts->h_prf_algo != NULL)
 				usage();
-			if ((opts->h_prf_algo = check_prf_algo(veracrypt_mode, optarg, 0)) == NULL) {
+			if ((opts->h_prf_algo = check_prf_algo(optarg, 0, 0)) == NULL) {
 				if (strcmp(optarg, "help") == 0)
 					exit(EXIT_SUCCESS);
 				else
@@ -421,7 +405,7 @@ main(int argc, char *argv[])
 		case FLAG_LONG_MOD_PRF:
 			if (opts->new_prf_algo != NULL)
 				usage();
-			if ((opts->new_prf_algo = check_prf_algo(veracrypt_mode, optarg, 0)) == NULL) {
+			if ((opts->new_prf_algo = check_prf_algo(optarg, 0, 0)) == NULL) {
 				if (strcmp(optarg, "help") == 0)
 					exit(EXIT_SUCCESS);
 				else
@@ -440,16 +424,6 @@ main(int argc, char *argv[])
 			break;
 		case FLAG_LONG_NO_RETRIES:
 			opts->retries = 1;
-			break;
-		case FLAG_LONG_VERACRYPT_MODE:
-			opts->flags |= TC_FLAG_VERACRYPT_MODE;
-			veracrypt_mode = 1;
-			break;
-		case FLAG_LONG_VERACRYPT_PIM_VALUE:
-			opts->flags |= TC_FLAG_VERACRYPT_MODE;
-			veracrypt_mode = 1;
-			tc_set_iteration_count(iteration_count(atoi(optarg),
-							       TC_FLAG_SET(opts->flags, SYS)));
 			break;
 		case 'h':
 		case '?':

@@ -231,7 +231,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 	stringList_t list = StringListVoid ;
 	stringList_t stl = zuluCryptGetMoutedList() ;
 
-	if( uid ){;}
+	if( uid ){}
 
 	/*
 	 * zuluCryptMapperPrefix() is defined in create_mapper_name.c
@@ -291,7 +291,7 @@ stringList_t zuluCryptOpenedVolumesList( uid_t uid )
 			 */
 			f = zuluCryptGetVolumeTypeFromMapperPath( StringContent( q ) ) ;
 
-			e = StringSubChar( q,StringLastIndexOfChar( q,'-' ),'\0' ) + k + 6 ;
+			e = StringSubChar( q,(size_t)StringLastIndexOfChar( q,'-' ),'\0' ) + k + 6 ;
 
 			z = String_1( "UUID=\"",e,"\"\t",d,"\t",f,NULL ) ;
 

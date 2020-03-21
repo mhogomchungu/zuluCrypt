@@ -305,7 +305,7 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 		StringAppend( p,"\n used%:   \t0%\n" ) ;
 	}else{
-		snprintf( buff,SIZE,"%.2f%%",100 * ( ( float ) used / ( float ) total ) ) ;
+		snprintf( buff,SIZE,"%.2f%%",100 * (double)( ( float ) used / ( float ) total ) ) ;
 		StringMultipleAppend( p,"\n used%:   \t",buff,"\n",NULL ) ;
 	}
 
@@ -323,7 +323,7 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 
 		StringAppend( p,"\n mount point2:\tNil" ) ;
 	}else{
-		StringRemoveLeft( q,index ) ;
+		StringRemoveLeft( q,(size_t)index ) ;
 		e = StringPrepend( q,SHARE_MOUNT_PREFIX ) ;
 
 		if( stat( e,&statstr ) == 0 ){
@@ -337,80 +337,10 @@ void zuluCryptFileSystemProperties( string_t p,const char * mapper,const char * 
 	StringDelete( &q ) ;
 }
 
-static int _string_starts_with( const char * a,const char * b )
-{
-	return strncmp( a,b,strlen( b ) ) == 0 ;
-}
-
-static int _string_ends_with( const char * e,size_t ee,const char * s,size_t ss )
-{
-	if( ee >= ss ){
-		return memcmp( e + ee - ss,s,ss ) == 0 ;
-	}else{
-		return 0 ;
-	}
-}
-
-static int _string_starts_and_ends_with( const char * a,const char * b,const char * c )
-{
-	if( _string_starts_with( a,b ) ){
-
-		return _string_ends_with( a,strlen( a ),c,strlen( c ) ) ;
-	}else{
-		return 0 ;
-	}
-}
-
-static int _created_with_tcplay( const char * map_name )
-{
-	DIR * dir = opendir( "/dev/disk/by-id/" ) ;
-	struct dirent * e ;
-
-	const char * m = strrchr( map_name,'/' ) ;
-
-	if( m != NULL ){
-
-		map_name = m + 1 ;
-	}
-
-	if( dir != NULL ){
-
-		while( ( e = readdir( dir ) ) != NULL ){
-
-			if ( _string_starts_and_ends_with( e->d_name,"dm-uuid-CRYPT-",map_name ) ){
-
-				if ( _string_starts_with( e->d_name,"dm-uuid-CRYPT-TCRYPT" ) ){
-
-					if ( _string_starts_with( e->d_name,"dm-uuid-CRYPT-TCRYPT-zuluCrypt" ) ){
-
-						return 0 ;
-					}else{
-						return 1 ;
-					}
-
-				}else if( _string_starts_with( e->d_name,"dm-uuid-CRYPT-VCRYPT" ) ) {
-
-					return 1 ;
-				}
-
-				break ;
-			}
-		}
-
-		closedir( dir ) ;
-	}
-
-	return 0 ;
-}
-
 int zuluCryptVolumeManagedByTcplay( const char * mapper )
 {
-	if( zuluCryptBitLockerVolume( mapper ) ){
-
-		return 0 ;
-	}else{
-		return _created_with_tcplay( mapper ) ;
-	}
+	if( mapper ){}
+	return 0 ;
 }
 
 static char * _get_type( struct crypt_device * cd,const char * mapper )
@@ -526,161 +456,9 @@ static void _device_info( string_t p,const char * device )
 typedef struct{
 
 	const char * mapper ;
-	void * argument ;
-	void ( *function )( void *,const tcplay_volume_info * info ) ;
-	void ( *format_offset )( u_int64_t offset,char * buffer,size_t s ) ;
-
-}mapper_info;
-
-static int _tcplay_info( const mapper_info * e )
-{
-	int r = 1 ;
-
-	tc_api_task task ;
-
-	tcplay_volume_info info ;
-
-	memset( &info,'\0',sizeof( info ) ) ;
-
-	if( tc_api_initialize() ){
-
-		if( tc_api_task_initialize( &task,"info_mapped" ) ){
-
-			tc_api_task_set( task,"map_name",e->mapper ) ;
-
-			tc_api_task_do( task ) ;
-
-			info.format_offset = e->format_offset ;
-
-			tc_api_task_info_get( task,"volume_info",sizeof( info ),&info ) ;
-
-			e->function( e->argument,&info ) ;
-
-			tc_api_task_uninit( task ) ;
-
-			r = 0 ;
-		}
-
-		tc_api_uninit() ;
-	}
-
-	return r ;
-}
-
-typedef struct{
-
-	const char * mapper ;
 	string_t st ;
 
 } volume_properties ;
-
-static void _get_volume_properties( void * e,const tcplay_volume_info * info )
-{
-	volume_properties * p = e ;
-	string_t st = p->st ;
-
-	StringMultipleAppend( st,p->mapper," ",info->status,".",NULL ) ;
-
-	if( StringAtLeastOneMatch_1( info->status,"active","active and is in use",NULL ) ){
-
-		StringMultipleAppend( st,
-				      "\n type:   \t",info->type,
-				      "\n cipher: \t",info->cipher,
-				      "\n keysize:\t",info->keysize,
-				      "\n offset: \t",info->offset,NULL ) ;
-
-		_device_info( st,info->device ) ;
-
-		StringMultipleAppend( st,"\n mode:   \t",info->mode,"\n active slots:\tNil",NULL ) ;
-	}
-}
-
-static void _format_offset( u_int64_t offset,char * buffer,size_t s )
-{
-	char tmp[ 128 ] ;
-	char tmp_0[ 128 ] ;
-
-	const char * e ;
-
-	zuluCryptFormatSize( 512 * offset,tmp,sizeof( tmp ) ) ;
-
-	e = StringIntToString_1( tmp_0,sizeof( tmp_0 ),offset ) ;
-
-	snprintf( buffer,s,"%s sectors / %s",e,tmp ) ;
-}
-
-static string_t _get_crypto_info_from_tcplay( const char * mapper )
-{
-	volume_properties p ;
-	mapper_info e ;
-
-	memset( &e,'\0',sizeof( e ) ) ;
-	memset( &p,'\0',sizeof( p ) ) ;
-
-	p.st = StringEmpty() ;
-	p.mapper = mapper ;
-
-	e.argument      = &p ;
-	e.mapper        = mapper ;
-	e.format_offset = _format_offset ;
-	e.function      = _get_volume_properties ;
-
-	if( _tcplay_info( &e ) != 0 ){
-
-		StringMultipleAppend( p.st,mapper," is invalid.\n",NULL ) ;
-	}
-
-	return p.st ;
-}
-
-static void _get_volume_offset( void * e,const tcplay_volume_info * info )
-{
-	u_int64_t * offset = e ;
-
-	*offset = StringConvertToInt( info->offset ) ;
-}
-
-static void _format_offset_1( u_int64_t offset,char * buffer,size_t s )
-{
-	char tmp[ 128 ] ;
-	char tmp_0[ 128 ] ;
-
-	const char * e ;
-
-	zuluCryptFormatSize( 512 * offset,tmp,sizeof( tmp ) ) ;
-
-	e = StringIntToString_1( tmp_0,sizeof( tmp_0 ),offset ) ;
-
-	snprintf( buffer,s,"%s",e ) ;
-}
-
-static u_int64_t _crypt_get_data_offset( struct crypt_device * cd,const char * mapper,const char * type )
-{
-	u_int64_t p = crypt_get_data_offset( cd ) ;
-
-	mapper_info e ;
-
-	if( p == 0 && ( type == NULL || StringPrefixEqual( type,"LUKS" ) ) ){
-
-		/*
-		 * cryptsetup returns offset 0 with LUKS volumes that uses a detached header.
-		 *
-		 * We take this path here to ask tcplay to get the offset for us since cryptsetup
-		 * returns wrong info
-		 */
-
-		memset( &e,'\0',sizeof( e ) ) ;
-
-		e.argument      = &p ;
-		e.mapper        = mapper ;
-		e.format_offset = _format_offset_1 ;
-		e.function      = _get_volume_offset ;
-
-		_tcplay_info( &e ) ;
-	}
-
-	return p ;
-}
 
 static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 {
@@ -790,12 +568,12 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 
 		StringAppendString( p,auth_luks2.integrity_hash ) ;
 
-		z = StringIntToString_1( buffer,SIZE,8 * crypt_get_volume_key_size( cd ) ) ;
+		z = StringIntToString_1( buffer,SIZE,(u_int64_t)( 8 * crypt_get_volume_key_size( cd ) ) ) ;
 		StringMultipleAppend( p,"\n keysize:\t",z," bits",NULL ) ;
 
 		StringAppendString( p,auth_luks2.integrity_keysize ) ;
 
-		e = _crypt_get_data_offset( cd,mapper,type ) ;
+		e = crypt_get_data_offset( cd ) ;
 
 		z = StringIntToString_1( buffer,SIZE,e ) ;
 		StringMultipleAppend( p,"\n offset:\t",z," sectors",NULL ) ;
@@ -830,9 +608,9 @@ static string_t _get_crypto_info_from_cryptsetup( const char * mapper )
 				}
 			}
 
-			StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,i ),NULL ) ;
+			StringMultipleAppend( p,"\n active slots:\t",StringIntToString_1( buffer,SIZE,(u_int64_t)i ),NULL ) ;
 
-			StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,k ),NULL ) ;
+			StringMultipleAppend( p," / ",StringIntToString_1( buffer,SIZE,(u_int64_t)k ),NULL ) ;
 		}else{
 			StringAppend( p,"\n active slots:\tNil" ) ;
 		}
@@ -850,14 +628,7 @@ char * zuluCryptVolumeStatus( const char * mapper )
 {
 	char * path ;
 
-	string_t p ;
-
-	if( zuluCryptVolumeManagedByTcplay( mapper ) ){
-
-		p = _get_crypto_info_from_tcplay( mapper ) ;
-	}else{
-		p = _get_crypto_info_from_cryptsetup( mapper ) ;
-	}
+	string_t p = _get_crypto_info_from_cryptsetup( mapper ) ;
 
 	if( p == StringVoid ){
 
@@ -878,62 +649,25 @@ char * zuluCryptVolumeStatus( const char * mapper )
 	}
 }
 
-typedef struct{
-
-	char * device ;
-	char * ( *function )( const char * ) ;
-
-}info_device ;
-
-static void _info_device( void * e,const tcplay_volume_info * info )
-{
-	info_device * d = e ;
-
-	d->device = d->function( info->device ) ;
-}
-
 char * zuluCryptVolumeDeviceName( const char * mapper )
 {
 	struct crypt_device * cd ;
-
-	mapper_info m ;
-	info_device d ;
 
 	char * f = NULL ;
 
 	const char * e ;
 
-	if( zuluCryptVolumeManagedByTcplay( mapper ) ){
+	if( crypt_init_by_name( &cd,mapper ) == 0 ){
 
-		memset( &m,'\0',sizeof( m ) ) ;
-		memset( &d,'\0',sizeof( d ) ) ;
+		e = crypt_get_device_name( cd ) ;
 
-		/*
-		 * zuluCryptResolvePath_3() is defined in resolve_path.c
-		 */
+		if( e != NULL ){
 
-		d.function = zuluCryptResolvePath_3 ;
-
-		m.argument      = &d ;
-		m.mapper        = mapper ;
-		m.function      = _info_device ;
-
-		_tcplay_info( &m ) ;
-
-		return d.device ;
-	}else{
-		if( crypt_init_by_name( &cd,mapper ) == 0 ){
-
-			e = crypt_get_device_name( cd ) ;
-
-			if( e != NULL ){
-
-				f = zuluCryptResolvePath_3( e ) ;
-			}
-
-			crypt_free( cd ) ;
+			f = zuluCryptResolvePath_3( e ) ;
 		}
 
-		return f ;
+		crypt_free( cd ) ;
 	}
+
+	return f ;
 }

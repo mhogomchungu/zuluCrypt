@@ -40,19 +40,19 @@ static void _chown( const char * x,uid_t y,gid_t z )
 		}
 	}
 
-	if( chown( x,y,z ) ){;}
+	if( chown( x,y,z ) ){}
 }
 static void _chmod( const char * x,mode_t y )
 {
-	if( chmod( x,y ) ){;}
+	if( chmod( x,y ) ){}
 }
 static void _mkdir( const char * x,mode_t y )
 {
-	if( mkdir( x,y ) ){;}
+	if( mkdir( x,y ) ){}
 }
 static void _stat( const char * x,struct stat * y )
 {
-	if( stat( x,y ) ){;}
+	if( stat( x,y ) ){}
 }
 
 int zuluCryptReuseMountPoint( void )
@@ -300,7 +300,7 @@ void zuluCryptCreateMountPath( const char * path )
 
 	StringGetIterators( p,&it,&end ) ;
 
-	if( end ){;}
+	if( end ){}
 
 	f = it + 1 ;
 

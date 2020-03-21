@@ -145,16 +145,6 @@ const char * zuluCryptBitLockerType( void ) ;
 const char * zuluCryptBitLockerFolderPrefix( void ) ;
 
 /*
- * zuluCryptVeraCryptPIM() is defined in create_tcrypt.c
- */
-int zuluCryptVeraCryptPIM( int e ) ;
-
-/*
- * zuluCryptSystemVeraCryptPIM() is defined in create_tcrypt.c
- */
-int zuluCryptSystemVeraCryptPIM( int e ) ;
-
-/*
  * zuluCryptResolveDevicePath() is defined in resolve_path.c
  */
 int zuluCryptResolveDevicePath( int( * )( const char *,const resolve_path_t * ),
@@ -674,16 +664,6 @@ int zuluCryptModifyTcryptHeader( const info_t * info ) ;
  * this function is defined in mount_fs_options.c
  */
 int zuluCryptUserIsAMemberOfAGroup( uid_t uid,const char * groupname ) ;
-
-/*
- * this function is defined in open_tcrypt.c
- */
-int zuluCryptUseZuluPlayVCRYPT( void ) ;
-
-/*
- * this function is defined in open_tcrypt.c
- */
-int zuluCryptUseZuluPlayTCRYPT( void ) ;
 
 /*
  * this function is defined in bitlocker.c

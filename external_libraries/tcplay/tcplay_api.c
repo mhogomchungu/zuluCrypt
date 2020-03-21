@@ -33,16 +33,18 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include<dirent.h>
 
 #include "tcplay.h"
-#include "zuluplay_api.h"
+#include "tcplay_api.h"
 #include "tcplay_api_internal.h"
 
+extern int zuluCryptIterationCount ;
 
 int
 tc_api_init(int verbose)
 {
+	zuluCryptIterationCount = 0 ;
+
 	int error;
 
 	tc_internal_verbose = verbose;
@@ -116,8 +118,12 @@ tc_api_prf_iterate(tc_api_prf_iterator_fn fn, void *priv)
 		return TC_ERR;
 	}
 
-	for (i = 0; pbkdf_prf_algos_standard_tc[i].name != NULL; i++) {
-		if ((fn(priv, pbkdf_prf_algos_standard_tc[i].name)) < 0)
+	for (i = 0; pbkdf_prf_algos[i].name != NULL; i++) {
+		/* Skip over sys PRFs */
+		if (pbkdf_prf_algos[i].sys)
+			continue;
+
+		if ((fn(priv, pbkdf_prf_algos[i].name)) < 0)
 			break;
 	}
 
@@ -169,8 +175,6 @@ tc_api_task_init(const char *op)
 		goto out;
 	}
 
-	tc_set_iteration_count(0);
-
 	fail = 0;
 
 out:
@@ -211,103 +215,6 @@ tc_api_task_uninit(tc_api_task task)
 		opts->k = NULL;					\
 	} while (0)
 
-static int _string_ends_with(const char *e, size_t ee, const char *s, size_t ss)
-{
-	if (ee >= ss)
-		return memcmp(e + ee - ss, s, ss) == 0;
-	else
-		return 0;
-}
-
-static int _string_starts_with(const char *a, const char *b)
-{
-	return strncmp( a, b, strlen(b)) == 0;
-}
-
-static int _string_starts_and_ends_with(const char *a, const char *b, const char *c)
-{
-	if (_string_starts_with(a, b))
-		return _string_ends_with( a, strlen(a), c,strlen(c));
-	else
-		return 0;
-}
-
-void tc_api_get_volume_type(char *buffer, size_t size, const char *map_name)
-{
-	DIR *dir = opendir("/dev/disk/by-id/");
-	struct dirent *e;
-
-	const char *m = strrchr(map_name,'/');
-
-	if (m != NULL)
-		map_name = m + 1;
-
-	snprintf(buffer, size, "Nil");
-
-	if (dir != NULL){
-		while ((e = readdir(dir)) != NULL){
-			if (_string_starts_and_ends_with(e->d_name, "dm-uuid-CRYPT-", map_name)){
-				if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-TCRYPT")){
-					snprintf(buffer, size, "TCRYPT");
-				}else if (_string_starts_with(e->d_name, "dm-uuid-CRYPT-VCRYPT")){
-					snprintf(buffer, size, "VCRYPT");
-				}
-				break;
-			}
-		}
-		closedir(dir);
-	}
-}
-
-static const struct{
-
-	const char *first;
-	const char *second;
-
-}pair[] = {
-	{ "aes"                ,"AES-256-XTS" },
-	{ "twofish"            ,"TWOFISH-256-XTS" },
-	{ "serpent"            ,"SERPENT-256-XTS" },
-	{ "twofish:aes"        ,"TWOFISH-256-XTS,AES-256-XTS" },
-	{ "aes:serpent"        ,"AES-256-XTS,SERPENT-256-XTS" },
-	{ "serpent:twofish"    ,"SERPENT-256-XTS,TWOFISH-256-XTS" },
-	{ "aes:twofish:serpent","AES-256-XTS,TWOFISH-256-XTS,SERPENT-256-XTS" },
-	{ "serpent:twofish:aes","SERPENT-256-XTS,TWOFISH-256-XTS,AES-256-XTS" },
-	{ NULL                 ,NULL }
-} ;
-
-static const char *
-_convert_cipher(const char *p)
-{
-	int i;
-	const char *q;
-	for (i = 0;;i++) {
-		q = pair[i].second;
-		if (q == NULL)
-			break;
-		else if (strcmp(p, q) == 0)
-			return pair[i].first;
-
-	}
-	return "Nil";
-}
-
-static const char *
-_set_cipher_chain(const char *p)
-{
-	int i;
-	const char *q;
-	for (i = 0;;i++) {
-		q = pair[i].first;
-		if (q == NULL)
-			break;
-		else if(strcmp(p, q) == 0)
-			return pair[i].second;
-
-	}
-	return NULL;
-}
-
 int
 tc_api_task_set(tc_api_task task, const char *key, ...)
 {
@@ -316,10 +223,9 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 	const char *s;
 	int64_t i64;
 	int i;
-	const char *e;
 	tc_api_state_change_fn sc_fn;
 	void *vp;
-	int r = TC_OK, veracrypt_mode = 0;
+	int r = TC_OK;
 
 	if (task == NULL || key == NULL || ((opts = task->opts) == NULL)) {
 		errno = EFAULT;
@@ -331,12 +237,6 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 	if (_match(key, "interactive")) {
 		i = va_arg(ap, int);
 		opts->interactive = i;
-	} else if (_match(key, "veracrypt_mode")) {
-		i = va_arg(ap, int);
-		if (i)
-			opts->flags |= TC_FLAG_VERACRYPT_MODE;
-		else
-			opts->flags &= ~TC_FLAG_VERACRYPT_MODE;
 	} else if (_match(key, "weak_keys_and_salt")) {
 		i = va_arg(ap, int);
 		opts->weak_keys_and_salt = i;
@@ -441,9 +341,6 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 	} else if (_match(key, "map_name")) {
 		s = va_arg(ap, const char *);
 		if (s != NULL) {
-			e = strrchr(s,'/');
-			if (e != NULL)
-				s = e + 1;
 			_set_str(map_name);
 		} else {
 			_clr_str(map_name);
@@ -472,9 +369,7 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 	} else if (_match(key, "prf_algo")) {
 		s = va_arg(ap, const char *);
 		if (s != NULL) {
-			if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE))
-				veracrypt_mode = 1;
-			if ((opts->prf_algo = check_prf_algo(veracrypt_mode, s, 1)) == NULL) {
+			if ((opts->prf_algo = check_prf_algo(s, 0, 1)) == NULL) {
 				errno = ENOENT;
 				r = TC_ERR;
 				goto out;
@@ -485,9 +380,7 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 	} else if (_match(key, "h_prf_algo")) {
 		s = va_arg(ap, const char *);
 		if (s != NULL) {
-			if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE))
-				veracrypt_mode = 1;
-			if ((opts->h_prf_algo = check_prf_algo(veracrypt_mode, s, 1)) == NULL) {
+			if ((opts->h_prf_algo = check_prf_algo(s, 0, 1)) == NULL) {
 				errno = ENOENT;
 				r = TC_ERR;
 				goto out;
@@ -498,9 +391,7 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 	} else if (_match(key, "new_prf_algo")) {
 		s = va_arg(ap, const char *);
 		if (s != NULL) {
-			if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE))
-				veracrypt_mode = 1;
-			if ((opts->new_prf_algo = check_prf_algo(veracrypt_mode, s, 1)) == NULL) {
+			if ((opts->new_prf_algo = check_prf_algo(s, 0, 1)) == NULL) {
 				errno = ENOENT;
 				r = TC_ERR;
 				goto out;
@@ -510,17 +401,6 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 		}
 	} else if (_match(key, "cipher_chain")) {
 		s = va_arg(ap, const char *);
-		if (s != NULL) {
-			if ((opts->cipher_chain = check_cipher_chain(s, 1)) == NULL) {
-				errno = ENOENT;
-				r = TC_ERR;
-				goto out;
-			}
-		} else {
-			opts->cipher_chain = NULL;
-		}
-	} else if (_match(key, "cipher_chain_1")) {
-		s = _set_cipher_chain(va_arg(ap, const char *));
 		if (s != NULL) {
 			if ((opts->cipher_chain = check_cipher_chain(s, 1)) == NULL) {
 				errno = ENOENT;
@@ -541,36 +421,16 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 		} else {
 			opts->h_cipher_chain = NULL;
 		}
-	}else if (_match(key, "h_cipher_chain_1")) {
-		s = _set_cipher_chain(va_arg(ap, const char *));
-		if (s != NULL) {
-			if ((opts->h_cipher_chain = check_cipher_chain(s, 1)) == NULL) {
-				errno = ENOENT;
-				r = TC_ERR;
-				goto out;
-			}
-		} else {
-			opts->h_cipher_chain = NULL;
-		}
 	} else if (_match(key, "state_change_fn")) {
 		sc_fn = va_arg(ap, tc_api_state_change_fn);
 		opts->state_change_fn = sc_fn;
 		vp = va_arg(ap, void *);
 		opts->api_ctx = vp;
-	} else if (_match(key, "read_only")) {
-		i = va_arg(ap, int);
-		if (i)
-			opts->flags |= TC_FLAG_READ_ONLY_MODE;
-		else
-			opts->flags &= ~TC_FLAG_READ_ONLY_MODE;
 	} else if (_match(key, "iteration_count")) {
-		if (TC_FLAG_SET(opts->flags, VERACRYPT_MODE)){
-			tc_set_iteration_count(va_arg(ap, int));
-		}
+		zuluCryptIterationCount = va_arg(ap, int);
 	} else {
 		r = TC_ERR_UNIMPL;
 	}
-
 out:
 	va_end(ap);
 
@@ -856,61 +716,6 @@ tc_api_task_do(tc_api_task task)
 	return r;
 }
 
-static void
-_get_volume_info(tcplay_volume_info *volume_info,struct tcplay_info *info)
-{
-	int64_t e;
-
-	size_t i;
-	size_t k;
-
-	struct tc_cipher_chain *chain;
-
-	volume_info->status = info->status;
-	volume_info->device = info->dev;
-
-	if (strcmp(info->type, "TCRYPT") == 0)
-		strcpy(volume_info->type, "tcrypt");
-	else if (strcmp(info->type, "VCRYPT") == 0)
-		strcpy(volume_info->type, "vcrypt");
-	else
-		strcpy(volume_info->type, "Nil");
-
-	tc_cipher_chain_sprint(volume_info->cipher, sizeof(volume_info->cipher), info->cipher_chain);
-
-	snprintf(volume_info->cipher, sizeof(volume_info->cipher) ,"%s-xts-plain64",
-		 _convert_cipher(volume_info->cipher));
-
-	snprintf(volume_info->keysize, sizeof(volume_info->keysize), "%d bits",
-		 8*tc_cipher_chain_klen(info->cipher_chain));
-
-	if (info->hdr)
-		e = (int64_t)info->offset * (int64_t)info->hdr->sec_sz;
-	else
-		e = (int64_t)info->offset * (int64_t)info->blk_sz;
-
-	e = e/512;
-
-	if (volume_info->format_offset != NULL)
-		volume_info->format_offset(e, volume_info->offset, sizeof(volume_info->offset));
-	else
-		snprintf(volume_info->offset, sizeof(volume_info->offset), "%" PRIu64 " sectors", e);
-
-	if (info->read_only)
-		strcpy(volume_info->mode, "read only");
-	else
-		strcpy(volume_info->mode, "read and write");
-
-	k = sizeof(volume_info->crypto) / sizeof(volume_info->crypto[0]);
-
-	for (i = 0,chain = info->cipher_chain ; chain != NULL && i < k ; chain = chain->next,i++) {
-
-		volume_info->crypto[i].dm_key = chain->dm_key;
-		volume_info->crypto[i].cipher = _convert_cipher(chain->cipher->name);
-
-		volume_info->crypto_count++;
-	}
-}
 
 int
 tc_api_task_info_get(tc_api_task task, const char *key, ...)
@@ -994,22 +799,6 @@ tc_api_task_info_get(tc_api_task task, const char *key, ...)
 			*i64p = (int64_t)info->offset * (int64_t)info->hdr->sec_sz;
 		else
 			*i64p = (int64_t)info->offset * (int64_t)info->blk_sz;
-	} else if (_match(key, "type")) {
-		s = va_arg(ap, char *);
-		strncpy(s, info->type, sz);
-	} else if (_match(key, "status")) {
-		s = va_arg(ap, char *);
-		strncpy(s, info->status, sz);
-	} else if (_match(key, "mode")) {
-		if (sz != sizeof(int)) {
-			errno = EFAULT;
-			r = TC_ERR;
-			goto out;
-		}
-		ip = va_arg(ap, int *);
-		*ip = info->read_only;
-	} else if (_match(key, "volume_info")) {
-		_get_volume_info( va_arg(ap, tcplay_volume_info *),info ) ;
 	} else {
 		r = TC_ERR_UNIMPL;
 	}

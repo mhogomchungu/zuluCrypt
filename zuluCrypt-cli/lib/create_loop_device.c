@@ -164,7 +164,7 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 		StringFree( path ) ;
 
 		_clean_loop_path( st ) ;
-		return StringDeleteHandle( &st ) ; ;
+		return StringDeleteHandle( &st ) ;
 	}else{
 		_clean_loop_path( xt ) ;
 		return StringDeleteHandle( &xt ) ;
@@ -173,7 +173,7 @@ char * zuluCryptLoopDeviceAddress_1( const char * device )
 
 char * zuluCryptGetALoopDeviceAssociatedWithAnImageFile( const char * path )
 {
-	int i ;
+	u_int64_t i ;
 	string_t st = String( "" ) ;
 	const char * e ;
 	char * f ;
@@ -208,7 +208,7 @@ char * zuluCryptGetLoopDeviceAddress( const char * device )
 	string_t st = StringVoid ;
 	string_t xt = StringVoid ;
 
-	int i ;
+	u_int64_t i ;
 	int r ;
 
 	z = zuluCryptLoopDeviceAddress_1( device ) ;
@@ -263,7 +263,7 @@ char * zuluCryptGetFileNameFromFileDescriptor( int fd )
 
 	string_t xt = String( "/proc/self/fd/" ) ;
 
-	e = zuluCryptRealPath( StringAppendInt( xt,fd ) ) ;
+	e = zuluCryptRealPath( StringAppendInt( xt,(u_int64_t)fd ) ) ;
 
 	/*
 	 * zuluCryptResolvePath_4() is defined in resolve_paths.c
@@ -292,7 +292,7 @@ static int _paths_are_not_sane( int fd,const char * path )
 static int open_loop_device_1( string_t * loop_device )
 {
 	string_t st = String( "" ) ;
-	int i ;
+	u_int64_t i ;
 	int fd ;
 	const char * path ;
 	struct loop_info64 l_info ;
@@ -342,7 +342,7 @@ static int open_loop_device( string_t * loop_device )
 			return open_loop_device_1( loop_device ) ;
 		}else{
 			*loop_device = String( "/dev/loop" ) ;
-			StringAppendInt( *loop_device,devnr ) ;
+			StringAppendInt( *loop_device,(u_int64_t)devnr ) ;
 			return 1 ;
 		}
 	}
@@ -425,7 +425,7 @@ static int _attach_loop_device_to_file( const char * path,int mode,
 int zuluCryptAttachLoopDeviceToFile( const char * path,int mode,
 				     int * loop_fd,string_t * loop_device )
 {
-	int i ;
+	int i = 0 ;
 	int j ;
 	/*
 	 * try to attach a loop device multiple times
@@ -462,7 +462,7 @@ int zuluCryptAttachLoopDeviceToFileUsingFileDescriptor( int fd_path,
 							int mode,
 							string_t * loop_device )
 {
-	int i ;
+	int i = 0 ;
 	int j ;
 	/*
 	 * try to attach a loop device multiple times

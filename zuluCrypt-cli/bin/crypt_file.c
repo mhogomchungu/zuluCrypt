@@ -51,7 +51,7 @@ static int zuluExit( int st )
 		case 13: printf( gettext( "ERROR: Insufficient memory to hold passphrase\n" ) )				; break ;
 		case 14: printf( gettext( "ERROR: Source path is missing\n" ) )						; break ;
 		case 15: printf( gettext( "ERROR: Insufficient privilege to open source file for reading\n" ) )		; break ;
-		case 16: printf( gettext( "INFORMATION: Functionality currently disabled\n" ) ) ;			; break ;
+		case 16: printf( gettext( "INFORMATION: Functionality currently disabled\n" ) ) 			; break ;
 	}
 	return st ;
 }
@@ -190,8 +190,8 @@ static int crypt_opt( const struct_opts * opts,uid_t uid,int opt )
 		case 2 : return zuluExit( 11 ) ;
 	}
 
-	_ignore_result( chmod( dest,S_IRUSR | S_IWUSR ) ) ;
-	_ignore_result( chown( dest,uid,uid ) ) ;
+	_ignore_result( chmod( dest,S_IRUSR | S_IWUSR ) )
+	_ignore_result( chown( dest,uid,uid ) )
 
 	if( opt == 1 ){
 

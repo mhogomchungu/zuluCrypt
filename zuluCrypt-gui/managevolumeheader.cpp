@@ -18,7 +18,6 @@
  */
 
 #include "managevolumeheader.h"
-#include "truecrypt_support_1.h"
 #include "utility.h"
 #include "../zuluCrypt-cli/constants.h"
 

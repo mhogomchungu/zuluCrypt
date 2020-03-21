@@ -28,30 +28,55 @@
  */
 
 #include <errno.h>
-#include <openssl/evp.h>
+/*
+ * Yey for gcrypt and its broken includes...
+ * see http://lists.gnupg.org/pipermail/gcrypt-devel/2011-July/001830.html
+ * and http://seclists.org/wireshark/2011/Jul/208
+ * for more details...
+ */
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#include <gcrypt.h>
+#pragma GCC diagnostic warning "-Wdeprecated-declarations"
 
 #include "tcplay.h"
 
+extern int zuluCryptIterationCount ;
+
+static
+int
+get_gcrypt_hash_id(struct pbkdf_prf_algo *hash)
+{
+	if	(strcmp(hash->algo, "RIPEMD160") == 0)
+		return GCRY_MD_RMD160;
+	else if (strcmp(hash->algo, "SHA512") == 0)
+		return GCRY_MD_SHA512;
+	else if (strcmp(hash->algo, "SHA256") == 0)
+		return GCRY_MD_SHA256;
+	else if	(strcmp(hash->algo, "whirlpool") == 0)
+		return GCRY_MD_WHIRLPOOL;
+	else
+		return -1;
+}
 
 int
 pbkdf2(struct pbkdf_prf_algo *hash, const char *pass, int passlen,
     const unsigned char *salt, int saltlen,
     int keylen, unsigned char *out)
 {
-	const EVP_MD *md;
-	int r;
+	gpg_error_t err;
 
-	OpenSSL_add_all_algorithms();
+	int iter ;
 
-	md = EVP_get_digestbyname(hash->name);
-	if (md == NULL) {
-		tc_log(1, "Hash %s not found\n", hash->name);
-		return ENOENT;
-	}
-	r = PKCS5_PBKDF2_HMAC(pass, passlen, salt, saltlen,
-	    hash->iteration_count, md, keylen, out);
+	if (zuluCryptIterationCount)
+		iter = zuluCryptIterationCount ;
+	else
+		iter = hash->iteration_count ;
 
-	if (r == 0) {
+	err = gcry_kdf_derive(pass, passlen, GCRY_KDF_PBKDF2,
+	    get_gcrypt_hash_id(hash),
+	    salt, saltlen, iter, keylen, out);
+
+	if (err) {
 		tc_log(1, "Error in PBKDF2\n");
 		return EINVAL;
 	}

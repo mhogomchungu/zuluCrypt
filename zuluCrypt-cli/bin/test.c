@@ -38,28 +38,29 @@
 
 static void _write( int x,const void * y,size_t z )
 {
-	if( write( x,y,z ) ){;}
+	if( write( x,y,z ) ){}
 }
 static void _close( int x )
 {
-	if( close( x ) ){;}
+	if( close( x ) ){}
 }
 static void _fchmod( int x,mode_t y )
 {
-	if( fchmod( x,y ) ){;}
+	if( fchmod( x,y ) ){}
 }
 
-const char * luksTestVolume   = "/tmp/zuluCrypt-luksTestVolume" ;
-const char * plainTestVolume  = "/tmp/zuluCrypt-plainTestVolume" ;
-const char * tcryptTestVolume = "/tmp/zuluCrypt-tcryptTestVolume" ;
-const char * headerBackUp     = "/tmp/zuluCrypt-HeaderBackUp" ;
-const char * mount_point      = "zuluCrypt-MountPoint" ;
-const char * key              = "xyz" ;
-const char * key1             = "xxx" ;
-const char * zuluCryptExe     = ZULUCRYPTzuluCrypt ;
-const char * pluginPath       = ZULUCRYPTplugInPath;
-const char * keyfile          = "/tmp/zuluCrypt-KeyFile" ;
-const char * keyfile1         = "/tmp/zuluCrypt-KeyFile1" ;
+static const char * luksTestVolume   = "/tmp/zuluCrypt-luksTestVolume" ;
+static const char * plainTestVolume  = "/tmp/zuluCrypt-plainTestVolume" ;
+static const char * tcryptTestVolume = "/tmp/zuluCrypt-tcryptTestVolume" ;
+static const char * vcryptTestVolume = "/tmp/zuluCrypt-vcryptTestVolume" ;
+static const char * headerBackUp     = "/tmp/zuluCrypt-HeaderBackUp" ;
+static const char * mount_point      = "zuluCrypt-MountPoint" ;
+static const char * key              = "xyz" ;
+static const char * key1             = "xxx" ;
+static const char * zuluCryptExe     = ZULUCRYPTzuluCrypt ;
+static const char * pluginPath       = ZULUCRYPTplugInPath;
+static const char * keyfile          = "/tmp/zuluCrypt-KeyFile" ;
+static const char * keyfile1         = "/tmp/zuluCrypt-KeyFile1" ;
 
 static void _print( const char * msg )
 {
@@ -80,6 +81,7 @@ static void EXIT( int st,char * msg )
 	unlink( luksTestVolume ) ;
 	unlink( plainTestVolume ) ;
 	unlink( tcryptTestVolume ) ;
+	unlink( vcryptTestVolume ) ;
 	unlink( headerBackUp ) ;
 
 	rmdir( mount_point ) ;
@@ -95,7 +97,7 @@ static void EXIT( int st,char * msg )
 static void createKeyFiles_0( const char * keyfile )
 {
 	int f = open( keyfile,O_WRONLY|O_TRUNC|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH ) ;
-	int e ;
+	ssize_t e ;
 
 	puts( "creating a keyfile" ) ;
 
@@ -151,6 +153,7 @@ static void createTestImages( void )
 	createTestImages_0( plainTestVolume ) ;
 	createTestImages_0( luksTestVolume ) ;
 	createTestImages_0( tcryptTestVolume ) ;
+	createTestImages_0( vcryptTestVolume ) ;
 }
 
 static void _ProcessPrint( process_t p,void ( *print )( const char * ) )
@@ -202,15 +205,15 @@ static void restoreHeaderBackup( const char * device,const char * msg )
 	_ProcessGetResult( p ) ;
 }
 
-static void createVolume( const char * device,const char * msg,const char * keysource,const char * type )
+static void createVolume( const char * device,const char * msg,const char * keysource,const char * type,const char * arg1,const char * arg2 )
 {
 	process_t p ;
 	_print( msg ) ;
 	p = Process( zuluCryptExe,NULL ) ;
 	if( strcmp( keysource,"-p" ) == 0 ){
-		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,key,NULL ) ;
+		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,key,arg1,arg2,NULL ) ;
 	}else{
-		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,keyfile,NULL ) ;
+		ProcessSetArgumentList( p,"-c","-k","-d",device,"-t",type,keysource,keyfile,arg1,arg2,NULL ) ;
 	}
 	ProcessStart( p ) ;
 	_ProcessGetResult( p ) ;
@@ -225,15 +228,15 @@ static void closeVolume( const char * device,const char * msg )
 	_ProcessGetResult( p ) ;
 }
 
-static void openVolume( const char * device,const char * msg,const char * keysource )
+static void openVolume( const char * device,const char * msg,const char * keysource,const char * arg1,const char * arg2 )
 {
 	process_t p ;
 	_print( msg ) ;
 	p = Process( zuluCryptExe,NULL ) ;
 	if( strcmp( keysource,"-p" ) == 0 ){
-		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,key,NULL ) ;
+		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,key,arg1,arg2,NULL ) ;
 	}else{
-		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,keyfile,NULL ) ;
+		ProcessSetArgumentList( p,"-o","-d",device,"-m",mount_point,keysource,keyfile,arg1,arg2,NULL ) ;
 	}
 	ProcessStart( p ) ;
 	_ProcessGetResult( p ) ;
@@ -388,7 +391,7 @@ int zuluCryptRunTest( void )
 	r = setegid( uid ) ;
 	r = setuid( uid ) ;
 
-	if( r ){;}
+	if( r ){}
 
 	if( _loop_device_module_is_not_present() ){
 		printf( "\nWARNING: \"loop\" kernel module does not appear to be loaded,\n" ) ;
@@ -399,7 +402,7 @@ int zuluCryptRunTest( void )
 	createKeyFiles() ;
 
 	_printLine() ;
-	createVolume( luksTestVolume,"create a luks type volume using a key: ","-p","luks" ) ;
+	createVolume( luksTestVolume,"create a luks type volume using a key: ","-p","luks",NULL,NULL ) ;
 
 	_printLine() ;
 	checkIfDeviceIsLuks( luksTestVolume ) ;
@@ -411,22 +414,29 @@ int zuluCryptRunTest( void )
 	restoreHeaderBackup( luksTestVolume,"restore luks header from backup: " ) ;
 
 	_printLine() ;
-	createVolume( plainTestVolume,"create a plain type volume using a key: ","-p","plain" ) ;
+	createVolume( plainTestVolume,"create a plain type volume using a key: ","-p","plain",NULL,NULL ) ;
 
 	_printLine() ;
-	createVolume( tcryptTestVolume,"create a tcrypt type volume using a key: ","-p","tcrypt" ) ;
+	createVolume( tcryptTestVolume,"create a tcrypt type volume using a key: ","-p","tcrypt",NULL,NULL ) ;
 
 	_printLine() ;
-	openVolume( plainTestVolume,"open a plain volume with a key: ","-p" ) ;
+	createVolume( vcryptTestVolume,"create a vcrypt type volume with pim=10 using a key: ","-p","vcrypt","-g","/dev/urandom.aes.xts-plain64.256.sha512.10" ) ;
+
+	_printLine() ;
+	openVolume( plainTestVolume,"open a plain volume with a key: ","-p",NULL,NULL ) ;
 	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
 
 	_printLine() ;
-	openVolume( plainTestVolume,"open a plain volume with a keyfile: ","-f" ) ;
+	openVolume( plainTestVolume,"open a plain volume with a keyfile: ","-f",NULL,NULL ) ;
 	closeVolume( plainTestVolume,"closing a plain volume: " ) ;
 
 	_printLine() ;
-	openVolume( tcryptTestVolume,"open a tcrypt volume with a key: ","-p" ) ;
+	openVolume( tcryptTestVolume,"open a tcrypt volume with a key: ","-p",NULL,NULL ) ;
 	closeVolume( tcryptTestVolume,"closing a tcrypt volume: " ) ;
+
+	_printLine() ;
+	openVolume( vcryptTestVolume,"open a vcrypt volume with a key: ","-p","-t","vcrypt.10" ) ;
+	closeVolume( vcryptTestVolume,"closing a vcrypt volume: " ) ;
 
 	_printLine() ;
 	if( stat( ZULUCRYPTTestPlugin,&st ) != 0 ){
@@ -437,11 +447,11 @@ int zuluCryptRunTest( void )
 	}
 
 	_printLine() ;
-	openVolume( luksTestVolume,"open a luks volume with a key: ","-p" ) ;
+	openVolume( luksTestVolume,"open a luks volume with a key: ","-p",NULL,NULL ) ;
 	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
 
 	_printLine() ;
-	openVolume( luksTestVolume,"open a luks volume with a keyfile: ","-f" ) ;
+	openVolume( luksTestVolume,"open a luks volume with a keyfile: ","-f",NULL,NULL ) ;
 	closeVolume( luksTestVolume,"closing a luks volume: " ) ;
 
 	_printLine() ;

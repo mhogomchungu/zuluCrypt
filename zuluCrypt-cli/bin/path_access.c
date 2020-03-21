@@ -61,7 +61,7 @@ static int path_is_accessible( const char * path,uid_t uid,int action )
 	int st ;
 	char * e ;
 
-	if( uid ){;}
+	if( uid ){}
 
 	if( StringPrefixEqual( path,"/dev/shm/" ) ){
 
