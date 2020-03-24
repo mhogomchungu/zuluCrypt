@@ -905,11 +905,11 @@ string_t StringListHasStartSequence_1( stringList_t stl,const char * str )
 	}
 }
 
-char * const * StringListStringArray( stringList_t stl )
+const char ** StringListStringArray( stringList_t stl )
 {
 	size_t i ;
 	size_t j ;
-	char ** q ;
+	const char ** q ;
 	string_t * p ;
 	string_t z ;
 

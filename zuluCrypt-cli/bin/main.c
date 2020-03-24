@@ -267,7 +267,7 @@ static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t ui
 	return 200 ; /* shouldnt get here */
 }
 
-static int zuluExit( int st,stringList_t stl,stringList_t stx,char * const * env,const char * msg )
+static int zuluExit( int st,stringList_t stl,stringList_t stx,const char ** env,const char * msg )
 {
 	zuluCryptSecurityUnlockMemory( stl ) ;
 	StringListClearDelete( &stl ) ;
@@ -361,7 +361,7 @@ int main( int argc,char * argv[] )
 	char * dev ;
 	char action ;
 	int st ;
-	char * const * env = NULL ;
+	const char ** env = NULL ;
 	ssize_t i ;
 
 	string_t q = StringVoid ;
@@ -429,7 +429,7 @@ int main( int argc,char * argv[] )
 		printf( gettext( "User is not root\n" ) ) ;
 		return 114 ;
 	}else{
-		uid = st ;
+		uid = (uid_t)st ;
 	}
 
 	/*
@@ -528,7 +528,7 @@ int main( int argc,char * argv[] )
 	 * Hide "sensitive" command line arguments from ps comamnd and related tools.
 	 * Best way to pass keys to zuluCrypt-cli is to use libzuluCryptPluginManager API
 	 */
-	#define hide( z ) strncpy( ( char * )z,"x",StringLength( q ) ) ;
+	#define hide( z ) strncpy( ( char * )z,"x",StringLength( q ) )
 
 	if( clargs.key != NULL ){
 

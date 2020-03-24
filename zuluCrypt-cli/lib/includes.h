@@ -87,7 +87,7 @@ typedef struct{
 	int bitlocker_volume ;
 	int system_volume ;
 	int use_cryptsetup_for_bitlocker ;
-	const char * const * tcrypt_keyfiles ;
+	const char ** tcrypt_keyfiles ;
 	unsigned long m_flags ;
 	int use_backup_header ;
 	int use_hidden_header ;
@@ -98,11 +98,11 @@ typedef struct{
 	const char * device ;
 	const char * passphrase ;
 	size_t       passphrase_size ;
-	const char * const * keyfiles ;
-	size_t       keyfiles_number ;
+	const char ** keyfiles ;
+	int          keyfiles_number ;
 	const char * passphrase_h ;
 	size_t       passphrase_h_size ;
-	const char * const * keyfiles_h ;
+	const char ** keyfiles_h ;
 	size_t       keyfiles_h_number ;
 	const char *  encryption_options ;
 	u_int64_t    hidden_volume_size ;

@@ -56,7 +56,7 @@ typedef struct struct_opts_1{
 	const char * offset ;
 	const char * uid ;
 	const char * luks_external_header ;
-	char * const * env ;
+	const char ** env ;
 	char action ;
 	int partition_number ;
 	int ask_confirmation ;

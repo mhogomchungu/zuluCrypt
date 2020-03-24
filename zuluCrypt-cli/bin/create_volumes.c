@@ -420,8 +420,8 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 			tcrypt.passphrase_size  = volkeysize ;
 		}
 
-		tcrypt.keyfiles = StringListStringArray_0( stz ) ;
-		tcrypt.keyfiles_number = StringListSize( stz ) ;
+		tcrypt.keyfiles = StringListStringArray( stz ) ;
+		tcrypt.keyfiles_number = (int)StringListSize( stz ) ;
 
 		if( tcrypt.hidden_volume_size > 0 ){
 
@@ -449,7 +449,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 				tcrypt.passphrase_h_size = volkeysize_h ;
 			}
 
-			tcrypt.keyfiles_h        = StringListStringArray_0( stk ) ;
+			tcrypt.keyfiles_h        = StringListStringArray( stk ) ;
 			tcrypt.keyfiles_h_number = StringListSize( stk ) ;
 		}
 

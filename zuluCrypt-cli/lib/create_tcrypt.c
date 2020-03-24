@@ -90,7 +90,7 @@ static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 	if( e->keyfiles != NULL ){
 
 		opts.tcrypt_keyfiles       = e->keyfiles ;
-		opts.tcrypt_keyfiles_count = (int)e->keyfiles_number ;
+		opts.tcrypt_keyfiles_count = e->keyfiles_number ;
 	}
 
 	opts.veraCrypt_volume = e->veraCrypt_volume ;
@@ -127,7 +127,7 @@ static int _create_file_system( const create_tcrypt_t * e,int iteration_count )
 		if( e->keyfiles_h != NULL ){
 
 			opts.tcrypt_keyfiles       = e->keyfiles_h ;
-			opts.tcrypt_keyfiles_count = (int)e->keyfiles_h_number ;
+			opts.tcrypt_keyfiles_count = e->keyfiles_h_number ;
 		}
 
 		r = zuluCryptOpenTcrypt_1( &opts ) ;

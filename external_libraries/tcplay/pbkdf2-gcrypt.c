@@ -67,6 +67,7 @@ pbkdf2(struct pbkdf_prf_algo *hash, const char *pass, int passlen,
 
 	int iter ;
 
+	printf( "----%d----\n",zuluCryptIterationCount);
 	if (zuluCryptIterationCount)
 		iter = zuluCryptIterationCount ;
 	else
