@@ -77,11 +77,11 @@ typedef struct{
 	const char * luks_detached_header ;
 
 	size_t       key_len ;
+	size_t tcrypt_keyfiles_count ;
 	uid_t        uid ;
 	int          volume_type ;
 	int          key_source ;
 	int iteration_count ;
-	int tcrypt_keyfiles_count ;
 	int veraCrypt_volume ;
 	int trueCrypt_volume ;
 	int bitlocker_volume ;
