@@ -66,7 +66,7 @@ void * zuluCryptCryptsetupTCryptVCrypt( const open_struct_t * opt )
 	m->passphrase      = opt->key ;
 	m->passphrase_size = opt->key_len ;
 	m->keyfiles        = opt->tcrypt_keyfiles ;
-	m->keyfiles_count  = opt->tcrypt_keyfiles_count ;
+	m->keyfiles_count  = ( unsigned int )opt->tcrypt_keyfiles_count ;
 
 	m->flags = CRYPT_TCRYPT_LEGACY_MODES ;
 

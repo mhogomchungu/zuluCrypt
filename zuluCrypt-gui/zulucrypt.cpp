@@ -682,7 +682,7 @@ void zuluCrypt::closeAllVolumes()
 
 				emit closeVolume( e,r.exitCode() ) ;
 
-				utility::Task::waitForOneSecond() ; ; // for ui effect
+				utility::Task::waitForOneSecond() ; // for ui effect
 			}
 		}
 

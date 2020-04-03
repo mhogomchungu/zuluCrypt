@@ -241,9 +241,13 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 		m_actionPair.append( { ac,"Clear Dead Mount Points" } ) ;
 
-		connect( ac,&QAction::triggered,[](){
+		connect( ac,&QAction::triggered,[ this ](){
+
+			this->disableAll() ;
 
 			utility::Task::run( zuluMountPath" --clear-dead-mount-points" ).await() ;
+
+			this->enableAll() ;
 		} ) ;
 
 		return ac ;
