@@ -2632,9 +2632,9 @@ QString utility::failedToStartzuluPolkit()
 	return QObject::tr( "Failed To Start Helper Application.\n\n\"org.zulucrypt.zulupolkit.policy\" polkit file is misconfigured,\nzuluPolkit executable could not be found\n or pkexec failed to start zuluPolkit." ) ;
 }
 
-static utility::result< int > _convert_string_to_version( const QString& e )
+static utility2::result< int > _convert_string_to_version( const QString& e )
 {
-	auto _convert = []( const QString& e )->utility::result< int >{
+	auto _convert = []( const QString& e )->utility2::result< int >{
 
 		bool ok ;
 
@@ -2690,7 +2690,7 @@ static utility::result< int > _convert_string_to_version( const QString& e )
 	return {} ;
 }
 
-static utility::result< QString > _installed_version( const QString& backend )
+static utility2::result< QString > _installed_version( const QString& backend )
 {
 	auto _remove_junk = []( QString e ){
 
@@ -2767,12 +2767,12 @@ static utility::result< QString > _installed_version( const QString& backend )
 	return {} ;
 }
 
-::Task::future< utility::result< QString > >& utility::backEndInstalledVersion( const QString& backend )
+::Task::future< utility2::result< QString > >& utility::backEndInstalledVersion( const QString& backend )
 {
 	return ::Task::run( _installed_version,backend ) ;
 }
 
-static utility::result< int > _installedVersion( const QString& backend )
+static utility2::result< int > _installedVersion( const QString& backend )
 {
 	auto s = utility::backEndInstalledVersion( backend ).get() ;
 
@@ -2785,11 +2785,11 @@ static utility::result< int > _installedVersion( const QString& backend )
 }
 
 template< typename Function >
-::Task::future< utility::result< bool > >& _compare_versions( const QString& backend,
-							     const QString& version,
-							     Function compare )
+::Task::future< utility2::result< bool > >& _compare_versions( const QString& backend,
+							      const QString& version,
+							      Function compare )
 {
-	return ::Task::run( [ = ]()->utility::result< bool >{
+	return ::Task::run( [ = ]()->utility2::result< bool >{
 
 		auto installed = _installedVersion( backend ) ;
 		auto guard_version = _convert_string_to_version( version ) ;
@@ -2803,14 +2803,14 @@ template< typename Function >
 	} ) ;
 }
 
-::Task::future< utility::result< bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
-									       const QString& version )
+::Task::future< utility2::result< bool > >& utility::backendIsGreaterOrEqualTo( const QString& backend,
+										const QString& version )
 {
 	return _compare_versions( backend,version,std::greater_equal<int>() ) ;
 }
 
-::Task::future< utility::result< bool > >& utility::backendIsLessThan( const QString& backend,
-								       const QString& version )
+::Task::future< utility2::result< bool > >& utility::backendIsLessThan( const QString& backend,
+									const QString& version )
 {
 	return _compare_versions( backend,version,std::less<int>() ) ;
 }
@@ -2931,7 +2931,7 @@ static QString _ykchalresp_path()
 }
 
 
-utility::result<QByteArray> utility::yubiKey( const QString& challenge )
+utility2::result<QByteArray> utility::yubiKey( const QString& challenge )
 {
 	QString exe = _ykchalresp_path() ;
 

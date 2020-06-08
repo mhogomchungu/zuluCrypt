@@ -24,51 +24,54 @@ secrets::secrets( QWidget * parent ) : m_parent( parent )
 {
 }
 
-void secrets::changeInternalWalletPassword( const QString& walletName,const QString& appName )
+void secrets::changeInternalWalletPassword( const QString& walletName,
+					    const QString& appName,
+					    std::function< void( bool ) > ff )
 {
 	auto e = this->internalWallet() ;
-	auto f = *e ;
 
-	f->changeWalletPassWord( walletName,appName,[ e,f ]( bool q ){
+	e->changeWalletPassWord( walletName,appName,[ ff = std::move( ff ) ]( bool q ){
 
-		if( q ){
-
-			f->deleteLater() ;
-			*e = nullptr ;
-		}
+		ff( q ) ;
 	} ) ;
 }
 
 secrets::~secrets()
 {
-	delete m_internalWallet ;
+	this->close() ;
 }
 
-LXQt::Wallet::Wallet ** secrets::internalWallet()
+void secrets::close()
+{
+	delete m_internalWallet ;
+	m_internalWallet = nullptr ;
+}
+
+LXQt::Wallet::Wallet * secrets::internalWallet() const
 {
 	if( m_internalWallet == nullptr ){
 
 		namespace w = LXQt::Wallet ;
 
-		m_internalWallet = w::getWalletBackend( w::BackEnd::internal ) ;
+		m_internalWallet = w::getWalletBackend( w::BackEnd::internal ).release() ;
 
 		m_internalWallet->setParent( m_parent ) ;
 	}
 
-	return &m_internalWallet ;
+	return m_internalWallet ;
 }
 
-secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e )
+secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e ) const
 {
 	if( e == LXQt::Wallet::BackEnd::internal ){
 
-		return *( this->internalWallet() ) ;
+		return this->internalWallet() ;
 	}else{
-		return LXQt::Wallet::getWalletBackend( e ) ;
+		return LXQt::Wallet::getWalletBackend( e ).release() ;
 	}
 }
 
-QWidget * secrets::parent()
+QWidget * secrets::parent() const
 {
 	return m_parent ;
 }
@@ -80,9 +83,14 @@ void secrets::setParent( QWidget * w )
 
 static void _delete( LXQt::Wallet::Wallet * w )
 {
-	if( w && w->backEnd() != LXQt::Wallet::BackEnd::internal ){
+	if( w ){
 
-		w->deleteLater() ;
+		auto m = w->backEnd() ;
+
+		if( m != LXQt::Wallet::BackEnd::internal ){
+
+			delete w ;
+		}
 	}
 }
 
@@ -101,18 +109,17 @@ secrets::wallet::~wallet()
 
 secrets::wallet::wallet( secrets::wallet&& w )
 {
+	_delete( m_wallet ) ;
 	m_wallet = w.m_wallet ;
 	w.m_wallet = nullptr ;
 }
 
-secrets::wallet& secrets::wallet::operator=( secrets::wallet&& w )
+secrets::wallet::info secrets::wallet::walletInfo()
 {
-	if( m_wallet != w.m_wallet ){
+	if( m_wallet->backEnd() == LXQt::Wallet::BackEnd::kwallet ){
 
-		_delete( m_wallet ) ;
-		m_wallet = w.m_wallet ;
-		w.m_wallet = nullptr ;
+		return { "default",utility::applicationName() } ;
+	}else{
+		return { utility::walletName(),utility::applicationName() } ;
 	}
-
-	return *this ;
 }

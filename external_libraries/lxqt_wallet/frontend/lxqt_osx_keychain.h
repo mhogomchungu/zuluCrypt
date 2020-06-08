@@ -1,5 +1,5 @@
 /*
- * copyright: 2013-2015
+ * copyright: 2017
  * name : Francis Banyikwa
  * email: mhogomchungu@gmail.com
  *
@@ -28,16 +28,17 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LXQT_KWALLET_H
-#define LXQT_KWALLET_H
+#ifndef LXQT_SECRET_SERVICE_H
+#define LXQT_SECRET_SERVICE_H
 
 #include "lxqt_wallet.h"
 
 #include <QString>
 #include <QByteArray>
 #include <QDebug>
+#include <QEventLoop>
 
-#include <kwallet.h>
+#include <memory>
 
 class QWidget;
 
@@ -47,12 +48,11 @@ namespace LXQt
 namespace Wallet
 {
 
-class kwallet : public LXQt::Wallet::Wallet
+class osxKeyChain : public LXQt::Wallet::Wallet
 {
-    Q_OBJECT
 public:
-    kwallet();
-    ~kwallet();
+    osxKeyChain();
+    ~osxKeyChain();
 
     void open(const QString &walletName,
               const QString &applicationName,
@@ -85,7 +85,7 @@ public:
     void closeWallet(bool);
     void changeWalletPassWord(const QString &walletName,
                               const QString &applicationName = QString(),
-                              std::function<void(bool)> = [](bool e) { Q_UNUSED(e); });
+                              std::function< void(bool) > = [](bool e) { Q_UNUSED(e); });
     void setImage(const QIcon &);
 
     int walletSize(void) ;
@@ -94,18 +94,9 @@ public:
 
     LXQt::Wallet::BackEnd backEnd(void);
     QObject *qObject(void);
-
-private slots:
-    void walletOpened(bool);
 private:
-    void openedWallet(bool);
-
-    KWallet::Wallet *m_kwallet;
-    QString m_walletName;
-    QString m_applicationName;
-    QString m_password;
-
-    std::function< void(bool) > m_walletOpened = [](bool e) { Q_UNUSED(e); };
+    bool m_opened = false ;
+    QByteArray m_walletName ;
 };
 
 }

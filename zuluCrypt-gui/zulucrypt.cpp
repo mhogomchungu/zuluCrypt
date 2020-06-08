@@ -574,7 +574,10 @@ void zuluCrypt::changePassWordOfInternalWallet()
 	auto a = utility::walletName() ;
 	auto b = utility::applicationName() ;
 
-	m_secrets.changeInternalWalletPassword( a,b ) ;
+	m_secrets.changeInternalWalletPassword( a,b,[]( bool e ){
+
+		Q_UNUSED( e )
+	} ) ;
 }
 
 void zuluCrypt::permissionExplanation()
@@ -767,12 +770,14 @@ void zuluCrypt::quitApplication()
 
 void zuluCrypt::closeApplication()
 {
+	m_secrets.close() ;
 	utility::quitHelper() ;
 	m_mountInfo.stop()() ;
 }
 
 void zuluCrypt::closeApplication( int s )
 {
+	m_secrets.close() ;
 	Q_UNUSED( s )
 	m_mountInfo.stop()() ;
 }

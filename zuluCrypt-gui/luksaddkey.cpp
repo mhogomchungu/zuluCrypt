@@ -358,7 +358,7 @@ void luksaddkey::pbAdd( void )
 
 	this->disableAll() ;
 
-	utility::raii raii( [ this ](){ this->enableAll() ; } ) ;
+	utility2::raii raii( [ this ](){ this->enableAll() ; } ) ;
 
 	auto ExistingKey = m_ui->textEditExistingPassphrase->text() ;
 

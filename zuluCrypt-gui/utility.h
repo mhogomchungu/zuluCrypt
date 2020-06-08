@@ -55,6 +55,7 @@
 
 #include <blkid/blkid.h>
 
+#include "utility2.h"
 #include "task.hpp"
 #include "lxqt_wallet.h"
 #include "debugwindow.h"
@@ -74,75 +75,6 @@
 
 namespace utility
 {
-template< typename T >
-class result
-{
-public:
-		result()
-		{
-		}
-		result( T e ) : m_valid( true ),m_value( std::move( e ) )
-		{
-		}
-		T * operator->()
-		{
-			return &m_value ;
-		}
-		const T * operator->() const
-		{
-			return &m_value ;
-		}
-		T& operator*()
-		{
-			return m_value ;
-		}
-		const T& operator*() const
-		{
-			return m_value ;
-		}
-		operator bool()
-		{
-			return m_valid ;
-		}
-		bool has_value() const
-		{
-			return m_valid ;
-		}
-		T& value()
-		{
-			return m_value ;
-		}
-		const T& value() const
-		{
-			return m_value ;
-		}
-	private:
-		bool m_valid = false ;
-		T m_value ;
-	} ;
-
-	class raii
-	{
-	public:
-		raii( std::function< void() > s ) : m_function( std::move( s ) )
-		{
-		}
-		~raii()
-		{
-			if( m_run ){
-
-				m_function() ;
-			}
-		}
-		void cancel()
-		{
-			m_run = false ;
-		}
-	private:
-		bool m_run = true ;
-		std::function< void() > m_function ;
-	};
-
 	class label
 	{
 	public:
@@ -417,15 +349,15 @@ namespace utility
 	void setSettingsObject( QSettings * ) ;
 	QSettings& settingsObject() ;
 
-	::Task::future< utility::result< QString > >& backEndInstalledVersion( const QString& backend ) ;
+	::Task::future< utility2::result< QString > >& backEndInstalledVersion( const QString& backend ) ;
 
-	::Task::future< utility::result< bool > >& backendIsLessThan( const QString& backend,
+	::Task::future< utility2::result< bool > >& backendIsLessThan( const QString& backend,
 								      const QString& version ) ;
 
-	::Task::future< utility::result< bool > >& backendIsGreaterOrEqualTo( const QString& backend,
+	::Task::future< utility2::result< bool > >& backendIsGreaterOrEqualTo( const QString& backend,
 									      const QString& version ) ;
 
-	utility::result< QByteArray > yubiKey( const QString& ) ;
+	utility2::result< QByteArray > yubiKey( const QString& ) ;
 	bool useDmCryptForRandomData() ;
 	void setDefaultEnvironment() ;
 	QString passwordSocketPath() ;
@@ -867,7 +799,7 @@ namespace utility
 		bool ok() const
 		{
 			return this->splitOutput( '\n' ).size() > 12 ;
-		}	
+		}
 	private:
 		void execute( const QString& exe,int waitTime,const QProcessEnvironment& env,
 			      const QByteArray& password,std::function< void() > f,USEPOLKIT ) ;

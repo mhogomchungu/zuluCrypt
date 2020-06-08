@@ -194,29 +194,15 @@ void walletconfig::ShowUI( secrets::wallet&& wallet )
 
 	m_wallet = std::move( wallet ) ;
 
-	if( m_wallet->opened() ){
+	m_wallet.open( [ this ]{ this->accessWallet() ; },[](){},[ this ]( bool opened ){
 
-		this->accessWallet() ;
-	}else{
-		m_wallet->open( [ & ]()->QString{
+		if( opened ){
 
-			if( m_wallet->backEnd() == LXQt::Wallet::BackEnd::kwallet ){
-
-				return "default" ;
-			}else{
-				return utility::walletName() ;
-			}
-
-		}(),utility::applicationName(),[ this ]( bool opened ){
-
-			if( opened ){
-
-				this->accessWallet() ;
-			}else{
-				this->HideUI() ;
-			}
-		} ) ;
-	}
+			this->accessWallet() ;
+		}else{
+			this->HideUI() ;
+		}
+	} ) ;
 }
 
 void walletconfig::accessWallet()

@@ -219,7 +219,7 @@ void luksdeletekey::pbDelete()
 
 	this->disableAll() ;
 
-	utility::raii raii( [ this ](){ this->enableAll() ; } ) ;
+	utility2::raii raii( [ this ](){ this->enableAll() ; } ) ;
 
 	if( m_volumePath.isEmpty() ){
 

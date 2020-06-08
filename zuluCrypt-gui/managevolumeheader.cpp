@@ -370,7 +370,7 @@ void managevolumeheader::pbCreate()
 
 	this->disableAll() ;
 
-	utility::raii raii( [ this ](){ this->enableAll() ; } ) ;
+	utility2::raii raii( [ this ](){ this->enableAll() ; } ) ;
 
 	if( m_ui->lineEditBackUpName->text().isEmpty() || m_ui->lineEditDevicePath->text().isEmpty() ){
 

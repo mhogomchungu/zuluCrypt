@@ -640,12 +640,14 @@ void zuluMount::startAutoMonitor()
  */
 void zuluMount::closeApplication()
 {
+	m_secrets.close() ;
 	utility::quitHelper() ;
 	m_events.stop() ;
 }
 
 void zuluMount::closeApplication( int s )
 {
+	m_secrets.close() ;
 	Q_UNUSED( s )
 	m_events.stop() ;
 }

@@ -64,11 +64,49 @@ private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 
-	secrets::wallet m_wallet ;
 	int m_row ;
 	QString m_volumeID ;
 	QString m_comment ;
 	QString m_key ;
+
+	class wallet{
+
+	public:
+		void operator=( secrets::wallet s )
+		{
+			m_w.reset( new w{ std::move( s ) } ) ;
+		}
+		LXQt::Wallet::Wallet * operator->()
+		{
+			return m_w.get()->wallet.operator->() ;
+		}
+		secrets::wallet& get()
+		{
+			return m_w.get()->wallet ;
+		}
+		template< typename ... Args >
+		void open( Args&& ... args )
+		{
+			m_w->wallet.open( std::forward< Args >( args ) ... ) ;
+		}
+		operator bool()
+		{
+			auto s = m_w.get() ;
+
+			if( s == nullptr ){
+
+				return false ;
+			}else{
+				return s->wallet.operator bool() ;
+			}
+		}
+	private:
+		struct w{
+			secrets::wallet wallet ;
+		} ;
+		std::unique_ptr< w > m_w = nullptr ;
+
+	} m_wallet ;
 };
 
 #endif // KWALLETCONFIG_H
