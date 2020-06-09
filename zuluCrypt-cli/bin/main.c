@@ -379,6 +379,34 @@ int main( int argc,char * argv[] )
 	sa.sa_handler = _forceTerminateOnSeriousError ;
 	sigaction( SIGSEGV,&sa,NULL ) ;
 
+	if( argc == 1 ){
+
+		zuluCryptEXEHelp();
+		return 1;
+	}
+	if( argc == 2 ){
+
+		ac = argv[ 1 ] ;
+
+		if( StringAtLeastOneMatch_1( ac,"-h","--help","-help",NULL ) ){
+
+			zuluCryptEXEHelp();
+
+			return 0 ;
+		}
+		if( StringAtLeastOneMatch_1( ac,"-v","-version","--version",NULL ) ){
+
+			printf( "%s\n",zuluCryptVersion() );
+
+			return 0 ;
+		}
+		if( StringsAreEqual( ac,"--clear-dead-mount-points" ) ){
+
+			zuluCryptClearDeadMappers( uid,1 ) ;
+			return 0 ;
+		}
+	}
+
 	zuluCryptExeSetOriginalUID( uid ) ;
 
 	/*
@@ -460,34 +488,6 @@ int main( int argc,char * argv[] )
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ./security.c
 	 */
 	zuluCryptSecurityDropElevatedPrivileges() ;
-
-	if( argc == 1 ){
-
-		zuluCryptEXEHelp();
-		return 1;
-	}
-	if( argc == 2 ){
-
-		ac = argv[ 1 ] ;
-
-		if( StringAtLeastOneMatch_1( ac,"-h","--help","-help",NULL ) ){
-
-			zuluCryptEXEHelp();
-
-			return 0 ;
-		}
-		if( StringAtLeastOneMatch_1( ac,"-v","-version","--version",NULL ) ){
-
-			printf( "%s\n",zuluCryptVersion() );
-
-			return 0 ;
-		}
-		if( StringsAreEqual( ac,"--clear-dead-mount-points" ) ){
-
-			zuluCryptClearDeadMappers( uid,1 ) ;
-			return 0 ;
-		}
-	}
 
 	/*
 	 * this object is used as a form of memory management.It collects all string objects to make them easily deletable
