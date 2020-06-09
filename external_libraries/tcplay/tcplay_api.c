@@ -38,13 +38,9 @@
 #include "tcplay_api.h"
 #include "tcplay_api_internal.h"
 
-extern int zuluCryptIterationCount ;
-
 int
 tc_api_init(int verbose)
 {
-	zuluCryptIterationCount = 0 ;
-
 	int error;
 
 	tc_internal_verbose = verbose;
@@ -427,7 +423,7 @@ tc_api_task_set(tc_api_task task, const char *key, ...)
 		vp = va_arg(ap, void *);
 		opts->api_ctx = vp;
 	} else if (_match(key, "iteration_count")) {
-		zuluCryptIterationCount = va_arg(ap, int);
+		opts->iteration_count = va_arg(ap, int);
 	} else {
 		r = TC_ERR_UNIMPL;
 	}
@@ -655,6 +651,7 @@ tc_api_task_do(tc_api_task task)
 			errno = EINVAL;
 			return r;
 		}
+
 		r = create_volume(opts);
 		break;
 

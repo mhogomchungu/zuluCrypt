@@ -202,7 +202,7 @@ struct tcplay_opts {
 	const char	*h_passphrase;
 	int		interactive;
 	int		weak_keys_and_salt;
-
+	int             iteration_count;
 	/* Options for create */
 	int		hidden;
 	disksz_t	hidden_size_bytes;
@@ -273,12 +273,12 @@ int syscrypt(struct tc_crypto_algo *cipher, unsigned char *key, size_t klen,
     int do_encrypt);
 int pbkdf2(struct pbkdf_prf_algo *hash, const char *pass, int passlen,
     const unsigned char *salt, int saltlen,
-    int keylen, unsigned char *out);
+    int keylen, int iteration_count, unsigned char *out);
 
 int apply_keyfiles(unsigned char *pass, size_t pass_memsz, const char *keyfiles[],
     int nkeyfiles);
 
-struct tchdr_enc *create_hdr(unsigned char *pass, int passlen,
+struct tchdr_enc *create_hdr(int iteration_count, unsigned char *pass, int passlen,
     struct pbkdf_prf_algo *prf_algo, struct tc_cipher_chain *cipher_chain,
     size_t sec_sz, disksz_t total_blocks,
     off_t offset, disksz_t blocks, int hidden, int weak,
@@ -286,7 +286,7 @@ struct tchdr_enc *create_hdr(unsigned char *pass, int passlen,
 struct tchdr_dec *decrypt_hdr(struct tchdr_enc *ehdr,
     struct tc_cipher_chain *cipher_chain, unsigned char *key);
 int verify_hdr(struct tchdr_dec *hdr, struct pbkdf_prf_algo *prf_algo);
-struct tchdr_enc *copy_reencrypt_hdr(unsigned char *pass, int passlen,
+struct tchdr_enc *copy_reencrypt_hdr(int iteration_count,unsigned char *pass, int passlen,
     struct pbkdf_prf_algo *prf_algo, int weak, struct tcplay_info *info,
     struct tchdr_enc **backup_hdr);
 
@@ -308,7 +308,7 @@ char *tc_cipher_chain_sprint(char *buf, size_t bufsz,
 int free_info(struct tcplay_info *info);
 void print_info(struct tcplay_info *info);
 int adjust_info(struct tcplay_info *info, struct tcplay_info *hinfo);
-int process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
+int process_hdr(const char *dev, int iteration_count,int flags, unsigned char *pass, int passlen,
     struct tchdr_enc *ehdr, struct tcplay_info **pinfo);
 int create_volume(struct tcplay_opts *opts);
 struct tcplay_info *info_map_common(struct tcplay_opts *opts,

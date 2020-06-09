@@ -125,7 +125,7 @@
  if( STATIC_ZULUPLAY )
         TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process tcplay-static ${cryptsetup_lib} ${blkid} ${uuid_lib} ${devmapper_lib} -lgcrypt )
  else()
-        TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${uuid_lib} ${devmapper_lib} ${TCPLAY_LIB} -lgcrypt -ltcplay )
+        TARGET_LINK_LIBRARIES( zuluCrypt     String StringList Process ${cryptsetup_lib} ${blkid} ${uuid_lib} ${devmapper_lib} -lgcrypt -lzuluplay )
  endif()
 
  set_target_properties( zuluCrypt PROPERTIES LINK_FLAGS "-pie -Wl,-z,relro -Wl,-z,now" )

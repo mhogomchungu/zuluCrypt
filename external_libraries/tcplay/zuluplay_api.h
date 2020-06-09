@@ -27,60 +27,49 @@
  * SUCH DAMAGE.
  */
 
-#include <errno.h>
-/*
- * Yey for gcrypt and its broken includes...
- * see http://lists.gnupg.org/pipermail/gcrypt-devel/2011-July/001830.html
- * and http://seclists.org/wireshark/2011/Jul/208
- * for more details...
- */
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#include <gcrypt.h>
-#pragma GCC diagnostic warning "-Wdeprecated-declarations"
+#ifndef _TCPLAY_API_H
+#define _TCPLAY_API_H
 
-#include "tcplay.h"
+#include <stddef.h>
 
-extern int zuluCryptIterationCount ;
+#define TC_OK		0
+#define TC_ERR		-1
+#define TC_ERR_UNIMPL	-255
 
-static
-int
-get_gcrypt_hash_id(struct pbkdf_prf_algo *hash)
-{
-	if	(strcmp(hash->algo, "RIPEMD160") == 0)
-		return GCRY_MD_RMD160;
-	else if (strcmp(hash->algo, "SHA512") == 0)
-		return GCRY_MD_SHA512;
-	else if (strcmp(hash->algo, "SHA256") == 0)
-		return GCRY_MD_SHA256;
-	else if	(strcmp(hash->algo, "whirlpool") == 0)
-		return GCRY_MD_WHIRLPOOL;
-	else
-		return -1;
+#define TC_STATE_ENTER	1
+#define TC_STATE_EXIT	0
+
+struct _tc_api_task;
+
+typedef struct _tc_api_task *tc_api_task;
+
+typedef int (*tc_api_cipher_iterator_fn)(void *, const char *, int /* klen */, int /* length */);
+typedef int (*tc_api_prf_iterator_fn)(void *, const char *);
+typedef int (*tc_api_state_change_fn)(void *, const char *, int);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int tc_api_init(int verbose);
+int tc_api_uninit(void);
+
+int tc_api_has(const char *feature);
+
+int tc_api_cipher_iterate(tc_api_cipher_iterator_fn fn, void *priv);
+int tc_api_prf_iterate(tc_api_prf_iterator_fn fn, void *priv);
+
+
+tc_api_task tc_api_task_init(const char *op);
+int tc_api_task_uninit(tc_api_task task);
+int tc_api_task_set(tc_api_task task, const char *key, ...);
+int tc_api_task_do(tc_api_task task);
+
+int tc_api_task_info_get(tc_api_task task, const char *key, ...);
+const char *tc_api_task_get_error(tc_api_task task);
+
+#ifdef __cplusplus
 }
+#endif
 
-int
-pbkdf2(struct pbkdf_prf_algo *hash, const char *pass, int passlen,
-    const unsigned char *salt, int saltlen,
-    int keylen, int iteration_count,unsigned char *out)
-{
-	gpg_error_t err;
-
-	int iter ;
-
-	if (iteration_count)
-		iter = iteration_count ;
-	else
-		iter = hash->iteration_count ;	
-
-	err = gcry_kdf_derive(pass, passlen, GCRY_KDF_PBKDF2,
-	    get_gcrypt_hash_id(hash),
-	    salt, saltlen, iter, keylen, out);
-
-	if (err) {
-		tc_log(1, "Error in PBKDF2\n");
-		return EINVAL;
-	}
-
-	return 0;
-}
-
+#endif

@@ -150,7 +150,7 @@ verify_hdr(struct tchdr_dec *hdr, struct pbkdf_prf_algo *prf_algo)
 }
 
 struct tchdr_enc *
-create_hdr(unsigned char *pass, int passlen, struct pbkdf_prf_algo *prf_algo,
+create_hdr(int iteration_count, unsigned char *pass, int passlen, struct pbkdf_prf_algo *prf_algo,
     struct tc_cipher_chain *cipher_chain, size_t sec_sz,
     disksz_t total_blocks __unused,
     off_t offset, disksz_t blocks, int hidden, int weak, struct tchdr_enc **backup_hdr)
@@ -208,7 +208,7 @@ create_hdr(unsigned char *pass, int passlen, struct pbkdf_prf_algo *prf_algo,
 
 	error = pbkdf2(prf_algo, (char *)pass, passlen,
 	    ehdr->salt, sizeof(ehdr->salt),
-	    MAX_KEYSZ, key);
+	    MAX_KEYSZ, iteration_count, key);
 	if (error) {
 		tc_log(1, "could not derive key\n");
 		goto error;
@@ -216,7 +216,7 @@ create_hdr(unsigned char *pass, int passlen, struct pbkdf_prf_algo *prf_algo,
 
 	error = pbkdf2(prf_algo, (char *)pass, passlen,
 	    ehdr_backup->salt, sizeof(ehdr_backup->salt),
-	    MAX_KEYSZ, key_backup);
+	    MAX_KEYSZ, iteration_count, key_backup);
 	if (error) {
 		tc_log(1, "could not derive backup key\n");
 		goto error;
@@ -303,7 +303,7 @@ error:
 	return NULL;
 }
 
-struct tchdr_enc *copy_reencrypt_hdr(unsigned char *pass, int passlen,
+struct tchdr_enc *copy_reencrypt_hdr(int iteration_count, unsigned char *pass, int passlen,
     struct pbkdf_prf_algo *prf_algo, int weak, struct tcplay_info *info,
     struct tchdr_enc **backup_hdr)
 {
@@ -354,7 +354,7 @@ struct tchdr_enc *copy_reencrypt_hdr(unsigned char *pass, int passlen,
 
 	error = pbkdf2(prf_algo, (char *)pass, passlen,
 	    ehdr->salt, sizeof(ehdr->salt),
-	    MAX_KEYSZ, key);
+	    MAX_KEYSZ, iteration_count, key);
 	if (error) {
 		tc_log(1, "could not derive key\n");
 		goto error;
@@ -362,7 +362,7 @@ struct tchdr_enc *copy_reencrypt_hdr(unsigned char *pass, int passlen,
 
 	error = pbkdf2(prf_algo, (char *)pass, passlen,
 	    ehdr_backup->salt, sizeof(ehdr_backup->salt),
-	    MAX_KEYSZ, key_backup);
+	    MAX_KEYSZ, iteration_count, key_backup);
 	if (error) {
 		tc_log(1, "could not derive backup key\n");
 		goto error;

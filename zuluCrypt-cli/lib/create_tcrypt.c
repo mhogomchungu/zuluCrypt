@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "tcplay_api.h"
+#include "zuluplay_api.h"
 
 static const int TRUE  = 1 ;
 static const int FALSE = 0 ;
@@ -293,16 +293,6 @@ static const struct hashes{
 static const char * _set_hash( int type,const char * e )
 {
 	const struct hashes * h = Hashes ;
-
-	if( type > 1 ){
-
-		type = 1 ;
-	}
-
-	if( type < 0 ){
-
-		type = 0 ;
-	}
 
 	for( ; h->hash != NULL ; h++ ){
 

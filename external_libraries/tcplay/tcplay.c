@@ -436,7 +436,7 @@ adjust_info(struct tcplay_info *info, struct tcplay_info *hinfo)
 }
 
 int
-process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
+process_hdr(const char *dev, int iteration_count,int flags, unsigned char *pass, int passlen,
     struct tchdr_enc *ehdr, struct tcplay_info **pinfo)
 {
 	struct tchdr_dec *dhdr;
@@ -463,7 +463,7 @@ process_hdr(const char *dev, int flags, unsigned char *pass, int passlen,
 #endif
 		error = pbkdf2(&pbkdf_prf_algos[i], (char *)pass, passlen,
 		    ehdr->salt, sizeof(ehdr->salt),
-		    MAX_KEYSZ, key);
+		    MAX_KEYSZ, iteration_count,key);
 
 		if (error) {
 			tc_log(1, "pbkdf failed for algorithm %s\n",
@@ -768,7 +768,7 @@ create_volume(struct tcplay_opts *opts)
 		opts->state_change_fn(opts->api_ctx, "create_header", 1);
 
 	/* create encrypted headers */
-	ehdr = create_hdr((unsigned char *)pass,
+	ehdr = create_hdr(opts->iteration_count, (unsigned char *)pass,
 	    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass),
 	    opts->prf_algo, opts->cipher_chain, blksz, blocks, VOL_RSVD_BYTES_START/blksz,
 	    blocks - (MIN_VOL_BYTES/blksz), 0, opts->weak_keys_and_salt, &ehdr_backup);
@@ -778,7 +778,7 @@ create_volume(struct tcplay_opts *opts)
 	}
 
 	if (opts->hidden) {
-		hehdr = create_hdr((unsigned char *)h_pass,
+		hehdr = create_hdr(opts->iteration_count, (unsigned char *)h_pass,
 		    (opts->n_hkeyfiles > 0)?MAX_PASSSZ:strlen(h_pass), opts->h_prf_algo,
 		    opts->h_cipher_chain,
 		    blksz, blocks,
@@ -1011,7 +1011,7 @@ info_map_common(struct tcplay_opts *opts, char *passphrase_out)
 			hehdr = NULL;
 		}
 
-		error = process_hdr(opts->dev, opts->flags, (unsigned char *)pass,
+		error = process_hdr(opts->dev, opts->iteration_count,opts->flags, (unsigned char *)pass,
 		    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass),
 		    ehdr, &info);
 
@@ -1022,12 +1022,12 @@ info_map_common(struct tcplay_opts *opts, char *passphrase_out)
 		 */
 		if (hehdr && (error || opts->protect_hidden)) {
 			if (error) {
-				error2 = process_hdr(opts->dev, opts->flags, (unsigned char *)pass,
+				error2 = process_hdr(opts->dev, opts->iteration_count, opts->flags, (unsigned char *)pass,
 				    (opts->nkeyfiles > 0)?MAX_PASSSZ:strlen(pass), hehdr,
 				    &info);
 				is_hidden = !error2;
 			} else if (opts->protect_hidden) {
-				error2 = process_hdr(opts->dev, opts->flags, (unsigned char *)h_pass,
+				error2 = process_hdr(opts->dev, opts->iteration_count, opts->flags, (unsigned char *)h_pass,
 				    (opts->n_hkeyfiles > 0)?MAX_PASSSZ:strlen(h_pass), hehdr,
 				    &hinfo);
 			}
@@ -1199,6 +1199,7 @@ modify_volume(struct tcplay_opts *opts)
 
 	if (TC_FLAG_SET(opts->flags, ONLY_RESTORE)) {
 		if (opts->interactive) {
+
 			if ((pass = alloc_safe_mem(PASS_BUFSZ)) == NULL) {
 				tc_log(1, "could not allocate safe "
 				    "passphrase memory");
@@ -1261,7 +1262,7 @@ modify_volume(struct tcplay_opts *opts)
 		}
 	}
 
-	ehdr = copy_reencrypt_hdr((unsigned char *)pass,
+	ehdr = copy_reencrypt_hdr(opts->iteration_count, (unsigned char *)pass,
 	    (opts->n_newkeyfiles > 0)?MAX_PASSSZ:strlen(pass),
 	    new_prf_algo, opts->weak_keys_and_salt, info, &ehdr_backup);
 	if (ehdr == NULL) {
