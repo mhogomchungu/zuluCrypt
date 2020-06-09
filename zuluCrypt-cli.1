@@ -66,6 +66,8 @@ create volume: zuluCrypt-cli -c -d /dev/sdc1 -z ext4 -t luks -p xxx
 .br
 open volume  : zuluCrypt-cli -o -d /dev/sdc1 -m sdc1 -e ro -p xxx
 .br
+open volume through sudo/pkexec  : zuluCrypt-cli -o -d /dev/sdc1 -m sdc1 -e ro -p xxx -K $USER_ID
+.br
 close volume ; zuluCrypt-cli -q -d /dev/sdc1
 .br
 remove key   ; zuluCrypt-cli -r -d /dev/sdc1 -p xxx
@@ -103,6 +105,10 @@ operation list:
 -o         open and encrypted volume
 .br
 -O         open an encrypted volume but do not mount it( -m therefore not needed )
+.br
+-K         if zuluCrypt-cli or zuluMount-cli is invoked with sudo/pkexec to unlock a volume, use this option
+           to tell zuluCrypt to work on behalf of what user. If this option is not set them the unlocked volume
+           will incorrectly belong to root user instead of the user who run zuluCrypt-cli/zuluMount-cli.
 .br
 -q         close an opened encrypted volume
 .br
@@ -204,7 +210,7 @@ options that goes with above operations:
 .br
 
 .SH COPYRIGHT
-Copyright (c) 2011-2013
+Copyright (c) 2011-2020
 .br
 name : Francis Banyikwa
 .br
@@ -225,4 +231,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .br
 
 .SH LAST EDIT
-Last change: Fri Jan  9 14:43:08 EAT 2015
+Last change: Tue 09 Jun 2020 01:21:51 PM EAT
