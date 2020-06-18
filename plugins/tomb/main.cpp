@@ -43,11 +43,9 @@ int main( int argc,char * argv[] )
 		 * TODO: look into passing the passphrase more securely
 		 */
 
-		QString arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe.first(),keyFile,password ) ;
-
 		QProcess p ;
 
-		p.start( arg ) ;
+		p.start( exe.first(),{ "--extract","-sf",keyFile,"-xf","-","-p",password } ) ;
 
 		p.waitForFinished( -1 ) ;
 

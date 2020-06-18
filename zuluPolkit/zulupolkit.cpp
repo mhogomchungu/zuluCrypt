@@ -236,7 +236,7 @@ void zuluPolkit::gotConnection()
 
 			}else if( _correct_cmd( command ) ){
 
-				return _respond( s,Task::process::run( command,password.toLatin1() ).get() ) ;
+				return _respond( s,Task::process::run( command,{},password.toLatin1() ).get() ) ;
 			}
 		}
 

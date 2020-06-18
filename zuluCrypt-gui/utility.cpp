@@ -228,7 +228,8 @@ void utility::polkitFailedWarning( std::function< void() > e )
 	_failed_to_connect_to_zulupolkit = std::move( e ) ;
 }
 
-void utility::Task::execute( const QString& exe,int waitTime,
+void utility::Task::execute( const QString& exe,
+			     int waitTime,
 			     const QProcessEnvironment& env,
 			     const QByteArray& password,
 			     std::function< void() > f,
@@ -267,7 +268,16 @@ void utility::Task::execute( const QString& exe,int waitTime,
 	}else{
 		_post_backend_cmd( exe ) ;
 
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
 		auto p = ::Task::process::run( exe,{},waitTime,password,env,std::move( f ) ).get() ;
+#else
+		auto s = QProcess::splitCommand( exe ) ;
+
+		auto ee = s.first() ;
+		s.removeFirst() ;
+
+		auto p = ::Task::process::run( ee,s,waitTime,password,env,std::move( f ) ).get() ;
+#endif
 
 		m_finished   = p.finished() ;
 		m_exitCode   = p.exit_code() ;
@@ -1212,7 +1222,11 @@ QStringList utility::split( const QString& str,char token )
 		return {} ;
 	}
 
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
 	return str.split( token,QString::SkipEmptyParts ) ;
+#else
+	return str.split( token,Qt::SkipEmptyParts ) ;
+#endif
 }
 
 QStringList utility::split( const QByteArray& str,char token )
@@ -2937,11 +2951,9 @@ utility2::result<QByteArray> utility::yubiKey( const QString& challenge )
 
 	if( !exe.isEmpty() ){
 
-		exe = exe + " " + _ykchalrespArguments() ;
-
 		//_post_backend_cmd( exe ) ;
 
-		auto s = ::Task::process::run( exe,challenge.toLatin1() ).await() ;
+		auto s = ::Task::process::run( exe,{ _ykchalrespArguments() },challenge.toLatin1() ).await() ;
 
 		if( s.success() ){
 

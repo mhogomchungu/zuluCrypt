@@ -38,23 +38,14 @@ enum class plugin{ gpg,hmac_key,hmac_key_1,keyKeyFile,luks,steghide } ;
 
 static inline QByteArray gpg( const QVector<QString>& exe,const QString& keyFile,const QString& password )
 {
-	auto _args = []( const QVector<QString>& exe,const QString& keyFile,const QString& password ){
-
-		if( password.isEmpty() ){
-
-			auto e = "%1 --no-tty --yes --no-mdc-warning --no-verbose -d %2" ;
-
-			return QString( e ).arg( exe.first(),keyFile ) ;
-		}else{
-			auto e = "%1 --no-tty --yes --no-mdc-warning --no-verbose --passphrase-fd 0 -d  %2" ;
-
-			return QString( e ).arg( exe.first(),keyFile ) ;
-		}
-	} ;
-
 	QProcess p ;
 
-	p.start( _args( exe,keyFile,password ) ) ;
+	if( password.isEmpty() ){
+
+		p.start( exe.first(),{ "--no-tty","--yes","--no-mdc-warning","--no-verbose","-d",keyFile } ) ;
+	}else{
+		p.start( exe.first(),{ "--no-tty","--yes","--no-mdc-warning","--no-verbose","--passphrase-fd","0","-d",keyFile } ) ;
+	}
 
 	p.waitForStarted() ;
 
@@ -176,11 +167,9 @@ static inline QByteArray steghide( const QVector<QString>& exe,const QString& ke
 	 * TODO: look into passing the passphrase more securely
 	 */
 
-	QString arg = QString( "%1 --extract -sf %2 -xf - -p %3" ).arg( exe.first(),keyFile,password ) ;
-
 	QProcess p ;
 
-	p.start( arg ) ;
+	p.start( exe.first(),{ "--extract","-sf",keyFile,"-xf","-","-p",password } ) ;
 
 	p.waitForFinished( -1 ) ;
 
