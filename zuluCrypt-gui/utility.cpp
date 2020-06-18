@@ -278,7 +278,6 @@ void utility::Task::execute( const QString& exe,
 
 		auto p = ::Task::process::run( ee,s,waitTime,password,env,std::move( f ) ).get() ;
 #endif
-
 		m_finished   = p.finished() ;
 		m_exitCode   = p.exit_code() ;
 		m_exitStatus = p.exit_status() ;

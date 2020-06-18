@@ -236,7 +236,16 @@ void zuluPolkit::gotConnection()
 
 			}else if( _correct_cmd( command ) ){
 
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
 				return _respond( s,Task::process::run( command,{},password.toLatin1() ).get() ) ;
+#else
+				auto ss = QProcess::splitCommand( command ) ;
+
+				auto ee = ss.first() ;
+				ss.removeFirst() ;
+
+				return _respond( s,Task::process::run( ee,ss,password.toLatin1() ).get() ) ;
+#endif
 			}
 		}
 
