@@ -2950,9 +2950,11 @@ utility2::result<QByteArray> utility::yubiKey( const QString& challenge )
 
 	if( !exe.isEmpty() ){
 
-		//_post_backend_cmd( exe ) ;
+		auto args = utility::split( _ykchalrespArguments(),' ' ) ;
 
-		auto s = ::Task::process::run( exe,{ _ykchalrespArguments() },challenge.toLatin1() ).await() ;
+		auto s = ::Task::process::run( exe,args,challenge.toLatin1() ).await() ;
+
+		_post_backend_cmd( exe + " " + args.join( " " ) ) ;
 
 		if( s.success() ){
 
