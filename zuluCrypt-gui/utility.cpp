@@ -2225,24 +2225,19 @@ QIcon utility::getIcon( const QString& app )
 	}
 }
 
-bool utility::autoSetVolumeAsVeraCrypt( const QString& app )
+QString utility::autoSetVolumeAsVeraCrypt()
 {
-	Q_UNUSED( app )
+	if( !_settings->contains( "AutoSetVolumeAsVeraCryptType" ) ){
 
-	if( _settings->contains( "AutoSetVolumeAsVeraCrypt" ) ){
-
-		return _settings->value( "AutoSetVolumeAsVeraCrypt" ).toBool() ;
-	}else{
-		_settings->setValue( "AutoOpenFolderOnMount",false ) ;
-
-		return false ;
+		_settings->setValue( "AutoSetVolumeAsVeraCryptType",QString() ) ;
 	}
+
+	return _settings->value( "AutoSetVolumeAsVeraCryptType" ).toString() ;
 }
 
-void utility::autoSetVolumeAsVeraCrypt( const QString& app,bool set )
+void utility::autoSetVolumeAsVeraCrypt( const QString& opt )
 {
-	Q_UNUSED( app )
-	_settings->setValue( "AutoSetVolumeAsVeraCrypt",set ) ;
+	_settings->setValue( "AutoSetVolumeAsVeraCryptType",opt ) ;
 }
 
 int utility::defaultUnlockingVolumeType()

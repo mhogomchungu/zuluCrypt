@@ -330,8 +330,8 @@ namespace utility
 	void setIconMenu( const QString& app,QAction * ac,QWidget *,
 			  std::function< void( const QString& ) >&& ) ;
 
-	bool autoSetVolumeAsVeraCrypt( const QString& ) ;
-	void autoSetVolumeAsVeraCrypt( const QString&,bool ) ;
+	QString autoSetVolumeAsVeraCrypt() ;
+	void autoSetVolumeAsVeraCrypt( const QString& ) ;
 
 	int defaultUnlockingVolumeType() ;
 	void defaultUnlockingVolumeType( int ) ;

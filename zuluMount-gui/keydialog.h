@@ -38,6 +38,8 @@ class QTableWidget ;
 #include <functional>
 #include <memory>
 
+#include <QCheckBox>
+
 namespace Ui {
 class keyDialog;
 }
@@ -69,7 +71,6 @@ signals:
 	void cryptoOpen( QString ) ;
 private slots:
 	void cbVisibleKeyStateChanged( int ) ;
-	void cbVeraCryptVolume( int ) ;
 	void cbActicated( int ) ;
 	void pbkeyOption( void ) ;
 	void pbMountPointPath( void ) ;
@@ -88,6 +89,18 @@ private slots:
 	void showFileSystemOptionWindow( void ) ;
 	void encryptedFolderMount( void ) ;
 private :
+	class veraCryptVolumeType{
+	public:
+		void setValues( QCheckBox * vc,QCheckBox * sys,const QString& opt ) ;
+		~veraCryptVolumeType() ;
+		bool veraCrypt() ;
+		bool veraCryptSystem() ;
+		bool yes() ;
+	private:
+		QCheckBox * m_veraCrypt ;
+		QCheckBox * m_veraCryptSystem ;
+	} m_veraCryptVolumeType ;
+
 	bool errorNotFound( int ) ;
 	void keyAndKeyFile( void ) ;
 	void tcryptGui( void ) ;
@@ -107,12 +120,10 @@ private :
 	QMenu * m_menu ;
 	QMenu * m_menu_1 ;
 	QTableWidget * m_table ;
-	utility::veraCryptWarning m_veraCryptWarning ;
-	bool m_veraCryptVolume = false ;
+	utility::veraCryptWarning m_veraCryptWarning ;	
 	bool m_working ;
 	bool m_encryptedFolder = false ;
 	enum{ Key = 0,keyfile = 1,keyKeyFile = 2,plugin = 3,tcryptKeys = 4,yubikey = 5 } ;
-	int m_veraCryptPIMValue = 0 ;
 	std::function< void() > m_cancel ;
 	std::function< void( const QString& ) > m_success ;
 	utility::label m_label ;

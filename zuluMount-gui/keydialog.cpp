@@ -71,7 +71,7 @@ keyDialog::keyDialog( QWidget * parent,
 	m_working = false ;
 	m_encryptedFolder = e.fileSystem() == "cryptfs" ;
 
-	decltype( tr( "" ) ) msg ;
+	QString msg ;
 
 	if( e.fileSystem() == "crypto_LUKS" ){
 
@@ -105,13 +105,17 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Password ) ;
 
-	m_veraCryptVolume = utility::autoSetVolumeAsVeraCrypt( "zuluMount-gui" ) ;
+	m_veraCryptVolumeType.setValues( m_ui->checkBoxVeraCryptVolume,
+					 m_ui->checkBoxVeraCryptSystemVolume,
+					 utility::autoSetVolumeAsVeraCrypt() ) ;
+	if( m_encryptedFolder ){
 
-	m_ui->checkBoxVeraCryptVolume->setChecked( m_veraCryptVolume ) ;
+		m_ui->checkBoxVeraCryptVolume->setEnabled( false ) ;
+		m_ui->checkBoxVeraCryptSystemVolume->setEnabled( false ) ;
+		m_ui->lineEditPIM->setEnabled( false ) ;
+		m_ui->labelVeraCryptPIM->setEnabled( false ) ;
+	}
 
-	m_ui->checkBoxVeraCryptVolume->setEnabled( !m_encryptedFolder ) ;
-
-	connect( m_ui->checkBoxVeraCryptVolume,SIGNAL( stateChanged( int ) ),this,SLOT( cbVeraCryptVolume( int ) ) ) ;
 	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
@@ -163,7 +167,6 @@ keyDialog::keyDialog( QWidget * parent,
 
 		_add_action( tr( "Set File System Options" ) ) ;
 		_add_action( tr( "Set Volume Offset" ) ) ;
-		_add_action( tr( "Set VeraCrypt PIM value" ) ) ;
 	}
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
@@ -226,28 +229,7 @@ void keyDialog::doAction( QAction * ac )
 	}else if( e == tr( "Set Volume Offset" ) ){
 
 		this->showOffSetWindowOption() ;
-
-	}else if( e == tr( "Set Volume As VeraCrypt Volume" ) ){
-
-		m_veraCryptVolume = true ;
-
-	}else if( e == tr( "Set VeraCrypt PIM value" ) ){
-
-		VeraCryptPIMDialog::instance( this,[ this ]( int e ){
-
-			m_veraCryptPIMValue = e ;
-			m_veraCryptVolume = true ;
-
-			m_ui->checkBoxVeraCryptVolume->setChecked( true ) ;
-		} ) ;
 	}
-}
-
-void keyDialog::cbVeraCryptVolume( int state )
-{
-	m_veraCryptVolume = state != Qt::Unchecked ;
-
-	utility::autoSetVolumeAsVeraCrypt( "zuluMount-gui",m_veraCryptVolume ) ;
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )
@@ -333,6 +315,11 @@ void keyDialog::enableAll()
 	m_ui->checkBoxOpenReadOnly->setEnabled( true ) ;
 
 	m_ui->checkBoxShareMountPoint->setEnabled( !m_encryptedFolder ) ;
+
+	m_ui->checkBoxVeraCryptVolume->setEnabled( true ) ;
+	m_ui->checkBoxVeraCryptSystemVolume->setEnabled( true ) ;
+	m_ui->lineEditPIM->setEnabled( true ) ;
+	m_ui->labelVeraCryptPIM->setEnabled( true ) ;
 }
 
 void keyDialog::disableAll()
@@ -351,6 +338,10 @@ void keyDialog::disableAll()
 	m_ui->label->setEnabled( false ) ;
 	m_ui->checkBoxOpenReadOnly->setEnabled( false ) ;
 	m_ui->checkBoxShareMountPoint->setEnabled( false ) ;
+	m_ui->checkBoxVeraCryptVolume->setEnabled( false ) ;
+	m_ui->checkBoxVeraCryptSystemVolume->setEnabled( false ) ;
+	m_ui->lineEditPIM->setEnabled( false ) ;
+	m_ui->labelVeraCryptPIM->setEnabled( false ) ;
 }
 
 void keyDialog::KeyFile()
@@ -851,19 +842,32 @@ void keyDialog::openVolume()
 		}
 	}
 
-	if( m_veraCryptVolume ){
+	if( m_veraCryptVolumeType.veraCrypt() ){
 
-		if( m_veraCryptPIMValue > 0 ){
+		auto pim = m_ui->lineEditPIM->text() ;
 
-			exe += " -t vcrypt." + QString::number( m_veraCryptPIMValue ) + " " + m ;
+		if( !pim.isEmpty() ){
+
+			exe += " -t vcrypt." + pim + " " + m ;
 		}else{
 			exe += " -t vcrypt " + m ;
+		}
+
+	}else if( m_veraCryptVolumeType.veraCryptSystem() ){
+
+		auto pim = m_ui->lineEditPIM->text() ;
+
+		if( !pim.isEmpty() ){
+
+			exe += " -t vcrypt-sys." + pim + " " + m ;
+		}else{
+			exe += " -t vcrypt-sys " + m ;
 		}
 	}else{
 		exe += " " + m ;
 	}
 
-	m_veraCryptWarning.show( m_veraCryptVolume ) ;
+	m_veraCryptWarning.show( m_veraCryptVolumeType.yes() ) ;
 
 	m_working = true ;
 
@@ -1024,4 +1028,69 @@ keyDialog::~keyDialog()
 {
 	m_menu->deleteLater() ;
 	delete m_ui ;
+}
+
+void keyDialog::veraCryptVolumeType::setValues( QCheckBox * vc,QCheckBox * sys,const QString& e )
+{
+	m_veraCrypt = vc ;
+	m_veraCryptSystem = sys ;
+
+	if( e == "veraCrypt" ){
+
+		m_veraCrypt->setChecked( true ) ;
+		m_veraCryptSystem->setChecked( false ) ;
+
+	}else if( e == "veraCryptSystem" ){
+
+		m_veraCrypt->setChecked( false ) ;
+		m_veraCryptSystem->setChecked( true ) ;
+	}else{
+		m_veraCrypt->setChecked( false ) ;
+		m_veraCryptSystem->setChecked( false ) ;
+	}
+
+	connect( m_veraCrypt,&QCheckBox::stateChanged,[ this ]( int s ){
+
+		if( s == Qt::Checked ){
+
+			m_veraCryptSystem->setChecked( false ) ;
+		}
+	} ) ;
+
+	connect( m_veraCryptSystem,&QCheckBox::stateChanged,[ this ]( int s ){
+
+		if( s == Qt::Checked ){
+
+			m_veraCrypt->setChecked( false ) ;
+		}
+	} ) ;
+}
+
+keyDialog::veraCryptVolumeType::~veraCryptVolumeType()
+{
+	if( m_veraCrypt->isChecked() ){
+
+		utility::autoSetVolumeAsVeraCrypt( "veraCrypt" ) ;
+
+	}else if( m_veraCryptSystem->isChecked() ){
+
+		utility::autoSetVolumeAsVeraCrypt( "veraCryptSystem" ) ;
+	}else{
+		utility::autoSetVolumeAsVeraCrypt( "" ) ;
+	}
+}
+
+bool keyDialog::veraCryptVolumeType::veraCrypt()
+{
+	return m_veraCrypt->isChecked() ;
+}
+
+bool keyDialog::veraCryptVolumeType::veraCryptSystem()
+{
+	return m_veraCryptSystem->isChecked() ;
+}
+
+bool keyDialog::veraCryptVolumeType::yes()
+{
+	return m_veraCryptSystem->isChecked() || m_veraCrypt->isChecked() ;
 }
