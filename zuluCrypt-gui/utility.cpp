@@ -1976,6 +1976,14 @@ int utility::pluginKey( QWidget * w,QByteArray * key,const QString& p )
 	return l.exec() ;
 }
 
+static void _show_tray( QObject * obj,bool show,bool opt_show )
+{
+	QMetaObject::invokeMethod( obj,
+				   "showTrayIcon",
+				   Qt::QueuedConnection,
+				   Q_ARG( bool,show ? show : opt_show ) ) ;
+}
+
 void utility::showTrayIcon( QAction * ac,QObject * obj,bool show )
 {
 	bool opt_show = true ;
@@ -1999,27 +2007,37 @@ void utility::showTrayIcon( QAction * ac,QObject * obj,bool show )
 		}
 	}
 
-	auto _show_tray = [ & ]{
+	if( QSystemTrayIcon::isSystemTrayAvailable() ){
+		/*
+		 * System tray is available, use it.
+		 */
+		_show_tray( obj,show,opt_show ) ;
+	}else{
+		utility::Timer( 1000,[ = ]( int counter ){
 
-		QMetaObject::invokeMethod( obj,"showTrayIcon",Qt::QueuedConnection,
-					   Q_ARG( bool,show ? show : opt_show ) ) ;
-	} ;
+			if( QSystemTrayIcon::isSystemTrayAvailable() ){
+				/*
+				 * System tray is available, use it.
+				 */
+				_show_tray( obj,show,opt_show ) ;
 
-	for( int i = 0 ; i < 10 ; i++ ){
+				return true ;
 
-		if( QSystemTrayIcon::isSystemTrayAvailable() ){
+			}else if( counter == 5 ){
+				/*
+				 * We waited for 5 seconds and its not available, use it and hope for the best.
+				 */
+				_show_tray( obj,show,opt_show ) ;
 
-			return _show_tray() ;
-		}else{
-			utility::Task::suspendForOneSecond() ;
-		}
+				return true ;
+			}else{
+				/*
+				 * Lets keep on waiting.
+				 */
+				return false ;
+			}
+		} ) ;
 	}
-
-	/*
-	 * The tray doesnt seem to be ready yet but we cant wait any longer,just display it and
-	 * hope for the best.
-	 */
-	_show_tray() ;
 }
 
 void utility::trayProperty( QSystemTrayIcon * trayIcon,bool zuluCrypt )
