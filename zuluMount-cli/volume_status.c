@@ -65,8 +65,7 @@ void zuluMountPartitionProperties( const char * dev,const char * UUID,
 	const char * device = NULL ;
 	char * device_1 = NULL ;
 
-	if( StringAtLeastOneMatch_1( fs,"fuse.encfs","fuse.cryfs",
-				     "fuse.gocryptfs","fuse.securefs","ecryptfs",NULL ) ){
+	if( zuluCryptFUSEVolumeIsSupported( fs ) ){
 
 		if( m_point != NULL ){
 

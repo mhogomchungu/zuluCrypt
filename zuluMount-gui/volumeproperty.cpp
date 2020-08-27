@@ -68,11 +68,13 @@ static void setFsSize( const QString& path,QString * volumeSize,QString * usedPe
 
 #endif
 
-bool volumeProperty::encryptedFolder( const QString& e,bool f )
+bool volumeProperty::encryptedFolder( const QString& s,bool f )
 {
+	auto e = s.toLower() ;
+
 	if( f ){
 
-		return utility::equalsAtleastOne( e,"Nil","cryptfs","cryfs","encfs",
+		return utility::equalsAtleastOne( e,"nil","cryptfs","cryfs","encfs",
 						  "gocryptfs","securefs","ecryptfs" ) ;
 	}else{
 		return utility::equalsAtleastOne( e,"cryptfs","cryfs","encfs",

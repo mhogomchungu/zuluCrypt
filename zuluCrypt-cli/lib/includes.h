@@ -341,6 +341,16 @@ int zuluCryptNoPartitionLoopDevice( const char * e ) ;
 char * zuluCryptLoopDeviceAddress( const char * device ) ;
 
 /*
+ * this function is defined in ./mountinfo.c
+ */
+int zuluCryptFUSEVolumeIsSupported( const char * fs ) ;
+
+/*
+ * this function is defined in ./mountinfo.c
+ */
+int zuluCryptFUSEVolumeIsSupportedStartsWith( const char * device ) ;
+
+/*
  * this function is defined in ./create_loop_device.c
  */
 char * zuluCryptLoopDeviceAddress_1( const char * device ) ;

@@ -57,6 +57,26 @@ static int _valid_entry( const vInfo * e )
 	return 0 ;
 }
 
+int zuluCryptFUSEVolumeIsSupported( const char * fs )
+{
+	return StringAtLeastOneMatch_1( fs,
+					"fuse.encfs","fuse.Encfs",
+					"fuse.cryfs","fuse.Cryfs",
+					"fuse.securefs","fuse.Securefs",
+					"fuse.gocryptfs","fuse.Gocryptfs",
+					"ecryptfs",NULL ) ;
+}
+
+int zuluCryptFUSEVolumeIsSupportedStartsWith( const char * device )
+{
+	return StringAtLeastOnePrefixMatch( device,
+					    "encfs@","Encfs@",
+					    "cryfs@","Cryfs@",
+					    "securefs@","Securefs@",
+					    "gocryptfs@","Gocryptfs@",
+					    NULL ) ;
+}
+
 static void _add_entry( string_t ( *function )( const vInfo * ),stringList_t tmp,
 			stringList_t * stx,char * const ** entry,size_t * entry_len )
 {
@@ -74,11 +94,9 @@ static void _add_entry( string_t ( *function )( const vInfo * ),stringList_t tmp
 	volumeInfo.mountOptions = *( *entry + 5 ) ;
 	volumeInfo.rootPath     = *( *entry + 3 ) ;
 
-	if( StringAtLeastOneMatch_1( volumeInfo.fileSystem,"fuse.encfs","fuse.cryfs",
-				     "fuse.securefs","fuse.gocryptfs",NULL ) ){
+	if( zuluCryptFUSEVolumeIsSupported( volumeInfo.fileSystem ) ){
 
-		if( StringAtLeastOnePrefixMatch( volumeInfo.device,"encfs@",
-						 "cryfs@","securefs@","gocryptfs@",NULL ) ){
+		if( zuluCryptFUSEVolumeIsSupportedStartsWith( volumeInfo.device ) ){
 
 			volumeInfo.device += StringFirstIndexOfChar_1( volumeInfo.device,'@' ) + 1 ;
 		}else{

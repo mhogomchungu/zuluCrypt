@@ -1052,7 +1052,9 @@ void zuluMount::showContextMenu( QTableWidgetItem * item,bool itemClicked )
 
 	auto fs = _text( row,2 ) ;
 
-	auto _properties_menu = [ & ]( const QString& fs,bool addSeparator ){
+	auto _properties_menu = [ & ]( const QString& ff,bool addSeparator ){
+
+		auto fs = ff.toLower() ;
 
 		if( _encrypted_folder( fs ) ){
 
