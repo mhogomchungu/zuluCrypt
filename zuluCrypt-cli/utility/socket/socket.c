@@ -193,10 +193,12 @@ int SocketFileDescriptor( socket_t s )
 socket_t SocketLocalWithOptions( const char * address,int type,int protocol )
 {
 	socket_t s = Socket( AF_UNIX,type,protocol ) ;
+
 	struct sockaddr_un * e ;
-	size_t l = sizeof( e->sun_path ) ;
+	size_t l = sizeof( e->sun_path ) - 1 ;
 	if( s != SocketVoid ){
 		e = s->socket ;
+		memset( e->sun_path,'\0',sizeof( e->sun_path ) ) ;
 		strncpy( e->sun_path,address,l ) ;
 	}
 	return s ;

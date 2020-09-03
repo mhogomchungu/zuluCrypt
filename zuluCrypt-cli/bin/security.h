@@ -31,12 +31,6 @@ extern "C" {
  * All these functions are defined in security.c
  */
 
-/*
- * set the function to be called when an attempt to evelate or downgrade privileges fail
- * zuluCryptSecurityPrivilegeElevationError global variable is defined in security.c
- */
-extern void ( *zuluCryptSecurityPrivilegeElevationError )( const char * ) ;
-
 void zuluCryptSecuritySetPrivilegeElevationErrorFunction( void ( * ) ( const char * ) ) ;
 
 void zuluCryptSecuritySanitizeTheEnvironment( uid_t uid,stringList_t * ) ;

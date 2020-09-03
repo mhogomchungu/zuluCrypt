@@ -46,6 +46,11 @@
 static uid_t _original_UID ;
 static const char * _run_time_path ;
 
+/*
+ * set the function to be called when an attempt to evelate or downgrade privileges fail.
+ */
+static void ( *zuluCryptSecurityPrivilegeElevationError )( const char * ) = NULL ;
+
 const char * zuluCryptRunTimePath()
 {
 	return _run_time_path ;
@@ -98,8 +103,6 @@ void zuluCryptSetUserUIDForPrivilegeManagement( uid_t uid )
 {
 	global_variable_user_uid = uid ;
 }
-
-void ( *zuluCryptSecurityPrivilegeElevationError )( const char * ) = NULL ;
 
 void zuluCryptSecuritySetPrivilegeElevationErrorFunction( void ( *f ) ( const char * ) )
 {
