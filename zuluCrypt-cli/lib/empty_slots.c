@@ -185,7 +185,7 @@ static void _get_slot_property( string_t q,int j,const char * type,struct crypt_
 				break ;
 			}
 
-			StringMultipleAppend( q,"Time cost: ",_to_string( pbkdf.time_ms ),"\n",NULL ) ;
+			StringMultipleAppend( q,"Time cost: ",_to_string( pbkdf.iterations ),"\n",NULL ) ;
 
 			StringMultipleAppend( q,"Memory: ",_to_string( pbkdf.max_memory_kb ),"\n",NULL ) ;
 
