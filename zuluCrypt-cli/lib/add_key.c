@@ -28,6 +28,7 @@ typedef struct{
 	size_t       key_0_len ;
 	const char * key_1 ;
 	size_t       key_1_len ;
+	int          key_slot ;
 
 }arguments ;
 
@@ -55,9 +56,12 @@ static int _add_key( const char * device,const resolve_path_t * opts )
 
 		return zuluExit( 2,cd ) ;
 	}
-	if( crypt_keyslot_add_by_passphrase( cd,CRYPT_ANY_SLOT,args->key_0,
-
-		args->key_0_len,args->key_1,args->key_1_len ) < 0 ){
+	if( crypt_keyslot_add_by_passphrase( cd,
+					     args->key_slot,
+					     args->key_0,
+					     args->key_0_len,
+					     args->key_1,
+					     args->key_1_len ) < 0 ){
 		return zuluExit( 1,cd ) ;
 	}else{
 		return zuluExit( 0,cd ) ;
@@ -66,6 +70,16 @@ static int _add_key( const char * device,const resolve_path_t * opts )
 
 int zuluCryptAddKey( const char * device,const char * existingkey,
 		     size_t existingkey_size,const char * newkey,size_t newkey_size )
+{
+	return zuluCryptAddKey_0( device,existingkey,existingkey_size,newkey,newkey_size,CRYPT_ANY_SLOT ) ;
+}
+
+int zuluCryptAddKey_0( const char * device,
+		       const char * existingkey,
+		       size_t existingkey_size,
+		       const char * newkey,
+		       size_t newkey_size,
+		       int slot_number )
 {
 	/*
 	 * resolve_path_t is defined in includes.h
@@ -80,6 +94,13 @@ int zuluCryptAddKey( const char * device,const char * existingkey,
 	args.key_0_len    = existingkey_size ;
 	args.key_1        = newkey ;
 	args.key_1_len    = newkey_size ;
+
+	if( slot_number == -1 ){
+
+		args.key_slot = CRYPT_ANY_SLOT ;
+	}else{
+		args.key_slot = slot_number ;
+	}
 
 	opts.device       = device ;
 	opts.args         = &args ;

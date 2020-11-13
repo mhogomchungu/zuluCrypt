@@ -69,6 +69,8 @@ signals:
 	void closeVolume( QTableWidgetItem *,int ) ;
 	void updateVolumeListSignal( QString,QString ) ;
 private slots :
+	void showLUKSSlotsData( void ) ;
+	void showLUKSSlotsInfo( void ) ;
 	void createVolumeInFile() ;
 	void showTrayIcon( bool ) ;
 	void polkitFailedWarning( void ) ;

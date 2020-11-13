@@ -459,6 +459,12 @@ else()
 	file( WRITE ${PROJECT_BINARY_DIR}/luks2_support.h "\n#define SUPPORT_crypt_get_pbkdf_default 0\n" )
 endif()
 
+if( ( CRYPTSETUP_VERSION VERSION_GREATER "2.1.0" ) OR ( CRYPTSETUP_VERSION VERSION_EQUAL "2.1.0" ) )
+	file( WRITE ${PROJECT_BINARY_DIR}/luks_slot_status.h "\n#define SUPPORT_crypt_keyslot_get_pbkdf 1\n" )
+else()
+	file( WRITE ${PROJECT_BINARY_DIR}/luks_slot_status.h "\n#define SUPPORT_crypt_keyslot_get_pbkdf 0\n" )
+endif()
+
 if( CRYPTSETUP_VERSION VERSION_GREATER "1.6.0" )
 	file( WRITE ${PROJECT_BINARY_DIR}/check_tcrypt.h "\n#define CHECK_TCRYPT 1\n" )
 else()

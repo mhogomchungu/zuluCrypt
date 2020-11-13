@@ -30,6 +30,7 @@ set( UI_FILES createfile.ui
 		help.ui
 		dialogok.ui
 		filemanager.ui
+		showluksslots.ui
 )
 
 set( MOC_FILES
@@ -62,6 +63,7 @@ set( MOC_FILES
 		about.h
 		help.h
 		filemanager.h
+		showluksslots.h
  )
 
 set( SRC
@@ -97,6 +99,7 @@ set( SRC
 	help.cpp
 	about.cpp
 	filemanager.cpp
+	showluksslots.cpp
 )
 
 if( QT5 )

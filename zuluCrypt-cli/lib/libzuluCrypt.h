@@ -205,6 +205,13 @@ int zuluCryptAddKey( const char * device,     /* path to an encrypted file or pa
 		     const char * newkey,     /* new key to be added to the volume			*/
 		     size_t newkey_size );    /* size of the new key					*/
 
+int zuluCryptAddKey_0( const char * device,     /* path to an encrypted file or partition		*/
+		       const char * existingkey,/* a key that already exist in the encrypted volume	*/
+		       size_t existingkey_size, /* size of existingkey					*/
+		       const char * newkey,     /* new key to be added to the volume			*/
+		       size_t newkey_size,      /* size of the new key                                  */
+		       int slot_number ) ;      /* key slot to add the key                              */
+
 /**
  * This function deletes a key from a luks volume.
  *
@@ -217,14 +224,17 @@ int zuluCryptAddKey( const char * device,     /* path to an encrypted file or pa
 int zuluCryptRemoveKey( const char * device ,      /* path to an encrypted device			*/
 			const char * passphrase,   /* a key already in the volume to be removed		*/
 			size_t passphrase_size ) ; /* passphrase size					*/
-
+int zuluCryptRemoveKey_0( const char * device ,     /* path to an encrypted device			*/
+			 const char * passphrase,   /* a key already in the volume to be removed		*/
+			 size_t passphrase_size,    /* passphrase size                                   */
+			 int key_slot ) ;           /* a key slot number to remove a key                 */
 /**
  *This function gives information about slots in a luks volume.
  *
  * return value:
  * NULL if an error occurs(if the device path is invalid or does not point to luks device.
  *
- * If no error occur a sting made up of 0,1,2 and 3 is returned. Make sure to free it when you are done.
+ * If no error occur a string made up of 0,1,2 and 3 is returned. Make sure to free it when you are done.
  *
  * 	0 is for disabled/unoccupied/inactive
  * 	1 is for enabled/occupied/active

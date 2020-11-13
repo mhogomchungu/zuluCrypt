@@ -98,6 +98,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	const char * device      = opts->device ;
 	const char * keyType     = opts->key_source ;
 	const char * keytoremove = opts->key ;
+	int key_slot             = opts->luks_slot_number ;
 
 	stringList_t stl = StringListInit() ;
 
@@ -215,7 +216,7 @@ int zuluCryptEXERemoveKey( const struct_opts * opts,uid_t uid )
 	/*
 	 * zuluCryptRemoveKey() is defined in ../lib/remove_key.c
 	 */
-	status = zuluCryptRemoveKey( device,key,key_size ) ;
+	status = zuluCryptRemoveKey_0( device,key,key_size,key_slot ) ;
 	zuluCryptSecurityDropElevatedPrivileges() ;
 
 	if( status == 1 ){

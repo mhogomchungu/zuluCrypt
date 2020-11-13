@@ -203,6 +203,31 @@ static int zuluCryptEXECheckEmptySlots( const char * device )
 	return status ;
 }
 
+static int zuluCryptEXEPrintSlotStatus( const char * device )
+{
+	int status ;
+	char * c  ;
+	zuluCryptSecurityGainElevatedPrivileges() ;
+	/*
+	 * zuluCryptEmptySlots() is defined in ../lib/empty_slots.c
+	 */
+	c = zuluCryptSlotsStatus( device ) ;
+
+	zuluCryptSecurityDropElevatedPrivileges() ;
+
+	if( c == NULL ){
+
+		printf( gettext( "Device \"%s\" is not a luks device\n" ),device ) ;
+		status = 2 ;
+	}else{
+		printf( "%s",c ) ;
+		status = 0 ;
+		free( c ) ;
+	}
+
+	return status ;
+}
+
 static int zuluCryptEXECheckUUID( const char * device )
 {
 	printf( "%s\n",device ) ;
@@ -250,6 +275,7 @@ static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t ui
 		case 'X' : return zuluCryptEXEWriteDeviceWithJunk( clargs,mapping_name,uid ) ;
 		case 'w' : return zuluCryptEXECheckUUID( clargs->device ) ;
 		case 'b' : return zuluCryptEXECheckEmptySlots( clargs->device ) ;
+		case '2' : return zuluCryptEXEPrintSlotStatus( clargs->device ) ;
 		case 'i' : return zuluCryptEXECheckIfLuks( clargs->device ) ;
 		case 'P' : return zuluCryptEXEGetDevice( clargs->device ) ;
 		case 's' : return zuluCryptEXEVolumeInfo( mapping_name,clargs->device,uid ) ;

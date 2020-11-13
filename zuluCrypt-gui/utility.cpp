@@ -1233,6 +1233,25 @@ QStringList utility::split( const QByteArray& str,char token )
 	return  utility::split( QString( str ),token ) ;
 }
 
+QStringList utility::split( const QByteArray& str,const char * token )
+{
+	return  utility::split( QString( str ),token ) ;
+}
+
+QStringList utility::split( const QString& str,const char * token )
+{
+	if( str.isEmpty() ){
+
+		return {} ;
+	}
+
+#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
+	return str.split( token,QString::SkipEmptyParts ) ;
+#else
+	return str.split( token,Qt::SkipEmptyParts ) ;
+#endif
+}
+
 bool utility::mapperPathExists( const QString& path )
 {
 	return utility::pathExists( utility::mapperPath( path ) ) ;

@@ -65,6 +65,7 @@ typedef struct struct_opts_1{
 	int print_partition_type ;
 	int share ;
 	int use_cryptsetup_for_bitlocker ;
+	int luks_slot_number ;
 }struct_opts;
 
 /*

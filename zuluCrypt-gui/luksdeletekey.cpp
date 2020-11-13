@@ -166,8 +166,20 @@ void luksdeletekey::ShowUI( const QString& path )
 	this->ShowUI() ;
 }
 
+void luksdeletekey::ShowUI( const QString& path,
+			    const QString& slot,
+			    std::function< void() > onExit )
+{
+	m_ui->lineEditVolumePath->setText( path ) ;
+	m_ui->lineEditSlotNumber->setText( slot ) ;
+	m_onExit = std::move( onExit ) ;
+	this->ShowUI() ;
+}
+
 void luksdeletekey::disableAll()
 {
+	m_ui->label_3->setEnabled( false ) ;
+	m_ui->lineEditSlotNumber->setEnabled( false ) ;
 	m_ui->cbKey->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
 	m_ui->labelPassphrase->setEnabled( false ) ;
@@ -182,6 +194,8 @@ void luksdeletekey::disableAll()
 
 void luksdeletekey::enableAll()
 {
+	m_ui->label_3->setEnabled( true ) ;
+	m_ui->lineEditSlotNumber->setEnabled( true ) ;
 	m_ui->cbKey->setEnabled( true ) ;
 	m_ui->label->setEnabled( true ) ;
 	m_ui->labelPassphrase->setEnabled( true ) ;
@@ -303,6 +317,13 @@ void luksdeletekey::deleteKey( const QStringList& l )
 
 	m_isWindowClosable = false ;
 
+	auto slotNumber = m_ui->lineEditSlotNumber->text() ;
+
+	if( !slotNumber.isEmpty() ){
+
+		exe += " -g " + slotNumber ;
+	}
+
 	auto e = utility::Task::run( exe ).await() ;
 
 	m_isWindowClosable = true ;
@@ -358,6 +379,7 @@ void luksdeletekey::pbOpenVolume()
 void luksdeletekey::HideUI()
 {
 	this->hide() ;
+	m_onExit() ;
 	this->deleteLater() ;
 }
 

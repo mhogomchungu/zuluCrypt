@@ -17,6 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "luks_slot_status.h"
 #include "includes.h"
 #include <libcryptsetup.h>
 #include <fcntl.h>
@@ -25,34 +26,51 @@
 static char * zuluExit( char * c,struct crypt_device * cd )
 {
 	if( cd != NULL ){
+
 		crypt_free( cd ) ;
 	}
+
 	return c ;
+}
+
+static const char * _crypt_init( struct crypt_device ** cd,
+				 const char * device,
+				 const resolve_path_t * opts )
+{
+	const char * type ;
+
+	if( opts ){}
+
+	if( crypt_init( cd,device ) != 0 ){
+
+		return NULL ;
+	}
+
+	if( crypt_load( *cd,NULL,NULL ) != 0 ){
+
+		return NULL ;
+	}
+
+	type = crypt_get_type( *cd ) ;
+
+	if( type == NULL ){
+
+		return zuluExit( NULL,*cd ) ;
+	}else{
+		return type ;
+	}
 }
 
 static char * _empty_slots( const char * device,const resolve_path_t * opts )
 {
-	struct crypt_device * cd;
+	struct crypt_device * cd ;
 
 	int j ;
 	int k ;
-	const char * type ;
 
 	string_t p ;
 
-	if( opts ){}
-
-	if( crypt_init( &cd,device ) != 0 ){
-
-		return zuluExit( NULL,NULL ) ;
-	}
-
-	if( crypt_load( cd,NULL,NULL ) != 0 ){
-
-		return zuluExit( NULL,cd ) ;
-	}
-
-	type = crypt_get_type( cd ) ;
+	const char * type = _crypt_init( &cd,device,opts ) ;
 
 	if( type == NULL ){
 
@@ -100,4 +118,157 @@ char * zuluCryptEmptySlots( const char * device )
 	 * zuluCryptResolveDevicePath_1() is defined in resolve_path.c
 	 */
 	return zuluCryptResolveDevicePath_1( _empty_slots,&opts ) ;
+}
+
+#if SUPPORT_crypt_keyslot_get_pbkdf
+
+const char * _to_string( unsigned int s )
+{
+	static char buffer[ 1024 ] ;
+	snprintf( buffer,sizeof( buffer ),"%d",( int )s ) ;
+	return buffer ;
+}
+
+static void _get_slot_property( string_t q,int j,const char * type,struct crypt_device * cd )
+{
+	size_t key_size ;
+
+	struct crypt_pbkdf_type pbkdf ;
+
+	StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
+
+	if( StringsAreEqual( type,CRYPT_LUKS2 ) ){
+
+		StringAppend( q,"Type: luks2\n" ) ;
+
+	}else if( StringsAreEqual( type,CRYPT_LUKS1 ) ){
+
+		StringAppend( q,"Type: luks1\n" ) ;
+	}else{
+		StringAppend( q,"Type: luks\n" ) ;
+	}
+
+	if( crypt_keyslot_get_pbkdf( cd,j,&pbkdf ) == 0 ){
+
+		StringMultipleAppend( q,"PBKDF type: ",pbkdf.type,"\n",NULL ) ;
+
+		if( StringsAreEqual( type,CRYPT_LUKS1 ) ){
+
+			StringMultipleAppend( q,"PBKDF hash: ",pbkdf.hash,"\n",NULL ) ;
+
+			StringMultipleAppend( q,"PBKDF iterations: ",_to_string( pbkdf.iterations ),NULL ) ;
+
+		}else if( StringsAreEqual( type,CRYPT_LUKS2 ) ){
+
+			const char * e = crypt_keyslot_get_encryption( cd,j,&key_size ) ;
+
+			key_size *= 8 ;
+
+			if( e ){
+
+				StringMultipleAppend( q,"Cipher: ",e,"\n",NULL ) ;
+			}else{
+				StringMultipleAppend( q,"Cipher: ","N/A","\n",NULL ) ;
+			}
+
+			StringMultipleAppend( q,"Cipher key: ",_to_string( ( unsigned int )key_size )," bits\n",NULL ) ;
+
+			switch( crypt_keyslot_get_priority( cd,j ) ) {
+
+				case CRYPT_SLOT_PRIORITY_INVALID : StringMultipleAppend( q,"Priority: Invalid\n",NULL ) ;
+				break ;
+				case CRYPT_SLOT_PRIORITY_IGNORE : StringMultipleAppend( q,"Priority: Ignore\n",NULL ) ;
+				break ;
+				case CRYPT_SLOT_PRIORITY_NORMAL : StringMultipleAppend( q,"Priority: Normal\n",NULL ) ;
+				break ;
+				case CRYPT_SLOT_PRIORITY_PREFER : StringMultipleAppend( q,"Priority: Prefer\n",NULL ) ;
+				break ;
+			}
+
+			StringMultipleAppend( q,"Time cost: ",_to_string( pbkdf.time_ms ),"\n",NULL ) ;
+
+			StringMultipleAppend( q,"Memory: ",_to_string( pbkdf.max_memory_kb ),"\n",NULL ) ;
+
+			StringMultipleAppend( q,"Threads: ",_to_string( pbkdf.parallel_threads ),NULL ) ;
+		}
+
+		StringAppend( q,"\n\n" ) ;
+	}
+}
+
+static char * _slots_status( const char * device,const resolve_path_t * opts )
+{
+	struct crypt_device * cd ;
+
+	int j ;
+	int k ;
+
+	string_t q ;
+
+	const char * type = _crypt_init( &cd,device,opts ) ;
+
+	if( type == NULL ){
+
+		return zuluExit( NULL,cd ) ;
+	}
+
+	k = crypt_keyslot_max( type ) ;
+
+	if( k < 0 ){
+
+		return zuluExit( NULL,cd ) ;
+	}
+
+	k = crypt_keyslot_max( type ) ;
+
+	if( k < 0 ){
+
+		return zuluExit( NULL,cd ) ;
+	}
+
+	crypt_keyslot_info info ;
+
+	q = StringEmpty() ;
+
+	for( j = 0 ; j < k ; j++ ){
+
+		info = crypt_keyslot_status( cd,j ) ;
+
+		if( info == CRYPT_SLOT_ACTIVE || info == CRYPT_SLOT_ACTIVE_LAST ) {
+
+			_get_slot_property( q,j,type,cd ) ;
+		}
+	}
+
+	return zuluExit( StringDeleteHandle( &q ),cd ) ;
+}
+
+#else
+
+static char * _slots_status( const char * device,const resolve_path_t * opts )
+{
+	if( device && opts ){}
+
+	return NULL ;
+}
+
+#endif
+
+char * zuluCryptSlotsStatus( const char * device )
+{
+	/*
+	 * resolve_path_t is defined in includes.h
+	 */
+	resolve_path_t opts ;
+
+	memset( &opts,'\0',sizeof( opts ) ) ;
+
+	opts.device        = device ;
+	opts.open_mode     = O_RDONLY ;
+	opts.error_value_1 = NULL ;
+
+	/*
+	 * zuluCryptResolveDevicePath_1() is defined in resolve_path.c
+	 */
+	return zuluCryptResolveDevicePath_1( _slots_status,&opts ) ;
 }

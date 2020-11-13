@@ -34,6 +34,7 @@ void zuluCryptEXEGetOptsSetDefault( struct_opts * stopts )
 
 	stopts->open_mount = 1 ;
 	stopts->ask_confirmation = 1 ;
+	stopts->luks_slot_number = -1 ;
 
 	if( zuluCryptPathIsValid( "/etc/zuluCrypt/dislocker" ) ){
 
@@ -49,6 +50,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 
 	int k = 0 ;
 	int n = 0 ;
+	int switch_b = 0 ;
 
 	zuluCryptEXEGetOptsSetDefault( stopts ) ;
 
@@ -73,8 +75,21 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 			case( 'q' ) : stopts->action = 'q'      ; break ;
 			case( 'w' ) : stopts->action = 'w'      ; break ;
 			case( 'i' ) : stopts->action = 'i'      ; break ;
-			case( 'b' ) : stopts->action = 'b'      ; break ;
 			case( 'P' ) : stopts->action = 'P'      ; break ;
+
+			case( 'b' ) :
+			{
+				switch_b++ ;
+
+				if( switch_b == 1 ){
+
+					stopts->action = 'b' ;
+				}else{
+					stopts->action = '2' ;
+				}
+
+				break ;
+			}
 
 			case( 'O' ) :
 				stopts->action = 'O' ;
@@ -162,6 +177,7 @@ void zuluCryptEXEGetOpts( int argc,char * argv[],struct_opts * stopts )
 				break ;
 			case( 'g' ) :
 				stopts->rng = optarg ;
+				stopts->luks_slot_number = ( int )StringConvertToInt( optarg ) ;
 				break ;
 			case( 'y' ) :
 				stopts->existing_key_source = "-p" ;

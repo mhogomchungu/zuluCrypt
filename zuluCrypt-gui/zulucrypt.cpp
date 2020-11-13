@@ -72,7 +72,7 @@
 #include "createvolumeinexistingfile.h"
 #include "pdf_path.h"
 #include "warnwhenextendingcontainerfile.h"
-
+#include "showluksslots.h"
 #include "checkforupdates.h"
 
 #include <memory>
@@ -439,6 +439,8 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionBackup_header,SIGNAL( triggered() ),this,SLOT( volumeHeaderBackUp() ) ) ;
 	connect( m_ui->actionRestore_header,SIGNAL( triggered() ),this,SLOT( volumeRestoreHeader() ) ) ;
 
+	connect( m_ui->actionView_LUKS_Key_Slots,SIGNAL( triggered() ),this,SLOT( showLUKSSlotsData() ) ) ;
+
 	using wbe = LXQt::Wallet::BackEnd ;
 
 	auto a = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
@@ -473,6 +475,23 @@ void zuluCrypt::setupConnections()
 
 	this->setAcceptDrops( true ) ;
 	this->updateTrayContextMenu() ;
+}
+
+void zuluCrypt::showLUKSSlotsData()
+{
+	showLUKSSlots::Show( this,{},[](){} ) ;
+}
+
+void zuluCrypt::showLUKSSlotsInfo()
+{
+	auto item = m_ui->tableWidget->currentItem() ;
+
+	if( item ){
+
+		auto path = m_ui->tableWidget->item( item->row(),0 )->text() ;
+
+		showLUKSSlots::Show( this,path,[](){} ) ;
+	}
 }
 
 void zuluCrypt::updateTrayContextMenu()
@@ -1063,6 +1082,7 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,QPoint point )
 
 		connect( m.addAction( tr( "Add Key" ) ),SIGNAL( triggered() ),this,SLOT( luksAddKeyContextMenu() ) ) ;
 		connect( m.addAction( tr( "Remove Key" ) ),SIGNAL( triggered() ),this,SLOT( luksDeleteKeyContextMenu() ) ) ;
+		connect( m.addAction( tr( "Show Key Slots Information" ) ),SIGNAL( triggered() ),this,SLOT( showLUKSSlotsInfo() ) ) ;
 
 		m.addSeparator() ;
 

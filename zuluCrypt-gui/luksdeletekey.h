@@ -49,6 +49,7 @@ signals:
 public slots:
 	void ShowUI( void ) ;
 	void ShowUI( const QString& ) ;
+	void ShowUI( const QString&,const QString&,std::function< void() > ) ;
 	void HideUI( void ) ;
 private slots:
 	void Key( int ) ;
@@ -67,6 +68,7 @@ private:
 	QString m_volumePath ;
 	utility::label m_label ;
 	bool m_isWindowClosable ;
+	std::function< void() > m_onExit = [](){} ;
 };
 
 #endif // LUKSDELETEKEY_H

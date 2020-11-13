@@ -132,6 +132,8 @@
     <addaction name="separator"/>
     <addaction name="actionBackup_header"/>
     <addaction name="actionRestore_header"/>
+    <addaction name="separator"/>
+    <addaction name="actionView_LUKS_Key_Slots"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -576,6 +578,11 @@
   <action name="actionClear_Dead_Mount_Points">
    <property name="text">
     <string>Clear Dead Mount Points</string>
+   </property>
+  </action>
+  <action name="actionView_LUKS_Key_Slots">
+   <property name="text">
+    <string>Show LUKS Key Slots</string>
    </property>
   </action>
  </widget>

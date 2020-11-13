@@ -175,11 +175,34 @@ void luksaddkey::HideUI()
 
 void luksaddkey::cbVolumeType( int e )
 {
-	bool s = ( e == 2 ) ;
+	if( e == 0 ){
+		/*
+		 * LUKS volume
+		 */
+		m_ui->lineEditPIM->setEnabled( true ) ;
+		m_ui->label_4->setEnabled( true ) ;
+		m_ui->lineEditPIM->setEnabled( true ) ;
+		m_ui->lineEditPIM->setEchoMode( QLineEdit::Normal ) ;
 
-	m_ui->lineEditPIM->setEnabled( s ) ;
-	m_ui->label_4->setEnabled( s ) ;
-	m_ui->lineEditPIM->setEnabled( s ) ;
+		m_ui->label_4->setText( tr( "Key Slot Number To Add Key In" ) ) ;
+
+	}else if( e == 1 ){
+		/*
+		 * TrueCrypt
+		 */
+		m_ui->lineEditPIM->setEnabled( false ) ;
+		m_ui->label_4->setEnabled( false ) ;
+		m_ui->lineEditPIM->setEnabled( false ) ;
+	}else{
+		/*
+		 * VeraCrypt
+		 */
+		m_ui->lineEditPIM->setEnabled( true ) ;
+		m_ui->label_4->setEnabled( true ) ;
+		m_ui->lineEditPIM->setEnabled( true ) ;
+		m_ui->lineEditPIM->setEchoMode( QLineEdit::Password ) ;
+		m_ui->label_4->setText( tr( "PIM" ) ) ;
+	}
 }
 
 void luksaddkey::cbExistingKey( int e )
@@ -503,6 +526,15 @@ void luksaddkey::pbAdd( void )
 
 			exe += "." + e ;
 		}
+
+	}else if( m_ui->cbVolumeType->currentIndex() == 0 ){
+
+		auto e = m_ui->lineEditPIM->text() ;
+
+		if( !e.isEmpty() ){
+
+			exe += " -g " + e ;
+		}
 	}
 
 	m_isWindowClosable = false ;
@@ -559,6 +591,8 @@ void luksaddkey::taskFinished( const utility::Task& e )
 		case 13 : m_label.show( tr( "Couldnt get enought memory to hold the key file" ) ) ;			break ;
 		case 14 : m_label.show( tr( "Could not get a key from a socket" ) ) ;					break ;
 		case 15 : m_label.show( tr( "Could not get elevated privilege,check binary permissions" ) ) ;		break ;
+		case 16 : m_label.show( tr( "Key slot already occupied" ) ) ;					break ;
+		case 17 : m_label.show( tr( "Failed to find empty key slot or key slot out of range" ) ) ;		break ;
 		case 110: m_label.show( tr( "Can not find a partition that match presented UUID" ) ) ;			break ;
 		case 113: m_label.show( tr( "Device is not a luks device" ) ) ;						break ;
 		default:  m_label.show( tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;

@@ -26,6 +26,7 @@ typedef struct{
 
 	const char * key ;
 	size_t       key_len ;
+	int          slot_number ;
 
 }arguments ;
 
@@ -56,7 +57,7 @@ static int _remove_key( const char * device,const resolve_path_t * opts )
 		return zuluExit( 3,cd ) ;
 	}
 
-	slot = crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,args->key,args->key_len,0 ) ;
+	slot = crypt_activate_by_passphrase( cd,NULL,args->slot_number,args->key,args->key_len,0 ) ;
 
 	if( slot < 0 ){
 
@@ -72,6 +73,11 @@ static int _remove_key( const char * device,const resolve_path_t * opts )
 
 int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size )
 {
+	return zuluCryptRemoveKey_0( device,pass,pass_size,CRYPT_ANY_SLOT ) ;
+}
+
+int zuluCryptRemoveKey_0( const char * device ,const char * pass,size_t pass_size,int key_slot )
+{
 	/*
 	 * resolve_path_t is defined in includes.h
 	 */
@@ -81,8 +87,15 @@ int zuluCryptRemoveKey( const char * device ,const char * pass,size_t pass_size 
 	memset( &opts,'\0',sizeof( opts ) ) ;
 	memset( &args,'\0',sizeof( args ) ) ;
 
-	args.key          = pass ;
-	args.key_len      = pass_size ;
+	args.key     = pass ;
+	args.key_len = pass_size ;
+
+	if( key_slot == -1 ){
+
+		args.slot_number = CRYPT_ANY_SLOT ;
+	}else{
+		args.slot_number  = key_slot ;
+	}
 
 	opts.device       = device ;
 	opts.args         = &args  ;

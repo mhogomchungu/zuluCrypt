@@ -416,6 +416,8 @@ namespace utility
 	bool eventFilter( QObject * gui,QObject * watched,QEvent * event,std::function< void() > ) ;
 	QStringList split( const QString&,char token = '\n' ) ;
 	QStringList split( const QByteArray&,char token = '\n' ) ;
+	QStringList split( const QByteArray&,const char * token ) ;
+	QStringList split( const QString&,const char * token ) ;
 	QStringList directoryList( const QString& ) ;
 	QStringList plainDmCryptOptions( void ) ;
 	QStringList supportedFileSystems( void ) ;

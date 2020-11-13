@@ -190,7 +190,10 @@ only root user or members of group \"zulucrypt\" can do that\n" ) ) ;							brea
 		case 13 : printf( gettext( "ERROR: Couldnt get enought memory to hold the key file\n" ) ) ;	     	break ;
 		case 14 : printf( gettext( "ERROR: Could not get a key from a socket\n" ) ) ;				break ;
 		case 15 : printf( gettext( "ERROR: Could not get elevated privilege,check binary permissions\n" ) ) ;	break ;
-		default : printf( gettext( "ERROR: Unrecognized error with status number %d encountered\n" ),st ) ;
+		case 16 : printf( gettext( "ERROR: Key slot already occupied\n" ) ) ;	                                break ;
+		case 17 : printf( gettext( "ERROR: Failed to find empty key slot or key slot out of range\n" ) ) ;      break ;
+
+	default : printf( gettext( "ERROR: Unrecognized error with status number %d encountered\n" ),st ) ;
 	}
 
 	return st ;
@@ -248,7 +251,9 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	const char * existingKey = opts->existing_key ;
 	const char * keyType2    = opts->new_key_source ;
 	const char * newKey      = opts->new_key ;
+	int slot_number          = opts->luks_slot_number ;
 
+	char * m ;
 	/*
 	 * Below is a form of memory management.All strings are collected in a stringlist object to easily delete them
 	 * when the function returns.This allows for the function to have multiple exit points without risks of leaking
@@ -256,18 +261,20 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 * code deleting blocks to take into account different exit points.
 	 */
 	stringList_t stl ;
-	string_t * stringArray  = StringListArray( &stl,5 ) ;
+	string_t * stringArray  = StringListArray( &stl,6 ) ;
 	string_t * presentKey	= &stringArray[ 0 ] ;
 	string_t * newKey_1  	= &stringArray[ 1 ] ;
 	string_t * newKey_2    	= &stringArray[ 2 ] ;
 	string_t * ek          	= &stringArray[ 3 ] ;
 	string_t * nk          	= &stringArray[ 4 ] ;
+	string_t * slots       	= &stringArray[ 5 ] ;
 
 	const char * key1 = NULL ;
 	const char * key2 = NULL ;
 
 	size_t len1 = 0 ;
 	size_t len2 = 0 ;
+	size_t len3 ;
 
 	int status = 0 ;
 
@@ -415,10 +422,26 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	 */
 	if( zuluCryptVolumeIsLuks( device ) ){
 
-		/*
-		* zuluCryptAddKey() is defined in ../lib/add_key.c
-		*/
-		status = zuluCryptAddKey( device,key1,len1,key2,len2 ) ;
+		m = zuluCryptEmptySlots( device ) ;
+
+		*slots = StringInherit( &m ) ;
+
+		len3 = StringLength( *slots ) ;
+
+		if( len3 > 0 && ( size_t )slot_number < len3 ){
+
+			if( StringContent( *slots )[ slot_number ] == '0' ){
+
+				/*
+				* zuluCryptAddKey() is defined in ../lib/add_key.c
+				*/
+				status = zuluCryptAddKey_0( device,key1,len1,key2,len2,slot_number ) ;
+			}else{
+				return zuluExit( 16,stl ) ;
+			}
+		}else{
+			return zuluExit( 17,stl ) ;
+		}
 	}else{
 		tcrypt.device = device ;
 

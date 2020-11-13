@@ -710,4 +710,9 @@ int zuluCryptIsDislockerMapperPath( const char * ) ;
  */
 int zuluCryptDeviceManagedByDislocker( const char * device,uid_t ) ;
 
+/*
+ * this function is defined in empty_slots.c
+ */
+char * zuluCryptSlotsStatus( const char * device ) ;
+
 #endif
