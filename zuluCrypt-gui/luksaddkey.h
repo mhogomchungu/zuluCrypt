@@ -50,6 +50,7 @@ signals :
 	void pbOpenPartitionClicked( void ) ;
 public slots:
 	void ShowUI( const QString& ) ;
+	void ShowUI( const QString&,const QString&,std::function< void() > ) ;
 	void ShowUI( void ) ;
 	void HideUI( void ) ;
 private slots:
@@ -80,6 +81,7 @@ private:
 	keystrength m_keystrength ;
 	utility::veraCryptWarning m_veraCryptWarning ;
 	utility::label m_label ;
+	std::function< void() > m_onExit = [](){} ;
 };
 
 #endif // luksaddkeySUI_H

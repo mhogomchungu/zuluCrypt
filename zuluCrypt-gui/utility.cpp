@@ -2290,7 +2290,6 @@ int utility::defaultUnlockingVolumeType()
 void utility::defaultUnlockingVolumeType( int e )
 {
 	_settings->setValue( "DefaultUnlockingVolumeType",e ) ;
-
 }
 
 void utility::autoOpenFolderOnMount( const QString& app,bool e )
@@ -3150,4 +3149,19 @@ void utility::duration::reset()
 QDateTime& utility::duration::timer()
 {
 	return m_time ;
+}
+
+bool utility::showOnlyOccupiedSlots()
+{
+	if( !_settings->contains( "ShowOnlyOccupiedSlots" ) ){
+
+		_settings->setValue( "ShowOnlyOccupiedSlots",true ) ;
+	}
+
+	return _settings->value( "ShowOnlyOccupiedSlots" ).toBool() ;
+}
+
+void utility::showOnlyOccupiedSlots( bool e )
+{
+	_settings->setValue( "ShowOnlyOccupiedSlots",e ) ;
 }

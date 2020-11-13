@@ -180,6 +180,13 @@ void openvolume::partitionList( const QString& p, const QString& q,std::function
 	this->partitionList( p,q ) ;
 }
 
+openvolume& openvolume::setOnExit( std::function< void() > m )
+{
+	m_onExit = std::move( m ) ;
+
+	return *this ;
+}
+
 void openvolume::ShowAllPartitions( std::function< void( const QString& ) > f )
 {
 	m_function = std::move( f ) ;
@@ -305,6 +312,9 @@ void openvolume::HideUI()
 	if( m_ui->pbCancel->isEnabled() ){
 
 		this->hide() ;
+
+		m_onExit() ;
+
 		this->deleteLater() ;
 	}
 }

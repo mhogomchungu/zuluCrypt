@@ -135,19 +135,6 @@ static void _get_slot_property( string_t q,int j,const char * type,struct crypt_
 
 	struct crypt_pbkdf_type pbkdf ;
 
-	StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
-
-	if( StringsAreEqual( type,CRYPT_LUKS2 ) ){
-
-		StringAppend( q,"Type: luks2\n" ) ;
-
-	}else if( StringsAreEqual( type,CRYPT_LUKS1 ) ){
-
-		StringAppend( q,"Type: luks1\n" ) ;
-	}else{
-		StringAppend( q,"Type: luks\n" ) ;
-	}
-
 	if( crypt_keyslot_get_pbkdf( cd,j,&pbkdf ) == 0 ){
 
 		StringMultipleAppend( q,"PBKDF type: ",pbkdf.type,"\n",NULL ) ;
@@ -205,6 +192,8 @@ static char * _slots_status( const char * device,const resolve_path_t * opts )
 
 	string_t q ;
 
+	const char * typ ;
+
 	const char * type = _crypt_init( &cd,device,opts ) ;
 
 	if( type == NULL ){
@@ -226,6 +215,17 @@ static char * _slots_status( const char * device,const resolve_path_t * opts )
 		return zuluExit( NULL,cd ) ;
 	}
 
+	if( StringsAreEqual( type,CRYPT_LUKS2 ) ){
+
+		typ = "Type: luks2\n" ;
+
+	}else if( StringsAreEqual( type,CRYPT_LUKS1 ) ){
+
+		typ = "Type: luks1\n" ;
+	}else{
+		typ = "Type: luks\n" ;
+	}
+
 	crypt_keyslot_info info ;
 
 	q = StringEmpty() ;
@@ -236,7 +236,33 @@ static char * _slots_status( const char * device,const resolve_path_t * opts )
 
 		if( info == CRYPT_SLOT_ACTIVE || info == CRYPT_SLOT_ACTIVE_LAST ) {
 
+			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
+
+			StringMultipleAppend( q,typ,"Slot Status: Active\n",NULL ) ;
+
 			_get_slot_property( q,j,type,cd ) ;
+
+		}else if( info == CRYPT_SLOT_INACTIVE ){
+
+			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
+
+			StringMultipleAppend( q,typ,"Slot Status: Inactive\n\n",NULL ) ;
+
+		}else if( info == CRYPT_SLOT_INVALID ){
+
+			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
+
+			StringMultipleAppend( q,typ,"Slot Status: Invalid\n\n",NULL ) ;
+
+		}else if( info == CRYPT_SLOT_UNBOUND ){
+
+			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
+
+			StringMultipleAppend( q,typ,"Slot Status: Unbound\n\n",NULL ) ;
+		}else{
+			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
+
+			StringMultipleAppend( q,typ,"Slot Status: Unknown\n\n",NULL ) ;
 		}
 	}
 

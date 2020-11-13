@@ -23,6 +23,7 @@
 #include "utility.h"
 #include "openvolume.h"
 #include "luksdeletekey.h"
+#include "luksaddkey.h"
 #include "bin_path.h"
 #include "tablewidget.h"
 
@@ -44,6 +45,8 @@ showLUKSSlots::showLUKSSlots( QWidget * parent,const QString& p,std::function< v
 	m_ui->labelError->setVisible( false ) ;
 	m_ui->pbOK->setVisible( false ) ;
 
+	m_ui->checkBox->setChecked( utility::showOnlyOccupiedSlots() ) ;
+
 	m_ui->tableWidget->verticalHeader()->setSectionResizeMode( QHeaderView::ResizeToContents ) ;
 
 	m_ui->tableWidget->verticalHeader()->setMinimumSectionSize( 30 ) ;
@@ -55,6 +58,13 @@ showLUKSSlots::showLUKSSlots( QWidget * parent,const QString& p,std::function< v
 	m_ui->pbDevice->setIcon( QIcon( ":/partition.png" ) ) ;
 
 	m_ui->tableWidget->setContextMenuPolicy( Qt::CustomContextMenu ) ;
+
+	connect( m_ui->checkBox,&QCheckBox::stateChanged,[ this ]( int s ){
+
+		utility::showOnlyOccupiedSlots( s != Qt::Unchecked ) ;
+
+		this->showData() ;
+	} ) ;
 
 	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
 
@@ -88,7 +98,7 @@ showLUKSSlots::showLUKSSlots( QWidget * parent,const QString& p,std::function< v
 
 	connect( m_ui->pbFile,&QPushButton::clicked,[ this ](){
 
-		auto Z = QFileDialog::getOpenFileName( this,tr( "Encrypted Volume Path" ),utility::homePath() ) ;
+		auto Z = QFileDialog::getOpenFileName( this,tr( "Encrypted LUkS Volume Path" ),utility::homePath() ) ;
 
 		if( !Z.isEmpty() ){
 
@@ -102,13 +112,19 @@ showLUKSSlots::showLUKSSlots( QWidget * parent,const QString& p,std::function< v
 
 	connect( m_ui->pbDevice,&QPushButton::clicked,[ this ](){
 
-		//this->hide() ;
+		this->hide() ;
 
-		openvolume::instance( this,false ).showLuksOnly().ShowAllPartitions( [ this ]( const QString& e ){
+		auto& m = openvolume::instance( this,false ) ;
+
+		m.setOnExit( [ this ](){ this->show() ; } ) ;
+
+		m.showLuksOnly() ;
+
+		m.ShowAllPartitions( [ this ]( const QString& e ){
 
 			m_ui->lineEdit->setText( e ) ;
 
-			this->show() ;
+			this->showData() ;
 		} ) ;
 	} ) ;
 
@@ -147,6 +163,30 @@ void showLUKSSlots::deleteSlot( QTableWidgetItem * item )
 	}
 }
 
+void showLUKSSlots::addSlot( QTableWidgetItem * item )
+{
+	auto m = utility::split( item->text(),'\n' ).first() ;
+
+	if( !m.isEmpty() ){
+
+		auto mm = utility::split( m,' ' ) ;
+
+		if( mm.size() > 1 ){
+
+			this->hide() ;
+
+			auto s = m_ui->lineEdit->text() ;
+
+			luksaddkey::instance( m_parent ).ShowUI( s,mm.at( 2 ),[ this ](){
+
+				this->show() ;
+
+				this->showData() ;
+			} ) ;
+		}
+	}
+}
+
 void showLUKSSlots::showData()
 {
 	this->disableAll() ;
@@ -159,6 +199,8 @@ void showLUKSSlots::showData()
 
 	auto s = utility::Task::run( exe.arg( ZULUCRYPTzuluCrypt,m ) ).await() ;
 
+	bool showOnlyOccupiedSlots = utility::showOnlyOccupiedSlots() ;
+
 	QString tmp ;
 
 	if( s.success() ){
@@ -169,32 +211,46 @@ void showLUKSSlots::showData()
 
 			auto b = utility::split( it,"\n" ) ;
 
-			if( b.size() > 3 ){
+			if( b.size() > 2 ){
 
-				if( b.at( 1 ).contains( "luks1" ) ){
+				if( b.at( 2 ).contains( "Active" ) ){
 
-					tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 2 ) ;
+					if( b.at( 1 ).endsWith( "luks1" ) || b.at( 1 ).endsWith( "luks" ) ){
 
-					for( int i = 3 ; i < b.size() ; i++ ){
+						tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 2 ) ;
 
-						tmp += ", " + b.at( i ) ;
-					}
-				}else{
-					tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 2 ) ;
+						for( int i = 3 ; i < b.size() ; i++ ){
 
-					for( int i = 3 ; i < b.size() ; i++ ){
-
-						if( i % 5 == 0 ){
-
-							tmp += "\n" + b.at( i ) ;
-						}else{
 							tmp += ", " + b.at( i ) ;
 						}
+					}else{
+						tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 2 ) ;
+
+						for( int i = 3 ; i < b.size() ; i++ ){
+
+							if( i % 5 == 0 ){
+
+								tmp += "\n" + b.at( i ) ;
+							}else{
+								tmp += ", " + b.at( i ) ;
+							}
+						}
+					}
+
+				}else{
+					if( !showOnlyOccupiedSlots ){
+
+						tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 2 ) ;
 					}
 				}
-			}
 
-			tablewidget::addRow( m_ui->tableWidget,{ tmp } ) ;
+				if( !tmp.isEmpty() ){
+
+					tablewidget::addRow( m_ui->tableWidget,{ tmp } ) ;
+				}
+
+				tmp.clear() ;
+			}			
 		}
 
 		this->enableAll() ;
@@ -207,6 +263,7 @@ void showLUKSSlots::showData()
 
 void showLUKSSlots::HideUI()
 {
+	utility::showOnlyOccupiedSlots( m_ui->checkBox->isChecked() ) ;
 	this->hide() ;
 	m_function() ;
 	this->deleteLater() ;
@@ -235,10 +292,12 @@ void showLUKSSlots::enableAll()
 	m_ui->lineEdit->setEnabled( true ) ;
 	m_ui->label->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
+	m_ui->checkBox->setEnabled( true ) ;
 }
 
 void showLUKSSlots::disableAll()
 {
+	m_ui->checkBox->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
 	m_ui->label->setEnabled( false ) ;
 	m_ui->tableWidget->setEnabled( false ) ;
@@ -252,14 +311,30 @@ void showLUKSSlots::showMenu( QTableWidgetItem * item )
 {
 	QMenu m ;
 
-	m.addAction( tr( "Delete Key Slot" ) )->setObjectName( "Delete Key Slot" ) ;
+	auto text = item->text() ;
+
+	if( text.contains( "Slot Status: Active" ) ){
+
+		m.addAction( tr( "Delete Key Slot" ) )->setObjectName( "Delete Key Slot" ) ;
+
+	}else if( text.contains( "Slot Status: Inactive" ) ){
+
+		m.addAction( tr( "Add Key To This Slot" ) )->setObjectName( "Add Key To This Slot" ) ;
+	}
+
 	m.addAction( tr( "Cancel" ) )->setObjectName( "Cancel" ) ;
 
 	connect( &m,&QMenu::triggered,[ this,item ]( QAction * ac ){
 
-		if( ac->objectName() == "Delete Key Slot" ){
+		auto txt = ac->objectName() ;
+
+		if( txt == "Delete Key Slot" ){
 
 			this->deleteSlot( item ) ;
+
+		}else if( txt == "Add Key To This Slot" ){
+
+			this->addSlot( item ) ;
 		}
 	} ) ;
 

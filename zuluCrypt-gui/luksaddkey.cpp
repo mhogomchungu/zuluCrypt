@@ -134,6 +134,15 @@ void luksaddkey::ShowUI( const QString& path )
 	this->ShowUI() ;
 }
 
+void luksaddkey::ShowUI( const QString& path,const QString& slot,std::function< void() > onExit )
+{
+	m_ui->textEditPathToVolume->setText( path ) ;
+	m_ui->lineEditPIM->setText( slot ) ;
+	m_onExit = std::move( onExit ) ;
+
+	this->ShowUI() ;
+}
+
 void luksaddkey::ShowUI()
 {
 	this->setFieldFocus() ;
@@ -170,6 +179,7 @@ void luksaddkey::setFieldFocus()
 void luksaddkey::HideUI()
 {
 	this->hide() ;
+	m_onExit() ;
 	this->deleteLater() ;
 }
 

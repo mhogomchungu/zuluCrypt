@@ -45,6 +45,7 @@ public:
 	~showLUKSSlots() ;
 private:
 	void deleteSlot( QTableWidgetItem * ) ;
+	void addSlot( QTableWidgetItem * ) ;
 	void showData() ;
 	void HideUI() ;
 	void ShowUI() ;

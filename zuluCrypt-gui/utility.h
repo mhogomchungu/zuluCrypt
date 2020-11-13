@@ -336,6 +336,9 @@ namespace utility
 	int defaultUnlockingVolumeType() ;
 	void defaultUnlockingVolumeType( int ) ;
 
+	bool showOnlyOccupiedSlots() ;
+	void showOnlyOccupiedSlots( bool ) ;
+
 	void autoOpenFolderOnMount( const QString&,bool ) ;
 	bool autoOpenFolderOnMount( const QString& ) ;
 

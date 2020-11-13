@@ -47,6 +47,7 @@ public:
 	virtual ~openvolume() ;
 	openvolume& showEncryptedOnly( void ) ;
 	openvolume& showLuksOnly( void ) ;
+	openvolume& setOnExit( std::function< void() > ) ;
 	void ShowAllPartitions( std::function< void( const QString& ) > ) ;
 	void ShowNonSystemPartitions( std::function< void( const QString& ) > ) ;
 	void partitionList( const QString&,const QString&,std::function< void( const QString& ) > ) ;
@@ -74,6 +75,7 @@ private:
 	bool m_showLuksOnly = false ;
 	bool m_enableUUID ;
 	std::function< void( const QString& ) > m_function ;
+	std::function< void() > m_onExit = [](){} ;
 };
 
 #endif
