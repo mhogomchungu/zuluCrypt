@@ -92,12 +92,12 @@ showLUKSSlots::showLUKSSlots( QWidget * parent,const QString& p,std::function< v
 
 		if( !Z.isEmpty() ){
 
-			m_ui->lineEdit->setText( Z ) ;
+			m_ui->lineEdit->setText( Z ) ;			
+
+			m_ui->lineEdit->setFocus() ;
+
+			this->showData() ;
 		}
-
-		m_ui->lineEdit->setFocus() ;
-
-		this->showData() ;
 	} ) ;
 
 	connect( m_ui->pbDevice,&QPushButton::clicked,[ this ](){

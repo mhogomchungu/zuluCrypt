@@ -322,3 +322,6 @@ version 5.7.1
    if installed version of cryptsetup >= 2.3.0(released on February 3,2020).
    Users of cryptsetup >= 2.3.0 who prefer to use dislocker to unlock
    BitLocker volumes  should create a text file at "/etc/zuluCrypt/dislocker".
+
+version 5.7.2
+-- Add ability to show used LUKS key slots and their properties in zuluCrypt-gui.
