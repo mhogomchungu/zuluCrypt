@@ -64,6 +64,12 @@ luksdeletekey::luksdeletekey( QWidget * parent ) : QDialog( parent ),m_ui( new U
 
 	m_ui->cbKey->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
+	auto m = tr( "zuluCrypt will have the same behavious as luksKillSlot if a key slot is given" ) ;
+	auto n = tr( "zuluCrypt will have the same behavious as luksRemoveKey if a key slot is NOT given" ) ;
+
+	m_ui->lineEditSlotNumber->setToolTip( m + "\n" + n ) ;
+
+
 	this->installEventFilter( this ) ;
 }
 

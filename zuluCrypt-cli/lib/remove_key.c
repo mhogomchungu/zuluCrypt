@@ -57,17 +57,32 @@ static int _remove_key( const char * device,const resolve_path_t * opts )
 		return zuluExit( 3,cd ) ;
 	}
 
-	slot = crypt_activate_by_passphrase( cd,NULL,args->slot_number,args->key,args->key_len,0 ) ;
+	slot = crypt_activate_by_passphrase( cd,NULL,CRYPT_ANY_SLOT,args->key,args->key_len,0 ) ;
 
 	if( slot < 0 ){
 
 		return zuluExit( 2,cd ) ;
 	}
-	if( crypt_keyslot_destroy( cd,slot ) < 0 ){
+	if( args->slot_number == CRYPT_ANY_SLOT ){
+		/*
+		 * Behaves like luksRemoveKey
+		 */
+		if( crypt_keyslot_destroy( cd,slot ) < 0 ){
 
-		return zuluExit( 2,cd ) ;
+			return zuluExit( 2,cd ) ;
+		}else{
+			return zuluExit( 0,cd ) ;
+		}
 	}else{
-		return zuluExit( 0,cd ) ;
+		/*
+		 * Behaves like luksKillSlot
+		 */
+		if( crypt_keyslot_destroy( cd,args->slot_number ) < 0 ){
+
+			return zuluExit( 2,cd ) ;
+		}else{
+			return zuluExit( 0,cd ) ;
+		}
 	}
 }
 
