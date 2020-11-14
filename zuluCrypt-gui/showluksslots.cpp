@@ -205,52 +205,54 @@ void showLUKSSlots::showData()
 
 	if( s.success() ){
 
-		const auto a = utility::split( s.stdOut(),"\n\n" ) ;
+		auto a = utility::split( s.stdOut(),"\n\n" ) ;
+
+		if( a.isEmpty() ){
+
+			m_ui->labelError->setVisible( true ) ;
+			m_ui->pbOK->setVisible( true ) ;
+			m_ui->labelError->setText( "Failed To Get Data From zuluCrypt-cli" ) ;
+
+			return ;
+		}
+
+		m_ui->tableWidget->horizontalHeaderItem( 0 )->setText( a.takeAt( 0 ) ) ;
 
 		for( const auto& it : a ){
 
 			auto b = utility::split( it,"\n" ) ;
 
-			if( b.size() > 2 ){
+			if( b.size() == 2 ){
 
-				if( b.at( 2 ).contains( "Active" ) ){
+				if( !showOnlyOccupiedSlots ){
 
-					if( b.at( 1 ).endsWith( "luks1" ) || b.at( 1 ).endsWith( "luks" ) ){
+					tmp = b.at( 0 ) + "\n" + b.at( 1 ) ;
+				}
 
-						tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 2 ) ;
+			}else if( b.size() > 2 ){
 
-						for( int i = 3 ; i < b.size() ; i++ ){
+				if( b.at( 1 ).contains( "Active" ) ){
 
+					tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 3 ) ;
+
+					for( int i = 4 ; i < b.size() ; i++ ){
+
+						if( i % 6 == 0 ){
+
+							tmp += "\n" + b.at( i ) ;
+						}else{
 							tmp += ", " + b.at( i ) ;
 						}
-					}else{
-						tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 2 ) ;
-
-						for( int i = 3 ; i < b.size() ; i++ ){
-
-							if( i % 5 == 0 ){
-
-								tmp += "\n" + b.at( i ) ;
-							}else{
-								tmp += ", " + b.at( i ) ;
-							}
-						}
-					}
-
-				}else{
-					if( !showOnlyOccupiedSlots ){
-
-						tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 2 ) ;
 					}
 				}
+			}
 
-				if( !tmp.isEmpty() ){
+			if( !tmp.isEmpty() ){
 
-					tablewidget::addRow( m_ui->tableWidget,{ tmp } ) ;
-				}
+				tablewidget::addRow( m_ui->tableWidget,{ tmp } ) ;
+			}
 
-				tmp.clear() ;
-			}			
+			tmp.clear() ;
 		}
 
 		this->enableAll() ;

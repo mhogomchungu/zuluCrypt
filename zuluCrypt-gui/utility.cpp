@@ -67,6 +67,7 @@
 #include "executablesearchpaths.h"
 #include "network_access_manager.hpp"
 #include "zuluPolkit.h"
+#include "luks_slot_status.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -3164,4 +3165,9 @@ bool utility::showOnlyOccupiedSlots()
 void utility::showOnlyOccupiedSlots( bool e )
 {
 	_settings->setValue( "ShowOnlyOccupiedSlots",e ) ;
+}
+
+bool utility::canShowKeySlotProperties()
+{
+	return SUPPORT_crypt_keyslot_get_pbkdf ;
 }

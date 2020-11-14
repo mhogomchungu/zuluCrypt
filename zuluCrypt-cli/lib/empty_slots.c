@@ -162,14 +162,21 @@ static void _get_slot_property( string_t q,int j,const char * type,struct crypt_
 
 			switch( crypt_keyslot_get_priority( cd,j ) ) {
 
-				case CRYPT_SLOT_PRIORITY_INVALID : StringMultipleAppend( q,"Priority: Invalid\n",NULL ) ;
-				break ;
-				case CRYPT_SLOT_PRIORITY_IGNORE : StringMultipleAppend( q,"Priority: Ignore\n",NULL ) ;
-				break ;
-				case CRYPT_SLOT_PRIORITY_NORMAL : StringMultipleAppend( q,"Priority: Normal\n",NULL ) ;
-				break ;
-				case CRYPT_SLOT_PRIORITY_PREFER : StringMultipleAppend( q,"Priority: Prefer\n",NULL ) ;
-				break ;
+				case CRYPT_SLOT_PRIORITY_INVALID :
+					StringAppend( q,"Priority: Invalid\n" ) ;
+					break ;
+				case CRYPT_SLOT_PRIORITY_IGNORE :
+					StringAppend( q,"Priority: Ignore\n" ) ;
+					break ;
+				case CRYPT_SLOT_PRIORITY_NORMAL :
+					StringAppend( q,"Priority: Normal\n" ) ;
+					break ;
+				case CRYPT_SLOT_PRIORITY_PREFER :
+					StringAppend( q,"Priority: Prefer\n" ) ;
+					break ;
+				default:
+					StringAppend( q,"Priority: Unknown\n" ) ;
+					break ;
 			}
 
 			StringMultipleAppend( q,"Time cost: ",_to_string( pbkdf.iterations ),"\n",NULL ) ;
@@ -192,8 +199,6 @@ static char * _slots_status( const char * device,const resolve_path_t * opts )
 
 	string_t q ;
 
-	const char * typ ;
-
 	const char * type = _crypt_init( &cd,device,opts ) ;
 
 	if( type == NULL ){
@@ -215,20 +220,9 @@ static char * _slots_status( const char * device,const resolve_path_t * opts )
 		return zuluExit( NULL,cd ) ;
 	}
 
-	if( StringsAreEqual( type,CRYPT_LUKS2 ) ){
-
-		typ = "Type: luks2\n" ;
-
-	}else if( StringsAreEqual( type,CRYPT_LUKS1 ) ){
-
-		typ = "Type: luks1\n" ;
-	}else{
-		typ = "Type: luks\n" ;
-	}
-
 	crypt_keyslot_info info ;
 
-	q = StringEmpty() ;
+	q = String_1( type," header information\n\n",NULL ) ;
 
 	for( j = 0 ; j < k ; j++ ){
 
@@ -238,7 +232,7 @@ static char * _slots_status( const char * device,const resolve_path_t * opts )
 
 			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
 
-			StringMultipleAppend( q,typ,"Slot Status: Active\n",NULL ) ;
+			StringAppend( q,"Slot Status: Active\n" ) ;
 
 			_get_slot_property( q,j,type,cd ) ;
 
@@ -246,23 +240,23 @@ static char * _slots_status( const char * device,const resolve_path_t * opts )
 
 			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
 
-			StringMultipleAppend( q,typ,"Slot Status: Inactive\n\n",NULL ) ;
+			StringAppend( q,"Slot Status: Inactive\n\n" ) ;
 
 		}else if( info == CRYPT_SLOT_INVALID ){
 
 			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
 
-			StringMultipleAppend( q,typ,"Slot Status: Invalid\n\n",NULL ) ;
+			StringAppend( q,"Slot Status: Invalid\n\n" ) ;
 
 		}else if( info == CRYPT_SLOT_UNBOUND ){
 
 			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
 
-			StringMultipleAppend( q,typ,"Slot Status: Unbound\n\n",NULL ) ;
+			StringAppend( q,"Slot Status: Unbound\n\n" ) ;
 		}else{
 			StringMultipleAppend( q,"Slot Number: ",_to_string( ( unsigned int )j ),"\n",NULL ) ;
 
-			StringMultipleAppend( q,typ,"Slot Status: Unknown\n\n",NULL ) ;
+			StringAppend( q,"Slot Status: Unknown\n\n" ) ;
 		}
 	}
 

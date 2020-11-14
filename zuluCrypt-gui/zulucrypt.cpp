@@ -441,6 +441,8 @@ void zuluCrypt::setupConnections()
 
 	connect( m_ui->actionView_LUKS_Key_Slots,SIGNAL( triggered() ),this,SLOT( showLUKSSlotsData() ) ) ;
 
+	m_ui->actionView_LUKS_Key_Slots->setEnabled( utility::canShowKeySlotProperties() ) ;
+
 	using wbe = LXQt::Wallet::BackEnd ;
 
 	auto a = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
@@ -1082,7 +1084,12 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,QPoint point )
 
 		connect( m.addAction( tr( "Add Key" ) ),SIGNAL( triggered() ),this,SLOT( luksAddKeyContextMenu() ) ) ;
 		connect( m.addAction( tr( "Remove Key" ) ),SIGNAL( triggered() ),this,SLOT( luksDeleteKeyContextMenu() ) ) ;
-		connect( m.addAction( tr( "Show Key Slots Information" ) ),SIGNAL( triggered() ),this,SLOT( showLUKSSlotsInfo() ) ) ;
+
+		auto ac = m.addAction( tr( "Show Key Slots Information" ) ) ;
+
+		ac->setEnabled( utility::canShowKeySlotProperties() ) ;
+
+		connect( ac,SIGNAL( triggered() ),this,SLOT( showLUKSSlotsInfo() ) ) ;
 
 		m.addSeparator() ;
 

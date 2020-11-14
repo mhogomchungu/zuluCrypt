@@ -455,6 +455,8 @@ namespace utility
 	bool readOnlyOption( void ) ;
 	void readOnlyOption( bool ) ;
 
+	bool canShowKeySlotProperties() ;
+
 	bool readOnlyWarning( void ) ;
 	void readOnlyWarning( bool ) ;
 
