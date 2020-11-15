@@ -24,6 +24,8 @@ endif()
 
 pkg_check_modules(DEVMAPPER devmapper)
 pkg_check_modules(UUID uuid)
+pkg_check_modules(UUID-OSSP ossp-uuid)
+
 find_library(GCRYPT_LIB gcrypt)
 
 if (NOT DEVMAPPER_FOUND)
@@ -31,7 +33,9 @@ if (NOT DEVMAPPER_FOUND)
 endif()
 
 if (NOT UUID_FOUND)
-	message(FATAL_ERROR "Could not find the uuid library")
+	if (NOT UUID-OSSP_NOT_FOUND)
+		message(FATAL_ERROR "Could not find the uuid library")
+	else()
 endif()
 
 if (NOT GCRYPT_LIB)
@@ -83,8 +87,8 @@ endif()
 
 add_executable(tcplay-bin main.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(tcplay-bin PROPERTIES OUTPUT_NAME tcplay)
-set_target_properties(tcplay-bin PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
-target_link_libraries(tcplay-bin ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
+set_target_properties(tcplay-bin PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${UUID-OSSP_CFLAGS}  ${GCRYPT_CFLAGS}")
+target_link_libraries(tcplay-bin ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${UUID-OSSP_LDLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
 
 
 add_library(tcplay-so SHARED tcplay_api.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
@@ -93,13 +97,13 @@ set_target_properties(tcplay-so PROPERTIES SOVERSION ${VERSION_MAJOR}.${VERSION_
 set_target_properties(tcplay-so PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
 set_target_properties(tcplay-so PROPERTIES LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/tcplay.map")
 # XXX: revist linking libraries against so. Seems to be more common practice nowadays
-target_link_libraries(tcplay-so ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
+target_link_libraries(tcplay-so ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${UUID-OSSP_LDLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
 
 
 add_library(tcplay-static STATIC tcplay_api.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(tcplay-static PROPERTIES OUTPUT_NAME tcplay)
 set_target_properties(tcplay-static PROPERTIES VERSION ${VERSION_MAJOR}.${VERSION_MINOR})
-set_target_properties(tcplay-static PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
+set_target_properties(tcplay-static PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${UUID-OSSP_CFLAGS} ${GCRYPT_CFLAGS}")
 
 
 # Generate pkg-config file tcplay.pc
