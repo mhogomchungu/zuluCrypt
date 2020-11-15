@@ -55,6 +55,11 @@ LXQt::Wallet::Wallet * secrets::internalWallet() const
 
 		m_internalWallet = w::getWalletBackend( w::BackEnd::internal ).release() ;
 
+		m_internalWallet->log( []( const QString& e ){
+
+			utility::debug() << e ;
+		} ) ;
+
 		m_internalWallet->setParent( m_parent ) ;
 	}
 
