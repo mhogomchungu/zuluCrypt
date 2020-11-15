@@ -28,17 +28,15 @@
  * SUCH DAMAGE.
  */
 
-#ifndef LXQT_LIBSECRET_H
-#define LXQT_LIBSECRET_H
+#ifndef LXQT_KWALLET_DBUS_H
+#define LXQT_KWALLET_DBUS_H
 
 #include "lxqt_wallet.h"
 
 #include <QString>
 #include <QByteArray>
 #include <QDebug>
-#include <QEventLoop>
-
-#include <memory>
+#include <QtDBus>
 
 class QWidget;
 
@@ -48,11 +46,14 @@ namespace LXQt
 namespace Wallet
 {
 
-class libsecret : public LXQt::Wallet::Wallet
+class kwallet_dbus : public LXQt::Wallet::Wallet
 {
+    Q_OBJECT
 public:
-    libsecret();
-    ~libsecret();
+    static bool has_functionality();
+
+    kwallet_dbus();
+    ~kwallet_dbus();
 
     void open(const QString &walletName,
               const QString &applicationName,
@@ -85,7 +86,7 @@ public:
     void closeWallet(bool);
     void changeWalletPassWord(const QString &walletName,
                               const QString &applicationName = QString(),
-                              std::function< void(bool) > = [](bool e) { Q_UNUSED(e); });
+			      std::function<void(bool)> = [](bool e) { Q_UNUSED(e) });
     void setImage(const QIcon &);
 
     int walletSize(void) ;
@@ -94,29 +95,24 @@ public:
 
     LXQt::Wallet::BackEnd backEnd(void);
     QObject *qObject(void);
-private:
+
+private slots:
     void walletOpened(bool);
+private:
+    void openedWallet(bool);
 
-    QByteArray m_byteArrayWalletName;
-    QByteArray m_byteArrayApplicationName;
-    QByteArray m_byteArraySchemaName;
-
-    const char *m_walletName;
-    const char *m_applicationName;
-
+    int m_handle = -1;
+    QString m_walletName;
+    QString m_applicationName;
     QString m_password;
-    QWidget *m_interfaceObject = nullptr;
-
-    std::unique_ptr<void, void( *)(void *)> m_schema;
-    std::unique_ptr<void, void( *)(void *)> m_schema_1;
-
-    bool m_opened;
-
-    std::function< void(bool) > m_walletOpened = [](bool e) { Q_UNUSED(e); };
+    QString m_folder;
+    QDBusInterface m_dbus;
+    std::function<void(bool)> m_walletOpened = [](bool e) { Q_UNUSED(e) };
+    std::function<void(QString)> m_log;
 };
 
 }
 
 }
 
-#endif // LXQT_LIBSECRET_H
+#endif // LXQT_KWALLET_DBUS_H

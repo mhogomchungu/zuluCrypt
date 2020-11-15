@@ -67,7 +67,14 @@ secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e ) const
 
 		return this->internalWallet() ;
 	}else{
-		return LXQt::Wallet::getWalletBackend( e ).release() ;
+		auto a = LXQt::Wallet::getWalletBackend( e ).release() ;
+
+		a->log( []( const QString& e ){
+
+			utility::debug() << e ;
+		} ) ;
+
+		return a ;
 	}
 }
 
