@@ -80,10 +80,17 @@
 #include <limits.h>
 #include <inttypes.h>
 
+#include "uuid_source.h"
+
 #if defined(__DragonFly__)
 #include <uuid.h>
 #elif defined(__linux__)
+#include <linux/limits.h>
+#if USE_UUID
+#include <uuid/uuid.h>
+#else
 #include <uuid.h>
+#endif
 #endif
 
 
@@ -164,9 +171,12 @@ struct tcplay_info {
 	off_t skip;	/* IV offset (in blk_sz blocks) */
 	off_t offset;	/* Block offset (in blk_sz blocks) */
 
+#if USE_UUID
 	/* Populated by dm_setup */
 	uuid_t uuid;
-
+#else
+	unsigned char uuid[16];
+#endif
 	int hidden;
 };
 

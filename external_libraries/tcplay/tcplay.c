@@ -46,7 +46,6 @@
 #include <time.h>
 #if defined(__linux__)
 #include <libdevmapper.h>
-#include <uuid/uuid.h>
 #include <sys/sysmacros.h>
 #elif defined(__DragonFly__)
 #include <libdm.h>
@@ -1695,7 +1694,8 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 	struct dm_task *dmt = NULL;
 	struct dm_info dmi;
 	char *params = NULL;
-	char *uu, *uu_temp;
+	char *uu;
+	char *uu_temp=NULL;
 	char *uu_stack[64];
 	int uu_stack_idx;
 #if defined(__DragonFly__)
@@ -1767,6 +1767,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 		}
 
 #if defined(__linux__)
+#if USE_UUID
 		uuid_generate(info->uuid);
 		if ((uu_temp = malloc(1024)) == NULL) {
 			tc_log(1, "uuid_unparse memory failed\n");
@@ -1774,6 +1775,16 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 			goto out;
 		}
 		uuid_unparse(info->uuid, uu_temp);
+#else
+		uuid_t *uu;
+		uuid_create(&uu) ;
+		uuid_make(uu, UUID_MAKE_V1);
+		size_t s ;
+		uuid_export(uu, UUID_FMT_STR, &uu_temp, &s);
+		s = sizeof(info->uuid);
+		uuid_export(uu, UUID_FMT_BIN, &info->uuid, &s);
+		uuid_destroy(uu);
+#endif
 #elif defined(__DragonFly__)
 		uuid_create(&info->uuid, &status);
 		if (status != uuid_s_ok) {
