@@ -83,7 +83,7 @@
 #if defined(__DragonFly__)
 #include <uuid.h>
 #elif defined(__linux__)
-#include <uuid/uuid.h>
+#include <uuid.h>
 #endif
 
 
