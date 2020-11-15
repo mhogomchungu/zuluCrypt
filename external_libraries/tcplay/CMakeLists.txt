@@ -39,6 +39,8 @@ if (NOT UUID_FOUND)
 
 	if (NOT UUID-OSSP_FOUND)
 		message(FATAL_ERROR "Could not find the uuid library")
+	else()
+
 	endif()
 else()
 	file( WRITE ${PROJECT_BINARY_DIR}/uuid_source.h "\n#define USE_UUID 1\n" )
@@ -90,6 +92,7 @@ if (NOT (DEFINED SBIN_DIR))
   set (SBIN_DIR "sbin")
 endif()
 
+include_directories(${PROJECT_BINARY_DIR})
 
 add_executable(tcplay-bin main.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(tcplay-bin PROPERTIES OUTPUT_NAME tcplay)
@@ -100,7 +103,7 @@ target_link_libraries(tcplay-bin ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${UUID-OSS
 add_library(tcplay-so SHARED tcplay_api.c ${SRCS_COMMON} ${SRCS_LINUX} ${SRCS_PBKDF})
 set_target_properties(tcplay-so PROPERTIES OUTPUT_NAME tcplay)
 set_target_properties(tcplay-so PROPERTIES SOVERSION ${VERSION_MAJOR}.${VERSION_MINOR})
-set_target_properties(tcplay-so PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${GCRYPT_CFLAGS}")
+set_target_properties(tcplay-so PROPERTIES COMPILE_FLAGS "${CFLAGS_COMMON} ${DEVMAPPER_CFLAGS} ${UUID_CFLAGS} ${UUID-OSSP_CFLAGS} ${GCRYPT_CFLAGS}")
 set_target_properties(tcplay-so PROPERTIES LINK_FLAGS "-Wl,--version-script=${PROJECT_SOURCE_DIR}/tcplay.map")
 # XXX: revist linking libraries against so. Seems to be more common practice nowadays
 target_link_libraries(tcplay-so ${DEVMAPPER_LDFLAGS} ${UUID_LDFLAGS} ${UUID-OSSP_LDFLAGS} ${GCRYPT_LDFLAGS} ${LDFLAGS_PBKDF})
