@@ -33,7 +33,7 @@ if (NOT DEVMAPPER_FOUND)
 endif()
 
 if (NOT UUID_FOUND)
-	if (NOT UUID-OSSP_NOT_FOUND)
+	if (NOT UUID-OSSP_FOUND)
 		message(FATAL_ERROR "Could not find the uuid library")
 	endif()
 endif()
