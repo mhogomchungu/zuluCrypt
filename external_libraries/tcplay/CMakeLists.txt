@@ -35,15 +35,13 @@ if (NOT DEVMAPPER_FOUND)
 endif()
 
 if (NOT UUID_FOUND)
-	file( WRITE ${PROJECT_BINARY_DIR}/uuid_source.h "\n#define USE_UUID 0\n" )
-
 	if (NOT UUID-OSSP_FOUND)
 		message(FATAL_ERROR "Could not find the uuid library")
 	else()
-
+		file( WRITE ${PROJECT_BINARY_DIR}/uuid_source.h "\n#define TCPLAY_USE_OOSD_UUID 1\n" )
 	endif()
 else()
-	file( WRITE ${PROJECT_BINARY_DIR}/uuid_source.h "\n#define USE_UUID 1\n" )
+	file( WRITE ${PROJECT_BINARY_DIR}/uuid_source.h "\n#define TCPLAY_USE_OOSD_UUID 0\n" )
 endif()
 
 if (NOT GCRYPT_LIB)

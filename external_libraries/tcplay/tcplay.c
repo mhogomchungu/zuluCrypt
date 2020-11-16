@@ -1767,15 +1767,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 		}
 
 #if defined(__linux__)
-#if USE_UUID
-		uuid_generate(info->uuid);
-		if ((uu_temp = malloc(1024)) == NULL) {
-			tc_log(1, "uuid_unparse memory failed\n");
-			ret = -1;
-			goto out;
-		}
-		uuid_unparse(info->uuid, uu_temp);
-#else
+#if TCPLAY_USE_OOSD_UUID
 		uuid_t *uu;
 		uuid_create(&uu) ;
 		uuid_make(uu, UUID_MAKE_V1);
@@ -1784,6 +1776,14 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 		s = sizeof(info->uuid);
 		uuid_export(uu, UUID_FMT_BIN, &info->uuid, &s);
 		uuid_destroy(uu);
+#else
+		uuid_generate(info->uuid);
+		if ((uu_temp = malloc(1024)) == NULL) {
+			tc_log(1, "uuid_unparse memory failed\n");
+			ret = -1;
+			goto out;
+		}
+		uuid_unparse(info->uuid, uu_temp);
 #endif
 #elif defined(__DragonFly__)
 		uuid_create(&info->uuid, &status);
