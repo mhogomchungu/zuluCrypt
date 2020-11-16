@@ -1767,7 +1767,7 @@ dm_setup(const char *mapname, struct tcplay_info *info)
 		}
 
 #if defined(__linux__)
-#if TCPLAY_USE_OOSD_UUID
+#if TCPLAY_USE_OSSP_UUID
 		uuid_t *uu;
 		uuid_create(&uu) ;
 		uuid_make(uu, UUID_MAKE_V1);

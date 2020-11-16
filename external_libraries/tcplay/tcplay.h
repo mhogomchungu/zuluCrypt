@@ -86,10 +86,10 @@
 #include <uuid.h>
 #elif defined(__linux__)
 #include <linux/limits.h>
-#if TCPLAY_USE_OOSD_UUID
-#include <uuid/uuid.h>
-#else
+#if TCPLAY_USE_OSSP_UUID
 #include <uuid.h>
+#else
+#include <uuid/uuid.h>
 #endif
 #endif
 
@@ -171,7 +171,7 @@ struct tcplay_info {
 	off_t skip;	/* IV offset (in blk_sz blocks) */
 	off_t offset;	/* Block offset (in blk_sz blocks) */
 
-#if TCPLAY_USE_OOSD_UUID
+#if TCPLAY_USE_OSSP_UUID
 	/* Populated by dm_setup */
 	unsigned char uuid[16];
 #else
