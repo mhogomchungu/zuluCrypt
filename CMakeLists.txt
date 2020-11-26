@@ -75,7 +75,6 @@ pkg_check_modules( DEVMAPPER devmapper )
 pkg_check_modules( UUID uuid )
 pkg_check_modules( UUID-OSSP ossp-uuid )
 
-pkg_check_modules( MCHUNGU_NETWORK mhogomchungu_network )
 pkg_check_modules( MCHUNGU_TASK mhogomchungu_task )
 
 if ( WITH_PWQUALITY )
@@ -369,22 +368,6 @@ if( NOT NOGUI )
 
 		INCLUDE( ${QT_USE_FILE} )
         endif()
-
-	if( MCHUNGU_NETWORK_FOUND )
-
-		message( STATUS "---------------------------------------------------------------------------" )
-		message( STATUS "mhogomchungu_network library will be provided by an external library" )
-		message( STATUS "---------------------------------------------------------------------------" )
-
-		include_directories( "${MCHUNGU_NETWORK_INCLUDEDIR}" )
-		link_directories( "${MCHUNGU_NETWORK_LIBDIR}" )
-	else()
-		message( STATUS "---------------------------------------------------------------------------" )
-		message( STATUS "mhogomchungu_network library will be provided by an internal library" )
-		message( STATUS "---------------------------------------------------------------------------" )
-		ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/NetworkAccessManager )
-		include_directories( ${PROJECT_SOURCE_DIR}/external_libraries/NetworkAccessManager )
-	endif()
 
 	if( MCHUNGU_TASK_FOUND )
 

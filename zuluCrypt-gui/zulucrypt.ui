@@ -173,7 +173,6 @@
     <addaction name="actionEncrypt_file"/>
     <addaction name="actionDecrypt_file"/>
     <addaction name="separator"/>
-    <addaction name="actionCheck_For_Update"/>
     <addaction name="separator"/>
     <addaction name="actionShow_Debug_Window"/>
     <addaction name="separator"/>

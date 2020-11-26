@@ -56,7 +56,6 @@
 #include "siritask.h"
 #include "zulumounttask.h"
 #include "task.hpp"
-#include "../zuluCrypt-gui/checkforupdates.h"
 #include "../zuluCrypt-gui/favorites.h"
 #include "bin_path.h"
 
@@ -71,7 +70,6 @@ zuluMount::zuluMount( QWidget * parent ) :
 	QWidget( parent ),
 	m_mountInfo( this,true,[](){ QCoreApplication::quit() ; } ),
 	m_events( this,m_mountInfo.stop() ),
-	m_checkForUpdates( this ),
 	m_signalHandler( this )
 {
 	utility::mainWindowWidget( this ) ;
@@ -348,17 +346,6 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 	trayMenu->addAction( [ this ](){
 
-		auto ac = new QAction( tr( "Check For Update" ),this ) ;
-
-		m_actionPair.append( { ac,"Check For Update" } ) ;
-
-		connect( ac,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
-
-		return ac ;
-	}() ) ;
-
-	trayMenu->addAction( [ this ](){
-
 		auto ac = new QAction( tr( "About" ),this ) ;
 
 		m_actionPair.append( { ac,"About" } ) ;
@@ -427,8 +414,6 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 		this->showMoungDialog( volume ) ;
 	}
 
-	this->autoUpdateCheck() ;
-
 	if( !m_startHidden ){
 
 		this->raiseWindow() ;
@@ -465,16 +450,6 @@ void zuluMount::setIcons()
 void zuluMount::licenseInfo()
 {
 	utility::licenseInfo( this ) ;
-}
-
-void zuluMount::updateCheck()
-{
-	m_checkForUpdates.run() ;
-}
-
-void zuluMount::autoUpdateCheck()
-{
-	m_checkForUpdates.run( "zuluMount" ) ;
 }
 
 void zuluMount::removeVolumeFromHiddenVolumeList( QAction * ac )

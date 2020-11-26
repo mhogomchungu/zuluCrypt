@@ -30,7 +30,6 @@
 #include "../zuluCrypt-gui/secrets.h"
 #include "events.h"
 #include "monitor_mountinfo.h"
-#include "../zuluCrypt-gui/checkforupdates.h"
 #include "../zuluCrypt-gui/systemsignalhandler.h"
 #include "../zuluCrypt-gui/debugwindow.h"
 
@@ -104,7 +103,6 @@ private slots:
 	void favoriteClicked( QAction * ) ;
 	void openMountPointPath( QString ) ;
 	void licenseInfo( void ) ;
-	void updateCheck( void ) ;
 	void languageMenu( QAction * ac ) ;
 	void encfsProperties( void ) ;
 	void securefsProperties( void ) ;
@@ -114,7 +112,6 @@ private:
 	void setIcons( void ) ;
 	bool errorNotFound( int ) ;
 	QString resolveFavoriteMountPoint( const QString& ) ;
-	void autoUpdateCheck( void ) ;
 	void updateVolumeList( const QVector< volumeProperty >& ) ;
 	void openMountPoint( const QString& ) ;
 	QFont getSystemVolumeFont( void ) ;
@@ -160,8 +157,6 @@ private:
 
 	monitor_mountinfo m_mountInfo ;
 	events m_events ;
-
-	checkForUpdates m_checkForUpdates ;
 
 	systemSignalHandler m_signalHandler ;
 

@@ -30,7 +30,6 @@
 #include "lxqt_wallet.h"
 #include "utility.h"
 #include "secrets.h"
-#include "checkforupdates.h"
 #include "systemsignalhandler.h"
 #include "debugwindow.h"
 
@@ -137,7 +136,6 @@ private slots :
 	void changePassWordOfInternalWallet( void ) ;
 	void optionMenuAboutToShow( void ) ;
 	void openpdf( void ) ;
-	void updateCheck( void ) ;
 	void cinfo( void ) ;
 	void updateVolumeList( const QString& = QString() ) ;
 	void updateVolumeList( QString,QString ) ;
@@ -148,7 +146,6 @@ private:
 	void quitApplication( void ) ;
 	void removeRowFromTable( int ) ;
 	void openFolder( const QString& ) ;
-	void autoUpdateCheck( void ) ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void dropEvent( QDropEvent * ) ;
 
@@ -183,7 +180,6 @@ private:
 	int m_userID ;
 	bool m_autoOpenMountPoint ;
 	monitor_mountinfo m_mountInfo ;
-	checkForUpdates m_checkForUpdates ;
 	systemSignalHandler m_signalHandler ;
 	debugWindow m_debugWindow ;
 };

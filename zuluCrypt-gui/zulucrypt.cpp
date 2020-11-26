@@ -73,14 +73,12 @@
 #include "pdf_path.h"
 #include "warnwhenextendingcontainerfile.h"
 #include "showluksslots.h"
-#include "checkforupdates.h"
 
 #include <memory>
 
 zuluCrypt::zuluCrypt( QWidget * parent ) :
 	QMainWindow( parent ),
 	m_mountInfo( this,false,[ this ](){ this->quitApplication() ; } ),
-	m_checkForUpdates( this ),
 	m_signalHandler( this )
 {
 	utility::mainWindowWidget( this ) ;
@@ -124,7 +122,6 @@ void zuluCrypt::helperStarted( bool e,const QString& volume )
 		this->initKeyCombo() ;
 		this->initTray( m_startHidden ) ;
 		this->info() ;
-		this->autoUpdateCheck() ;
 		this->setLocalizationLanguage( false ) ;
 		this->updateVolumeList( volume ) ;
 
@@ -411,7 +408,6 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionManage_volumes_in_gnome_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInGNOMEWallet() ) ) ;
 	connect( m_ui->actionManage_volumes_in_internal_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInInternalWallet() ) ) ;
 	connect( m_ui->actionOpen_zuluCrypt_pdf,SIGNAL( triggered() ),this,SLOT( openpdf() ) ) ;
-	connect( m_ui->actionCheck_For_Update,SIGNAL( triggered() ),this,SLOT( updateCheck() ) ) ;
 	connect( m_ui->actionSet_File_Manager,SIGNAL( triggered() ),this,SLOT( setFileManager() ) ) ;
 
 	connect( this,SIGNAL( closeVolume( QTableWidgetItem *,int ) ),this,SLOT( closeAll( QTableWidgetItem *,int ) ) ) ;
@@ -537,18 +533,8 @@ void zuluCrypt::optionMenuAboutToShow()
 	m_ui->actionChange_internal_wallet_password->setEnabled( c ) ;
 }
 
-void zuluCrypt::updateCheck()
-{
-	m_checkForUpdates.run() ;
-}
-
 void zuluCrypt::cinfo()
 {
-}
-
-void zuluCrypt::autoUpdateCheck()
-{
-	m_checkForUpdates.run( "zuluCrypt" ) ;
 }
 
 void zuluCrypt::info()
@@ -882,7 +868,6 @@ void zuluCrypt::setUserFont( QFont Font )
 	m_ui->actionVeracrypt_container_in_a_file->setFont( Font ) ;
 	m_ui->actionVeracrypt_container_in_a_partition->setFont( Font ) ;
 	m_ui->actionOpen_zuluCrypt_pdf->setFont( Font ) ;
-	m_ui->actionCheck_For_Update->setFont( Font ) ;
 	m_ui->actionSelect_Language->setFont( Font ) ;
 	m_ui->actionAuto_Open_Mount_Point->setFont( Font ) ;
 	m_ui->actionSelect_Icons->setFont( Font ) ;

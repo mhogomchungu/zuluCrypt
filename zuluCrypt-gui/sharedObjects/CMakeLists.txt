@@ -6,7 +6,6 @@ set( SRC
 	../tablewidget.cpp
 	../utility.cpp
 	../readonlywarning.cpp
-	../checkforupdates.cpp
 	../plugin.cpp
 	../executablesearchpaths.cpp
 	../systemsignalhandler.cpp
@@ -34,9 +33,9 @@ if( QT5 )
 	add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} ${ICON} )
 
 	if( BUILDKWALLET )
-                target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task mhogomchungu_network )
+	        target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
 	else()
-                target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task mhogomchungu_network )
+	        target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
 	endif()
 else()
 	INCLUDE( ${QT_USE_FILE} )
@@ -47,9 +46,9 @@ else()
 	add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} ${ICON} )
 
 	if( BUILDKWALLET )
-                target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${QT_LIBRARIES} mhogomchungu_task mhogomchungu_network )
+	        target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${QT_LIBRARIES} mhogomchungu_task )
 	else()
-                target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${QT_LIBRARIES} mhogomchungu_task mhogomchungu_network )
+	        target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${QT_LIBRARIES} mhogomchungu_task )
 	endif()
 endif()
 
