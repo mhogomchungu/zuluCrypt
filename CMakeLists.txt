@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.0.2)
 
 set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON)
 
@@ -149,6 +149,9 @@ else( NOT CRYPTSETUP_FOUND )
 	if( NOT cryptsetup_lib )
 		message( FATAL_ERROR "ERROR: could not find libcryptsetup.so" )
 	endif( NOT cryptsetup_lib )
+
+	get_filename_component(libcrypsetupFullPath ${cryptsetup_lib} REALPATH)
+	MESSAGE( STATUS "commiting to cryptsetup library path of: ${libcrypsetupFullPath}" )
 endif( NOT CRYPTSETUP_FOUND )
 
 find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
