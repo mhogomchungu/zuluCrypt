@@ -67,6 +67,7 @@
 #include "executablesearchpaths.h"
 #include "zuluPolkit.h"
 #include "luks_slot_status.h"
+#include "cryptsetup_library_path.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -3169,4 +3170,9 @@ void utility::showOnlyOccupiedSlots( bool e )
 bool utility::canShowKeySlotProperties()
 {
 	return SUPPORT_crypt_keyslot_get_pbkdf ;
+}
+
+bool utility::libCryptSetupLibraryNotFound()
+{
+	return !utility::pathExists( CRYPTSETUP_LIBRARY_PATH ) ;
 }

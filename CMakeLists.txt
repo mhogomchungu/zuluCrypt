@@ -152,6 +152,8 @@ else( NOT CRYPTSETUP_FOUND )
 
 	get_filename_component(libcrypsetupFullPath ${cryptsetup_lib} REALPATH)
 	MESSAGE( STATUS "commiting to cryptsetup library path of: ${libcrypsetupFullPath}" )
+	file( WRITE ${PROJECT_BINARY_DIR}/cryptsetup_library_path.h "\n#define CRYPTSETUP_LIBRARY_PATH \"${libcrypsetupFullPath}\"" )
+
 endif( NOT CRYPTSETUP_FOUND )
 
 find_file( GCRYPT_INCLUDE_FILE gcrypt.h )
@@ -388,9 +390,14 @@ if( NOT NOGUI )
 		ADD_SUBDIRECTORY( ${PROJECT_SOURCE_DIR}/external_libraries/tasks )
 	endif()
 
-	add_definitions( -std=c++14 )
+	if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0)
+		set( CMAKE_CXX_STANDARD 20 )
+		MESSAGE( STATUS "Setting C++ version to C++20" )
+	else()
+		set( CMAKE_CXX_STANDARD 14 )
+		MESSAGE( STATUS "Setting C++ version to C++14" )
+	endif()
 
-	set( CMAKE_CXX_STANDARD 14 )
 	set( CMAKE_CXX_STANDARD_REQUIRED ON )
 	set( CMAKE_CXX_EXTENSIONS OFF)
 

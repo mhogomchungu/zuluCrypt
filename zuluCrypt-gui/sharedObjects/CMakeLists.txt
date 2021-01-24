@@ -23,33 +23,18 @@ set( MOC_FILES
 
 set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui ../dialogok.ui ../debugwindow.ui )
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++14 -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR})
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR})
 
-if( QT5 )
-	Qt5_WRAP_UI( UI ${UI_FILES} )
-	Qt5_WRAP_CPP( MOC ${MOC_FILES} )
-	Qt5_ADD_RESOURCES( ICON icon.qrc )
+Qt5_WRAP_UI( UI ${UI_FILES} )
+Qt5_WRAP_CPP( MOC ${MOC_FILES} )
+Qt5_ADD_RESOURCES( ICON icon.qrc )
 
-	add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} ${ICON} )
+add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} ${ICON} )
 
-	if( BUILDKWALLET )
-	        target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
-	else()
-	        target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
-	endif()
+if( BUILDKWALLET )
+        target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
 else()
-	INCLUDE( ${QT_USE_FILE} )
-	Qt4_WRAP_UI( UI ${UI_FILES} )
-	Qt4_WRAP_CPP( MOC ${MOC_FILES} )
-	Qt4_ADD_RESOURCES( ICON icon.qrc )
-
-	add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} ${ICON} )
-
-	if( BUILDKWALLET )
-	        target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${QT_LIBRARIES} mhogomchungu_task )
-	else()
-	        target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${QT_LIBRARIES} mhogomchungu_task )
-	endif()
+        target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
 endif()
 
 set_target_properties( sharedObject PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -pedantic" )

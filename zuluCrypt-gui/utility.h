@@ -316,6 +316,7 @@ namespace utility
 		QString key ;
 	};
 
+	bool libCryptSetupLibraryNotFound() ;
 	int startApplication( const char * appName,std::function<int()> ) ;
 	void startApplication( QObject *,const char * ) ;
 

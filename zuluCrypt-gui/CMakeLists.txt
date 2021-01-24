@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++14 -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ )
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ )
 
 include_directories( ${PROJECT_BINARY_DIR}/zuluCrypt-gui/ )
 
@@ -102,16 +102,9 @@ set( SRC
 	showluksslots.cpp
 )
 
-if( QT5 )
-	Qt5_WRAP_UI( UI ${UI_FILES} )
-	Qt5_WRAP_CPP( MOC ${MOC_FILES} )
-	Qt5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
-else()
-	INCLUDE( ${QT_USE_FILE} )
-	Qt4_WRAP_UI( UI ${UI_FILES} )
-	Qt4_WRAP_CPP( MOC ${MOC_FILES} )
-	Qt4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
-endif()
+Qt5_WRAP_UI( UI ${UI_FILES} )
+Qt5_WRAP_CPP( MOC ${MOC_FILES} )
+Qt5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
@@ -121,24 +114,13 @@ set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_F
 
 set_target_properties( zuluCrypt-gui PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
 
-if( QT5 )
-	if( WITH_PWQUALITY AND library_pwquality )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${library_pwquality} )
-	else( WITH_PWQUALITY AND library_pwquality )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${kwallet_library} )
-	endif( WITH_PWQUALITY AND library_pwquality )
+if( WITH_PWQUALITY AND library_pwquality )
+	TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${library_pwquality} )
+else( WITH_PWQUALITY AND library_pwquality )
+	TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${kwallet_library} )
+endif( WITH_PWQUALITY AND library_pwquality )
 
-	target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager )
-else()
-        if( WITH_PWQUALITY AND library_pwquality )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${QT_LIBRARIES} ${blkid} ${library_pwquality} )
-	else( WITH_PWQUALITY AND library_pwquality )
-		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${QT_LIBRARIES} ${blkid} ${kwallet_library} )
-	endif( WITH_PWQUALITY AND library_pwquality )
-
-        target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager )
-
-endif()
+target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager )
 
 install( TARGETS zuluCrypt-gui RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 

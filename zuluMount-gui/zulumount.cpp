@@ -775,6 +775,14 @@ void zuluMount::Show()
 		QMetaObject::invokeMethod( this,"polkitFailedWarning",Qt::QueuedConnection ) ;
 	} ) ;
 
+	if( utility::libCryptSetupLibraryNotFound() ){
+
+		auto a = tr( "Cryptsetup library could not be found and zuluCrypt will most likely not work as expected." ) ;
+		auto b = tr( "\n\nPlease recompile zuluCrypt to force it to re-discover the new library" ) ;
+
+		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),a + b ) ;
+	}
+
 	oneinstance::instance( this,
 			       s + "/zuluMount-gui.socket",
 			       utility::cmdArgumentValue( l,"-d" ),

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0.2)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++14 -I${PROJECT_BINARY_DIR}/zuluMount-gui/ -I${PROJECT_BINARY_DIR})
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINARY_DIR}/zuluMount-gui/ -I${PROJECT_BINARY_DIR})
 
 include_directories( ${PROJECT_BINARY_DIR}/zuluMount-gui/ )
 
@@ -50,47 +50,24 @@ set(SRC 	main.cpp
 		../zuluCrypt-gui/secrets.cpp
 )
 
-if( QT5 )
-	find_package( Qt5Widgets REQUIRED )
-	find_package( Qt5Core REQUIRED )
+find_package( Qt5Widgets REQUIRED )
+find_package( Qt5Core REQUIRED )
 
-	set( CMAKE_INCLUDE_CURRENT_DIR ON )
-	include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
+set( CMAKE_INCLUDE_CURRENT_DIR ON )
+include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
 
-	add_definitions( ${Qt5Widgets_DEFINITIONS} )
-	QT5_WRAP_UI( UI ${UI_FILES} )
-	QT5_WRAP_CPP(MOC ${MOC_FILES} )
-	QT5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
+add_definitions( ${Qt5Widgets_DEFINITIONS} )
+QT5_WRAP_UI( UI ${UI_FILES} )
+QT5_WRAP_CPP(MOC ${MOC_FILES} )
+QT5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
 
-	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
-	add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
 
-	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqt-wallet  ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} zuluCryptPluginManager )
+TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqt-wallet  ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} zuluCryptPluginManager )
 
-	set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
-else()
-	find_package( Qt4 REQUIRED )
-
-	add_definitions( -I${Qt4_INCLUDE_DIR} )
-	add_definitions( -I${QT_HEADERS_DIR} )
-
-	INCLUDE( ${QT_USE_FILE} )
-	INCLUDE( ${QT_USE_FILE} )
-
-	INCLUDE( ${QT_USE_FILE} )
-	QT4_WRAP_UI( UI ${UI_FILES} )
-	QT4_WRAP_CPP(MOC ${MOC_FILES} )
-	QT4_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
-
-	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
-
-	add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
-
-	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqt-wallet ${QT_LIBRARIES} ${blkid} zuluCryptPluginManager )
-
-	set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
-endif()
+set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 
 set_target_properties( zuluMount-gui PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic " )
 

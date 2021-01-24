@@ -376,25 +376,28 @@ void zuluCryptDisableMetadataLocking( void )
 
 static void * _luks2( const arguments * args )
 {
+	struct crypt_pbkdf_type * pbkdf  = args->pbkdf ;
+
 	struct crypt_params_luks2 * params = args->params ;
 
 	params->sector_size     = 512 ;
 	params->integrity       = args->integrity ;
 
-#if SUPPORT_crypt_get_pbkdf_default //added in cryptsetup 2.0.3
-
-	params->pbkdf = crypt_get_pbkdf_default( CRYPT_LUKS2 ) ;
+#if SUPPORT_crypt_get_pbkdf_default
+	/*
+	 * added in cryptsetup 2.0.3
+	 */
+	memcpy( pbkdf,crypt_get_pbkdf_default( CRYPT_LUKS2 ),sizeof( struct crypt_pbkdf_type ) ) ;
+	pbkdf->hash             = args->hash ;
 #else
-	struct crypt_pbkdf_type   * pbkdf  = args->pbkdf ;
-
 	pbkdf->type             = CRYPT_KDF_ARGON2I ;
 	pbkdf->hash             = args->hash ;
 	pbkdf->time_ms          = 800 ;
 	pbkdf->max_memory_kb    = 1024 ;
 	pbkdf->parallel_threads = 4 ;
-
-	params->pbkdf           = pbkdf ;
 #endif
+	params->pbkdf           = pbkdf ;
+
 	return params ;
 }
 

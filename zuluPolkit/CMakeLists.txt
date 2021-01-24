@@ -1,7 +1,18 @@
 cmake_minimum_required(VERSION 3.0.2)
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/zuluPolkit/ )
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINARY_DIR}/zuluPolkit/ )
 include_directories( ${PROJECT_BINARY_DIR}/zuluPolkit/ )
+
+if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0)
+	set( CMAKE_CXX_STANDARD 20 )
+	MESSAGE( STATUS "Setting C++ version to C++20" )
+else()
+	set( CMAKE_CXX_STANDARD 14 )
+	MESSAGE( STATUS "Setting C++ version to C++14" )
+endif()
+
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF)
 
 set( MOC_FILES
 	zulupolkit.h
@@ -13,12 +24,7 @@ set( SRC
 	../zuluCrypt-gui/executablesearchpaths.cpp
 )
 
-if( QT5 )
-	Qt5_WRAP_CPP( MOC ${MOC_FILES} )
-else()
-	INCLUDE( ${QT_USE_FILE} )
-	Qt4_WRAP_CPP( MOC ${MOC_FILES} )
-endif()
+Qt5_WRAP_CPP( MOC ${MOC_FILES} )
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
