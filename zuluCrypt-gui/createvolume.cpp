@@ -110,9 +110,11 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden TrueCrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal VeraCrypt" ) ) ;
 	m_ui->comboBoxVolumeType->addItem( tr( "Normal+Hidden VeraCrypt" ) ) ;
-
+#ifdef CRYPT_LUKS2
+	m_ui->comboBoxVolumeType->setCurrentIndex( int( createvolume::luks2 ) ) ;
+#else
 	m_ui->comboBoxVolumeType->setCurrentIndex( int( createvolume::luks ) ) ;
-
+#endif
 	m_ui->comboBoxHiddenSize->setCurrentIndex( 2 ) ;
 
 	this->setOptions( 1 ) ;
