@@ -55,6 +55,9 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	m_isWindowClosable = true ;
 	m_warned = false ;
 
+	m_ui->lineEditIterationNumber->setVisible( false ) ;
+	m_ui->labelIterationNumber->setVisible( false ) ;
+
 	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreateClicked() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancelClicked() ) ) ;
@@ -398,6 +401,12 @@ void createvolume::setOptions( int e )
 		#endif
 	} ;
 
+	auto luksSelected = _luks() ;
+
+	m_ui->lineEditIterationNumber->setVisible( luksSelected ) ;
+	m_ui->labelIterationNumber->setVisible( luksSelected ) ;
+	m_ui->lineEditIterationNumber->clear() ;
+
 	if( _plain_dmcrypt() ){
 
 		/*
@@ -413,7 +422,7 @@ void createvolume::setOptions( int e )
 			options->addItems( s ) ;
 		}
 
-	}else if( _luks() ){
+	}else if( luksSelected ){
 
 		/*
 		 * cryto options for LUKS volumes.
@@ -757,6 +766,9 @@ void createvolume::HideUI()
 
 void createvolume::enableAll()
 {
+	m_ui->lineEditIterationNumber->setEnabled( true ) ;
+	m_ui->labelIterationNumber->setEnabled( true ) ;
+
 	auto enable = m_ui->comboBoxVolumeType->currentText().contains( "VeraCrypt" ) ;
 
 	m_ui->label_2->setEnabled( enable ) ;
@@ -822,6 +834,8 @@ void createvolume::enableAll()
 
 void createvolume::disableAll()
 {
+	m_ui->lineEditIterationNumber->setEnabled( false ) ;
+	m_ui->labelIterationNumber->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
 	m_ui->lineEditPIM->setEnabled( false ) ;
 	m_ui->labelPassPhrase->setEnabled( false ) ;
@@ -1036,6 +1050,13 @@ void createvolume::pbCreateClicked()
 		if( !e.isEmpty() ){
 
 			g += "." + e ;
+		}
+	}else{
+		auto m = m_ui->lineEditIterationNumber->text() ;
+
+		if( !m.isEmpty() ){
+
+			g += "." + m ;
 		}
 	}
 

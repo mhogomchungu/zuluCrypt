@@ -159,7 +159,7 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 		crypt_set_rng_type( cd,CRYPT_RNG_URANDOM ) ;
 	}
 
-	if( args->iterations != 0 ){
+	if( args->iterations != 0 && StringsAreEqual( args->type,CRYPT_LUKS1 )){
 
 		crypt_set_iteration_time( cd,args->iterations ) ;
 	}
@@ -388,15 +388,19 @@ static void * _luks2( const arguments * args )
 	 * added in cryptsetup 2.0.3
 	 */
 	memcpy( pbkdf,crypt_get_pbkdf_default( CRYPT_LUKS2 ),sizeof( struct crypt_pbkdf_type ) ) ;
-	pbkdf->hash             = args->hash ;
 #else
 	pbkdf->type             = CRYPT_KDF_ARGON2I ;
-	pbkdf->hash             = args->hash ;
-	pbkdf->time_ms          = 800 ;
 	pbkdf->max_memory_kb    = 1024 ;
 	pbkdf->parallel_threads = 4 ;
 #endif
-	params->pbkdf           = pbkdf ;
+	pbkdf->hash = args->hash ;
+
+	if( args->iterations != 0 ){
+
+		pbkdf->time_ms = (unsigned int)args->iterations ;
+	}
+
+	params->pbkdf = pbkdf ;
 
 	return params ;
 }
