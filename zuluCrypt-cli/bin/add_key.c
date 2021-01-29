@@ -428,7 +428,11 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 
 		len3 = StringLength( *slots ) ;
 
-		if( len3 > 0 && ( size_t )slot_number < len3 ){
+		if( slot_number == - 1 ){
+
+			status = zuluCryptAddKey_0( device,key1,len1,key2,len2,slot_number ) ;
+
+		}else if( len3 > 0 && ( size_t )slot_number < len3 ){
 
 			if( StringContent( *slots )[ slot_number ] == '0' ){
 
