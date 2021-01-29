@@ -101,6 +101,8 @@ read the README file for further instructions.
 
 <a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.0.0/zuluCrypt-6.0.0-ubuntu-20.04-Focal_Fossa.tar.xz">zuluCrypt-6.0.0-ubuntu-20.04-Focal_Fossa.tar.xz</a>
 
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.0.0/zuluCrypt-6.0.0-ubuntu-20.10-Groovy_Gorilla.tar.xz">zuluCrypt-6.0.0-ubuntu-20.10-Groovy_Gorilla.tar.xz</a>
+
 These archives contains binaries for both 32 bit and 64 bit systems.
 
 
