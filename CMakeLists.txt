@@ -7,7 +7,7 @@ project(zuluCrypt)
 
 INCLUDE(GNUInstallDirs)
 
-set( PGR_VERSION "5.7.1" )
+set( PGR_VERSION "5.7.2" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 
@@ -90,7 +90,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/version_1.h "
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef ZULUCRYPT_VERSION
 #define ZULUCRYPT_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2011-2020 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2011-2021 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
 

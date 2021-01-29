@@ -327,3 +327,4 @@ version 5.7.2
 -- Add ability to show used LUKS key slots and their properties in zuluCrypt-gui.
 -- Fix a bug that caused zuluCrypt to not set user specified digest hash when creating LUKS2 volumes.
 -- Default to creating LUKS2 volumes if installed version of cryptsetup supports it.
+-- Make it buildable again on some systems.
