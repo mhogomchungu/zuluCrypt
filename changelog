@@ -323,7 +323,7 @@ version 5.7.1
    Users of cryptsetup >= 2.3.0 who prefer to use dislocker to unlock
    BitLocker volumes  should create a text file at "/etc/zuluCrypt/dislocker".
 
-version 5.7.2
+version 6.0.0
 -- Add ability to show used LUKS key slots and their properties in zuluCrypt-gui.
 -- Fix a bug that caused zuluCrypt to not set user specified digest hash when creating LUKS2 volumes.
 -- Default to creating LUKS2 volumes if installed version of cryptsetup supports it.
