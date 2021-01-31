@@ -500,14 +500,6 @@
     <string>F1</string>
    </property>
   </action>
-  <action name="actionCheck_For_Update">
-   <property name="text">
-    <string>C&amp;heck For Update</string>
-   </property>
-   <property name="shortcut">
-    <string>Shift+U</string>
-   </property>
-  </action>
   <action name="actionContact_Info">
    <property name="text">
     <string>Contact &amp;Info</string>
