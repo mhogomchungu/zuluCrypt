@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  *  Copyright ( c ) 2011-2015
  *  name : Francis Banyikwa
@@ -18,277 +18,346 @@
  */
 
 #include "favorites.h"
-#include "ui_favorites.h"
-#include <iostream>
 
-#include <QTableWidgetItem>
-#include <QCloseEvent>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QAction>
-#include <QMenu>
-
-#include "openvolume.h"
 #include "utility.h"
-#include "dialogmsg.h"
-#include "tablewidget.h"
 
-favorites::favorites( QWidget * parent,bool e ) : QDialog( parent ),m_ui( new Ui::favorites )
+#include <QDir>
+#include <QFile>
+#include <QCryptographicHash>
+#include <QStandardPaths>
+
+static QByteArray _sha256( const QString& e )
 {
-	m_ui->setupUi( this ) ;
-
-	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
-	this->setFont( parent->font() ) ;
-
-	this->setFixedSize( this->size() ) ;
-
-	connect( m_ui->pbFolderAddress,SIGNAL( clicked() ),this,SLOT( folderAddress() ) ) ;
-	connect( m_ui->pbDeviceAddress,SIGNAL( clicked() ),this,SLOT( deviceAddress() ) ) ;
-	connect( m_ui->pbAdd,SIGNAL( clicked() ),this,SLOT( add() ) ) ;
-	connect( m_ui->pbFileAddress,SIGNAL( clicked() ),this,SLOT( fileAddress() ) ) ;
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( cancel() ) ) ;
-	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),this,
-		SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
-	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
-		SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
-	connect( m_ui->lineEditDeviceAddress,SIGNAL( textChanged( QString ) ),this,SLOT( devicePathTextChange( QString ) ) ) ;
-
-	m_ui->pbFileAddress->setIcon( QIcon( ":/file.png" ) ) ;
-	m_ui->pbDeviceAddress->setIcon( QIcon( ":/partition.png" ) ) ;
-	m_ui->pbFolderAddress->setIcon( QIcon( ":/folder.png" ) ) ;
-
-	m_ui->pbFolderAddress->setEnabled( e ) ;
-
-	this->addAction( [ this ](){
-
-		auto ac = new QAction( this ) ;
-
-		QList<QKeySequence> keys ;
-
-		keys.append( Qt::Key_Enter ) ;
-		keys.append( Qt::Key_Return ) ;
-		keys.append( Qt::Key_Menu ) ;
-
-		ac->setShortcuts( keys ) ;
-
-		connect( ac,SIGNAL( triggered() ),this,SLOT( shortcutPressed() ) ) ;
-
-		return ac ;
-	}() ) ;
-
-	this->installEventFilter( this ) ;
-
-	this->ShowUI() ;
+	return QCryptographicHash::hash( e.toUtf8(),QCryptographicHash::Sha256 ).toHex() ;
 }
 
-bool favorites::eventFilter( QObject * watched,QEvent * event )
+static utility2::result< QString > _config_path()
 {
-	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
-}
+	auto m = [](){
 
-void favorites::devicePathTextChange( QString txt )
-{
-	if( txt.isEmpty() ){
+		auto& settings = utility::settingsObject() ;
 
-		m_ui->lineEditMountPath->clear() ; ;
+		if( !settings.contains( "ConfigLocation" ) ){
+
+			auto m = QStandardPaths::standardLocations( QStandardPaths::ConfigLocation ) ;
+
+			if( !m.isEmpty() ){
+
+				settings.setValue( "ConfigLocation",m.first() + "/zuluCrypt/" ) ;
+			}else{
+				//TODO: what to do here???
+			}
+		}
+
+		return settings.value( "ConfigLocation" ).toString() ;
+	}() ;
+
+
+
+	m += "/favorites/" ;
+
+	if( utility::pathExists( m ) ){
+
+		return m ;
 	}else{
-		auto s = txt.split( "/" ).last() ;
+		if( QDir().mkpath( m ) ){
 
-		if( s.isEmpty() ){
-
-			m_ui->lineEditMountPath->setText( txt ) ;
+			return m ;
 		}else{
-			m_ui->lineEditMountPath->setText( s ) ;
+			return {} ;
 		}
 	}
 }
 
-void favorites::shortcutPressed()
+static QString _create_path( const QString& m,const favorites::entry& e )
 {
-	this->itemClicked( m_ui->tableWidget->currentItem(),false ) ;
+	auto a = utility::split( e.volumePath,'@' ).last() ;
+
+	a = utility::split( a,'/' ).last() ;
+
+	a.replace( ":","" ) ;
+
+	auto b = a + e.mountPointPath ;
+
+	return m + a + "-" + _sha256( b ) + ".json" ;
 }
 
-void favorites::deviceAddress()
+static QString _create_entry_path( const favorites::entry& e )
 {
-	openvolume::instance( this,true ).ShowAllPartitions( [ this ]( const QString& e ){
+	auto s = _config_path() ;
 
-		m_ui->lineEditDeviceAddress->setText( e ) ;
+	if( s.has_value() ){
+
+		return _create_path( s.value(),e ) ;
+	}else{
+		return {} ;
+	}
+}
+
+static utility2::result< favorites::entry > _favorites( const QString& path )
+{
+	SirikaliJson json( QFile( path ),[]( const QString& e ){
+
+		Q_UNUSED( e )
 	} ) ;
-}
 
-void favorites::ShowUI()
-{
-	m_ui->tableWidget->setColumnWidth( 0,285 ) ;
-	m_ui->tableWidget->setColumnWidth( 1,285 ) ;
+	favorites::entry m ;
 
-	tablewidget::clearTable( m_ui->tableWidget ) ;
+	if( json.passed() ){
 
-	auto _add_entry = [ this ]( const QStringList& l ){
+		m.internalConfigPath   = QDir( path ).absolutePath() ;		
+		m.mountPointPath       = json.getString( "mountPointPath" ) ;		
+		m.preMountCommand      = json.getString( "preMountCommand" ) ;
+		m.postMountCommand     = json.getString( "postMountCommand" ) ;
+		m.preUnmountCommand    = json.getString( "preUnmountCommand" ) ;
+		m.postUnmountCommand   = json.getString( "postUnmountCommand" ) ;
+		m.mountOptions         = json.getString( "mountOptions" ) ;
 
-		if( l.size() > 1 ){
+		m.password             = json.getByteArray( "password" ) ;
 
-			this->addEntries( l ) ;
-		}
-	} ;
+		m.volumePath           = json.getString( "volumePath" ) ;
 
-	for( const auto& it : utility::readFavorites() ){
+		favorites::triState::readTriState( json,m.readOnlyMode,"mountReadOnly" ) ;
+		favorites::triState::readTriState( json,m.autoMount,"autoMountVolume" ) ;
 
-		_add_entry( utility::split( it,'\t' ) ) ;
-	}
-
-	m_ui->lineEditDeviceAddress->clear() ;
-	m_ui->lineEditMountPath->clear() ;
-	m_ui->tableWidget->setFocus() ;
-
-	this->show() ;
-}
-
-void favorites::HideUI()
-{
-	this->hide() ;
-	this->deleteLater() ;
-}
-
-void favorites::addEntries( const QStringList& l )
-{
-	tablewidget::addRow( m_ui->tableWidget,l ) ;
-}
-
-void favorites::itemClicked( QTableWidgetItem * current )
-{
-	this->itemClicked( current,true ) ;
-}
-
-void favorites::itemClicked( QTableWidgetItem * current,bool clicked )
-{
-	QMenu m ;
-	m.setFont( this->font() ) ;
-	connect( m.addAction( tr( "Remove Selected Entry" ) ),SIGNAL( triggered() ),this,SLOT( removeEntryFromFavoriteList() ) ) ;
-
-	m.addSeparator() ;
-	m.addAction( tr( "Cancel" ) ) ;
-
-	if( clicked ){
-
-		m.exec( QCursor::pos() ) ;
+		return m ;
 	}else{
-		int x = m_ui->tableWidget->columnWidth( 0 ) ;
-		int y = m_ui->tableWidget->rowHeight( current->row() ) * current->row() + 20 ;
-		m.exec( m_ui->tableWidget->mapToGlobal( QPoint( x,y ) ) ) ;
+		return {} ;
 	}
 }
 
-void favorites::removeEntryFromFavoriteList()
+static void _update_favorites( favorites * f )
 {
-	auto table = m_ui->tableWidget ;
+	auto& settings = utility::settingsObject() ;
 
-	table->setEnabled( false ) ;
+	if( settings.contains( "Favotites" ) ){
 
-	auto row = table->currentRow() ;
+		 QStringList l ;
 
-	auto p = table->item( row,0 )->text() ;
-	auto q = table->item( row,1 )->text() ;
+		 for( const auto& it : settings.value( "Favotites" ).toStringList() ){
 
-	if( !p.isEmpty() && !q.isEmpty() ){
+			 favorites::entry e ;
 
-		utility::removeFavoriteEntry( QString( "%1\t%2" ).arg( p,q ) ) ;
+			 auto s = [ & ](){
 
-		tablewidget::deleteRow( table,row ) ;
+				 if( it.startsWith( "/dev/disk/by-id" ) ){
+
+					auto a = utility::deviceIDToPartitionID( it ) ;
+					return utility::split( a,'\t' ) ;
+				}else{
+					return utility::split( it,'\t' ) ;
+				}
+			 }() ;
+
+			 e.volumePath = s.at( 0 ) ;
+			 e.mountPointPath = s.at( 1 ) ;
+
+			f->add( e ) ;
+		 }
+
+		 settings.remove( "Favotites" ) ;
 	}
-
-	table->setEnabled( true ) ;
 }
 
-void favorites::cancel()
+favorites::favorites()
 {
-	this->HideUI() ;
+	_update_favorites( this ) ;
+
+	this->reload() ;
 }
 
-void favorites::add()
+void favorites::reload()
 {
-	DialogMsg msg( this ) ;
+	m_favorites.clear() ;
 
-	auto dev = m_ui->lineEditDeviceAddress->text() ;
-	auto m_path = m_ui->lineEditMountPath->text() ;
+	const auto m = _config_path() ;
 
-	if( dev.isEmpty() ){
+	if( m.has_value() ){
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Device address field is empty" ) ) ;
-	}
-	if( m_path.isEmpty() ){
+		const auto& a = m.value() ;
 
-		return msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount point path field is empty" ) ) ;
-	}
+		const auto s = QDir( a ).entryList( QDir::Filter::Files | QDir::Filter::Hidden ) ;
 
-	m_ui->tableWidget->setEnabled( false ) ;
+		for( const auto& it : s ){
 
-	this->addEntries( { dev,m_path } ) ;
+			auto m = _favorites( a + it ) ;
 
-	utility::addToFavorite( dev,m_path ) ;
+			if( m.has_value() ){
 
-	m_ui->lineEditDeviceAddress->clear() ; ;
-	m_ui->lineEditMountPath->clear() ;
-
-	m_ui->tableWidget->setEnabled( true ) ;
-}
-
-void favorites::folderAddress()
-{
-	auto e = QFileDialog::getExistingDirectory( this,tr( "Path To An Encrypted Volume" ),
-						    QDir::homePath(),QFileDialog::ShowDirsOnly ) ;
-
-	while( true ){
-
-		if( e.endsWith( '/' ) ){
-
-			e.truncate( e.length() - 1 ) ;
-		}else{
-			break ;
+				m_favorites.emplace_back( std::move( m.RValue() ) ) ;
+			}
 		}
+	}else{
+		utility::debug() << "Failed To Get Favorites List" ;
+	}
+}
+
+favorites::error favorites::add( const favorites::entry& e )
+{
+	auto m = _config_path() ;
+
+	if( !m.has_value() ){
+
+		utility::debug() << "Failed To Get Favorites Path" ;
+
+		return error::FAILED_TO_CREATE_ENTRY ;
 	}
 
-	if( !e.isEmpty() ){
+	auto a = _create_path( m.value(),e ) ;
 
-		m_ui->lineEditDeviceAddress->setText( [ & ]{
+	SirikaliJson json( []( const QString& e ){
+
+		Q_UNUSED( e )
+	} ) ;
+
+	json[ "volumePath" ]           = e.volumePath ;
+	json[ "mountPointPath" ]       = e.mountPointPath ;
+	json[ "mountOptions" ]         = e.mountOptions ;
+	json[ "preMountCommand" ]      = e.preMountCommand ;
+	json[ "postMountCommand" ]     = e.postMountCommand ;
+	json[ "preUnmountCommand" ]    = e.preUnmountCommand ;
+	json[ "postUnmountCommand" ]   = e.postUnmountCommand ;
+	json[ "password" ]             = e.password ;
+
+	favorites::triState::writeTriState( json,e.readOnlyMode,"mountReadOnly" ) ;
+	favorites::triState::writeTriState( json,e.autoMount,"autoMountVolume" ) ;
+
+	if( utility::pathExists( a ) ){
+
+		utility::debug() << "Favorite Entry Already Exist" ;
+		return error::ENTRY_ALREADY_EXISTS ;
+	}else{
+		if( json.passed() && json.toFile( a ) ){
 
 			while( true ){
 
-				if( e.endsWith( '/' ) ){
+				if( utility::pathExists( a ) ){
 
-					e.truncate( e.length() - 1 ) ;
-				}else{
 					break ;
+				}else{
+					utility::debug() << "Waiting for a file to show up to the file system" ;
+					utility::Task::suspendForOneSecond() ;
 				}
 			}
 
-			return e ;
-
-		}() ) ;
+			this->reload() ;
+			return error::SUCCESS ;
+		}else{
+			utility::debug() << "Failed To Create Favorite Entry" ;
+			return error::FAILED_TO_CREATE_ENTRY ;
+		}
 	}
 }
 
-void favorites::fileAddress()
+const std::vector< favorites::entry >& favorites::readFavorites() const
 {
-	auto e = QFileDialog::getOpenFileName( this,tr( "Path To An Encrypted Volume" ),QDir::homePath() ) ;
+	return m_favorites ;
+}
 
-	if( !e.isEmpty() ){
+utility2::result_ref< const favorites::entry& > favorites::readFavoriteByPath( const QString& configPath ) const
+{
+	auto path = QDir( configPath ).absolutePath() ;
 
-		m_ui->lineEditDeviceAddress->setText( e ) ;
+	for( const auto& it : m_favorites ){
+
+		if( it.internalConfigPath == path ){
+
+			return it ;
+		}
+	}
+
+	return {} ;
+}
+
+utility2::result< favorites::entry > favorites::readFavoriteByFileSystemPath( const QString& path ) const
+{
+	return _favorites( path ) ;
+}
+
+utility2::result_ref< const favorites::entry& > favorites::readFavorite( const QString& volumePath,
+									 const QString& mountPath ) const
+{
+	if( mountPath.isEmpty() ){
+
+		for( const auto& it : m_favorites ){
+
+			if( it.volumePath == volumePath ){
+
+				return it ;
+			}
+		}
+	}else{
+		for( const auto& it : m_favorites ){
+
+			if( it.volumePath == volumePath && it.mountPointPath == mountPath ){
+
+				return it ;
+			}
+		}
+	}
+
+	return {} ;
+}
+
+void favorites::replaceFavorite( const favorites::entry& old,const favorites::entry& New )
+{
+	this->removeFavoriteEntry( old ) ;
+	this->add( New ) ;
+}
+
+template< typename Function >
+static bool _remove( const favorites::entry& e,Function function )
+{
+	auto s = function( e ) ;
+
+	if( !s.isEmpty() && utility::pathExists( s ) ){
+
+		return QFile::remove( s ) ;
+	}else{
+		return false ;
 	}
 }
 
-favorites::~favorites()
+void favorites::removeFavoriteEntry( const favorites::entry& e )
 {
-	delete m_ui ;
+	if( _remove( e,_create_entry_path ) ){
+
+		this->reload() ;
+
+	}else if( _remove( e,_create_entry_path ) ){
+
+		this->reload() ;
+	}else{
+		utility::debug() << "Failed To Remove Favorite Entry: " + e.volumePath ;
+	}
 }
 
-void favorites::closeEvent( QCloseEvent * e )
+favorites::entry::entry()
 {
-	e->ignore() ;
-	this->HideUI() ;
 }
 
-void favorites::currentItemChanged( QTableWidgetItem * current, QTableWidgetItem * previous )
+favorites::entry::entry( const QString& e,const QString& mountPath ) :
+	volumePath( e ),mountPointPath( mountPath )
 {
-	tablewidget::selectRow( current,previous ) ;
+}
+
+void favorites::volEntry::setAutoMount( bool s )
+{
+	auto m = m_tmpFavorite.get() ;
+
+	if( m ){
+
+		utility::debug() << "Changing a setting of a temporary favorite: " + m->volumePath ;
+
+		m->autoMount = s ;
+	}else{
+		QString aa = "Creating a copy of a favorite at: %1\nto change a setting" ;
+
+		utility::debug() << aa.arg( m_favorite->volumePath ) ;
+
+		auto a = *m_favorite ;
+		a.autoMount = s ;
+
+		m_favorite = this->entry( std::move( a ) ) ;
+	}
 }

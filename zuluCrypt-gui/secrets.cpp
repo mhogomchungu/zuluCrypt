@@ -20,7 +20,7 @@
 #include "secrets.h"
 #include "utility.h"
 
-secrets::secrets( QWidget * parent ) : m_parent( parent )
+secrets::secrets( QWidget * parent ) : m_parent( parent ),m_backends( m_parent )
 {
 }
 
@@ -28,11 +28,23 @@ void secrets::changeInternalWalletPassword( const QString& walletName,
 					    const QString& appName,
 					    std::function< void( bool ) > ff )
 {
-	auto e = this->internalWallet() ;
+	auto e = m_backends.get( LXQt::Wallet::BackEnd::internal ) ;
 
 	e->changeWalletPassWord( walletName,appName,[ ff = std::move( ff ) ]( bool q ){
 
 		ff( q ) ;
+	} ) ;
+}
+
+void secrets::changeWindowsDPAPIWalletPassword( const QString& walletName,
+						const QString& appName,
+						std::function< void( bool ) > f )
+{
+	auto s = m_backends.get( LXQt::Wallet::BackEnd::windows_dpapi ) ;
+
+	s->changeWalletPassWord( walletName,appName,[ f = std::move( f ) ]( bool q ){
+
+		f( q ) ;
 	} ) ;
 }
 
@@ -43,67 +55,17 @@ secrets::~secrets()
 
 void secrets::close()
 {
-	delete m_internalWallet ;
-	m_internalWallet = nullptr ;
-}
-
-LXQt::Wallet::Wallet * secrets::internalWallet() const
-{
-	if( m_internalWallet == nullptr ){
-
-		namespace w = LXQt::Wallet ;
-
-		m_internalWallet = w::getWalletBackend( w::BackEnd::internal ).release() ;
-
-		m_internalWallet->log( []( const QString& e ){
-
-			utility::debug() << e ;
-		} ) ;
-
-		m_internalWallet->setParent( m_parent ) ;
-	}
-
-	return m_internalWallet ;
+	m_backends.close() ;
 }
 
 secrets::wallet secrets::walletBk( LXQt::Wallet::BackEnd e ) const
 {
-	if( e == LXQt::Wallet::BackEnd::internal ){
-
-		return this->internalWallet() ;
-	}else{
-		auto a = LXQt::Wallet::getWalletBackend( e ).release() ;
-
-		a->log( []( const QString& e ){
-
-			utility::debug() << e ;
-		} ) ;
-
-		return a ;
-	}
+	return m_backends.get( e ) ;
 }
 
 QWidget * secrets::parent() const
 {
 	return m_parent ;
-}
-
-void secrets::setParent( QWidget * w )
-{
-	m_parent = w ;
-}
-
-static void _delete( LXQt::Wallet::Wallet * w )
-{
-	if( w ){
-
-		auto m = w->backEnd() ;
-
-		if( m != LXQt::Wallet::BackEnd::internal ){
-
-			delete w ;
-		}
-	}
 }
 
 secrets::wallet::wallet()
@@ -116,22 +78,101 @@ secrets::wallet::wallet( LXQt::Wallet::Wallet * w ) : m_wallet( w )
 
 secrets::wallet::~wallet()
 {
-	_delete( m_wallet ) ;
 }
 
 secrets::wallet::wallet( secrets::wallet&& w )
 {
-	_delete( m_wallet ) ;
 	m_wallet = w.m_wallet ;
-	w.m_wallet = nullptr ;
+}
+
+secrets::wallet::walletKey secrets::wallet::getKey( const QString& keyID,QWidget * widget )
+{
+	auto _getKey = []( LXQt::Wallet::Wallet * wallet,const QString& volumeID ){
+
+		return ::Task::await( [ & ](){ return wallet->readValue( volumeID ) ; } ) ;
+	} ;
+
+	walletKey w{ false,false,"" } ;
+
+	auto s = m_wallet->backEnd() ;
+
+	QString walletName = utility::walletName() ;
+	QString applicationName = utility::applicationName() ;
+
+	auto _open = [ & ]( bool s ){
+
+		if( s ){
+
+			auto m = this->openSync( [](){ return true ; },
+						 [ & ](){ if( widget ){	widget->hide() ; } },
+						 [ & ](){ if( widget ){	widget->show() ; } } ) ;
+
+			w.opened = m ;
+
+			if( w.opened ){
+
+				w.key = _getKey( m_wallet,keyID ) ;
+			}
+		}else{
+			w.notConfigured = true ;
+		}
+	} ;
+
+	if( s == LXQt::Wallet::BackEnd::internal ){
+
+		_open( LXQt::Wallet::walletExists( s,walletName,applicationName ) ) ;
+
+	}else if( s == LXQt::Wallet::BackEnd::windows_dpapi ){
+
+		_open( true ) ;
+	}else{
+		_open( true ) ;
+
+		w.opened = m_wallet->open( "default",applicationName ) ;
+
+		if( w.opened ){
+
+			w.key = _getKey( m_wallet,keyID ) ;
+		}
+	}
+
+	return w ;
 }
 
 secrets::wallet::info secrets::wallet::walletInfo()
 {
-	if( m_wallet->backEnd() == LXQt::Wallet::BackEnd::kwallet ){
+	return { "kdewallet",utility::applicationName() } ;
+}
 
-		return { "default",utility::applicationName() } ;
-	}else{
-		return { utility::walletName(),utility::applicationName() } ;
+secrets::backends::backends( QWidget * w ) : m_parent( w )
+{
+}
+
+LXQt::Wallet::Wallet * secrets::backends::get( LXQt::Wallet::BackEnd e )
+{
+	for( const auto& it : m_backends ){
+
+		if( it.bk == e ){
+
+			return it.wallet ;
+		}
 	}
+
+	auto a = LXQt::Wallet::getWalletBackend( e ).release() ;
+
+	a->setParent( m_parent ) ;
+
+	m_backends.emplace_back( e,a ) ;
+
+	return a ;
+}
+
+void secrets::backends::close()
+{
+	for( auto& it : m_backends ){
+
+		delete it.wallet ;
+	}
+
+	m_backends.clear() ;
 }

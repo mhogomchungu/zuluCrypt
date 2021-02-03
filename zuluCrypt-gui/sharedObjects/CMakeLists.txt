@@ -7,6 +7,7 @@ set( SRC
 	../utility.cpp
 	../readonlywarning.cpp
 	../plugin.cpp
+	../favorites.cpp
 	../executablesearchpaths.cpp
 	../systemsignalhandler.cpp
 	../debugwindow.cpp

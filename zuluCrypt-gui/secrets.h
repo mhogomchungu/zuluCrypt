@@ -31,6 +31,8 @@
 
 #include "utility2.h"
 
+void windowsDebugWindow( const QString& e,bool s ) ;
+
 class secrets
 {
 public:
@@ -68,7 +70,12 @@ public:
 
 				return function() ;
 			}else{
-				m_wallet->setImage( QIcon( ":/zuluCrypt" ) ) ;
+				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+
+				m_wallet->log( []( QString e ){
+
+					Q_UNUSED( e )
+				} );
 
 				auto s = this->walletInfo() ;
 
@@ -109,7 +116,12 @@ public:
 
 				auto s = this->walletInfo() ;
 
-				m_wallet->setImage( QIcon( ":/zuluCrypt" ) ) ;
+				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+
+				m_wallet->log( []( QString e ){
+
+					Q_UNUSED( e )
+				} );
 
 				m_wallet->open( s.walletName,s.appName,std::move( a ) ) ;
 			}
@@ -120,7 +132,16 @@ public:
 		{
 			this->open( std::move( ofunction ),[](){},std::move( afunction ) ) ;
 		}
-	private:
+
+		struct walletKey
+		{
+			bool opened ;
+			bool notConfigured ;
+			QString key ;
+		} ;
+
+		walletKey getKey( const QString& keyID,QWidget * widget = nullptr ) ;
+	private:		
 		struct info{
 
 			QString walletName ;
@@ -137,8 +158,8 @@ public:
 	QWidget * parent() const ;
 
 	void changeInternalWalletPassword( const QString&,const QString&,std::function< void( bool ) > ) ;
+	void changeWindowsDPAPIWalletPassword( const QString&,const QString&,std::function< void( bool ) > ) ;
 
-	void setParent( QWidget * ) ;
 	void close() ;
 	secrets( QWidget * parent = nullptr ) ;
 	secrets( const secrets& ) = delete ;
@@ -147,9 +168,28 @@ public:
 
 	~secrets() ;
 private:
-	LXQt::Wallet::Wallet * internalWallet() const ;
 	QWidget * m_parent = nullptr ;
-	mutable LXQt::Wallet::Wallet * m_internalWallet = nullptr ;
-};
+
+	class backends{
+	public:
+		backends( QWidget * ) ;
+		LXQt::Wallet::Wallet * get( LXQt::Wallet::BackEnd ) ;
+		void close() ;
+	private:
+		struct bks{
+
+			bks( LXQt::Wallet::BackEnd e,LXQt::Wallet::Wallet * s ) :
+				bk( e ),wallet( s )
+			{
+			}
+			LXQt::Wallet::BackEnd bk ;
+			LXQt::Wallet::Wallet * wallet ;
+		} ;
+
+		std::vector< bks > m_backends ;
+		QWidget * m_parent ;
+
+	} mutable m_backends ;
+} ;
 
 #endif

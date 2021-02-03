@@ -50,7 +50,7 @@
 #include "plugin_path.h"
 #include "tablewidget.h"
 #include "../zuluCrypt-cli/constants.h"
-
+#include "favorites2.h"
 #include "utility.h"
 
 #define KWALLET         "KDE Wallet"
@@ -229,8 +229,8 @@ void passwordDialog::pbPlugin()
 	//utility::createPlugInMenu( m_pluginMenu,tr( INTERNAL_WALLET ),
 	//			   tr( GNOME_WALLET ),tr( KWALLET ),!utility::useZuluPolkit() ) ;
 
-	utility::createPlugInMenu( m_pluginMenu,tr( INTERNAL_WALLET ),
-				   tr( GNOME_WALLET ),tr( KWALLET ),true ) ;
+	//utility::createPlugInMenu( m_pluginMenu,tr( INTERNAL_WALLET ),
+	//			   tr( GNOME_WALLET ),tr( KWALLET ),true ) ;
 
 	m_pluginMenu->addSeparator() ;
 
@@ -287,6 +287,26 @@ void passwordDialog::cbStateChanged( int state )
 	m_ui->checkBoxReadOnly->setEnabled( true ) ;
 }
 
+void passwordDialog::autoSetPassword( const QString& keyID )
+{
+	auto m = favorites2::settings().autoMountBackEnd() ;
+
+	if( m.isInvalid() ){
+
+		return ;
+	}
+
+	auto secret = m_secrets.walletBk( m.bk() ).getKey( keyID ) ;
+
+	if( secret.notConfigured ){
+
+		DialogMsg msg( this ) ;
+		msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal wallet is not configured" ) ) ;
+	}else{
+		m_ui->PassPhraseField->setText( secret.key ) ;
+	}
+}
+
 void passwordDialog::setDefaultOpenMode()
 {
 	m_ui->checkBoxReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( "zuluCrypt-gui" ) ) ;
@@ -311,11 +331,13 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 		m_point = utility::mountPathPostFix( mount_point.split( "/" ).last() ) ;
 	}
 
+	utility::debug() << m_point ;
 	m_open_with_path = true ;
 
 	this->passphraseOption() ;
 
 	m_ui->OpenVolumePath->setText( volumePath ) ;
+
 	m_ui->OpenVolumePath->setEnabled( false ) ;
 	m_ui->PushButtonVolumePath->setEnabled( false ) ;
 	m_ui->MountPointPath->setText( m_point ) ;
@@ -328,6 +350,7 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 		m_ui->PushButtonVolumePath->setIcon( QIcon( ":/file.png" ) ) ;
 	}
 
+	this->autoSetPassword( volumePath ) ;
 	this->show() ;
 }
 

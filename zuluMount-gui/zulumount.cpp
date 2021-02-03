@@ -56,7 +56,7 @@
 #include "siritask.h"
 #include "zulumounttask.h"
 #include "task.hpp"
-#include "../zuluCrypt-gui/favorites.h"
+#include "../zuluCrypt-gui/favorites2.h"
 #include "bin_path.h"
 
 #include <memory>
@@ -68,6 +68,7 @@ static bool _encrypted_folder( const QString& e,bool f = true )
 
 zuluMount::zuluMount( QWidget * parent ) :
 	QWidget( parent ),
+	m_secrets( this ),
 	m_mountInfo( this,true,[](){ QCoreApplication::quit() ; } ),
 	m_events( this,m_mountInfo.stop() ),
 	m_signalHandler( this )
@@ -391,8 +392,6 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 		return m ;
 	}() ) ;
 
-	m_secrets.setParent( this ) ;
-
 	m_ui->pbmenu->setMenu( trayMenu ) ;
 
 	this->setLocalizationLanguage( false ) ;
@@ -518,24 +517,23 @@ void zuluMount::removeVolumeFromVisibleVolumeList( QAction * ac )
 	this->enableAll() ;
 }
 
-QString zuluMount::resolveFavoriteMountPoint( const QString& e )
+QString zuluMount::resolveFavoriteMountPoint( const QString& m )
 {
-	for( const auto& it : utility::readFavorites() ){
+	QString s ;
 
-		if( it.startsWith( e + '\t' ) ){
+	favorites::instance().entries( [ & ]( const favorites::entry& e ){
 
-			auto l = it.split( '\t' ) ;
+		if( e.volumePath == m ){
 
-			if( l.size() > 1 ){
+			s = e.volumePath ;
 
-				return l.at( 1 ) ;
-			}else{
-				return QString() ;
-			}
+			return true ;
 		}
-	}
 
-	return QString() ;
+		return false ;
+	} ) ;
+
+	return s ;
 }
 
 void zuluMount::favoriteClicked( QAction * ac )
@@ -547,19 +545,14 @@ void zuluMount::favoriteClicked( QAction * ac )
 
 	if( r == 1 ){
 
-		favorites::instance( this,true ) ;
+		favorites2::instance( this,m_secrets,[](){} ) ;
 
 	}else if( r == 2 ){
 
-		for( const auto& it : utility::readFavorites() ){
+		favorites::instance().entries( [ & ]( const favorites::entry& e ){
 
-			auto e = utility::split( it,'\t' ) ;
-
-			if( e.size() > 1 ){
-
-				this->showMoungDialog( e.at( 0 ),e.at( 1 ) ) ;
-			}
-		}
+			this->showMoungDialog( e.volumePath,e.mountPointPath ) ;
+		} ) ;
 	}else{
 		this->showMoungDialog( e,this->resolveFavoriteMountPoint( e ) ) ;
 	}

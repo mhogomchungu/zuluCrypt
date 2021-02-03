@@ -76,6 +76,7 @@ private slots :
 	void mountPointPath( QString ) ;
 	void cbStateChanged( int ) ;
 private :
+	void autoSetPassword( const QString& ) ;
 	void keyAndKeyFile( void ) ;
 	void tcryptGui( void ) ;
 	void openVolume( void ) ;

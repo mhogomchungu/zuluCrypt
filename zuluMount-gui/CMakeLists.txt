@@ -12,7 +12,7 @@ set (UI_FILES 	zulumount.ui
 		mountoptions.ui
 		veracryptpimdialog.ui
 		../zuluCrypt-gui/tcrypt.ui
-		../zuluCrypt-gui/favorites.ui
+		../zuluCrypt-gui/favorites2.ui
 		../zuluCrypt-gui/openvolume.ui
 )
 
@@ -27,7 +27,7 @@ set(MOC_FILES 	zulumount.h
 		veracryptpimdialog.h
 		../zuluCrypt-gui/tcrypt.h
 		../zuluCrypt-gui/utility.h
-		../zuluCrypt-gui/favorites.h
+		../zuluCrypt-gui/favorites2.h
 		../zuluCrypt-gui/openvolume.h
  )
 
@@ -45,7 +45,7 @@ set(SRC 	main.cpp
 		volumeproperty.cpp
 		../zuluCrypt-gui/tcrypt.cpp
 		veracryptpimdialog.cpp
-		../zuluCrypt-gui/favorites.cpp
+		../zuluCrypt-gui/favorites2.cpp
 		../zuluCrypt-gui/openvolume.cpp
 		../zuluCrypt-gui/secrets.cpp
 )

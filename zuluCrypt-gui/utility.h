@@ -371,15 +371,14 @@ namespace utility
 	bool runningInMixedMode( void ) ;
 	bool notRunningInMixedMode( void ) ;
 	void addToFavorite( const QString& dev,const QString& m_point ) ;
-	QStringList readFavorites( void ) ;
 	void readFavorites( QMenu *,bool = false,bool = true ) ;
-	void removeFavoriteEntry( const QString& ) ;
 	void setHDPI( const QString& ) ;
 	bool pathExists( const QString& ) ;
 	bool canCreateFile( const QString& ) ;
 	bool useZuluPolkit( void ) ;
 	void startHelperExecutable( QObject *,const QString&,const QString&,const char *,const char * ) ;
 	void setDebugWindow( debugWindow * w ) ;
+	QString deviceIDToPartitionID( const QString& ) ;
 	QString fileManager( void ) ;
 	QString loopDevicePath( const QString& ) ;
 	void setFileManager( const QString& ) ;

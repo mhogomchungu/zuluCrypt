@@ -167,6 +167,40 @@ namespace utility2
 	};
 
 	template< typename T >
+	class result_ref
+	{
+	public:
+		result_ref() : m_value( nullptr )
+		{
+		}
+		result_ref( T e ) : m_value( std::addressof( e ) )
+		{
+		}
+		typename std::remove_reference< T >::type * operator->() const
+		{
+			return m_value ;
+		}
+		T& value() const
+		{
+			return *m_value ;
+		}
+		T& operator*() const
+		{
+			return this->value() ;
+		}
+		bool has_value() const
+		{
+			return m_value != nullptr ;
+		}
+		operator bool() const
+		{
+			return this->has_value() ;
+		}
+	private:
+		typename std::remove_reference< T >::type * m_value ;
+	} ;
+
+	template< typename T >
 	class result
 	{
 	public:

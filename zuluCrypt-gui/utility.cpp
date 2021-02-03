@@ -91,6 +91,8 @@
 
 #include "json.h"
 
+#include "favorites.h"
+
 struct jsonResult
 {
 	bool finished ;
@@ -1510,7 +1512,7 @@ QString utility::cmdArgumentValue( const QStringList& l,const QString& arg,const
 	return defaulT ;
 }
 
-static QString _device_id_to_partition_id( const QString& id )
+QString utility::deviceIDToPartitionID( const QString& id )
 {
 	if( id.startsWith( "/dev/disk/by-id" ) ){
 
@@ -1611,7 +1613,7 @@ void utility::addToFavorite( const QString& dev,const QString& m_point )
 	}
 }
 
-QStringList utility::readFavorites()
+QStringList readFavorites()
 {
 	if( _settings->contains( "Favotites" ) ){
 
@@ -1621,7 +1623,7 @@ QStringList utility::readFavorites()
 
 			 if( it.startsWith( "/dev/disk/by-id" ) ){
 
-				 l.append( _device_id_to_partition_id( it ) ) ;
+				 l.append( utility::deviceIDToPartitionID( it ) ) ;
 			 }else{
 				 l.append( it ) ;
 			 }
@@ -1643,36 +1645,22 @@ bool utility::unMountVolumesOnLogout()
 	return _settings->value( "unMountVolumesOnLogout" ).toBool() ;
 }
 
-void utility::removeFavoriteEntry( const QString& e )
-{
-	auto s = utility::readFavorites() ;
-
-	s.removeOne( e ) ;
-
-	_settings->setValue( "Favotites",s );
-}
-
 void utility::readFavorites( QMenu * m,bool truncate,bool showFolders )
 {
 	m->clear() ;
 
-	auto _add_action = [ m,truncate ]( const QString& e ){
+	auto _add_action = [ m,truncate ]( const favorites::entry& e ){
 
 		auto ac = new QAction( m ) ;
 
 		if( truncate ){
 
-			auto l = utility::split( e,'\t' ) ;
-
-			if( l.size() > 0 ){
-
-				ac->setText( l.first() ) ;
-			}
+			ac->setText( e.volumePath ) ;
 		}else{
-			ac->setText( e ) ;
+			ac->setText( e.volumePath + "\t" + e.mountPointPath ) ;
 		}
 
-		ac->setEnabled( !e.startsWith( "/dev/disk/by-id" ) ) ;
+		ac->setEnabled( !e.volumePath.startsWith( "/dev/disk/by-id" ) ) ;
 
 		return ac ;
 	} ;
@@ -1683,23 +1671,23 @@ void utility::readFavorites( QMenu * m,bool truncate,bool showFolders )
 
 	m->addSeparator() ;
 
-	for( const auto& it : utility::readFavorites() ){
+	favorites::instance().entries( [ & ]( const favorites::entry& e ){
 
 		if( showFolders ){
 
-			m->addAction( _add_action( it ) ) ;
+			m->addAction( _add_action( e ) ) ;
 		}else{
-			auto e = utility::split( it,'\t' ).first() ;
+			const auto& s = e.volumePath ;
 
-			if( utility::pathExists( e ) ){
+			if( utility::pathExists( s ) ){
 
-				if( !utility::pathPointsToAFolder( e ) ){
+				if( !utility::pathPointsToAFolder( s ) ){
 
-					m->addAction( _add_action( it ) ) ;
+					m->addAction( _add_action( e ) ) ;
 				}
 			}
 		}
-	}
+	} ) ;
 }
 
 int utility::favoriteClickedOption( const QString& opt )
@@ -3014,7 +3002,7 @@ utility::progress::progress( int s,std::function< void( const utility::progress:
 	m_function( std::move( function ) ),
 	m_duration( s ),
 	m_time( m_duration.timer() ),
-	m_previousTime( m_time.currentMSecsSinceEpoch() )
+	m_previousTime( static_cast< double >( m_time.currentMSecsSinceEpoch() ) )
 {
 }
 

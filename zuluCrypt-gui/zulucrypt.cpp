@@ -56,7 +56,7 @@
 #include "createfile.h"
 #include "filemanager.h"
 #include "createkeyfile.h"
-#include "favorites.h"
+#include "favorites2.h"
 #include "cryptoinfo.h"
 #include "erasedevice.h"
 #include "managevolumeheader.h"
@@ -78,6 +78,7 @@
 
 zuluCrypt::zuluCrypt( QWidget * parent ) :
 	QMainWindow( parent ),
+	m_secrets( this ),
 	m_mountInfo( this,false,[ this ](){ this->quitApplication() ; } ),
 	m_signalHandler( this )
 {
@@ -311,7 +312,7 @@ void zuluCrypt::setupUIElements()
 {
 	m_ui->setupUi( this ) ;
 
-	m_secrets.setParent( this ) ;
+	//m_secrets.setParent( this ) ;
 
 	m_trayIcon.setParent( this ) ;
 
@@ -955,16 +956,11 @@ void zuluCrypt::favClicked( QAction * ac )
 
 	r.remove( "&" ) ;
 
-	auto _show_dialog = [ this ]( const QStringList& e ){
+	auto _show_dialog = [ this ]( const QString& v,const QString& m ){
 
-		if( e.size() > 1 ){
+		if( !utility::pathPointsToAFolder( v ) ){
 
-			const auto& first = e.first() ;
-
-			if( !utility::pathPointsToAFolder( first ) ){
-
-				this->ShowPasswordDialog( first,e.at( 1 ) ) ;
-			}
+			this->ShowPasswordDialog( v,m ) ;
 		}
 	} ;
 
@@ -972,16 +968,17 @@ void zuluCrypt::favClicked( QAction * ac )
 
 	if( e == 1 ){
 
-		favorites::instance( this,false ) ;
+		this->ShowFavoritesEntries() ;
 
 	}else if( e == 2 ){
 
-		for( const auto& it : utility::readFavorites() ){
+		favorites::instance().entries( [ & ]( const favorites::entry& e ){
 
-			_show_dialog( utility::split( it,'\t' ) ) ;
-		}
+			_show_dialog( e.volumePath,e.mountPointPath ) ;
+		} ) ;
 	}else{
-		_show_dialog( utility::split( r,'\t' ) ) ;
+		auto m = utility::split( r,'\t' ) ;
+		_show_dialog( m.at( 0 ),m.at( 1 ) ) ;
 	}
 }
 
@@ -1093,18 +1090,19 @@ void zuluCrypt::itemClicked( QTableWidgetItem * item,QPoint point )
 
 	auto volume_id = m_ui->tableWidget->item( item->row(),0 )->text() + "\t" ;
 
-	auto has_favorite = [ & ](){
+	bool has_favorite = false ;
 
-		for( const auto& it : utility::readFavorites() ){
+	favorites::instance().entries( [ & ]( const favorites::entry& e ){
 
-			if( it.startsWith( volume_id ) ){
+		if( e.volumePath.startsWith( volume_id ) ){
 
-				return true ;
-			}
+			has_favorite = true ;
+
+			return true ;
 		}
 
 		return false ;
-	}() ;
+	} ) ;
 
 	ac = m.addAction( tr( "Add To Favorite" ) ) ;
 
@@ -1257,7 +1255,10 @@ void zuluCrypt::ShowCreateKeyFile()
 
 void zuluCrypt::ShowFavoritesEntries()
 {
-	favorites::instance( this,false ) ;
+	favorites2::instance( this,m_secrets,[](){
+
+
+	} ) ;
 }
 
 void zuluCrypt::ShowCreateFile()

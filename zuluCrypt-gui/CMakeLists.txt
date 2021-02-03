@@ -21,7 +21,7 @@ set( UI_FILES createfile.ui
 		cryptfiles.ui
 		createvolumedialog.ui
 		managesystemvolumes.ui
-		favorites.ui
+		favorites2.ui
 		erasedevice.ui
 		walletconfig.ui
 		walletconfiginput.ui
@@ -49,7 +49,7 @@ set( MOC_FILES
 		createvolumeinexistingfile.h
 		password_dialog.h
 		zulucrypt.h
-		favorites.h
+		favorites2.h
 		help.h
 		erasedevice.h
 		managevolumeheader.h
@@ -82,7 +82,6 @@ set( SRC
 	password_dialog.cpp
 	createvolumeinexistingfile.cpp
 	zulucrypt.cpp
-	favorites.cpp
 	cryptoinfo.cpp
 	erasedevice.cpp
 	managevolumeheader.cpp
@@ -100,6 +99,7 @@ set( SRC
 	about.cpp
 	filemanager.cpp
 	showluksslots.cpp
+	favorites2.cpp
 )
 
 Qt5_WRAP_UI( UI ${UI_FILES} )

@@ -146,11 +146,6 @@
     <addaction name="actionSelect_Language"/>
     <addaction name="actionSelect_Icons"/>
     <addaction name="actionFonts"/>
-    <addaction name="actionManage_names"/>
-    <addaction name="actionManage_volumes_in_internal_wallet"/>
-    <addaction name="actionManage_volumes_in_kde_wallet"/>
-    <addaction name="actionManage_volumes_in_gnome_wallet"/>
-    <addaction name="actionChange_internal_wallet_password"/>
     <addaction name="actionManage_system_partitions"/>
     <addaction name="actionManage_non_system_partitions"/>
    </widget>
