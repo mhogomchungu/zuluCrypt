@@ -160,27 +160,17 @@ favorites2::favorites2( QWidget * parent,
 
 	connect( m_ui->pbAdd,&QPushButton::clicked,[ this ](){
 
-		DialogMsg msg( this ) ;
-
-		m_ui->tableWidget->setEnabled( false ) ;
-
 		favorites::entry e ;
 
 		e.volumePath = m_ui->lineEditVolumeID->text() ;
 		e.mountPointPath = m_ui->lineEditMountPath->text() ;
 
-		auto a = favorites::instance().add( e ) ;
+		if( !e.volumePath.isEmpty() && !e.mountPointPath.isEmpty() ){
 
-		if( a != favorites::error::SUCCESS ){
+			favorites::instance().add( e ) ;
 
-			m_ui->tableWidget->setEnabled( true ) ;
-
-			return ;
+			this->showUpdatedEntry( e ) ;
 		}
-
-		this->showUpdatedEntry( e ) ;
-
-		m_ui->tableWidget->setEnabled( true ) ;
 	} ) ;
 
 	connect( m_ui->pbPartition,&QPushButton::clicked,[ this ](){
