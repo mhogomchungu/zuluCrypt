@@ -331,7 +331,6 @@ void passwordDialog::ShowUI( const QString& volumePath,const QString& mount_poin
 		m_point = utility::mountPathPostFix( mount_point.split( "/" ).last() ) ;
 	}
 
-	utility::debug() << m_point ;
 	m_open_with_path = true ;
 
 	this->passphraseOption() ;
@@ -945,6 +944,8 @@ void passwordDialog::openVolume()
 
 		exe += " -M" ;
 	}
+
+	utility::setFileSystemOptions( exe,m_device,m_point ) ;
 
 	this->disableAll() ;
 

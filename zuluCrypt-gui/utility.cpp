@@ -3164,3 +3164,41 @@ bool utility::libCryptSetupLibraryNotFound()
 {
 	return !utility::pathExists( CRYPTSETUP_LIBRARY_PATH ) ;
 }
+
+void utility::setFileSystemOptions( QString& exe,
+				    const QString& device,
+				    const QString& mountpoint,
+				    const QString& mountOptions )
+{
+	QString mOpts ;
+
+	favorites::instance().entries( [ & ]( const favorites::entry& e ){
+
+		if( e.volumePath == device && e.mountPointPath == mountpoint ){
+
+			mOpts = e.mountOptions ;
+
+			return true ;
+		}
+
+		return false ;
+	} ) ;
+
+	if( mOpts.isEmpty() ){
+
+		if( mountOptions.isEmpty() ){
+			/*
+			 * Both are empty, do nothing.
+			 */
+		}else{
+			exe += " -Y " + mountOptions ;
+		}
+	}else{
+		if( mountOptions.isEmpty() ){
+
+			exe += " -Y " + mOpts ;
+		}else{
+			exe += " -Y " + mOpts + "," + mountOptions ;
+		}
+	}
+}

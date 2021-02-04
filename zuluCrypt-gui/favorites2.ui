@@ -35,7 +35,7 @@
        <x>10</x>
        <y>0</y>
        <width>741</width>
-       <height>321</height>
+       <height>301</height>
       </rect>
      </property>
      <property name="sizeAdjustPolicy">
@@ -87,7 +87,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>330</y>
+       <y>300</y>
        <width>461</width>
        <height>31</height>
       </rect>
@@ -97,7 +97,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>330</y>
+       <y>300</y>
        <width>131</width>
        <height>31</height>
       </rect>
@@ -113,7 +113,7 @@
      <property name="geometry">
       <rect>
        <x>610</x>
-       <y>330</y>
+       <y>300</y>
        <width>41</width>
        <height>33</height>
       </rect>
@@ -126,7 +126,7 @@
      <property name="geometry">
       <rect>
        <x>650</x>
-       <y>330</y>
+       <y>300</y>
        <width>41</width>
        <height>33</height>
       </rect>
@@ -139,7 +139,7 @@
      <property name="geometry">
       <rect>
        <x>150</x>
-       <y>360</y>
+       <y>330</y>
        <width>461</width>
        <height>31</height>
       </rect>
@@ -149,7 +149,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>360</y>
+       <y>330</y>
        <width>141</width>
        <height>31</height>
       </rect>
@@ -172,6 +172,32 @@
      </property>
      <property name="text">
       <string>&amp;Close</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEditMountOptions">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>360</y>
+       <width>461</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>360</y>
+       <width>141</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Mount Options</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
    </widget>

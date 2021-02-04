@@ -164,12 +164,17 @@ favorites2::favorites2( QWidget * parent,
 
 		e.volumePath = m_ui->lineEditVolumeID->text() ;
 		e.mountPointPath = m_ui->lineEditMountPath->text() ;
+		e.mountOptions = m_ui->lineEditMountOptions->text() ;
 
 		if( !e.volumePath.isEmpty() && !e.mountPointPath.isEmpty() ){
 
 			favorites::instance().add( e ) ;
 
 			this->showUpdatedEntry( e ) ;
+
+			m_ui->lineEditVolumeID->clear() ;
+			m_ui->lineEditMountPath->clear() ;
+			m_ui->lineEditMountOptions->clear() ;
 		}
 	} ) ;
 

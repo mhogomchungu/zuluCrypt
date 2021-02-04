@@ -236,10 +236,7 @@ void mountPartition::pbMount()
 		exe += " -e -rw" ;
 	}
 
-	if( !m_options.isEmpty() ){
-
-		exe += " -Y " + m_options ;
-	}
+	utility::setFileSystemOptions( exe,volume,m,m_options ) ;
 
 	auto s = utility::Task::run( utility::appendUserUID( exe ) ).await() ;
 

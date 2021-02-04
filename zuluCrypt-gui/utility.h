@@ -442,6 +442,11 @@ namespace utility
 
 	QString powerOffCommand( void ) ;
 
+	void setFileSystemOptions( QString& exe,
+				   const QString& device,
+				   const QString& mountpoint,
+				   const QString& mountOptions = QString() ) ;
+
 	int favoriteClickedOption( const QString& ) ;
 
 	QString executableFullPath( const QString& ) ;

@@ -822,11 +822,6 @@ void keyDialog::openVolume()
 
 	exe += " -z \"" + mountPoint + "\"" ;
 
-	if( !m_options.isEmpty() ){
-
-		exe += " -Y " + m_options ;
-	}
-
 	if( !m_deviceOffSet.isEmpty() ){
 
 		exe += m_deviceOffSet ;
@@ -867,6 +862,8 @@ void keyDialog::openVolume()
 	}else{
 		exe += " " + m ;
 	}
+
+	utility::setFileSystemOptions( exe,volume,mountPoint,m_options ) ;
 
 	m_veraCryptWarning.show( m_veraCryptVolumeType.yes() ) ;
 
