@@ -83,6 +83,9 @@ public:
 		settings() : m_settings( utility::settingsObject() )
 		{
 		}
+		settings( QSettings& s ) : m_settings( s )
+		{
+		}
 		bool autoMountFavoritesOnStartUp()
 		{
 			if( m_settings.contains( "AutoMountFavoritesOnStartUp" ) ){

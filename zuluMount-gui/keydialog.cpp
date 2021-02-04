@@ -42,6 +42,7 @@
 #include "zulumounttask.h"
 #include "siritask.h"
 #include "veracryptpimdialog.h"
+#include "../zuluCrypt-gui/favorites2.h"
 
 #define KWALLET         "kde wallet"
 #define INTERNAL_WALLET "internal wallet"
@@ -1012,6 +1013,23 @@ void keyDialog::pbCancel()
 
 void keyDialog::ShowUI()
 {
+	QSettings s( "zuluCrypt","zuluCrypt" ) ;
+
+	auto m = favorites2::settings( s ).autoMountBackEnd() ;
+
+	if( m.isValid() ){
+
+		auto secret = m_secrets.walletBk( m.bk() ).getKey( m_path ) ;
+
+		if( secret.notConfigured ){
+
+			DialogMsg msg( this ) ;
+			msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal wallet is not configured" ) ) ;
+		}else{
+			m_ui->lineEditKey->setText( secret.key ) ;
+		}
+	}
+
 	this->show() ;
 }
 

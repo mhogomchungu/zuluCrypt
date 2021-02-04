@@ -525,7 +525,7 @@ QString zuluMount::resolveFavoriteMountPoint( const QString& m )
 
 		if( e.volumePath == m ){
 
-			s = e.volumePath ;
+			s = e.mountPointPath ;
 
 			return true ;
 		}
