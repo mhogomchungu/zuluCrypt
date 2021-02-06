@@ -68,6 +68,8 @@ passwordDialog::passwordDialog( QTableWidget * table,
 {
 	m_ui->setupUi( this ) ;
 
+	m_ui->frameOptions->setVisible( false ) ;
+
 	m_label.setOptions( m_ui->veraCryptWarning,m_ui->pbOK ) ;
 
 	m_ui->PassPhraseField->setMaxLength( 32767 ) ;
@@ -122,6 +124,39 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	m_ui->cbKeyType->addItem( tr( "TrueCrypt/VeraCrypt Keys" ) ) ;
 
 	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Response" ) ) ;
+
+	connect( m_ui->PushButtonOptions,&QPushButton::clicked,[ this ](){
+
+		auto m = m_ui->OpenVolumePath->text() ;
+
+		if( !m.isEmpty() ){
+
+			favorites::instance().entries( [ this,&m ]( const favorites::entry& e ){
+
+				if( e.volumePath == m ){
+
+					m_ui->lineEditFsOptions->setText( e.mountOptions ) ;
+					return true ;
+				}
+
+				return false ;
+			} ) ;
+		}
+
+		m_ui->frameOptions->setVisible( true ) ;
+	} ) ;
+
+	connect( m_ui->pbSet,&QPushButton::clicked,[ this ](){
+
+		m_fsOptions = m_ui->lineEditFsOptions->text() ;
+		m_ui->frameOptions->setVisible( false ) ;
+	} ) ;
+
+	connect( m_ui->pbCancel,&QPushButton::clicked,[ this ](){
+
+		m_ui->lineEditFsOptions->clear() ;
+		m_ui->frameOptions->setVisible( false ) ;
+	} ) ;
 
 	m_ui->pushButtonPlainDmCryptOptions->setMenu( [ this ](){
 
@@ -536,7 +571,7 @@ void passwordDialog::file_path( void )
 	m_ui->OpenVolumePath->setText( Z ) ;
 
 	if( !Z.isEmpty() ){
-
+		this->autoSetPassword( Z ) ;
 		m_ui->MountPointPath->setText( utility::mountPathPostFix( Z.split( "/" ).last() ) ) ;
 		m_ui->PassPhraseField->setFocus() ;
 	}
@@ -636,6 +671,7 @@ void passwordDialog::sendKey( const QString& sockpath )
 
 void passwordDialog::disableAll()
 {
+	m_ui->PushButtonOptions->setEnabled( false ) ;
 	m_ui->labelVolumeProperty->setEnabled( false ) ;
 	m_ui->lineEditVolumeProperty->setEnabled( false ) ;
 	m_ui->pushButtonPlainDmCryptOptions->setEnabled( false ) ;
@@ -672,6 +708,7 @@ void passwordDialog::enableAll()
 
 	}
 
+	m_ui->PushButtonOptions->setEnabled( true ) ;
 	m_ui->lineEditVolumeProperty->setEnabled( true ) ;
 	m_ui->labelVolumeProperty->setEnabled( true ) ;
 	m_ui->pushButtonPlainDmCryptOptions->setEnabled( index == 3 ) ;
@@ -945,7 +982,7 @@ void passwordDialog::openVolume()
 		exe += " -M" ;
 	}
 
-	utility::setFileSystemOptions( exe,m_device,m_point ) ;
+	utility::setFileSystemOptions( exe,m_device,m_point,m_fsOptions ) ;
 
 	this->disableAll() ;
 

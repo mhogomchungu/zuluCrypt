@@ -97,6 +97,7 @@ private :
 	QWidget * m_parent ;
 	QByteArray m_key ;
 	QStringList m_keyFiles ;
+	QString m_fsOptions ;
 	QString m_device ;
 	QString m_point ;
 	QString m_plainDmCryptProperty ;

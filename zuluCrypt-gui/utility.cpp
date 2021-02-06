@@ -3198,7 +3198,22 @@ void utility::setFileSystemOptions( QString& exe,
 
 			exe += " -Y " + mOpts ;
 		}else{
-			exe += " -Y " + mOpts + "," + mountOptions ;
+			/*
+			 * remove duplicate entries
+			 */
+			auto m = utility::split( mountOptions,',' ) ;
+
+			for( const auto& it : utility::split( mOpts,',' ) ){
+
+				m.removeAll( it ) ;
+			}
+
+			if( m.isEmpty() ){
+
+				exe += " -Y " + mOpts ;
+			}else{
+				exe += " -Y " + mOpts + "," + m.join( ',' ) ;
+			}
 		}
 	}
 }
