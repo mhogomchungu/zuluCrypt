@@ -249,11 +249,6 @@ favorites::error favorites::add( const favorites::entry& e )
 	}
 }
 
-const std::vector< favorites::entry >& favorites::readFavorites() const
-{
-	return m_favorites ;
-}
-
 utility2::result_ref< const favorites::entry& > favorites::readFavoriteByPath( const QString& configPath ) const
 {
 	auto path = QDir( configPath ).absolutePath() ;
@@ -272,6 +267,21 @@ utility2::result_ref< const favorites::entry& > favorites::readFavoriteByPath( c
 utility2::result< favorites::entry > favorites::readFavoriteByFileSystemPath( const QString& path ) const
 {
 	return _favorites( path ) ;
+}
+
+utility2::result_ref< const favorites::entry& > favorites::readFavorite( int position )
+{
+	return this->readFavorite( static_cast< size_t >( position ) ) ;
+}
+
+utility2::result_ref< const favorites::entry& > favorites::readFavorite( size_t position )
+{
+	if( position < m_favorites.size() ){
+
+		return m_favorites[ position ] ;
+	}else{
+		return {} ;
+	}
 }
 
 utility2::result_ref< const favorites::entry& > favorites::readFavorite( const QString& volumePath,

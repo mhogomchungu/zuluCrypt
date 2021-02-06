@@ -8,8 +8,6 @@ include_directories( ${PROJECT_BINARY_DIR}/zuluMount-gui/ )
 set (UI_FILES 	zulumount.ui
 		keydialog.ui
 		mountpartition.ui
-		deviceoffset.ui
-		mountoptions.ui
 		veracryptpimdialog.ui
 		../zuluCrypt-gui/tcrypt.ui
 		../zuluCrypt-gui/favorites2.ui
@@ -22,8 +20,6 @@ set(MOC_FILES 	zulumount.h
 		oneinstance.h
 		events.h
 		monitor_mountinfo.h
-		deviceoffset.h
-		mountoptions.h
 		veracryptpimdialog.h
 		../zuluCrypt-gui/tcrypt.h
 		../zuluCrypt-gui/utility.h
@@ -39,8 +35,6 @@ set(SRC 	main.cpp
 		mountpartition.cpp
 		oneinstance.cpp
 		monitor_mountinfo.cpp
-		deviceoffset.cpp
-		mountoptions.cpp
 		siritask.cpp
 		volumeproperty.cpp
 		../zuluCrypt-gui/tcrypt.cpp
@@ -75,8 +69,6 @@ install( TARGETS zuluMount-gui RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 
 install ( FILES ${PROJECT_BINARY_DIR}/zuluMount.desktop
 DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
-
-PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
 install( FILES zuluMount.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps/ )

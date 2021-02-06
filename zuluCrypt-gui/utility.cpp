@@ -3217,3 +3217,24 @@ void utility::setFileSystemOptions( QString& exe,
 		}
 	}
 }
+
+QString utility::fileSystemOptions( const QString& path )
+{
+	QString m ;
+
+	if( !path.isEmpty() ){
+
+		favorites::instance().entries( [ & ]( const favorites::entry& e ){
+
+			if( e.volumePath == path ){
+
+				m = e.mountOptions ;
+				return true ;
+			}
+
+			return false ;
+		} ) ;
+	}
+
+	return m ;
+}

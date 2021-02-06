@@ -129,20 +129,8 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 		auto m = m_ui->OpenVolumePath->text() ;
 
-		if( !m.isEmpty() ){
-
-			favorites::instance().entries( [ this,&m ]( const favorites::entry& e ){
-
-				if( e.volumePath == m ){
-
-					m_ui->lineEditFsOptions->setText( e.mountOptions ) ;
-					return true ;
-				}
-
-				return false ;
-			} ) ;
-		}
-
+		m_ui->lineEditFsOptions->setText( utility::fileSystemOptions( m ) ) ;
+		m_ui->lineEditFsOptions->setText( m_fsOptions ) ;
 		m_ui->frameOptions->setVisible( true ) ;
 	} ) ;
 
@@ -154,7 +142,6 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 	connect( m_ui->pbCancel,&QPushButton::clicked,[ this ](){
 
-		m_ui->lineEditFsOptions->clear() ;
 		m_ui->frameOptions->setVisible( false ) ;
 	} ) ;
 

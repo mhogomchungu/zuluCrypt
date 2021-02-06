@@ -11,6 +11,15 @@ set( SRC
 	../executablesearchpaths.cpp
 	../systemsignalhandler.cpp
 	../debugwindow.cpp
+	../tcrypt.cpp
+	../favorites.cpp
+	../openvolume.cpp
+	../secrets.cpp
+	../favorites2.cpp
+	../../zuluMount-gui/oneinstance.cpp
+	../../zuluMount-gui/monitor_mountinfo.cpp
+	../../zuluMount-gui/zulumounttask.cpp
+	../../zuluMount-gui/volumeproperty.cpp
 )
 
 set( MOC_FILES
@@ -20,9 +29,25 @@ set( MOC_FILES
 	../plugin.h
 	../utility.h
 	../debugwindow.h
+	../tcrypt.h
+	../utility.h
+	../openvolume.h
+	../favorites2.h
+	../../zuluMount-gui/oneinstance.h
+	../../zuluMount-gui/monitor_mountinfo.h
 )
 
-set( UI_FILES ../dialogmsg.ui ../readonlywarning.ui ../plugin.ui ../dialogok.ui ../debugwindow.ui )
+set( UI_FILES
+	 ../dialogmsg.ui
+	 ../readonlywarning.ui
+	 ../plugin.ui
+	 ../dialogok.ui
+	 ../debugwindow.ui
+	../tcrypt.ui
+	../openvolume.ui
+	../favorites2.ui
+	../openvolume.ui
+ )
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR})
 

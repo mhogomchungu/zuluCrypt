@@ -79,14 +79,10 @@ private slots:
 	void key( void ) ;
 	void keyFile( void ) ;
 	void pbOpen( void ) ;
-	void pbOptions( void ) ;
 	void pbCancel( void ) ;
 	void Plugin( void ) ;
 	void KeyFile( void ) ;
 	void cbMountReadOnlyStateChanged( int ) ;
-	void doAction( QAction * ) ;
-	void showOffSetWindowOption( void ) ;
-	void showFileSystemOptionWindow( void ) ;
 	void encryptedFolderMount( void ) ;
 private :
 	class veraCryptVolumeType{
@@ -118,7 +114,6 @@ private :
 	QString m_deviceOffSet ;
 	QString m_options ;
 	QMenu * m_menu ;
-	QMenu * m_menu_1 ;
 	QTableWidget * m_table ;
 	utility::veraCryptWarning m_veraCryptWarning ;	
 	bool m_working ;

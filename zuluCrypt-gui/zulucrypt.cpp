@@ -63,7 +63,6 @@
 #include "cryptfiles.h"
 #include "dialogmsg.h"
 #include "managesystemvolumes.h"
-#include "walletconfig.h"
 #include "tablewidget.h"
 #include "utility.h"
 #include "task.hpp"
@@ -412,10 +411,6 @@ void zuluCrypt::setupConnections()
 	connect( m_ui->actionDecrypt_file,SIGNAL( triggered() ),this,SLOT( decryptFile() ) ) ;
 	connect( m_ui->actionManage_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageSystemPartitions() ) ) ;
 	connect( m_ui->actionManage_non_system_partitions,SIGNAL( triggered() ),this,SLOT( ShowManageNonSystemPartitions() ) ) ;
-	connect( m_ui->actionChange_internal_wallet_password,SIGNAL( triggered() ),this,SLOT( changePassWordOfInternalWallet() ) ) ;
-	connect( m_ui->actionManage_volumes_in_kde_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInKDEWallet() ) ) ;
-	connect( m_ui->actionManage_volumes_in_gnome_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInGNOMEWallet() ) ) ;
-	connect( m_ui->actionManage_volumes_in_internal_wallet,SIGNAL( triggered() ),this,SLOT( manageVolumesInInternalWallet() ) ) ;
 	connect( m_ui->actionOpen_zuluCrypt_pdf,SIGNAL( triggered() ),this,SLOT( openpdf() ) ) ;
 	connect( m_ui->actionSet_File_Manager,SIGNAL( triggered() ),this,SLOT( setFileManager() ) ) ;
 
@@ -551,26 +546,6 @@ void zuluCrypt::info()
 	//cryptoinfo::instance( this,utility::homePath() + "/.zuluCrypt/doNotshowWarning.option",QString() ) ;
 }
 
-static void _walletconfig( QWidget * widget,secrets& s,LXQt::Wallet::BackEnd e )
-{
-	walletconfig::instance( widget ).ShowUI( s.walletBk( e ) ) ;
-}
-
-void zuluCrypt::manageVolumesInGNOMEWallet()
-{
-	_walletconfig( this,m_secrets,LXQt::Wallet::BackEnd::libsecret ) ;
-}
-
-void zuluCrypt::manageVolumesInInternalWallet()
-{
-	_walletconfig( this,m_secrets,LXQt::Wallet::BackEnd::internal ) ;
-}
-
-void zuluCrypt::manageVolumesInKDEWallet()
-{
-	_walletconfig( this,m_secrets,LXQt::Wallet::BackEnd::kwallet ) ;
-}
-
 void zuluCrypt::createVolumeInExistingFile()
 {
 	warnWhenExtendingContainerFile::Show( this,[ this ](){
@@ -583,17 +558,6 @@ void zuluCrypt::failedToOpenWallet()
 {
 	//DialogMsg msg( this ) ;
 	//msg.ShowUIOK( tr( "ERROR" ),tr( "could not open selected wallet" ) ) ;
-}
-
-void zuluCrypt::changePassWordOfInternalWallet()
-{
-	auto a = utility::walletName() ;
-	auto b = utility::applicationName() ;
-
-	m_secrets.changeInternalWalletPassword( a,b,[]( bool e ){
-
-		Q_UNUSED( e )
-	} ) ;
 }
 
 void zuluCrypt::permissionExplanation()

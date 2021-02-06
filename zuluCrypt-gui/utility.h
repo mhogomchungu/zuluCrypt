@@ -89,16 +89,25 @@ namespace utility
 			QObject::connect( m_pushButton,&QPushButton::clicked,[ this ](){
 
 				this->hide() ;
-				m_eventLoop.exit() ;
+
+				if( m_runEventLoop ){
+
+					m_eventLoop.exit() ;
+				}
 			} ) ;
 		}
-		void show( const QString& e )
+		void show( const QString& e,bool runEventLopp = true )
 		{
+			m_runEventLoop = runEventLopp ;
 			m_label->setText( e ) ;
 			m_label->setVisible( true ) ;
 			m_pushButton->setVisible( true ) ;
 			m_pushButton->setFocus() ;
-			m_eventLoop.exec() ;
+
+			if( runEventLopp ){
+
+				m_eventLoop.exec() ;
+			}
 		}
 		void hide()
 		{
@@ -107,6 +116,7 @@ namespace utility
 			m_pushButton->setVisible( false ) ;
 		}
 	private:
+		bool m_runEventLoop ;
 		QLabel * m_label ;
 		QPushButton * m_pushButton ;
 		QEventLoop m_eventLoop ;
@@ -330,6 +340,8 @@ namespace utility
 	void setIcons( const QString&,const QString& ) ;
 	void setIconMenu( const QString& app,QAction * ac,QWidget *,
 			  std::function< void( const QString& ) >&& ) ;
+
+	QString fileSystemOptions( const QString& path ) ;
 
 	QString autoSetVolumeAsVeraCrypt() ;
 	void autoSetVolumeAsVeraCrypt( const QString& ) ;

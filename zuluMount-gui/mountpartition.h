@@ -64,15 +64,11 @@ signals:
 private slots:
 	void stateChanged( int ) ;
 	void pbMount( void ) ;
-	void pbOptions( void ) ;
 	void pbCancel( void ) ;
 	void pbOpenMountPath( void ) ;
-	void showOffSetWindowOption( void ) ;
-	void showFileSystemOptionWindow( void ) ;
 	void checkBoxReadOnlyStateChanged( int ) ;
-	void doAction( QAction * ) ;
 private:
-	bool errorNotFound( int ) ;
+	void reportError( utility::Task& ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;
@@ -85,7 +81,6 @@ private:
 	QString m_key ;
 	QString m_options ;
 	QTableWidget * m_table ;
-	QMenu * m_menu ;
 	std::function< void() > m_cancel ;
 	std::function< void( const QString& ) > m_success ;
 	utility::label m_Label ;

@@ -130,10 +130,6 @@ private slots :
 	void openFolder( void ) ;
 	void openSharedFolder( void ) ;
 	void itemEntered( QTableWidgetItem * ) ;
-	void manageVolumesInInternalWallet( void ) ;
-	void manageVolumesInKDEWallet( void ) ;
-	void manageVolumesInGNOMEWallet( void ) ;
-	void changePassWordOfInternalWallet( void ) ;
 	void optionMenuAboutToShow( void ) ;
 	void openpdf( void ) ;
 	void cinfo( void ) ;

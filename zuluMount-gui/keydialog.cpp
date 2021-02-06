@@ -17,8 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "deviceoffset.h"
-
 #include "keydialog.h"
 #include "ui_keydialog.h"
 
@@ -36,13 +34,12 @@
 #include "plugin_path.h"
 #include "../zuluCrypt-gui/utility.h"
 #include "lxqt_wallet.h"
-#include "mountoptions.h"
-#include "../zuluCrypt-gui/tcrypt.h"
 #include "zulumounttask.h"
 #include "zulumounttask.h"
 #include "siritask.h"
 #include "veracryptpimdialog.h"
 #include "../zuluCrypt-gui/favorites2.h"
+#include "../zuluCrypt-gui/tcrypt.h"
 
 #define KWALLET         "kde wallet"
 #define INTERNAL_WALLET "internal wallet"
@@ -117,7 +114,6 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->labelVeraCryptPIM->setEnabled( false ) ;
 	}
 
-	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
 	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
 	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),this,SLOT( pbkeyOption() ) ) ;
@@ -144,31 +140,37 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->lineEditMountPoint->setText( m_point ) ;
 
-	this->addAction( [ this ](){
-
-		auto ac = new QAction( this ) ;
-		ac->setShortcut( Qt::CTRL + Qt::Key_F ) ;
-		connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
-
-		return ac ;
-	}() ) ;
-
-	m_menu_1 = new QMenu( this ) ;
-
-	m_menu_1->setFont( this->font() ) ;
-
 	m_ui->pbOptions->setEnabled( !m_encryptedFolder ) ;
 
-	if( !m_encryptedFolder ){
+	m_ui->frame->setVisible( false ) ;
 
-		auto _add_action = [ & ]( const QString& e ){
+	connect( m_ui->pbOptions,&QPushButton::clicked,[ this ](){
 
-			m_menu_1->addAction( e ) ;
-		} ;
+		m_ui->lineEditVolumeOffset->setText( m_deviceOffSet ) ;
 
-		_add_action( tr( "Set File System Options" ) ) ;
-		_add_action( tr( "Set Volume Offset" ) ) ;
-	}
+		m_ui->lineEditFsOptions->setText( utility::fileSystemOptions( m_path ) ) ;
+
+		m_ui->frame->setVisible( true ) ;
+	} ) ;
+
+	connect( m_ui->pbSet,&QPushButton::clicked,[ this ](){
+
+		m_ui->frame->setVisible( false ) ;
+
+		auto e = m_ui->lineEditVolumeOffset->text() ;
+
+		if( !e.isEmpty() ){
+
+			m_deviceOffSet = QString( " -o %1" ).arg( e ) ;
+		}
+
+		m_options = m_ui->lineEditFsOptions->text() ;
+	} ) ;
+
+	connect( m_ui->pbCancelOptions,&QPushButton::clicked,[ this ](){
+
+		m_ui->frame->setVisible( false ) ;
+	} ) ;
 
 	m_ui->cbKeyType->addItem( tr( "Key" ) ) ;
 	m_ui->cbKeyType->addItem( tr( "KeyFile" ) ) ;
@@ -184,8 +186,6 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_ui->cbKeyType->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
-	connect( m_menu_1,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
-
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
 	m_ui->pbkeyOption->setVisible( false ) ;
@@ -196,41 +196,6 @@ keyDialog::keyDialog( QWidget * parent,
 bool keyDialog::eventFilter( QObject * watched,QEvent * event )
 {
 	return utility::eventFilter( this,watched,event,[ this ](){ this->pbCancel() ; } ) ;
-}
-
-void keyDialog::pbOptions()
-{
-	m_menu_1->exec( QCursor::pos() ) ;
-}
-
-void keyDialog::showOffSetWindowOption()
-{
-	deviceOffset::instance( this,false,[ this ]( const QString& e,const QString& f ){
-
-		Q_UNUSED( f )
-		m_deviceOffSet = QString( " -o %1" ).arg( e ) ;
-	} ) ;
-}
-
-void keyDialog::showFileSystemOptionWindow()
-{
-	mountOptions::instance( &m_options,this ) ;
-}
-
-void keyDialog::doAction( QAction * ac )
-{
-	auto e = ac->text() ;
-
-	e.remove( "&" ) ;
-
-	if( e == tr( "Set File System Options" ) ){
-
-		this->showFileSystemOptionWindow() ;
-
-	}else if( e == tr( "Set Volume Offset" ) ){
-
-		this->showOffSetWindowOption() ;
-	}
 }
 
 void keyDialog::cbMountReadOnlyStateChanged( int state )

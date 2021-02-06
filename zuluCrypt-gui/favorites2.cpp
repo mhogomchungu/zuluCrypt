@@ -383,9 +383,7 @@ favorites2::favorites2( QWidget * parent,
 		}
 	} ) ;
 
-	const auto& volumes = favorites::instance().readFavorites() ;
-
-	this->updateVolumeList( volumes,0 ) ;
+	this->updateVolumeList( 0 ) ;
 
 	this->addAction( [ this ](){
 
@@ -640,43 +638,35 @@ void favorites2::tabChanged( int index )
 }
 
 template< typename M >
-static void _updateList( QTableWidget * table,const QFont& font,
-			 const std::vector<favorites::entry>& e,const M& m )
+static void _updateList( QTableWidget * table,const QFont& font,const M& m )
 {
 	tablewidget::clearTable( table ) ;
 
-	for( size_t i = 0 ; i < e.size() ; i++ ){
+	favorites::instance().entries( [ & ]( size_t index,const favorites::entry& e ){
 
-		const auto& a = e[ i ].volumePath ;
-		const auto& b = e[ i ].mountPointPath ;
+		const auto& a = e.volumePath ;
+		const auto& b = e.mountPointPath ;
 
 		tablewidget::addRow( table,{ a,b },font ) ;
-		tablewidget::setRowToolTip( table,static_cast< int >( i ),a ) ;
-	}
+		tablewidget::setRowToolTip( table,static_cast< int >( index ),a ) ;
+	} ) ;
 
 	tablewidget::selectRow( table,m ) ;
 }
 
-void favorites2::updateVolumeList( const std::vector<favorites::entry>& e,const QString& volPath )
+void favorites2::updateVolumeList( const QString& volPath )
 {
-	_updateList( m_ui->tableWidget,this->font(),e,volPath ) ;
+	_updateList( m_ui->tableWidget,this->font(),volPath ) ;
 }
 
-void favorites2::updateVolumeList( const std::vector< favorites::entry >& e,size_t row )
+void favorites2::updateVolumeList( size_t row )
 {
-	if( e.size() == 0 ){
-
-		tablewidget::clearTable( m_ui->tableWidget ) ;
-
-		utility::debug() << "Information: Favorites list is empty" ;
-	}else{
-		_updateList( m_ui->tableWidget,this->font(),e,static_cast< int >( row ) ) ;
-	}	
+	_updateList( m_ui->tableWidget,this->font(),static_cast< int >( row ) ) ;
 }
 
 void favorites2::showUpdatedEntry( const favorites::entry& e )
 {
-	this->updateVolumeList( favorites::instance().readFavorites(),e.volumePath ) ;
+	this->updateVolumeList( e.volumePath ) ;
 
 	m_ui->tabWidget->setCurrentIndex( 0 ) ;
 }
@@ -689,15 +679,15 @@ void favorites2::removeEntryFromFavoriteList()
 
 		auto row = table->currentRow() ;
 
-		auto aa = this->getEntry( row ) ;
+		auto& favorites = favorites::instance() ;
+
+		const auto& aa = favorites.readFavorite( row ) ;
 
 		if( aa.has_value() ){
 
 			favorites::instance().removeFavoriteEntry( aa.value() ) ;
 
-			const auto& volumes = favorites::instance().readFavorites() ;
-
-			this->updateVolumeList( volumes,volumes.size() - 1 ) ;
+			this->updateVolumeList( 0 ) ;
 		}else{
 			utility::debug() << "Warning: favorites2::removeEntryFromFavoriteList() out of range" ;
 		}
@@ -745,22 +735,6 @@ void favorites2::HideUI()
 	this->hide() ;
 	m_function() ;
 	this->deleteLater() ;
-}
-
-utility2::result_ref< const favorites::entry& > favorites2::getEntry( int row )
-{
-	auto m = static_cast< size_t >( row ) ;
-
-	const auto& ff = favorites::instance() ;
-
-	const auto& volumes = ff.readFavorites() ;
-
-	if( m < volumes.size() ){
-
-		return volumes[ m ] ;
-	}else{
-		return {} ;
-	}
 }
 
 QString favorites2::getExistingFile( const QString& r )

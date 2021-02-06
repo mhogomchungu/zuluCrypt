@@ -21,12 +21,7 @@ set( UI_FILES createfile.ui
 		cryptfiles.ui
 		createvolumedialog.ui
 		managesystemvolumes.ui
-		favorites2.ui
 		erasedevice.ui
-		walletconfig.ui
-		walletconfiginput.ui
-		openvolume.ui
-		tcrypt.ui
 		help.ui
 		dialogok.ui
 		filemanager.ui
@@ -38,28 +33,21 @@ set( MOC_FILES
 		about.h
 		dialogok.h
 		utility.h
-		tcrypt.h
 		createfile.h
 		luksaddkey.h
 		createkeyfile.h
 		warnwhenextendingcontainerfile.h
 		luksdeletekey.h
 		createvolume.h
-		openvolume.h
 		createvolumeinexistingfile.h
 		password_dialog.h
 		zulucrypt.h
-		favorites2.h
 		help.h
 		erasedevice.h
 		managevolumeheader.h
 		cryptfiles.h
 		createvolumedialog.h
 		managesystemvolumes.h
-		walletconfig.h
-		walletconfiginput.h
-		../zuluMount-gui/oneinstance.h
-		../zuluMount-gui/monitor_mountinfo.h
 		about.h
 		help.h
 		filemanager.h
@@ -70,11 +58,9 @@ set( SRC
 	about.cpp
 	dialogok.cpp
 	secrets.cpp
-	tcrypt.cpp
 	createfile.cpp
 	createvolume.cpp
 	luksdeletekey.cpp
-	openvolume.cpp
 	createkeyfile.cpp
 	luksaddkey.cpp
 	main.cpp
@@ -89,17 +75,10 @@ set( SRC
 	createvolumedialog.cpp
 	managesystemvolumes.cpp
 	keystrength.cpp
-	walletconfig.cpp
-	walletconfiginput.cpp
-	../zuluMount-gui/oneinstance.cpp
-	../zuluMount-gui/monitor_mountinfo.cpp
-	../zuluMount-gui/zulumounttask.cpp
-	../zuluMount-gui/volumeproperty.cpp
 	help.cpp
 	about.cpp
 	filemanager.cpp
 	showluksslots.cpp
-	favorites2.cpp
 )
 
 Qt5_WRAP_UI( UI ${UI_FILES} )
@@ -126,8 +105,6 @@ install( TARGETS zuluCrypt-gui RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} )
 
 install( FILES ${PROJECT_BINARY_DIR}/zuluCrypt.desktop
 DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications
-
-PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 )
 
 install( FILES zuluCrypt.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps )

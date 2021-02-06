@@ -195,8 +195,8 @@ private :
 	void walletBkChanged( LXQt::Wallet::BackEnd ) ;
 	void setControlsAvailability( bool,bool clearTable ) ;
 	void tabChanged( int ) ;
-	void updateVolumeList( const std::vector< favorites::entry >&,const QString& ) ;
-	void updateVolumeList( const std::vector< favorites::entry >&,size_t ) ;
+	void updateVolumeList( const QString& ) ;
+	void updateVolumeList( size_t ) ;
 	void showUpdatedEntry( const favorites::entry& ) ;
 	void setCommand( QLineEdit * ) ;
 	void removeEntryFromFavoriteList( void ) ;
@@ -210,7 +210,6 @@ private :
 	void ShowUI() ;
 	void HideUI( void ) ;
 	QStringList readAllKeys() ;
-	utility2::result_ref< const favorites::entry& > getEntry( int ) ;
 	QString getExistingFile( const QString& ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;

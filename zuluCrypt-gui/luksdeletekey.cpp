@@ -33,7 +33,6 @@
 #include <QIcon>
 #include <QKeyEvent>
 
-#include "ui_openvolume.h"
 #include "openvolume.h"
 #include "ui_luksdeletekey.h"
 #include "task.hpp"

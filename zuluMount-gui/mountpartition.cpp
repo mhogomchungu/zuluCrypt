@@ -17,7 +17,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "deviceoffset.h"
 #include "mountpartition.h"
 #include "ui_mountpartition.h"
 #include <QDebug>
@@ -42,7 +41,6 @@
 #include "../zuluCrypt-gui/dialogmsg.h"
 #include "../zuluCrypt-gui/tablewidget.h"
 #include "../zuluCrypt-gui/utility.h"
-#include "mountoptions.h"
 
 mountPartition::mountPartition( QWidget * parent,QTableWidget * table,std::function< void() > p,std::function< void( const QString& ) > q ) :
 	QWidget( parent ),m_ui( new Ui::mountPartition ),m_cancel( std::move( p ) ),m_success( std::move( q ) )
@@ -61,7 +59,6 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,std::funct
 
 	m_ui->checkBoxMountReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( "zuluMount-gui" ) ) ;
 
-	connect( m_ui->pbOptions,SIGNAL( clicked() ),this,SLOT( pbOptions() ) ) ;
 	connect( m_ui->pbMount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
 	connect( m_ui->pbMountFolder,SIGNAL( clicked() ),this,SLOT( pbOpenMountPath() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
@@ -74,25 +71,28 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,std::funct
 
 	m_ui->pbMountFolder->setVisible( false ) ;
 
-	this->addAction( [ this ](){
+	m_ui->frame->setVisible( false ) ;
 
-		auto ac = new QAction( this ) ;
+	connect( m_ui->pbOptions,&QPushButton::clicked,[ this ](){
 
-		ac->setShortcut( Qt::CTRL + Qt::Key_F ) ;
+		m_ui->lineEditFsOptions->setText( utility::fileSystemOptions( m_path ) ) ;
 
-		connect( ac,SIGNAL( triggered() ),this,SLOT( showOffSetWindowOption() ) ) ;
+		m_ui->frame->setVisible( true ) ;
+	} ) ;
 
-		return ac ;
-	}() ) ;
+	connect( m_ui->pbFrameCancel,&QPushButton::clicked,[ this ](){
 
-	m_menu = new QMenu( this ) ;
+		m_ui->frame->setVisible( false ) ;
+	} ) ;
 
-	m_menu->addAction( tr( "Set File System Options" ) ) ;
-	m_menu->addAction( tr( "Set Volume Offset" ) ) ;
+	connect( m_ui->pbFrameSet,&QPushButton::clicked,[ this ](){
 
-	m_menu->setFont( this->font() ) ;
+		m_deviceOffSet = m_ui->lineEditVolumeOffset->text() ;
+		m_key          = m_ui->lineEditVolumePassword->text() ;
+		m_options      = m_ui->lineEditFsOptions->text() ;
 
-	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( doAction( QAction * ) ) ) ;
+		m_ui->frame->setVisible( false ) ;
+	} ) ;
 
 	this->installEventFilter( this ) ;
 }
@@ -149,16 +149,14 @@ void mountPartition::pbCancel()
 	this->HideUI() ;
 }
 
-bool mountPartition::errorNotFound( int r )
+void mountPartition::reportError( utility::Task& e )
 {
-	DialogMsg msg( this ) ;
-
-	switch ( r ){
+	switch ( e.exitCode() ){
 		case 0 : break ;
 		case 112 : m_Label.show( tr( "Could not resolve path to device or device could not be opened in read write mode" ) ) ;				break ;
 		case 100 : m_Label.show( tr( "Insuffienct privileges to mount the volume with given mount options" ) ) ;					break ;
 		case 102 : m_Label.show( tr( "Device already mounted" ) ) ;											break ;
-		case 103 : msg.ShowUIOK( tr( "ERROR!" ),tr( "Insuffienct privilege to manage a system volume.\nnecessary privileges can be acquired by:\n\
+		case 103 : m_Label.show( tr("Insuffienct privilege to manage a system volume.\nnecessary privileges can be acquired by:\n\
 1. Adding an entry for the volume in fstab with \"user\" mount option\n\2. Add yourself to \"zulumount\" group" ) ) ;						break ;
 		case 104 : m_Label.show( tr( "\"/etc/fstab\" entry for this volume requires it to be mounted read only" ) ) ;					break ;
 		case 113 : m_Label.show( tr( "\"/etc/fstab\" entry for this volume is malformed" ) ) ;								break ;
@@ -168,12 +166,15 @@ bool mountPartition::errorNotFound( int r )
 		case 108 : m_Label.show( tr( "Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered" ) ) ;	break ;
 		case 109 : m_Label.show( tr( "Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?" ) )	      ;		break ;
 		case 110 : m_Label.show( tr( "Mount failed,no or unrecognized file system" ) ) ;								break ;
-		case 111: msg.ShowUIOK( tr( "ERROR!" ),tr( "Mount failed,could not get a lock on /etc/mtab~" ) ) ;						break ;
-		case 115: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to mount the partition" ) ) ;								break ;
-		default: return true ;
-	}
+		case 111 : m_Label.show( tr( "Mount failed,could not get a lock on /etc/mtab~" ) ) ;								break ;
+		case 115 : m_Label.show( tr("Failed to mount the partition" ) ) ;										break ;
+	default: {
+			QString z = e.stdOut() ;
+			z.replace( tr( "ERROR: " ),"" ) ;
 
-	return false ;
+			m_Label.show( z ) ;
+		}
+	}
 }
 
 void mountPartition::pbMount()
@@ -262,13 +263,7 @@ void mountPartition::pbMount()
 		}else{
 			if( this->isVisible() ){
 
-				if( this->errorNotFound( s.exitCode() ) ){
-
-					QString z = s.stdOut() ;
-					z.replace( tr( "ERROR: " ),"" ) ;
-
-					DialogMsg( this ).ShowUIOK( tr( "ERROR" ),z ) ;
-				}
+				this->reportError( s ) ;
 
 				this->enableAll() ;
 			}else{
@@ -276,38 +271,6 @@ void mountPartition::pbMount()
 			}
 		}
 	}
-}
-
-void mountPartition::showOffSetWindowOption()
-{
-	deviceOffset::instance( this,true,[ this ]( const QString& e,const QString& f ){
-
-		m_deviceOffSet = e ;
-		m_key = f ;
-	} ) ;
-}
-
-void mountPartition::showFileSystemOptionWindow()
-{
-	mountOptions::instance( &m_options,this ) ;
-}
-
-void mountPartition::doAction( QAction * ac )
-{
-	auto e = ac->text() ;
-
-	e.remove( "&" ) ;
-
-	if( e == tr( "Set File System Options" ) ){
-		this->showFileSystemOptionWindow() ;
-	}else{
-		this->showOffSetWindowOption() ;
-	}
-}
-
-void mountPartition::pbOptions()
-{
-	m_menu->exec( QCursor::pos() ) ;
 }
 
 void mountPartition::pbOpenMountPath()

@@ -209,9 +209,8 @@ public:
 	void replaceFavorite( const favorites::entry&, const favorites::entry& ) ;
 	void removeFavoriteEntry( const favorites::entry& ) ;
 
-	const std::vector< favorites::entry >& readFavorites() const ;
-
-	template< typename Function,Task::detail::has_bool_return_type< Function,const favorites::entry& > = 0 >
+	template< typename Function,
+		  Task::detail::has_bool_return_type< Function,const favorites::entry& > = 0 >
 	bool entries( Function&& function ) const
 	{
 		for( const auto& it : m_favorites ){
@@ -224,7 +223,20 @@ public:
 
 		return false ;
 	}
+	template< typename Function,
+		  Task::detail::has_bool_return_type< Function,size_t,const favorites::entry& > = 0 >
+	bool entries( Function&& function ) const
+	{
+		for( size_t it = 0 ; it < m_favorites.size() ; it++ ){
 
+			if( function( it,m_favorites[ it ] ) ){
+
+				return true ;
+			}
+		}
+
+		return false ;
+	}
 	template< typename Function,
 		  typename NotFoundFunction,
 		  Task::detail::has_bool_return_type< Function,const favorites::entry& > = 0 >
@@ -236,7 +248,8 @@ public:
 		}
 	}
 
-	template< typename Function,Task::detail::has_void_return_type< Function,const favorites::entry& > = 0 >
+	template< typename Function,
+		  Task::detail::has_void_return_type< Function,const favorites::entry& > = 0 >
 	void entries( Function&& function ) const
 	{
 		for( const auto& it : m_favorites ){
@@ -245,9 +258,22 @@ public:
 		}
 	}
 
+	template< typename Function,
+		  Task::detail::has_void_return_type< Function,size_t,const favorites::entry& > = 0 >
+	void entries( Function&& function ) const
+	{
+		for( size_t it = 0 ; it < m_favorites.size() ; it++ ){
+
+			function( it,m_favorites[ it ] ) ;
+		}
+	}
+
 	utility2::result_ref< const favorites::entry& > readFavoriteByPath( const QString& configPath ) const ;
 
 	utility2::result< favorites::entry > readFavoriteByFileSystemPath( const QString& configPath ) const ;
+
+	utility2::result_ref< const favorites::entry& > readFavorite( int position ) ;
+	utility2::result_ref< const favorites::entry& > readFavorite( size_t position ) ;
 
 	utility2::result_ref< const favorites::entry& > readFavorite( const QString& volumePath,
 								      const QString& mountPath = QString() ) const ;
