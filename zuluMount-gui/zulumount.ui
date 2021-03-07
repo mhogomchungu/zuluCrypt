@@ -108,7 +108,7 @@
         <item>
          <widget class="QPushButton" name="pbunlockcryptfs">
           <property name="text">
-           <string>Mount &amp;Folder</string>
+           <string>Mount F&amp;older</string>
           </property>
          </widget>
         </item>
