@@ -1152,11 +1152,7 @@ Notwendige Berechtigungen können erworben werden durch:
     <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="111"/>
         <source>Mount F&amp;older</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Mount &amp;Folder</source>
-        <translation type="vanished">&amp;Ordner einhängen</translation>
+        <translation>&amp;Ordner einhängen</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="118"/>

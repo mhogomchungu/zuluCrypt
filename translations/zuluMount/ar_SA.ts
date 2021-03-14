@@ -1121,10 +1121,6 @@ necessary privileges can be acquired by:
         <translation>%مستخدم</translation>
     </message>
     <message>
-        <source>Mount &amp;Folder</source>
-        <translation type="vanished">تحميل المجلد</translation>
-    </message>
-    <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="138"/>
         <source>&amp;Favorites</source>
         <translation type="unfinished">&amp;التفضيلات</translation>
@@ -1142,7 +1138,7 @@ necessary privileges can be acquired by:
     <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="111"/>
         <source>Mount F&amp;older</source>
-        <translation type="unfinished"></translation>
+        <translation>تحميل المجلد</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="131"/>
