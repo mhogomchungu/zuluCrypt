@@ -1135,10 +1135,6 @@ Les droits nécessaires peuvent être obtenus par :
         <translation>%Utilisé</translation>
     </message>
     <message>
-        <source>Mount &amp;Folder</source>
-        <translation type="vanished">Monter un &amp;Répertoire</translation>
-    </message>
-    <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="138"/>
         <source>&amp;Favorites</source>
         <translation>&amp;Favoris</translation>
@@ -1156,7 +1152,7 @@ Les droits nécessaires peuvent être obtenus par :
     <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="111"/>
         <source>Mount F&amp;older</source>
-        <translation type="unfinished"></translation>
+        <translation>Monter un &amp;Répertoire</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.ui" line="131"/>
