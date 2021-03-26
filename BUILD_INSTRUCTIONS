@@ -37,7 +37,7 @@ The precise names of the above packages in debian are:
 6. libcryptsetup-dev
 7. cmake
 8.
-9. libgcrypt11-dev
+9.  libgcrypt20-dev(or libgcrypt11-dev if you are using the old version)
 10.libsecret-1-dev( optional dependency used to store and retrieve volume keys using gnome's libsecret )
 11.not sure of the package name( optional dependency used to store and retrieve volume keys using kde's kwallet )
 12.pkg-config
