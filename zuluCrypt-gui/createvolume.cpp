@@ -83,10 +83,12 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbNormalVolume->addItem( tr( "KeyFile" ) ) ;
 	m_ui->cbNormalVolume->addItem( tr( "Key+KeyFile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
 	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "KeyFile" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "Key+KeyFile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
 	m_veraCryptWarning.setWarningLabel( m_ui->veraCryptWarning ) ;
 
@@ -179,10 +181,12 @@ void createvolume::volumeType( int s )
 	m_ui->cbNormalVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbNormalVolume->addItem( tr( "KeyFile" ) ) ;
 	m_ui->cbNormalVolume->addItem( tr( "Key+KeyFile" ) ) ;
+	m_ui->cbNormalVolume->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
 	m_ui->cbHiddenVolume->addItem( tr( "Key" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "KeyFile" ) ) ;
 	m_ui->cbHiddenVolume->addItem( tr( "Key+KeyFile" ) ) ;
+	m_ui->cbHiddenVolume->addItem( tr( "YubiKey Challenge/Response" ) ) ;
 
 	auto _enableHidden = [ this ](){
 
@@ -667,6 +671,9 @@ void createvolume::cbNormalVolume( int r )
 				}
 			}
 		} ) ;
+	}else if( r == 3 ){
+
+		_set_key_ui() ;
 	}else{
 		m_ui->pbOpenKeyFile->setEnabled( false ) ;
 		m_ui->lineEditPassphrase1->clear() ;
@@ -742,6 +749,9 @@ void createvolume::cbHiddenVolume( int r )
 				}
 			}
 		} ) ;
+	} else if( r == 3 ){
+
+		_set_key_ui() ;
 	}else{
 		m_ui->pbHiddenKeyFile->setEnabled( false ) ;
 		m_ui->lineEditHiddenKey->clear() ;
@@ -779,7 +789,7 @@ void createvolume::enableAll()
 	m_ui->labelRepeatPassPhrase->setEnabled( true ) ;
 	m_ui->lineEditPassphrase1->setEnabled( true ) ;
 
-	if( m_ui->cbNormalVolume->currentIndex() == 0 ){
+	if( m_ui->cbNormalVolume->currentIndex() == 0 || m_ui->cbNormalVolume->currentIndex() == 3 ){
 
 		m_ui->lineEditPassPhrase2->setEnabled( true ) ;
 	}
@@ -970,12 +980,33 @@ void createvolume::pbCreateClicked()
 			source = "-f" ;
 			passphrase_1 = utility::resolvePath( passphrase_1 ).replace( "\"","\"\"\"" ) ;
 		}
-	}else{
+	}else if( r == 2 ){
+
 		source = "-f" ;
 
 		passphrase_1 = utility::keyPath() + "-2" ;
 
 		utility::keySend( passphrase_1,m_key ) ;
+
+	}else if( r == 3 ){
+
+		if( passphrase_1.isEmpty() ){
+
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+		}
+		if( passphrase_1 != passphrase_2 ){
+
+			return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;
+		}
+
+		auto m = utility::yubiKey( passphrase_1 ) ;
+
+		if( m.has_value() ){
+
+			m_key = m.value() ;
+		}else{
+			return msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+		}
 	}
 
 	switch( type ){
@@ -1075,11 +1106,16 @@ void createvolume::pbCreateClicked()
 
 		auto x = m_ui->lineEditHiddenKey->text() ;
 
-		decltype( x ) y ;
+		QString y ;
 
 		auto k = m_ui->cbHiddenVolume->currentIndex() ;
 
 		if( k == 0 ){
+
+			if( x != m_ui->lineEditHiddenKey1->text() ){
+
+				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;
+			}
 
 			y = utility::keyPath() + "-1" ;
 			utility::keySend( y,x ) ;
@@ -1087,9 +1123,33 @@ void createvolume::pbCreateClicked()
 		}else if( k == 1 ){
 
 			y = utility::resolvePath( x ).replace( "\"","\"\"\"" ) ;
-		}else{
+
+		}else if( k == 2 ){
+
 			y = utility::keyPath() + "-1" ;
 			utility::keySend( y,m_hiddenKey ) ;
+
+		}else if( k == 3 ){
+
+			if( x.isEmpty() ){
+
+				return 	msg.ShowUIOK( tr( "ERROR!" ),tr( "Atleast one required field is empty" ) ) ;
+			}
+
+			if( x != m_ui->lineEditHiddenKey1->text() ){
+
+				return msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match" ) ) ;
+			}
+
+			auto m = utility::yubiKey( x ) ;
+
+			if( m.has_value() ){
+
+				y = utility::keyPath() + "-1" ;
+				utility::keySend( y,m.value() ) ;
+			}else{
+				return msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+			}
 		}
 
 		auto r = m_ui->lineEditHiddenSize->text().toULongLong() ;

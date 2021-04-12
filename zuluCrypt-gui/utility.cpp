@@ -2972,7 +2972,15 @@ utility2::result<QByteArray> utility::yubiKey( const QString& challenge )
 
 		auto args = utility::split( _ykchalrespArguments(),' ' ) ;
 
-		auto s = ::Task::process::run( exe,args,challenge.toLatin1() ).await() ;
+		auto s = [ & ](){
+
+			if( challenge.isEmpty() ){
+
+				return ::Task::process::run( exe,"\n" ).await() ;
+			}else{
+				return ::Task::process::run( exe,args,challenge.toUtf8() ).await() ;
+			}
+		}() ;
 
 		_post_backend_cmd( exe + " " + args.join( " " ) ) ;
 
