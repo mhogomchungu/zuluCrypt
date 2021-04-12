@@ -1003,7 +1003,10 @@ void createvolume::pbCreateClicked()
 
 		if( m.has_value() ){
 
-			m_key = m.value() ;
+			source = "-f" ;
+			passphrase_1 = utility::keyPath() + "-2" ;
+
+			utility::keySend( passphrase_1,m.value() ) ;
 		}else{
 			return msg.ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
 		}
