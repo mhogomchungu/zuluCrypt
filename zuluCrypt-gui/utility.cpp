@@ -3162,7 +3162,8 @@ bool utility::canShowKeySlotProperties()
 
 bool utility::libCryptSetupLibraryNotFound()
 {
-	return !utility::pathExists( CRYPTSETUP_LIBRARY_PATH ) ;
+	return false ;
+	//return !utility::pathExists( CRYPTSETUP_LIBRARY_PATH ) ;
 }
 
 void utility::setFileSystemOptions( QString& exe,
