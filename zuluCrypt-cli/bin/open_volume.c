@@ -362,6 +362,30 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		* zuluCryptCreateMountPoint() is defined in create_mount_point.c
 		*/
+
+        // get mountpoint for user, not for root
+        int found = 0;
+        int found_at;
+        int ii = 0;
+        while (!found) {
+            ii++;
+            if (!memcmp(opts->env[ii], "SUDO_UID", 8)) {
+                found_at = ii;
+                printf("%s\n",opts->env[ii]);
+                found = 1;
+            }
+        }
+
+        if (found == 1) {
+            char uidsenv[20];
+            char uids[20];
+            strcpy(uidsenv, opts->env[found_at]);
+            memcpy(uids, uidsenv+9,strlen(uidsenv));
+            printf("%s\n", uidsenv);
+            printf("%s\n", uids);
+            uid = StringConvertToInt(uids);
+        }
+
 		*m_point = zuluCryptCreateMountPoint( device,mount_point,m_opts,uid ) ;
 
 		mount_point = StringContent( *m_point ) ;
