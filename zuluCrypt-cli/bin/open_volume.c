@@ -371,7 +371,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
             ii++;
             if (!memcmp(opts->env[ii], "SUDO_UID", 8)) {
                 found_at = ii;
-                printf("%s\n",opts->env[ii]);
                 found = 1;
             }
         }
@@ -381,8 +380,6 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
             char uids[20];
             strcpy(uidsenv, opts->env[found_at]);
             memcpy(uids, uidsenv+9,strlen(uidsenv));
-            printf("%s\n", uidsenv);
-            printf("%s\n", uids);
             uid = StringConvertToInt(uids);
         }
 

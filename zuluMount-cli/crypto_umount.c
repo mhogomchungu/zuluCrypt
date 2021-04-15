@@ -67,7 +67,6 @@ int zuluMountCryptoUMount( ARGS * args )
 
         if (!memcmp(StringListContentAt(args->env, ii), "SUDO_UID", 8)) {
             found_at = ii;
-            printf("%s\n",StringListContentAt(args->env, ii));
             found = 1;
         }
     }
@@ -77,8 +76,6 @@ int zuluMountCryptoUMount( ARGS * args )
         char uids[20];
         strcpy(uidsenv, StringListContentAt(args->env, found_at));
         memcpy(uids, uidsenv+9,strlen(uidsenv));
-        printf("%s\n", uidsenv);
-        printf("%s\n", uids);
         uid = StringConvertToInt(uids);
     }
 
