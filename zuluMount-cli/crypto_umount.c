@@ -62,12 +62,12 @@ int zuluMountCryptoUMount( ARGS * args )
     // get mountpoint for user, not for root
     int found = 0;
     int found_at;
-    int ii = 0;
-    while (!found) {
-        ii++;
-        if (!memcmp(opts->env[ii], "SUDO_UID", 8)) {
+    for (int ii=0; StringListContentAt(args->env,ii) != StringListContentAtLast(args->env); ii++) {
+        //printf("%s\n",StringListContentAt(stx,ii));
+
+        if (!memcmp(StringListContentAt(args->env, ii), "SUDO_UID", 8)) {
             found_at = ii;
-            printf("%s\n",opts->env[ii]);
+            printf("%s\n",StringListContentAt(args->env, ii));
             found = 1;
         }
     }
@@ -75,12 +75,13 @@ int zuluMountCryptoUMount( ARGS * args )
     if (found == 1) {
         char uidsenv[20];
         char uids[20];
-        strcpy(uidsenv, opts->env[found_at]);
+        strcpy(uidsenv, StringListContentAt(args->env, found_at));
         memcpy(uids, uidsenv+9,strlen(uidsenv));
         printf("%s\n", uidsenv);
         printf("%s\n", uids);
         uid = StringConvertToInt(uids);
     }
+
 
 	st = zuluCryptEXECloseVolume( device,mapping_name,uid ) ;
 
