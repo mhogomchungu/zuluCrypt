@@ -52,6 +52,9 @@
 #include <QKeyEvent>
 #include <QMetaObject>
 #include <QtNetwork/QLocalSocket>
+#include <QJsonObject>
+#include <QJsonDocument>
+
 #include "../zuluCrypt-cli/constants.h"
 #include "../zuluCrypt-cli/bin/bash_special_chars.h"
 #include "version.h"
@@ -88,8 +91,6 @@
 #include "share_mount_prefix_path.h"
 
 #include "zuluPolkit.h"
-
-#include "json.h"
 
 #include "favorites.h"
 
@@ -154,32 +155,37 @@ static QByteArray _json_command( const QByteArray& cookie,
 				 const QString& path = QString(),
 				 const QByteArray& data = QByteArray() )
 {
-	nlohmann::json json ;
+	QJsonObject obj ;
 
-	json[ "cookie" ]   = cookie.constData() ;
-	json[ "password" ] = password.constData() ;
-	json[ "command" ]  = exe.toLatin1().constData() ;
-	json[ "path" ]     = path.toLatin1().constData() ;
-	json[ "data" ]     = data.constData() ;
+	obj.insert( "cookie",cookie.constData() ) ;
+	obj.insert( "password",password.constData() ) ;
+	obj.insert( "command",exe.toLatin1().constData() ) ;
+	obj.insert( "path",path.toLatin1().constData() ) ;
+	obj.insert( "data",data.constData() ) ;
 
-	return json.dump().c_str() ;
+	return QJsonDocument( obj ).toJson( QJsonDocument::JsonFormat::Indented ) ;
 }
 
 static jsonResult _json_result( const QByteArray& e )
 {
-	try{
-		if( !e.isEmpty() ){
+	if( !e.isEmpty() ){
 
-			auto json = nlohmann::json::parse( e.constData() ) ;
+		QJsonParseError error ;
 
-			return { json[ "finished" ].get< bool >(),
-				 json[ "exitCode" ].get< int >(),
-				 json[ "exitStatus" ].get< int >(),
-				 json[ "stdError" ].get< std::string >().c_str(),
-				 json[ "stdOut" ].get< std::string >().c_str() } ;
+		auto doc = QJsonDocument::fromJson( e,&error ) ;
+
+		if( error.error == QJsonParseError::NoError ){
+
+			auto obj = doc.object() ;
+
+			return { obj.value( "finished" ).toBool(),
+				 obj.value( "exitCode" ).toInt(),
+				 obj.value( "exitStatus" ).toInt(),
+				 obj.value( "stdError" ).toString().toUtf8(),
+				 obj.value( "stdOut" ).toString().toUtf8() } ;
 		}
 
-	}catch( ... ){}
+	}
 
 	return { false,255,255,"","" } ;
 }

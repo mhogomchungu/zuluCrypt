@@ -22,7 +22,6 @@
 #include "task.hpp"
 #include "bin_path.h"
 #include "../zuluCrypt-gui/executablesearchpaths.h"
-#include "json.h"
 
 #include <termios.h>
 #include <memory>
@@ -37,6 +36,8 @@
 #include <QProcess>
 #include <QCoreApplication>
 #include <QFile>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 namespace utility
 {
@@ -169,30 +170,30 @@ void zuluPolkit::start()
 
 static void _respond( QLocalSocket& s,const QByteArray& e )
 {
-	nlohmann::json json ;
+	QJsonObject obj ;
 
-	json[ "stdOut" ]     = e.constData() ;
-	json[ "stdError" ]   = e.constData() ;
-	json[ "exitCode" ]   = 0 ;
-	json[ "exitStatus" ] = 0 ;
-	json[ "finished" ]   = true ;
+	obj.insert( "stdOut",e.constData() ) ;
+	obj.insert( "stdError",e.constData() ) ;
+	obj.insert( "exitCode",0 ) ;
+	obj.insert( "exitStatus",0 ) ;
+	obj.insert( "finished",true ) ;
 
-	s.write( json.dump().c_str() ) ;
+	s.write( QJsonDocument( obj ).toJson( QJsonDocument::JsonFormat::Indented ) ) ;
 
 	s.waitForBytesWritten() ;
 }
 
 static void _respond( QLocalSocket& s,const Task::process::result& e = Task::process::result() )
 {
-	nlohmann::json json ;
+	QJsonObject obj ;
 
-	json[ "stdOut" ]     = e.std_out().constData() ;
-	json[ "stdError" ]   = e.std_error().constData() ;
-	json[ "exitCode" ]   = e.exit_code() ;
-	json[ "exitStatus" ] = e.exit_status() ;
-	json[ "finished" ]   = e.finished() ;
+	obj.insert( "stdOut",e.std_out().constData() ) ;
+	obj.insert( "stdError",e.std_error().constData() ) ;
+	obj.insert( "exitCode",e.exit_code() ) ;
+	obj.insert( "exitStatus",e.exit_status() ) ;
+	obj.insert( "finished",e.finished() ) ;
 
-	s.write( json.dump().c_str() ) ;
+	s.write( QJsonDocument( obj ).toJson( QJsonDocument::JsonFormat::Indented ) ) ;
 
 	s.waitForBytesWritten() ;
 }
@@ -212,44 +213,49 @@ void zuluPolkit::gotConnection()
 	std::unique_ptr< QLocalSocket > m( m_server.nextPendingConnection() ) ;
 
 	auto& s = *m ;
+	s.waitForReadyRead() ;
 
-	try{
-		s.waitForReadyRead() ;
+	QJsonParseError error ;
 
-		auto json = nlohmann::json::parse( s.readAll().constData() ) ;
+	auto doc = QJsonDocument::fromJson( s.readAll(),&error ) ;
 
-		auto path     = QString::fromStdString( json[ "path" ].get< std::string >() ) ;
-		auto data     = QString::fromStdString( json[ "data" ].get< std::string >() ) ;
-		auto password = QString::fromStdString( json[ "password" ].get< std::string >() ) ;
-		auto cookie   = QString::fromStdString( json[ "cookie" ].get< std::string >() ) ;
-		auto command  = QString::fromStdString( json[ "command" ].get< std::string >() ) ;
+	if( error.error != QJsonParseError::NoError ){
 
-		if( cookie == m_cookie ){
+		return _respond( s,"zuluPolkit: Booooooooo!!!!" ) ;
+	}
 
-			if( command == "exit" ){
+	auto obj = doc.object() ;
 
-				return QCoreApplication::quit() ;
+	auto path     = obj.value( "path" ).toString() ;
+	auto data     = obj.value( "data" ).toString() ;
+	auto password = obj.value( "password" ).toString() ;
+	auto cookie   = obj.value( "cookie" ).toString() ;
+	auto command  = obj.value( "command" ).toString() ;
 
-			}else if( command == "Read" || command == "Write" ){
+	if( cookie == m_cookie ){
 
-				return _respond( s,_zulupolkit( command,path,data ) ) ;
+		if( command == "exit" ){
 
-			}else if( _correct_cmd( command ) ){
+			return QCoreApplication::quit() ;
+
+		}else if( command == "Read" || command == "Write" ){
+
+			return _respond( s,_zulupolkit( command,path,data ) ) ;
+
+		}else if( _correct_cmd( command ) ){
 
 #if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
-				return _respond( s,Task::process::run( command,{},password.toLatin1() ).get() ) ;
+			return _respond( s,Task::process::run( command,{},password.toLatin1() ).get() ) ;
 #else
-				auto ss = QProcess::splitCommand( command ) ;
+			auto ss = QProcess::splitCommand( command ) ;
 
-				auto ee = ss.first() ;
-				ss.removeFirst() ;
+			auto ee = ss.first() ;
+			ss.removeFirst() ;
 
-				return _respond( s,Task::process::run( ee,ss,password.toLatin1() ).get() ) ;
+			return _respond( s,Task::process::run( ee,ss,password.toLatin1() ).get() ) ;
 #endif
-			}
 		}
-
-	}catch( ... ){}
+	}
 
 	_respond( s,"zuluPolkit: Booooooooo!!!!" ) ;
 }

@@ -172,15 +172,6 @@ else()
 	MESSAGE( STATUS "found gcrypt library: ${GCRYPT_LIBRARY}" )
 endif()
 
-find_file( JSON_HEADER_PATH "nlohmann/json.hpp" )
-
-if( NOT JSON_HEADER_PATH )
-	set( JSON_HEADER_PATH "${PROJECT_SOURCE_DIR}/external_libraries/json/nlohmann/json.hpp" )
-endif()
-
-file( WRITE ${PROJECT_BINARY_DIR}/json.h "\n#include \"${JSON_HEADER_PATH}\"" )
-MESSAGE( STATUS "found json.hpp header file at: ${JSON_HEADER_PATH}" )
-
 if( WITH_PWQUALITY )
 	pkg_check_modules( PWQUALITY pwquality )
 endif( WITH_PWQUALITY )
