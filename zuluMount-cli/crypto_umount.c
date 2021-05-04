@@ -59,6 +59,27 @@ int zuluMountCryptoUMount( ARGS * args )
 	/*
 	 * zuluCryptEXECloseVolume() is defined in ../zuluCrypt-cli/bin/close_volume.c
 	 */
+    // get mountpoint for user, not for root
+    int found = 0;
+    int found_at;
+    for (int ii=0; StringListContentAt(args->env,ii) != StringListContentAtLast(args->env); ii++) {
+        //printf("%s\n",StringListContentAt(stx,ii));
+
+        if (!memcmp(StringListContentAt(args->env, ii), "SUDO_UID", 8)) {
+            found_at = ii;
+            found = 1;
+        }
+    }
+
+    if (found == 1) {
+        char uidsenv[20];
+        char uids[20];
+        strcpy(uidsenv, StringListContentAt(args->env, found_at));
+        memcpy(uids, uidsenv+9,strlen(uidsenv));
+        uid = StringConvertToInt(uids);
+    }
+
+
 	st = zuluCryptEXECloseVolume( device,mapping_name,uid ) ;
 
 	StringDelete( &str ) ;
