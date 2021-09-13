@@ -116,7 +116,7 @@ static void _post_backend_cmd( const QString& b )
 	QString a = "***************************\n" ;
 	QString c = "\n***************************" ;
 
-	_debugWindow->UpdateOutPut( a + b + c,true ) ;
+	_debugWindow->UpdateOutPut( a + b + c,false ) ;
 }
 
 void utility::setDebugWindow( debugWindow * w )
