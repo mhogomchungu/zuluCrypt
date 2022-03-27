@@ -38,8 +38,12 @@ typedef struct arguments{
 	const char * algo ;
 	const char * cipher ;
 	const char * rng ;
+	const char * label ;
+	const char * subsystem ;
 	const char * integrity ;
-
+	const char * pbkdf_type ;
+	const char * pbkdf_memory ;
+	const char * pbkdf_threads ;
 	void * params ;
 	void * pbkdf ;
 
@@ -202,6 +206,8 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 
 	stringList_t stl ;
 
+	const char * m ;
+
 	/*
 	 * options is structure expected to be in a format of:
 	 * rng.algo.cipher.keysize.hash.iteration_count
@@ -233,17 +239,77 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 			args->rng      = *( list + 0 ) ;
 			args->algo     = *( list + 1 ) ;
 			args->cipher   = *( list + 2 ) ;
-			args->key_size = ( size_t ) StringConvertToInt( *( list + 3 ) ) / 8 ;
+			args->key_size = ( unsigned long ) StringConvertToInt( *( list + 3 ) ) / 8 ;
 			args->hash     = *( list + 4 ) ;
 
 			if( list_count > 5 ){
 
-				args->iterations = StringConvertToInt( *( list + 5 ) ) ;
+				m = *( list + 5 ) ;
+
+				if( StringsAreNotEqual( m,"-1" ) ){
+
+					args->iterations = ( unsigned long ) StringConvertToInt( m ) ;
+				}
 			}
 
 			if( list_count > 6 ){
 
-				args->integrity = *( list + 6 ) ;
+				m = *( list + 6 ) ;
+
+				if( StringsAreNotEqual( m,"null" ) ){
+
+					args->integrity = m ;
+				}
+			}
+
+			if( list_count > 7 ){
+
+				m = *( list + 7 ) ;
+
+				if( StringsAreNotEqual( m,"null" ) ){
+
+					args->pbkdf_type = m ;
+				}
+			}
+
+			if( list_count > 8 ){
+
+				m = *( list + 8 ) ;
+
+				if( StringsAreNotEqual( m,"-1" ) ){
+
+					args->pbkdf_memory = m ;
+				}
+			}
+
+			if( list_count > 9 ){
+
+				m = *( list + 9 ) ;
+
+				if( StringsAreNotEqual( m,"-1" ) ){
+
+					args->pbkdf_threads = m ;
+				}
+			}
+
+			if( list_count > 10 ){
+
+				m = *( list + 10 ) ;
+
+				if( StringsAreNotEqual( m,"null" ) ){
+
+					args->label = m ;
+				}
+			}
+
+			if( list_count > 11 ){
+
+				m = *( list + 11 ) ;
+
+				if( StringsAreNotEqual( m,"null" ) ){
+
+					args->subsystem = m ;
+				}
 			}
 		}
 	}else{
@@ -382,8 +448,10 @@ static void * _luks2( const arguments * args )
 
 	params->sector_size     = 512 ;
 	params->integrity       = args->integrity ;
+	params->label           = args->label ;
+	params->subsystem       = args->subsystem ;
 
-#if SUPPORT_crypt_get_pbkdf_default
+#if SUPPORT_crypt_get_pbkdf_default	
 	/*
 	 * added in cryptsetup 2.0.3
 	 */
@@ -393,6 +461,22 @@ static void * _luks2( const arguments * args )
 	pbkdf->max_memory_kb    = 1024 ;
 	pbkdf->parallel_threads = 4 ;
 #endif
+
+	if( args->pbkdf_type ){
+
+		pbkdf->type = args->pbkdf_type ;
+	}
+
+	if( args->pbkdf_memory ){
+
+		pbkdf->max_memory_kb = ( unsigned int ) StringConvertToInt( args->pbkdf_memory ) ;
+	}
+
+	if( args->pbkdf_threads ){
+
+		pbkdf->parallel_threads = ( unsigned int ) StringConvertToInt( args->pbkdf_threads ) ;
+	}
+
 	pbkdf->hash = args->hash ;
 
 	if( args->iterations != 0 ){
