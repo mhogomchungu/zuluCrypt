@@ -233,7 +233,7 @@ void showLUKSSlots::showData()
 
 				if( b.at( 1 ).contains( "Active" ) ){
 
-					tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 3 ) ;
+					tmp = b.at( 0 ) + "\n" + b.at( 1 ) + "\n" + b.at( 2 ) + "\n" + b.at( 3 ) ;
 
 					for( int i = 4 ; i < b.size() ; i++ ){
 

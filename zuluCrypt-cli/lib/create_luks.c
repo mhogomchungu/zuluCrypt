@@ -47,7 +47,10 @@ typedef struct arguments{
 	void * params ;
 	void * pbkdf ;
 
-	u_int64_t iterations ;
+	unsigned int time_ms ;
+	unsigned int iterations ;
+
+	int allowDiscard ;
 
 	void *( *function )( const struct arguments * ) ;
 	int ( *format )( struct crypt_device * ) ;
@@ -163,9 +166,9 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 		crypt_set_rng_type( cd,CRYPT_RNG_URANDOM ) ;
 	}
 
-	if( args->iterations != 0 && StringsAreEqual( args->type,CRYPT_LUKS1 )){
+	if( args->time_ms != 0 && StringsAreEqual( args->type,CRYPT_LUKS1 )){
 
-		crypt_set_iteration_time( cd,args->iterations ) ;
+		crypt_set_iteration_time( cd,args->time_ms ) ;
 	}
 
 	if( crypt_format( cd,args->type,args->algo,args->cipher,NULL,NULL,
@@ -174,6 +177,12 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 		return zuluExit_1( 2,cd ) ;
 	}
 
+#ifdef CRYPT_ACTIVATE_ALLOW_DISCARDS
+	if( args->allowDiscard ){
+
+		crypt_persistent_flags_set( cd,CRYPT_FLAGS_ACTIVATION,CRYPT_ACTIVATE_ALLOW_DISCARDS ) ;
+	}
+#endif
 	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,args->key_size,
 		args->key,args->key_len ) < 0 ){
 		return zuluExit_1( 3,cd ) ;
@@ -248,7 +257,7 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 
 				if( StringsAreNotEqual( m,"-1" ) ){
 
-					args->iterations = ( unsigned long ) StringConvertToInt( m ) ;
+					args->time_ms = ( unsigned int ) StringConvertToInt( m ) ;
 				}
 			}
 
@@ -256,9 +265,9 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 
 				m = *( list + 6 ) ;
 
-				if( StringsAreNotEqual( m,"null" ) ){
+				if( StringsAreNotEqual( m,"-1" ) ){
 
-					args->integrity = m ;
+					args->iterations = ( unsigned int ) StringConvertToInt( m ) ;
 				}
 			}
 
@@ -268,7 +277,7 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 
 				if( StringsAreNotEqual( m,"null" ) ){
 
-					args->pbkdf_type = m ;
+					args->integrity = m ;
 				}
 			}
 
@@ -276,9 +285,9 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 
 				m = *( list + 8 ) ;
 
-				if( StringsAreNotEqual( m,"-1" ) ){
+				if( StringsAreNotEqual( m,"null" ) ){
 
-					args->pbkdf_memory = m ;
+					args->pbkdf_type = m ;
 				}
 			}
 
@@ -288,7 +297,7 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 
 				if( StringsAreNotEqual( m,"-1" ) ){
 
-					args->pbkdf_threads = m ;
+					args->pbkdf_memory = m ;
 				}
 			}
 
@@ -296,9 +305,9 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 
 				m = *( list + 10 ) ;
 
-				if( StringsAreNotEqual( m,"null" ) ){
+				if( StringsAreNotEqual( m,"-1" ) ){
 
-					args->label = m ;
+					args->pbkdf_threads = m ;
 				}
 			}
 
@@ -308,8 +317,25 @@ static int _create_luks_0( arguments * args,const char * device,const char * key
 
 				if( StringsAreNotEqual( m,"null" ) ){
 
+					args->label = m ;
+				}
+			}
+
+			if( list_count > 12 ){
+
+				m = *( list + 12 ) ;
+
+				if( StringsAreNotEqual( m,"null" ) ){
+
 					args->subsystem = m ;
 				}
+			}
+
+			if( list_count > 13 ){
+
+				m = *( list + 13 ) ;
+
+				args->allowDiscard = ( int ) StringConvertToInt( m ) ;
 			}
 		}
 	}else{
@@ -451,38 +477,47 @@ static void * _luks2( const arguments * args )
 	params->label           = args->label ;
 	params->subsystem       = args->subsystem ;
 
-#if SUPPORT_crypt_get_pbkdf_default	
-	/*
-	 * added in cryptsetup 2.0.3
-	 */
-	memcpy( pbkdf,crypt_get_pbkdf_default( CRYPT_LUKS2 ),sizeof( struct crypt_pbkdf_type ) ) ;
+	if( StringsAreNotEqual( args->pbkdf_type,"pbkdf2" ) ){
+
+#if SUPPORT_crypt_get_pbkdf_default
+		/*
+		 * added in cryptsetup 2.0.3
+		 */
+		memcpy( pbkdf,crypt_get_pbkdf_default( CRYPT_LUKS2 ),sizeof( struct crypt_pbkdf_type ) ) ;
 #else
-	pbkdf->type             = CRYPT_KDF_ARGON2I ;
-	pbkdf->max_memory_kb    = 1024 ;
-	pbkdf->parallel_threads = 4 ;
+		pbkdf->type             = CRYPT_KDF_ARGON2I ;
+		pbkdf->max_memory_kb    = 1024 ;
+		pbkdf->parallel_threads = 4 ;
 #endif
+		if( args->pbkdf_memory ){
+
+			pbkdf->max_memory_kb = ( unsigned int ) StringConvertToInt( args->pbkdf_memory ) ;
+		}
+
+		if( args->pbkdf_threads ){
+
+			pbkdf->parallel_threads = ( unsigned int ) StringConvertToInt( args->pbkdf_threads ) ;
+		}
+	}
+
+	if( args->time_ms != 0 ){
+
+		pbkdf->time_ms = args->time_ms ;
+	}
+
+	if( args->iterations != 0 ){
+
+		pbkdf->time_ms = 0 ;
+		pbkdf->iterations = args->iterations ;
+		pbkdf->flags |= CRYPT_PBKDF_NO_BENCHMARK ;
+	}
 
 	if( args->pbkdf_type ){
 
 		pbkdf->type = args->pbkdf_type ;
 	}
 
-	if( args->pbkdf_memory ){
-
-		pbkdf->max_memory_kb = ( unsigned int ) StringConvertToInt( args->pbkdf_memory ) ;
-	}
-
-	if( args->pbkdf_threads ){
-
-		pbkdf->parallel_threads = ( unsigned int ) StringConvertToInt( args->pbkdf_threads ) ;
-	}
-
 	pbkdf->hash = args->hash ;
-
-	if( args->iterations != 0 ){
-
-		pbkdf->time_ms = (unsigned int)args->iterations ;
-	}
 
 	params->pbkdf = pbkdf ;
 

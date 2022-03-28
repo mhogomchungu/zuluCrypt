@@ -58,6 +58,36 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	m_ui->lineEditIterationNumber->setVisible( false ) ;
 	m_ui->labelIterationNumber->setVisible( false ) ;
 
+	m_ui->groupBoxLUKS2Options->setVisible( false ) ;
+
+	connect( m_ui->pbLuks2Set,&QPushButton::clicked,[ this ](){
+
+		m_ui->groupBoxLUKS2Options->setVisible( false ) ;
+	} ) ;
+
+	auto m = static_cast< void ( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ) ;
+
+	connect( m_ui->cbLuks2Pbkdf,m,[ this ]( int s ){
+
+		if( s == 2 ){
+
+			m_ui->lineEditLuks2MaxMemory->clear() ;
+			m_ui->lineEditLuks2ParallelThreads->clear() ;
+
+			m_ui->lineEditLuks2MaxMemory->setEnabled( false ) ;
+			m_ui->lineEditLuks2ParallelThreads->setEnabled( false ) ;
+		}else{
+			m_ui->lineEditLuks2MaxMemory->setEnabled( true ) ;
+			m_ui->lineEditLuks2ParallelThreads->setEnabled( true ) ;
+		}
+	} ) ;
+
+#ifdef CRYPT_ACTIVATE_ALLOW_DISCARDS
+	m_ui->cbLuks2AllowDiscard->setEnabled( true ) ;
+#else
+	m_ui->cbLuks2AllowDiscard->setEnabled( false ) ;
+#endif
+	connect( m_ui->pbLUKS2Options,SIGNAL( clicked() ),this,SLOT( luks2Options() ) ) ;
 	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreateClicked() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancelClicked() ) ) ;
@@ -349,8 +379,6 @@ void createvolume::eraseDataPartition()
 
 			}else if( r == 1 ){
 
-				;
-
 			}else if( r == 2 ){
 
 				erasedevice::instance( this ).ShowUI( m_ui->lineEditVolumePath->text() ) ;
@@ -407,10 +435,12 @@ void createvolume::setOptions( int e )
 
 	auto luksSelected = _luks() ;
 
-	m_ui->lineEditIterationNumber->setVisible( luksSelected ) ;
-	m_ui->labelIterationNumber->setVisible( luksSelected ) ;
-	m_ui->lineEditIterationNumber->clear() ;
-
+#ifdef CRYPT_LUKS2
+	auto type = m_ui->comboBoxVolumeType->currentIndex() ;
+	m_ui->pbLUKS2Options->setEnabled( type == createvolume::luks2_external_header || type == createvolume::luks2 ) ;
+#else
+	m_ui->pbLUKS2Options->setEnabled( false ) ;
+#endif
 	if( _plain_dmcrypt() ){
 
 		/*
@@ -774,6 +804,11 @@ void createvolume::HideUI()
 	this->deleteLater() ;
 }
 
+void createvolume::luks2Options()
+{
+	m_ui->groupBoxLUKS2Options->setVisible( true ) ;
+}
+
 void createvolume::enableAll()
 {
 	m_ui->lineEditIterationNumber->setEnabled( true ) ;
@@ -840,10 +875,16 @@ void createvolume::enableAll()
 		m_ui->pbHiddenKeyFile->setEnabled(  m_ui->cbHiddenVolume->currentIndex() == 1 ) ;
 		m_ui->lineEditHiddenKey1->setEnabled(  m_ui->cbHiddenVolume->currentIndex() != 1 ) ;
 	}
+
+	if( m_ui->comboBoxVolumeType->currentText().startsWith( "LUKS2" ) ){
+
+		m_ui->pbLUKS2Options->setEnabled( true ) ;
+	}
 }
 
 void createvolume::disableAll()
 {
+	m_ui->pbLUKS2Options->setEnabled( false ) ;
 	m_ui->lineEditIterationNumber->setEnabled( false ) ;
 	m_ui->labelIterationNumber->setEnabled( false ) ;
 	m_ui->label_2->setEnabled( false ) ;
@@ -1086,12 +1127,58 @@ void createvolume::pbCreateClicked()
 			g += "." + e ;
 		}
 	}else{
-		auto m = m_ui->lineEditIterationNumber->text() ;
+		auto forcedIterations = m_ui->lineEditLuks2ForcedIteration->text() ;
+		auto unlockingTime    = m_ui->lineEditLuks2UnlockingTime->text() ;
+		auto maxThreads       = m_ui->lineEditLuks2ParallelThreads->text() ;
+		auto maxMemory        = m_ui->lineEditLuks2MaxMemory->text() ;
+		auto label            = m_ui->lineLEdituks2Label->text() ;
+		auto subsystem        = m_ui->lineEditLuks2SubSystem->text() ;
+		auto pbkdf            = m_ui->cbLuks2Pbkdf->currentText() ;
 
-		if( !m.isEmpty() ){
+		QString integrity = "null" ;
 
-			g += "." + m ;
+		if( label.isEmpty() ){
+
+			label = "null" ;
 		}
+
+		if( subsystem.isEmpty() ){
+
+			subsystem = "null" ;
+		}
+
+		if( unlockingTime.isEmpty() ){
+
+			unlockingTime = "-1" ;
+		}
+
+		if( forcedIterations.isEmpty() ){
+
+			forcedIterations = "-1" ;
+		}
+
+		if( maxThreads.isEmpty() ){
+
+			maxThreads = "-1" ;
+		}
+
+		if( maxMemory.isEmpty() ){
+
+			maxMemory = "-1" ;
+		}
+
+		auto allowDiscard = [ this ](){
+
+			if( m_ui->cbLuks2AllowDiscard->isChecked() ){
+
+				return "1" ;
+			}else{
+				return "0" ;
+			}
+		}() ;
+
+		QString m = ".%1.%2.%3.%4.%5.%6.%7.%8.%9" ;
+		g += m.arg( unlockingTime,forcedIterations,integrity,pbkdf,maxMemory,maxThreads,label,subsystem,allowDiscard ) ;
 	}
 
 	volumePath.replace( "\"","\"\"\"" ) ;
@@ -1268,6 +1355,11 @@ void createvolume::taskFinished( const utility::Task& e )
 		x += tr( "\nCreating a backup of the \"%1\" volume header is strongly advised.\nPlease read documentation on why this is important." ).arg( m_volumeType ) ;
 	}
 
+	auto _err = [ & ](){
+
+		return tr( "Failed to create a volume" ) + "\n\n" + e.stdError() ;
+	} ;
+
 	switch ( e.exitCode() ){
 		case 0 : msg.ShowUIOK( tr( "SUCCESS!" ),x ) ;
 		return this->HideUI() ;
@@ -1293,7 +1385,7 @@ only root user or members of group zulucrypt can do that" ) ) ;										break  
 		case 19: msg.ShowUIOK( tr( "ERROR!" ),tr( "Can not get passphrase in silent mode" ) ) ;					break  ;
 		case 20: msg.ShowUIOK( tr( "ERROR!" ),tr( "Insufficient memory to hold passphrase" ) ) ;				break  ;
 		case 21: msg.ShowUIOK( tr( "ERROR!" ),tr( "Passphrases do not match") ) ;						break  ;
-		case 22: msg.ShowUIOK( tr( "ERROR!" ),tr( "Failed to create a volume" ) ) ;						break  ;
+		case 22: msg.ShowUIOK( tr( "ERROR!" ),_err() ) ;						break  ;
 		case 23: msg.ShowUIOK( tr( "ERROR!" ),tr( "Wrong argument detected for tcrypt volume" ) ) ;				break  ;
 		case 110:msg.ShowUIOK( tr( "ERROR!" ),tr( "Could not find any partition with the presented UUID" ) ) ;			break  ;
 		default: msg.ShowUIOK( tr( "ERROR!" ),tr( "Error Code: %1\n--\nStdOut: %2\n--\nStdError: %3").arg( QString::number( e.exitCode() ),QString( e.stdError() ),QString( e.stdOut() ) ) ) ;
