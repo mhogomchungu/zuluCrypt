@@ -82,7 +82,7 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 		}
 	} ) ;
 
-#ifdef CRYPT_ACTIVATE_ALLOW_DISCARDS
+#ifdef CRYPT_LUKS2
 	m_ui->cbLuks2AllowDiscard->setEnabled( true ) ;
 #else
 	m_ui->cbLuks2AllowDiscard->setEnabled( false ) ;
