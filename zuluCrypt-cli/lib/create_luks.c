@@ -54,6 +54,7 @@ typedef struct arguments{
 
 	void *( *function )( const struct arguments * ) ;
 	int ( *format )( struct crypt_device * ) ;
+	void ( *set_persistent_flags )( const struct arguments *,struct crypt_device * cd ) ;
 
 }arguments ;
 
@@ -177,12 +178,8 @@ static int _create_luks( const char * device,const resolve_path_t * opts )
 		return zuluExit_1( 2,cd ) ;
 	}
 
-#ifdef CRYPT_ACTIVATE_ALLOW_DISCARDS
-	if( args->allowDiscard ){
+	args->set_persistent_flags( args,cd ) ;
 
-		crypt_persistent_flags_set( cd,CRYPT_FLAGS_ACTIVATION,CRYPT_ACTIVATE_ALLOW_DISCARDS ) ;
-	}
-#endif
 	if( crypt_keyslot_add_by_volume_key( cd,CRYPT_ANY_SLOT,NULL,args->key_size,
 		args->key,args->key_len ) < 0 ){
 		return zuluExit_1( 3,cd ) ;
@@ -373,6 +370,10 @@ static int _format_0( struct crypt_device * cd )
 	if( cd ){}
 	return 0 ;
 }
+static void _set_persistent_flags_0( const arguments * args,struct crypt_device * cd )
+{
+	if( args && cd ){}
+}
 
 int zuluCryptCreateLuks( const char * device,const char * key,size_t key_len,const char * options )
 {
@@ -387,6 +388,7 @@ int zuluCryptCreateLuks( const char * device,const char * key,size_t key_len,con
 	args.function = _luks1 ;
 	args.type     = CRYPT_LUKS1 ;
 	args.format   = _format_0 ;
+	args.set_persistent_flags = _set_persistent_flags_0 ;
 
 	return _create_luks_0( &args,device,key,key_len,options ) ;
 }
@@ -459,6 +461,14 @@ static int _format( struct crypt_device * cd )
 	StringDelete( &s ) ;
 
 	return 0 ;
+}
+
+static void _set_persistent_flags( const arguments * args,struct crypt_device * cd )
+{
+	if( args->allowDiscard ){
+
+		crypt_persistent_flags_set( cd,CRYPT_FLAGS_ACTIVATION,CRYPT_ACTIVATE_ALLOW_DISCARDS ) ;
+	}
 }
 
 void zuluCryptDisableMetadataLocking( void )
@@ -540,6 +550,7 @@ int zuluCryptCreateLuks2( const char * device,const char * key,size_t key_len,co
 	args.function = _luks2 ;
 	args.type     = CRYPT_LUKS2 ;
 	args.format   = _format ;
+	args.set_persistent_flags = _set_persistent_flags ;
 
 	return _create_luks_0( &args,device,key,key_len,options ) ;
 }
