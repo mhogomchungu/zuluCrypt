@@ -72,7 +72,6 @@ public slots:
 	void ShowFile( QString volume ) ;
 	void HideUI( void ) ;
 private slots:
-	void luks2Options( void ) ;
 	void keyChanged_0( QString ) ;
 	void keyChanged_1( QString ) ;
 	void pbCreateClicked( void ) ;

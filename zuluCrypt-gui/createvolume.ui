@@ -571,19 +571,35 @@
     <bool>true</bool>
    </property>
   </widget>
+  <widget class="QLabel" name="labelLUKS2Options">
+   <property name="geometry">
+    <rect>
+     <x>2</x>
+     <y>6</y>
+     <width>561</width>
+     <height>421</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <widget class="QGroupBox" name="groupBoxLUKS2Options">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
      <width>561</width>
-     <height>431</height>
+     <height>441</height>
     </rect>
    </property>
    <property name="title">
     <string/>
    </property>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -615,7 +631,7 @@
      <string>Set</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_4">
+   <widget class="QLabel" name="label_14">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -631,7 +647,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_5">
+   <widget class="QLabel" name="label_15">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -647,7 +663,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_8">
+   <widget class="QLabel" name="label_16">
     <property name="geometry">
      <rect>
       <x>100</x>
@@ -688,7 +704,7 @@
      </property>
     </item>
    </widget>
-   <widget class="QLabel" name="label_9">
+   <widget class="QLabel" name="label_17">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -704,7 +720,7 @@
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_10">
+   <widget class="QLabel" name="label_18">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -763,7 +779,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label_11">
+   <widget class="QLabel" name="label_19">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -805,7 +821,7 @@
      <string/>
     </property>
    </widget>
-   <widget class="QLabel" name="label_12">
+   <widget class="QLabel" name="label_20">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -824,7 +840,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="label_13">
+   <widget class="QLabel" name="label_21">
     <property name="geometry">
      <rect>
       <x>10</x>

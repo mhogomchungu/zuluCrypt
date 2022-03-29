@@ -59,10 +59,18 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 	m_ui->labelIterationNumber->setVisible( false ) ;
 
 	m_ui->groupBoxLUKS2Options->setVisible( false ) ;
+	m_ui->labelLUKS2Options->setVisible( false ) ;
 
 	connect( m_ui->pbLuks2Set,&QPushButton::clicked,[ this ](){
 
 		m_ui->groupBoxLUKS2Options->setVisible( false ) ;
+		m_ui->labelLUKS2Options->setVisible( false ) ;
+	} ) ;
+
+	connect( m_ui->pbLUKS2Options,&QPushButton::clicked,[ this ](){
+
+		m_ui->groupBoxLUKS2Options->setVisible( true ) ;
+		m_ui->labelLUKS2Options->setVisible( true ) ;
 	} ) ;
 
 	auto m = static_cast< void ( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ) ;
@@ -802,11 +810,6 @@ void createvolume::HideUI()
 {
 	this->hide() ;
 	this->deleteLater() ;
-}
-
-void createvolume::luks2Options()
-{
-	m_ui->groupBoxLUKS2Options->setVisible( true ) ;
 }
 
 void createvolume::enableAll()
