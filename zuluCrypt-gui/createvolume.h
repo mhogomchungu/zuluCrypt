@@ -84,6 +84,7 @@ private slots:
 	void setOptions( int ) ;
 	void tcryptGui( bool ) ;
 private:
+	void luks2Cancel() ;
 	void taskFinished( const utility::Task& ) ;
 	void taskFinished_1( const utility::Task& ) ;
 	void keyChanged( bool,const QString& ) ;
@@ -96,6 +97,7 @@ private:
 	bool m_created ;
 	Ui::createvolume * m_ui ;
 	bool m_isWindowClosable ;
+	bool m_showingLuks2AdvanceOptions = false ;
 	keystrength m_keyStrength ;
 	QString m_volumeType ;
 	bool m_warned ;

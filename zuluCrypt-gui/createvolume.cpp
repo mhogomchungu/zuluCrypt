@@ -69,8 +69,14 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 
 	connect( m_ui->pbLUKS2Options,&QPushButton::clicked,[ this ](){
 
+		m_showingLuks2AdvanceOptions = true ;
 		m_ui->groupBoxLUKS2Options->setVisible( true ) ;
 		m_ui->labelLUKS2Options->setVisible( true ) ;
+	} ) ;
+
+	connect( m_ui->pbLuks2Cancel,&QPushButton::clicked,[ this ](){
+
+		this->luks2Cancel() ;
 	} ) ;
 
 	auto m = static_cast< void ( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ) ;
@@ -95,7 +101,6 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 #else
 	m_ui->cbLuks2AllowDiscard->setEnabled( false ) ;
 #endif
-	connect( m_ui->pbLUKS2Options,SIGNAL( clicked() ),this,SLOT( luks2Options() ) ) ;
 	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) ) ;
 	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreateClicked() ) ) ;
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancelClicked() ) ) ;
@@ -357,9 +362,14 @@ void createvolume::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 
-	if( m_isWindowClosable ){
+	if( m_showingLuks2AdvanceOptions ){
 
-		this->pbCancelClicked() ;
+		this->luks2Cancel() ;
+	}else{
+		if( m_isWindowClosable ){
+
+			this->pbCancelClicked() ;
+		}
 	}
 }
 
@@ -647,6 +657,22 @@ void createvolume::tcryptGui( bool e )
 			m_hiddenKeyFiles.clear() ;
 		}
 	} ) ;
+}
+
+void createvolume::luks2Cancel()
+{
+	m_showingLuks2AdvanceOptions = false ;
+	m_ui->groupBoxLUKS2Options->setVisible( false ) ;
+	m_ui->labelLUKS2Options->setVisible( false ) ;
+
+	m_ui->lineEditLuks2ForcedIteration->clear() ;
+	m_ui->lineEditLuks2UnlockingTime->clear() ;
+	m_ui->lineEditLuks2ParallelThreads->clear() ;
+	m_ui->lineEditLuks2MaxMemory->clear() ;
+	m_ui->lineLEdituks2Label->clear() ;
+	m_ui->lineEditLuks2SubSystem->clear() ;
+	m_ui->cbLuks2Pbkdf->setCurrentIndex( 0 ) ;
+	m_ui->cbLuks2AllowDiscard->setChecked( false ) ;
 }
 
 void createvolume::cbNormalVolume( int r )
