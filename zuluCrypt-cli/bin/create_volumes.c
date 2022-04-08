@@ -116,7 +116,7 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 	int tcrypt_source   = TCRYPT_PASSPHRASE ;
 	int tcrypt_source_h = TCRYPT_PASSPHRASE ;
 
-	int socket_path ;
+	int socket_path = 0 ;
 
 	int st  ;
 
@@ -478,7 +478,13 @@ int zuluCryptEXECreateVolume( const struct_opts * opts,const char * mapping_name
 		/*
 		 * zuluCryptCreateVolume() is defined in ../lib/create_volume.c
 		 */
-		st = zuluCryptCreateVolume( device,fs,type,volkey,volkeysize,rng ) ;
+
+		if( StringsAreEqual( type,"plain" ) && StringsAreEqual( key_source,"-f" ) && !socket_path ){
+
+			st = zuluCryptCreateVolume( device,fs,"plain.keyfile",volkey,volkeysize,rng ) ;
+		}else{
+			st = zuluCryptCreateVolume( device,fs,type,volkey,volkeysize,rng ) ;
+		}
 
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}

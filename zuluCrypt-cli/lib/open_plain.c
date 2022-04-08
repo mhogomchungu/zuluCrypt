@@ -126,7 +126,10 @@ static int _open_plain( const char * device,const resolve_path_t * opts )
 
 	memset( &params,'\0',sizeof( struct crypt_params_plain ) ) ;
 
-	params.hash = e->hash ;
+	if( StringsAreNotEqual( e->hash,"null" ) ){
+
+		params.hash = e->hash ;
+	}
 
 	if( zuluCryptPathIsNotValid( device ) ){
 

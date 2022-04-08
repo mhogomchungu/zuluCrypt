@@ -86,6 +86,7 @@ typedef struct{
 	int trueCrypt_volume ;
 	int bitlocker_volume ;
 	int system_volume ;
+	int key_source_is_keyFile ;
 	int use_cryptsetup_for_bitlocker ;
 	const char ** tcrypt_keyfiles ;
 	unsigned long m_flags ;
@@ -261,6 +262,11 @@ const char * zuluCryptDecodeMountEntry( string_t ) ;
  * zuluCryptDecodeMountEntry() is defined in mount_volume.c
  */
 const char * zuluCryptEncodeMountEntry( string_t ) ;
+
+/*
+ *this function is deined in ../lib/open_volume.c
+ */
+string_t zuluCryptUpdatePlainDmcryptProperties( const char * ) ;
 
 /*
  *this function is deined in ../lib/process_mountinfo.c

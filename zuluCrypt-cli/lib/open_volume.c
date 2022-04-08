@@ -163,10 +163,72 @@ int zuluCryptOpenVolume_1( const open_struct_t * opts )
 	return zuluCryptOpenVolume_0( _open_mapper,opts ) ;
 }
 
-/*
- * this function tries to unlock luks,plain and truecrypt volumes
- */
-int zuluCryptOpenVolume_2( const open_struct_t * opts )
+string_t zuluCryptUpdatePlainDmcryptProperties( const char * e )
+{
+	stringList_t stx = StringListSplit( e,'.' ) ;
+
+	size_t n = StringListSize( stx ) ;
+
+	string_t xt = String( StringListContentAt( stx,0 ) ) ;
+
+	size_t s ;
+
+	if( StringPrefixEqual( e,"/dev/" ) ){
+
+		s = 4 ;
+	}else{
+		s = 3 ;
+	}
+
+	for( size_t m = 1 ; m < n ; m++ ){
+
+		if( m == s ){
+
+			StringAppend( xt,".null" ) ;
+		}else{
+			StringMultipleAppend( xt,".",StringListContentAt( stx,m ),NULL ) ;
+		}
+	}
+
+	StringListDelete( &stx ) ;
+
+	return xt ;
+}
+
+static int _open_plain( const open_struct_t * opts )
+{
+	string_t st ;
+
+	open_struct_t opts_1 ;
+	/*
+	 * zuluCryptOpenPlain_1() is defined in open_plain.c
+	 */
+	int r = zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,opts ) ;
+
+	if( r != 0 ){
+
+		memcpy( &opts_1,opts,sizeof( open_struct_t ) ) ;
+
+		if( opts_1.plain_dm_properties == NULL ){
+
+			opts_1.plain_dm_properties = "/dev/urandom.aes.cbc-essiv:sha256.256.null.0" ;
+
+			r = zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,&opts_1 ) ;
+		}else{
+			st = zuluCryptUpdatePlainDmcryptProperties( opts->plain_dm_properties ) ;
+
+			opts_1.plain_dm_properties = StringContent( st ) ;
+
+			r = zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,&opts_1 ) ;
+
+			StringDelete( &st ) ;
+		}
+	}
+
+	return r ;
+}
+
+static int _unlock_tcrypt_vcrypt( const open_struct_t * opts )
 {
 	int r ;
 
@@ -174,9 +236,49 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 
 	string_t zt = StringVoid ;
 
-	string_t xt = StringVoid ;
-
 	const char * keyfile ;
+
+	memcpy( &opts_1,opts,sizeof( open_struct_t ) ) ;
+
+	if( opts_1.key_source == TCRYPT_KEYFILE ){
+		/*
+		 * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
+		 */
+		zt = zuluCryptCreateKeyFile( opts_1.key,opts_1.key_len,"keyfile" ) ;
+
+		if( zt != StringVoid ){
+
+			keyfile = StringContent( zt ) ;
+			opts_1.tcrypt_keyfiles_count = 1 ;
+			opts_1.tcrypt_keyfiles       = &keyfile ;
+			opts_1.key = "" ;
+			opts_1.key_len = 0 ;
+
+			r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
+			/*
+			 * zuluCryptDeleteFile() is defined in file_path_security.c
+			 */
+			zuluCryptDeleteFile( keyfile ) ;
+
+			StringDelete( &zt ) ;
+		}else{
+			r = -1 ;
+		}
+	}else{
+		r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
+	}
+
+	return r ;
+}
+
+/*
+ * this function tries to unlock luks,plain and truecrypt volumes
+ */
+int zuluCryptOpenVolume_2( const open_struct_t * opts )
+{
+	int r ;
+
+	string_t xt = StringVoid ;
 
 	const char * mapper ;
 
@@ -194,55 +296,39 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 		StringDelete( &xt ) ;
 
 	}else if( opts->plain_dm_properties != NULL ){
+
+		r = _open_plain( opts ) ;
+
+	}else if( opts->luks_detached_header || zuluCryptVolumeIsLuks( opts->device ) ){
+
 		/*
-		 * zuluCryptOpenPlain_1() is defined in open_plain.c
+		 * zuluCryptOpenLuks_2() is defined in open_luks.c
 		 */
-		r = zuluCryptOpenVolume_0( zuluCryptOpenPlain_1,opts ) ;
+
+		r = zuluCryptOpenVolume_0( zuluCryptOpenLuks_2,opts ) ;
+
+	}else if( opts->veraCrypt_volume || opts->trueCrypt_volume ){
+
+		r = _unlock_tcrypt_vcrypt( opts ) ;
 	}else{
-		if( opts->veraCrypt_volume || opts->trueCrypt_volume ){
+		r = _open_plain( opts ) ;
 
-			r = 4 ;
-		}else{
-			r = zuluCryptOpenVolume_1( opts ) ;
-		}
+		if( r != 0 ){
 
-		if( r == 4 && zuluCryptVolumeIsNotLuks( opts->device ) ){
+			open_struct_t opts_1 ;
 
 			memcpy( &opts_1,opts,sizeof( open_struct_t ) ) ;
 
-			if( opts_1.key_source == TCRYPT_KEYFILE ){
-				/*
-				 * zuluCryptCreateKeyFile() is defined in open_tcrypt.c
-				 */
-				zt = zuluCryptCreateKeyFile( opts_1.key,opts_1.key_len,"keyfile" ) ;
+			opts_1.trueCrypt_volume = 1 ;
 
-				if( zt != StringVoid ){
+			r = _unlock_tcrypt_vcrypt( &opts_1 ) ;
 
-					keyfile = StringContent( zt ) ;
-					opts_1.tcrypt_keyfiles_count = 1 ;
-					opts_1.tcrypt_keyfiles       = &keyfile ;
-					opts_1.key = "" ;
-					opts_1.key_len = 0 ;
+			if( r != 0 ){
 
-					r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
-					/*
-					 * zuluCryptDeleteFile() is defined in file_path_security.c
-					 */
-					zuluCryptDeleteFile( keyfile ) ;
-
-					StringDelete( &zt ) ;
-				}else{
-					r = -1 ;
-				}
-			}else{
-				r = zuluCryptOpenTcrypt_1( &opts_1 ) ;
+				r = 4 ;
 			}
 		}
-		if( r == 0 || r == -1 ){
-
-		}else{
-			r = 4 ;
-		}
 	}
+
 	return r ;
 }

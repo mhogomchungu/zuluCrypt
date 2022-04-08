@@ -127,14 +127,41 @@ static int _create_volume( const char * device,const resolve_path_t * opts )
 {
 	int r ;
 
+	const char * e ;
 	const char * mapper ;
 
 	const arguments * args = opts->args ;
 
+	string_t xt = StringVoid ;
+
 	string_t m = String( "/zuluCrypt-create-volume-" ) ;
 	mapper = StringAppendInt( m,(u_int64_t)syscall( SYS_gettid ) ) + 1 ;
 
-	if( StringsAreEqual( args->type,"plain" ) ){
+	if( StringsAreEqual( args->type,"plain.keyfile" ) ){
+
+		if( StringsAreEqual( args->rng,"/dev/urandom" ) ){
+
+			e = "/dev/urandom.aes.cbc-essiv:sha256.256.null.0" ;
+
+		}else if( StringsAreEqual( args->rng,"/dev/random" ) ){
+
+			e = "/dev/random.aes.cbc-essiv:sha256.256.null.0" ;
+		}else{
+			xt = zuluCryptUpdatePlainDmcryptProperties( args->rng ) ;
+
+			e = StringContent( xt ) ;
+		}
+
+		if( zuluCryptOpenPlain_2( device,mapper,"rw",args->pass,args->pass_size,e ) != 0 ){
+
+			StringDelete( &xt ) ;
+
+			return zuluExit( 3,m ) ;
+		}
+
+		StringDelete( &xt ) ;
+
+	}else if( StringsAreEqual( args->type,"plain" ) ){
 
 		if( zuluCryptOpenPlain_2( device,mapper,"rw",args->pass,args->pass_size,args->rng ) != 0 ){
 
