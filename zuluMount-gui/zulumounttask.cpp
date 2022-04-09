@@ -209,7 +209,7 @@ utility::Task zuluMountTask::volumeUnmount( const QString& volumePath,const QStr
 
 		auto v = volumePath ;
 
-		if( v.startsWith( "/dev/sd" ) || v.startsWith( "/dev/hd" ) || v.startsWith( "/dev/vd" ) ){
+		if( utility::startsWithAtLeastOne( v,"/dev/sd","/dev/hd","/dev/vd","/dev/xvd" ) ){
 
 			for( char i = '0' ; i < '9' ; i++ ){
 
@@ -562,10 +562,12 @@ volumeStatus zuluMountTask::deviceProperties( const zuluMountTask::event& device
 
 		auto _allowed_device = []( const QString& device ){
 
-			return	device.startsWith( "/dev/sd" )  ||
-				device.startsWith( "/dev/hd" )  ||
-				device.startsWith( "/dev/vd" )  ||
-				device.startsWith( "/dev/mmc" ) ;
+			return utility::startsWithAtLeastOne( device,
+							      "/dev/sd",
+							      "/dev/hd",
+							      "/dev/vd",
+							      "/dev/mmc",
+							      "/dev/xvd" ) ;
 		} ;
 
 		volumeStatus s{ QString(),false,nullptr } ;

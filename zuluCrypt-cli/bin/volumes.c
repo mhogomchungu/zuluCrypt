@@ -191,7 +191,7 @@ static int _not_removed( stringList_t stl,StringListIterator it,StringListIterat
 
 	StringListIterator e = it + 1 ;
 
-	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd","/dev/vd","/dev/mmcblk","/dev/nvme",NULL ) ){
+	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd","/dev/vd","/dev/xvd","/dev/mmcblk","/dev/nvme",NULL ) ){
 
 		/*
 		 * we have a partition,lets continue
@@ -478,7 +478,7 @@ static int _zuluCryptCheckSYSifDeviceIsSystem( const char * device )
 		st = String( device ) ;
 	}
 
-	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd","/dev/vd",NULL ) ){
+	if( StringStartsWithAtLeastOne( st,"/dev/sd","/dev/hd","/dev/vd","/dev/xvd",NULL ) ){
 		/*
 		 * this path will convert something like: "/dev/sdc12" to "/dev/sdc"
 		 */
