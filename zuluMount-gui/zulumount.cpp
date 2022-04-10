@@ -396,7 +396,7 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 	this->setLocalizationLanguage( false ) ;
 
-	utility::showTrayIcon( nullptr,this,true ) ;
+	utility::showTrayIcon( nullptr,m_trayIcon,true ) ;
 
 	m_powerOff = utility::powerOffCommand() ;
 

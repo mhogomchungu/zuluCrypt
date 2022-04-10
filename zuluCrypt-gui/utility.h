@@ -438,7 +438,7 @@ namespace utility
 	QStringList supportedFileSystems( void ) ;
 	bool userHasGoodVersionOfWhirlpool( void ) ;
 	void licenseInfo( QWidget * ) ;
-	void showTrayIcon( QAction *,QObject * obj,bool = true ) ;
+	void showTrayIcon( QAction *,QSystemTrayIcon&,bool = true ) ;
 	void trayProperty( QSystemTrayIcon *,bool = true ) ;
 	void setDoNotMinimizeToTray( bool ) ;
 	bool doNotMinimizeToTray() ;

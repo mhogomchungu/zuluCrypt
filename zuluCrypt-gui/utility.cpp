@@ -1990,15 +1990,7 @@ int utility::pluginKey( QWidget * w,QByteArray * key,const QString& p )
 	return l.exec() ;
 }
 
-static void _show_tray( QObject * obj,bool show,bool opt_show )
-{
-	QMetaObject::invokeMethod( obj,
-				   "showTrayIcon",
-				   Qt::QueuedConnection,
-				   Q_ARG( bool,show ? show : opt_show ) ) ;
-}
-
-void utility::showTrayIcon( QAction * ac,QObject * obj,bool show )
+void utility::showTrayIcon( QAction * ac,QSystemTrayIcon& trayIcon,bool show )
 {
 	bool opt_show = true ;
 
@@ -2021,34 +2013,34 @@ void utility::showTrayIcon( QAction * ac,QObject * obj,bool show )
 		}
 	}
 
-	if( QSystemTrayIcon::isSystemTrayAvailable() ){
-		/*
-		 * System tray is available, use it.
-		 */
-		_show_tray( obj,show,opt_show ) ;
-	}else{
-		utility::Timer( 1000,[ = ]( int counter ){
+	if( show ? show : opt_show ){
 
-			if( QSystemTrayIcon::isSystemTrayAvailable() ){
-				/*
-				 * System tray is available, use it.
-				 */
-				_show_tray( obj,show,opt_show ) ;
+		trayIcon.show() ;
 
-				return true ;
+		utility::Timer( 1000,[ &trayIcon ]( int counter ){
 
-			}else if( counter == 5 ){
-				/*
-				 * We waited for 5 seconds and its not available, use it and hope for the best.
-				 */
-				_show_tray( obj,show,opt_show ) ;
+			if( counter < 6 ){
 
-				return true ;
+				if( !trayIcon.isVisible() || !QSystemTrayIcon::isSystemTrayAvailable() ){
+
+					/*
+					 * Try again to show the icon
+					 */
+					trayIcon.show() ;
+
+					return false ;
+				}else{
+					/*
+					 * The icon is visible, exiing
+					 */
+					return true ;
+				}
 			}else{
 				/*
-				 * Lets keep on waiting.
+				 * We waited long enough for the icon to show up, giving up.
 				 */
-				return false ;
+
+				return true ;
 			}
 		} ) ;
 	}

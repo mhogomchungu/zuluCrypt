@@ -286,7 +286,7 @@ void zuluCrypt::initTray( bool e )
 
 	this->setIcons() ;
 
-	utility::showTrayIcon( m_ui->actionTray_icon,this,e ) ;
+	utility::showTrayIcon( m_ui->actionTray_icon,m_trayIcon,e ) ;
 }
 
 void zuluCrypt::showTrayIcon( bool e )
