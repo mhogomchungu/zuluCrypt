@@ -1207,6 +1207,7 @@ const char * StringAppendChar( string_t st,char c )
 	char * d = __StringExpandMemory( st,st->size + 1 ) ;
 
 	if( d != NULL ){
+		st->string = d ;
 		st->string[ st->size ] = c ;
 		st->string[ st->size + 1 ] = '\0' ;
 		st->size += 1 ;

@@ -157,7 +157,7 @@ static void _printResult( const char * device,const char * m_point )
 	}
 }
 
-static int zuluExit( int st,const char * device,const char * m_point,stringList_t stl )
+static int zuluExit( int st,const char * device,const char * m_point,stringList_t * stl )
 {
 	switch( st ){
 
@@ -187,8 +187,8 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
 		default: printf( gettext( "ERROR: Unrecognized error with status number %d encountered\n" ),st ) ;
 	}
 
-	zuluCryptSecurityUnlockMemory( stl ) ;
-	StringListClearDelete( &stl ) ;
+	zuluCryptSecurityUnlockMemory( *stl ) ;
+	StringListClearDelete( stl ) ;
 
 	return st ;
 }
@@ -199,7 +199,7 @@ static int zuluExit( int st,const char * device,const char * m_point,stringList_
  * should be removed first before calling the above function.The above function is called directly when "open_volume"
  * function is to be exited before the mount point is created. *
  */
-static int zuluExit_1( int st,const struct_opts * opts,const char * device,const char * m_point,stringList_t stl )
+static int zuluExit_1( int st,const struct_opts * opts,const char * device,const char * m_point,stringList_t * stl )
 {
 	if( opts->open_mount && st != 0 ){
 
@@ -269,7 +269,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * memory from manually examining each exit point to make sure all strings are deleted or go with multiple goto
 	 * code deleting blocks to take into account different exit points.
 	 */
-	stringList_t stl ;
+	stringList_t stl = StringListVoid ;
 	string_t * stringArray = StringListArray( &stl,8 ) ;
 	string_t * passphrase  =  &stringArray[ 0 ] ;
 	string_t * m_name      =  &stringArray[ 1 ] ;
@@ -328,7 +328,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 */
 	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ){
 
-		return zuluExit( 5,device,mount_point,stl ) ;
+		return zuluExit( 5,device,mount_point,&stl ) ;
 	}
 	if( StringHasComponent( m_opts,"rw" ) ){
 		/*
@@ -351,11 +351,11 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	switch( st ){
 
 		case 0 :  break ;
-		case 1 :  return zuluExit( 6,device,mount_point,stl ) ;
-		case 2 :  return zuluExit( 6,device,mount_point,stl ) ;
-		case 3 :  return zuluExit( 6,device,mount_point,stl ) ;
-		case 4 :  return zuluExit( 6,device,mount_point,stl ) ;
-		default:  return zuluExit( 6,device,mount_point,stl ) ;
+		case 1 :  return zuluExit( 6,device,mount_point,&stl ) ;
+		case 2 :  return zuluExit( 6,device,mount_point,&stl ) ;
+		case 3 :  return zuluExit( 6,device,mount_point,&stl ) ;
+		case 4 :  return zuluExit( 6,device,mount_point,&stl ) ;
+		default:  return zuluExit( 6,device,mount_point,&stl ) ;
 	}
 
 	if( open_mount ){
@@ -368,16 +368,16 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 		if( mount_point == NULL ){
 
-			return zuluExit( 9,device,mount_point,stl ) ;
+			return zuluExit( 9,device,mount_point,&stl ) ;
 		}
 	}else{
 		if( uid != 0 ){
 
-			return zuluExit( 7,device,mount_point,stl ) ;
+			return zuluExit( 7,device,mount_point,&stl ) ;
 		}
 		if( mount_point != NULL ){
 
-			return zuluExit( 8,device,mount_point,stl ) ;
+			return zuluExit( 8,device,mount_point,&stl ) ;
 		}
 	}
 
@@ -387,7 +387,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 */
 		if( zuluCryptBindSharedMountPointPathTaken( *m_point ) ){
 
-			return zuluExit_1( 10,opts,device,mount_point,stl ) ;
+			return zuluExit_1( 10,opts,device,mount_point,&stl ) ;
 		}
 	}
 
@@ -426,7 +426,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 		if( stat( path_mapper,&statstr ) == 0 ){
 
-			return zuluExit_1( 11,opts,device,mount_point,stl ) ;
+			return zuluExit_1( 11,opts,device,mount_point,&stl ) ;
 		}
 	}
 
@@ -459,7 +459,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 		if( st != 0 || *passphrase == StringVoid ){
 
-			return zuluExit_1( 12,opts,device,mount_point,stl ) ;
+			return zuluExit_1( 12,opts,device,mount_point,&stl ) ;
 		}
 
 		key_len = StringLength( *passphrase ) ;
@@ -475,8 +475,8 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 */
 		switch( StringSilentlyGetFromTerminal_1( passphrase,ZULUCRYPT_KEY_MAX_SIZE ) ){
 
-			case 1 : return zuluExit_1( 13,opts,device,mount_point,stl ) ;
-			case 2 : return zuluExit_1( 14,opts,device,mount_point,stl ) ;
+			case 1 : return zuluExit_1( 13,opts,device,mount_point,&stl ) ;
+			case 2 : return zuluExit_1( 14,opts,device,mount_point,&stl ) ;
 		}
 
 		printf( "\n" ) ;
@@ -489,7 +489,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 			if( tcrypt_keyfiles == NULL ){
 
-				return zuluExit_1( 15,opts,device,mount_point,stl ) ;
+				return zuluExit_1( 15,opts,device,mount_point,&stl ) ;
 			}
 		}
 		if( StringsAreEqual( source,"-p" ) ){
@@ -508,15 +508,15 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			 */
 			switch( zuluCryptGetPassFromFile( NULL,pass,uid,data ) ){
 
-				case 1 : return zuluExit_1( 16,opts,device,mount_point,stl ) ;
-				case 2 : return zuluExit_1( 17,opts,device,mount_point,stl ) ;
-				case 4 : return zuluExit_1( 18,opts,device,mount_point,stl ) ;
-				case 5 : return zuluExit_1( 19,opts,device,mount_point,stl ) ;
+				case 1 : return zuluExit_1( 16,opts,device,mount_point,&stl ) ;
+				case 2 : return zuluExit_1( 17,opts,device,mount_point,&stl ) ;
+				case 4 : return zuluExit_1( 18,opts,device,mount_point,&stl ) ;
+				case 5 : return zuluExit_1( 19,opts,device,mount_point,&stl ) ;
 			}
 
 			if( *data == StringVoid ){
 
-				return zuluExit_1( 12,opts,device,mount_point,stl ) ;
+				return zuluExit_1( 12,opts,device,mount_point,&stl ) ;
 			}
 
 			key = StringContent( *data ) ;
@@ -676,5 +676,5 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * zuluCryptCheckInvalidKey() is defined in check_invalid_key.c
 	 */
 	zuluCryptCheckInvalidKey( opts->device ) ;
-	return zuluExit_1( st,opts,device,mount_point,stl ) ;
+	return zuluExit_1( st,opts,device,mount_point,&stl ) ;
 }

@@ -310,6 +310,11 @@ int zuluCryptOpenVolume_2( const open_struct_t * opts )
 	}else if( opts->veraCrypt_volume || opts->trueCrypt_volume ){
 
 		r = _unlock_tcrypt_vcrypt( opts ) ;
+
+		if( r != 0 ){
+
+			r = 4 ;
+		}
 	}else{
 		r = _open_plain( opts ) ;
 
