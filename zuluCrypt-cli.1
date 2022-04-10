@@ -20,10 +20,6 @@ meaning of symbols:
 .br
 zuluCrypt-cli --test
 .br
-zuluCrypt-cli -E <d> <e> <p|f|h>
-.br
-zuluCrypt-cli -D <d> <e> <p|f|h>
-.br
 zuluCrypt-cli -o <d> <m> [e] <p|f|h>
 .br
 zuluCrypt-cli -O <d> {m} [e] <p|f|h>
@@ -48,9 +44,9 @@ zuluCrypt-cli -X <d>
 .br
 zuluCrypt-cli -J <d>
 .br
-zuluCrypt-cli -R <d> <f>
+zuluCrypt-cli -R <d> <f> <z>
 .br
-zuluCrypt-cli -B <d> <f>
+zuluCrypt-cli -B <d> <f> <z>
 .br
 zuluCrypt-cli -A
 .br
@@ -167,7 +163,7 @@ options that goes with above operations:
 .br
 -G         module name to use to get a passphrase to open a volume
 .br
--e         mode for opening volumes(ro*/rw) when used with -o/-O. path to destination file when used with -E/-D
+-e         mode for opening volumes(ro*/rw) when used with -o/-O.
 .br
 -e         mode for managing a truecrypt header when used with -B/-R.Options can be "fde" for volumes that use whole disk
 .br
