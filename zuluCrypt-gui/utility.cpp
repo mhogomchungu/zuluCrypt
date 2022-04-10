@@ -2017,7 +2017,7 @@ void utility::showTrayIcon( QAction * ac,QSystemTrayIcon& trayIcon,bool show )
 
 		trayIcon.show() ;
 
-		utility::Timer( 1000,[ &trayIcon ]( int counter ){
+		utility::Timer( 2000,[ &trayIcon ]( int counter ){
 
 			if( counter < 6 ){
 
@@ -2031,7 +2031,7 @@ void utility::showTrayIcon( QAction * ac,QSystemTrayIcon& trayIcon,bool show )
 					return false ;
 				}else{
 					/*
-					 * The icon is visible, exiing
+					 * The icon is visible, exiting
 					 */
 					return true ;
 				}
