@@ -210,7 +210,7 @@ int zuluCryptAddKey_0( const char * device,     /* path to an encrypted file or 
 		       size_t existingkey_size, /* size of existingkey					*/
 		       const char * newkey,     /* new key to be added to the volume			*/
 		       size_t newkey_size,      /* size of the new key                                  */
-		       int slot_number ) ;      /* key slot to add the key                              */
+		       const char * options ) ; /* Options in dot separated string                      */
 
 /**
  * This function deletes a key from a luks volume.

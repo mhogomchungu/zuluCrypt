@@ -487,18 +487,18 @@ static void * _luks2( const arguments * args )
 	params->label           = args->label ;
 	params->subsystem       = args->subsystem ;
 
+#if SUPPORT_crypt_get_pbkdf_default
+	/*
+	 * added in cryptsetup 2.0.3
+	 */
+	memcpy( pbkdf,crypt_get_pbkdf_default( CRYPT_LUKS2 ),sizeof( struct crypt_pbkdf_type ) ) ;
+#else
+	pbkdf->type             = CRYPT_KDF_ARGON2I ;
+	pbkdf->max_memory_kb    = 1024 ;
+	pbkdf->parallel_threads = 4 ;
+#endif
 	if( StringsAreNotEqual( args->pbkdf_type,"pbkdf2" ) ){
 
-#if SUPPORT_crypt_get_pbkdf_default
-		/*
-		 * added in cryptsetup 2.0.3
-		 */
-		memcpy( pbkdf,crypt_get_pbkdf_default( CRYPT_LUKS2 ),sizeof( struct crypt_pbkdf_type ) ) ;
-#else
-		pbkdf->type             = CRYPT_KDF_ARGON2I ;
-		pbkdf->max_memory_kb    = 1024 ;
-		pbkdf->parallel_threads = 4 ;
-#endif
 		if( args->pbkdf_memory ){
 
 			pbkdf->max_memory_kb = ( unsigned int ) StringConvertToInt( args->pbkdf_memory ) ;
@@ -508,6 +508,9 @@ static void * _luks2( const arguments * args )
 
 			pbkdf->parallel_threads = ( unsigned int ) StringConvertToInt( args->pbkdf_threads ) ;
 		}
+	}else{
+		pbkdf->max_memory_kb = 0 ;
+		pbkdf->parallel_threads = 0 ;
 	}
 
 	if( args->time_ms != 0 ){

@@ -21,15 +21,16 @@
 #include <libcryptsetup.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "luks2_support.h"
 
-typedef struct{
+typedef struct arguments{
 
 	const char * key_0 ;
 	size_t       key_0_len ;
 	const char * key_1 ;
 	size_t       key_1_len ;
-	int          key_slot ;
-
+	const char * options ;
+	int ( *set_options )( int *,struct crypt_device *,const struct arguments * ) ;
 }arguments ;
 
 static int zuluExit( int st,struct crypt_device * cd )
@@ -44,6 +45,8 @@ static int _add_key( const char * device,const resolve_path_t * opts )
 
 	const arguments * args = opts->args ;
 
+	int key_slot ;
+
 	if( zuluCryptVolumeIsNotLuks( device ) ){
 
 		return 3 ;
@@ -56,8 +59,11 @@ static int _add_key( const char * device,const resolve_path_t * opts )
 
 		return zuluExit( 2,cd ) ;
 	}
+
+	args->set_options( &key_slot,cd,args ) ;
+
 	if( crypt_keyslot_add_by_passphrase( cd,
-					     args->key_slot,
+					     key_slot,
 					     args->key_0,
 					     args->key_0_len,
 					     args->key_1,
@@ -71,15 +77,152 @@ static int _add_key( const char * device,const resolve_path_t * opts )
 int zuluCryptAddKey( const char * device,const char * existingkey,
 		     size_t existingkey_size,const char * newkey,size_t newkey_size )
 {
-	return zuluCryptAddKey_0( device,existingkey,existingkey_size,newkey,newkey_size,CRYPT_ANY_SLOT ) ;
+	return zuluCryptAddKey_0( device,
+				  existingkey,
+				  existingkey_size,
+				  newkey,
+				  newkey_size,
+				  "-1.-1.argon2id.-1.-1.-1" ) ;
 }
+
+#ifdef CRYPT_LUKS2
+
+static int _set_options( int * key_slot,struct crypt_device * cd,const arguments * args )
+{
+	stringList_t stl = StringListSplit( args->options,'.' ) ;
+
+	size_t list_count = 0 ;
+
+	char * const * list = NULL ;
+
+	int r ;
+
+	StringListStringArray_1( &list,&list_count,stl ) ;
+
+	const char * pbkdf_type = NULL ;
+	const char * max_memory = NULL ;
+	const char * max_threads = NULL ;
+	const char * time_cost = NULL ;
+	const char * iterations = NULL ;
+	const char * keySlot = NULL ;
+
+	if( list_count >= 6 ){
+
+		time_cost   = *( list + 0 ) ;
+		iterations  = *( list + 1 ) ;
+		pbkdf_type  = *( list + 2 ) ;
+		max_memory  = *( list + 3 ) ;
+		max_threads = *( list + 4 ) ;
+		keySlot     = *( list + 5 ) ;
+	}
+
+	struct crypt_pbkdf_type pbkdf ;
+
+	memset( &pbkdf,'\0',sizeof( pbkdf ) ) ;
+
+#if SUPPORT_crypt_get_pbkdf_default
+	/*
+	 * added in cryptsetup 2.0.3
+	 */
+	memcpy( &pbkdf,crypt_get_pbkdf_default( CRYPT_LUKS2 ),sizeof( struct crypt_pbkdf_type ) ) ;
+#else
+	pbkdf.type             = CRYPT_KDF_ARGON2I ;
+	pbkdf.max_memory_kb    = 1024 ;
+	pbkdf.parallel_threads = 4 ;
+	pbkdf.hash = "sha256" ;
+#endif
+	if( StringsAreNotEqual( pbkdf_type,"pbkdf2" ) ){
+
+		if( max_memory && StringsAreNotEqual( max_memory,"-1" ) ){
+
+			pbkdf.max_memory_kb = ( unsigned int ) StringConvertToInt( max_memory ) ;
+		}
+
+		if( max_threads && StringsAreNotEqual( max_threads,"-1" ) ){
+
+			pbkdf.parallel_threads = ( unsigned int ) StringConvertToInt( max_threads ) ;
+		}
+	}else{
+		pbkdf.max_memory_kb = 0 ;
+		pbkdf.parallel_threads = 0 ;
+	}
+
+	if( time_cost && StringsAreNotEqual( time_cost,"-1" ) ){
+
+		pbkdf.time_ms = (unsigned int) StringConvertToInt( time_cost ) ;
+	}
+
+	if( iterations && StringsAreNotEqual( iterations,"-1" ) ){
+
+		pbkdf.time_ms = 0 ;
+		pbkdf.iterations = (unsigned int) StringConvertToInt( iterations ) ;
+		pbkdf.flags |= CRYPT_PBKDF_NO_BENCHMARK ;
+	}
+
+	if( pbkdf_type ){
+
+		pbkdf.type = pbkdf_type ;
+	}
+
+	if( keySlot && StringsAreNotEqual( keySlot,"-1" ) ){
+
+		*key_slot = (int)StringConvertToInt( keySlot ) ;
+	}else{
+		*key_slot = CRYPT_ANY_SLOT ;
+	}
+
+	r = crypt_set_pbkdf_type( cd,&pbkdf ) ;
+
+	StringListDelete( &stl ) ;
+	StringFree( list ) ;
+
+	return r ;
+}
+
+#else
+
+static int _set_options( int * key_slot,struct crypt_device * cd, const arguments * args )
+{
+	if( cd && args ){}
+
+	stringList_t stl = StringListSplit( args->options,'.' ) ;
+
+	size_t list_count = 0 ;
+
+	char * const * list = NULL ;
+
+	StringListStringArray_1( &list,&list_count,stl ) ;
+
+	const char * keySlot ;
+
+	if( list_count >= 6 ){
+
+		keySlot = *( list + 5 ) ;
+
+		if( keySlot && StringsAreNotEqual( keySlot,"-1" ) ){
+
+			*key_slot = (int)StringConvertToInt( keySlot ) ;
+		}else{
+			*key_slot = CRYPT_ANY_SLOT ;
+		}
+	}else{
+		*key_slot = CRYPT_ANY_SLOT ;
+	}
+
+	StringListDelete( &stl ) ;
+	StringFree( list ) ;
+
+	return 0 ;
+}
+
+#endif
 
 int zuluCryptAddKey_0( const char * device,
 		       const char * existingkey,
 		       size_t existingkey_size,
 		       const char * newkey,
 		       size_t newkey_size,
-		       int slot_number )
+		       const char * options )
 {
 	/*
 	 * resolve_path_t is defined in includes.h
@@ -94,13 +237,8 @@ int zuluCryptAddKey_0( const char * device,
 	args.key_0_len    = existingkey_size ;
 	args.key_1        = newkey ;
 	args.key_1_len    = newkey_size ;
-
-	if( slot_number == -1 ){
-
-		args.key_slot = CRYPT_ANY_SLOT ;
-	}else{
-		args.key_slot = slot_number ;
-	}
+	args.options      = options ;
+	args.set_options  = _set_options ;
 
 	opts.device       = device ;
 	opts.args         = &args ;

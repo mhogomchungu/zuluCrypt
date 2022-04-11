@@ -251,7 +251,9 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	const char * existingKey = opts->existing_key ;
 	const char * keyType2    = opts->new_key_source ;
 	const char * newKey      = opts->new_key ;
-	int slot_number          = opts->luks_slot_number ;
+	const char * luksOptions = opts->rng ;
+
+	int slot_number ;
 
 	char * m ;
 	/*
@@ -275,6 +277,8 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 	size_t len1 = 0 ;
 	size_t len2 = 0 ;
 	size_t len3 ;
+
+	ssize_t slot ;
 
 	int status = 0 ;
 
@@ -428,23 +432,33 @@ int zuluCryptEXEAddKey( const struct_opts * opts,uid_t uid )
 
 		len3 = StringLength( *slots ) ;
 
-		if( slot_number == - 1 ){
+		if( StringsAreEqual( luksOptions,"/dev/urandom" ) ){
 
-			status = zuluCryptAddKey_0( device,key1,len1,key2,len2,slot_number ) ;
+			luksOptions = "-1.-1.argon2id.-1.-1.-1" ;
+		}
 
-		}else if( len3 > 0 && ( size_t )slot_number < len3 ){
+		if( StringEndsWith_1( luksOptions,"-1" ) ){
 
-			if( StringContent( *slots )[ slot_number ] == '0' ){
-
-				/*
-				* zuluCryptAddKey() is defined in ../lib/add_key.c
-				*/
-				status = zuluCryptAddKey_0( device,key1,len1,key2,len2,slot_number ) ;
-			}else{
-				return zuluExit( 16,stl ) ;
-			}
+			status = zuluCryptAddKey_0( device,key1,len1,key2,len2,luksOptions ) ;
 		}else{
-			return zuluExit( 17,stl ) ;
+			slot = StringLastIndexOfChar_1( luksOptions,'.' ) + 1 ;
+
+			slot_number = (int)StringConvertToInt( luksOptions + slot ) ;
+
+			if( len3 > 0 && ( size_t )slot_number < len3 ){
+
+				if( StringContent( *slots )[ slot_number ] == '0' ){
+
+					/*
+					 * zuluCryptAddKey() is defined in ../lib/add_key.c
+					 */
+					status = zuluCryptAddKey_0( device,key1,len1,key2,len2,luksOptions ) ;
+				}else{
+					return zuluExit( 16,stl ) ;
+				}
+			}else{
+				return zuluExit( 17,stl ) ;
+			}
 		}
 	}else{
 		tcrypt.device = device ;

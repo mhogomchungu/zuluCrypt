@@ -102,7 +102,8 @@
 If you prefer for a volume not to be considered a system volume,start the toolfrom root account and then go to &quot;menu-&gt;options-&gt;manage non system partitions&quot; and add the volume to the list and the volume will stop being considered as &quot;system&quot;.
 
 Alternatively,you can add yourself to group &quot;zulucrypt&quot; and &quot;zulumount&quot; and all restrictions will go away.</source>
-        <translation>&quot;Les volumes système&quot; sont des volumes ayant été identifiés par udev, si udev est activé, ou bien qui ont une entrée dans &quot;/etc/fstab&quot;,&quot;/etc/crypttab&quot; ou &quot;/etc/zuluCrypt/system_volumes.list&quot;.
+        <translation>
+&quot;Les volumes système&quot; sont des volumes ayant été identifiés par udev, si udev est activé, ou bien qui ont une entrée dans &quot;/etc/fstab&quot;,&quot;/etc/crypttab&quot; ou &quot;/etc/zuluCrypt/system_volumes.list&quot;.
 
 Si vous préférez qu&apos;un volume ne soit pas considéré comme un volume système, démarrez le logiciel depuis le compte root, puis aller à &quot;menu-&gt; options-&gt; gérer des partitions non-système&quot; et ajouter le volume à la liste, celui-ci cessera d&apos;être considéré comme «système».
 
@@ -212,12 +213,12 @@ seul l&apos;utilisateur root ou les membres du groupe zulucrypt peuvent le faire
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="269"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="275"/>
         <source>zuluCrypt: Failed To Establish Connection With zuluPolkit</source>
-        <translation type="unfinished"></translation>
+        <translation>zuluCrypt: Échec de l&apos;établissement de connexion avec zuluPolkit</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="615"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="621"/>
         <source>
 options:
 	-d   path to where a volume to be auto unlocked/mounted is located
@@ -232,37 +233,36 @@ Options:
 </translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1024"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1030"/>
         <source>If the option is checked,a primary private mount point will be created in &quot;%1&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;%2&quot;</source>
-        <translation>
-Si l&apos;option est cochée, un point de montage privé primaire sera créé dans &quot;%1&quot;
+        <translation>Si l&apos;option est cochée, un point de montage privé primaire sera créé dans &quot;%1&quot;
 et un «miroir» secondaire du point de montage accessible au public sera créé dans &quot;%2&quot;</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1035"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1041"/>
         <source>public mount point: </source>
         <translation>point de montage public: </translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1668"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1695"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1674"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1701"/>
         <source>Manage Favorites</source>
         <translation>Gérer les favoris</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1670"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1699"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1676"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1705"/>
         <source>Mount All</source>
         <translation>Monter tout</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1733"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1739"/>
         <source>about zuluCrypt</source>
         <translation>A propos de zuluCrypt</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1932"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1938"/>
         <source>hmac plugin.
 
 This plugin generates a key using below formular:
@@ -275,7 +275,7 @@ Ce plugin génère une clé en utilisant la formule ci-dessous:
 key = hmac(sha256,passphrase,keyfile contents)</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1937"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1943"/>
         <source>keykeyfile plugin.
 
 This plugin generates a key using below formular:
@@ -288,7 +288,7 @@ Ce plugin génère une clé à l&apos;aide de la formule suivante:
 key = passphrase + keyfile contents</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1942"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1948"/>
         <source>gpg plugin.
 
 This plugin retrives a key locked in a gpg file with a symmetric key</source>
@@ -297,35 +297,39 @@ This plugin retrives a key locked in a gpg file with a symmetric key</source>
 Ce plugin récupère une clé de verrouillage dans un fichier gpg avec une clé symétrique</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="2665"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="2663"/>
         <source>Failed To Start Helper Application.
 
 &quot;org.zulucrypt.zulupolkit.policy&quot; polkit file is misconfigured,
 zuluPolkit executable could not be found
  or pkexec failed to start zuluPolkit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec du lancement de l&apos;application Helper.
+
+&quot;org.zulucrypt.zulupolkit.policy&quot; fichier polkit mal configuré,
+le zuluPolkit exécutable ne peut être trouvé
+ ou bien pkexec échoue à démarrer zuluPolkit.</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="394"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1167"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1960"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="400"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1173"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1966"/>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="911"/>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="927"/>
         <source>ERROR</source>
         <translation>ERREUR</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="395"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="401"/>
         <source>Failed to locate pkexec executable</source>
-        <translation type="unfinished"></translation>
+        <translation>Échoue à localiser l&apos;exécutable pkexec</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1166"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1172"/>
         <source>&quot;%1&quot; and &quot;%2&quot; Folders Must Be Writable.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; et &quot;%2&quot; doivent être des répertoires autorisés en écriture.</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1960"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1966"/>
         <source>Could not find &quot;gpg&quot; executable in &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; and &quot;/usr/sbin&quot;</source>
         <translation>Ne trouve pas de &quot;gpg&quot; executable dans &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; ou &quot;/usr/sbin&quot;</translation>
     </message>
@@ -337,17 +341,17 @@ zuluPolkit executable could not be found
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="912"/>
         <source>Failed To Find %1 Executable</source>
-        <translation type="unfinished"></translation>
+        <translation>Échoue à trouver l&apos;exécutable %1</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="925"/>
         <source>INFORMATION</source>
-        <translation type="unfinished">INFORMATIONS</translation>
+        <translation>INFORMATIONS</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="928"/>
         <source>Failed To Get Volume Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec à l&apos;obtention des propriétés de volume</translation>
     </message>
 </context>
 <context>
@@ -471,32 +475,32 @@ ou en téraoctets si l&apos;entrée se termine par &quot;t&quot;</translation>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="217"/>
         <source>VeraCrypt System Volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Volume Système VeraCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="243"/>
         <source>VeraCrypt PIM Value</source>
-        <translation type="unfinished"></translation>
+        <translation>VeraCrypt PIM Valeur</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="278"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="309"/>
         <source>Enter Below The Offset Location Of The Volume About To Be Opened.</source>
-        <translation type="unfinished">Entrer ci après l&apos;offset d&apos;emplacement du volume à ouvrir.</translation>
+        <translation>Entrer ci après l&apos;offset d&apos;emplacement du volume à ouvrir.</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="328"/>
         <source>Enter Comma Separated Volume&apos;s File System Options Below</source>
-        <translation type="unfinished">Entrer un fichier d&apos;options système de volume en séparation à virgules</translation>
+        <translation>Entrer un fichier d&apos;options système de volume en séparation à virgules</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.ui" line="367"/>
         <source>Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Définir</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="76"/>
@@ -511,7 +515,7 @@ ou en téraoctets si l&apos;entrée se termine par &quot;t&quot;</translation>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="81"/>
         <source>Check This Box To Make Password Visible</source>
-        <translation type="unfinished"></translation>
+        <translation>Cocher cette case pour rendre le mot de passe visible</translation>
     </message>
     <message>
         <source>Set File System Options</source>
@@ -550,7 +554,7 @@ ou en téraoctets si l&apos;entrée se termine par &quot;t&quot;</translation>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="187"/>
         <source>YubiKey Challenge/Response</source>
-        <translation type="unfinished"></translation>
+        <translation>YubiKey Challenge/Réponse</translation>
     </message>
     <message>
         <source>Set Volume As VeraCrypt Volume</source>
@@ -631,7 +635,7 @@ Mot de passe entré incorrect</translation>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="481"/>
         <source>A Space Character Is Not Allowed In Paths When Using Ecryptfs Backend And Polkit</source>
-        <translation type="unfinished"></translation>
+        <translation>Le caractère d&apos;espace n&apos;est pas autorisé dans les chemins quand Ecryptfs Backend et Polkit sont utilisés</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="486"/>
@@ -685,14 +689,16 @@ Volume non supporté rencontré</translation>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="526"/>
         <source>This backend requires root&apos;s privileges and an attempt to acquire them has failed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ce processus nécessite les privilèges root et leur tentative d&apos;obtention a malheureusement échoué.</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="531"/>
         <source>zuluMount Can Not Unlock This Volume Because Its FileSystem Has To Manually Be Converted To The Version Of Cryfs That Is Currently In Use.
 
 Run Cryfs With This Volume To Manually Update This Volume&apos;s FileSystem.</source>
-        <translation type="unfinished"></translation>
+        <translation>zuluMount ne peut débloquer ce volume car son système de fichier doit être converti dans la version de Cryfs actuellement utilisée.
+
+Exécutez Cryfs avec ce volume pour manuellement mettre à jour le système de fichier du volume.</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="558"/>
@@ -807,7 +813,8 @@ Consult menu-&gt;help-&gt;permission for more informaion
 </source>
         <translation>Privilèges insuffisants pour opérer sur un volume système.
 
-Consultez le menu -&gt;Aide-&gt; Zulucrypt.pdf - Permissions pour davantage d&apos;informations</translation>
+Consultez le menu -&gt;Aide-&gt; Zulucrypt.pdf - Permissions pour davantage d&apos;informations
+</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="580"/>
@@ -838,7 +845,7 @@ Les raisons possibles pour corriger l&apos;erreur sont les suivantes:
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="667"/>
         <source>Failed To Locate Or Run Yubikey&apos;s &quot;ykchalresp&quot; Program.</source>
-        <translation type="unfinished"></translation>
+        <translation>Echec de la localisation ou de l&apos;exécution du programme Yubikey&apos;s &quot;ykchalresp&quot;.</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="867"/>
@@ -922,32 +929,32 @@ Les raisons possibles pour corriger l&apos;erreur sont les suivantes:
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="192"/>
         <source>Enter Below The Offset Location Of The Volume About To Be Opened</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrer ci après l&apos;offset d&apos;emplacement du volume à ouvrir</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="211"/>
         <source>Enter The Password Below To A Volume At The Above Offset</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrer ci après le mot de passe du volume au dessus de l&apos;offset</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="263"/>
         <source>Set</source>
-        <translation type="unfinished"></translation>
+        <translation>Définir</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="276"/>
         <source>Cancel</source>
-        <translation type="unfinished">Annuler</translation>
+        <translation>Annuler</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="293"/>
         <source>TextLabel</source>
-        <translation type="unfinished">Etiquette de texte</translation>
+        <translation>Etiquette de texte</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="312"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="173"/>
@@ -1094,7 +1101,9 @@ Les droits nécessaires peuvent être obtenus par :
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>
-        <translation>Soyez patient car le déchiffrement d&apos;un volume VeraCrypt peut durer un certain temps.</translation>
+        <translation>Soyez patient car le déchiffrement d&apos;un volume VeraCrypt peut durer un certain temps.
+
+</translation>
     </message>
 </context>
 <context>
@@ -1231,7 +1240,8 @@ Les droits nécessaires peuvent être obtenus par :
         <location filename="../../zuluMount-gui/zulumount.cpp" line="749"/>
         <source>zuluMount Failed To Connect To zuluPolkit.
 Please Report This Serious Bug.</source>
-        <translation type="unfinished"></translation>
+        <translation>zuluMount a échoué à se connecter à zuluPolkit.
+Merci de reporter ce bug sérieux.</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="827"/>
@@ -1338,12 +1348,12 @@ Please Report This Serious Bug.</source>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="187"/>
         <source>Do Not Minimize To Tray</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne pas minimiser en barre des tâches</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="239"/>
         <source>Clear Dead Mount Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Effacer les points de montage obsolètes</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="381"/>
@@ -1353,14 +1363,16 @@ Please Report This Serious Bug.</source>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="773"/>
         <source>Cryptsetup library could not be found and zuluCrypt will most likely not work as expected.</source>
-        <translation type="unfinished"></translation>
+        <translation>La bibliothèque Cryptsetup n&apos;a pas été trouvée et ZuluCrypt risque évidemment de ne pas fonctionner comme prévu.</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="774"/>
         <source>
 
 Please recompile zuluCrypt to force it to re-discover the new library</source>
-        <translation type="unfinished"></translation>
+        <translation>
+
+Merci de recompiler zuluCrypt pour le forcer à redécouvrir la nouvelle bibliothèque</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="815"/>
@@ -1470,19 +1482,22 @@ le volume n&apos;est pas supporté (LVM/MDRAID signatures found)</translation>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="1508"/>
         <source>Could not resolve full path of device
 </source>
-        <translation>Ne trouve pas le chemin complet vers le périphérique</translation>
+        <translation>Ne trouve pas le chemin complet vers le périphérique
+</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="1509"/>
         <source>Shared mount point appear to be busy
 </source>
-        <translation>Chemin de point de montage du partage semble occupé</translation>
+        <translation>Chemin de point de montage du partage semble occupé
+</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="1510"/>
         <source>Shared mount point appear to belong to a different user or multiple mount points detected
 </source>
-        <translation>Chemin de point de montage du partage semble appartenir à un autre utilisateur ou bien points de montage multiples</translation>
+        <translation>Chemin de point de montage du partage semble appartenir à un autre utilisateur ou bien points de montage multiples
+</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="1511"/>

@@ -56,8 +56,10 @@ typedef struct struct_opts_1{
 	const char * offset ;
 	const char * uid ;
 	const char * luks_external_header ;
+
 	const char ** env ;
 	char action ;
+	int luks_slot_number ;
 	int partition_number ;
 	int ask_confirmation ;
 	int open_mount ;
@@ -65,7 +67,6 @@ typedef struct struct_opts_1{
 	int print_partition_type ;
 	int share ;
 	int use_cryptsetup_for_bitlocker ;
-	int luks_slot_number ;
 }struct_opts;
 
 /*

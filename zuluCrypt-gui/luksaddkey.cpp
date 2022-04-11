@@ -60,6 +60,47 @@ luksaddkey::luksaddkey( QWidget * parent ) : QDialog( parent )
 	this->setFixedSize( this->size() ) ;
 	this->setFont( parent->font() ) ;
 
+	m_ui->lineEditPIM->setEnabled( false ) ;
+	m_ui->label_4->setEnabled( false ) ;
+
+	m_ui->groupBoxLUKS2Options->setVisible( false ) ;
+	m_ui->labelAdvanceLuks2Options->setVisible( false ) ;
+
+	connect( m_ui->pbLuks2Set,&QPushButton::clicked,[ this ](){
+
+		m_ui->groupBoxLUKS2Options->setVisible( false ) ;
+		m_ui->labelAdvanceLuks2Options->setVisible( false ) ;
+	} ) ;
+
+	connect( m_ui->pushButtonLuks2AdvancedOptions,&QPushButton::clicked,[ this ](){
+
+		m_showingLuks2AdvanceOptions = true ;
+		m_ui->groupBoxLUKS2Options->setVisible( true ) ;
+		m_ui->labelAdvanceLuks2Options->setVisible( true ) ;
+	} ) ;
+
+	connect( m_ui->pbLuks2Cancel,&QPushButton::clicked,[ this ](){
+
+		this->luks2Cancel() ;
+	} ) ;
+
+	auto m = static_cast< void ( QComboBox::* )( int ) >( &QComboBox::currentIndexChanged ) ;
+
+	connect( m_ui->cbLuks2Pbkdf,m,[ this ]( int s ){
+
+		if( s == 2 ){
+
+			m_ui->lineEditLuks2MaxMemory->clear() ;
+			m_ui->lineEditLuks2ParallelThreads->clear() ;
+
+			m_ui->lineEditLuks2MaxMemory->setEnabled( false ) ;
+			m_ui->lineEditLuks2ParallelThreads->setEnabled( false ) ;
+		}else{
+			m_ui->lineEditLuks2MaxMemory->setEnabled( true ) ;
+			m_ui->lineEditLuks2ParallelThreads->setEnabled( true ) ;
+		}
+	} ) ;
+
 	connect( m_ui->cbVolumeType,SIGNAL( activated( int ) ),this,SLOT( cbVolumeType( int ) ) ) ;
 	connect( m_ui->pushButtonOpenFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;
 	connect( m_ui->pushButtonOpenExistingKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenExisitingKeyFile() ) ) ;
@@ -189,12 +230,11 @@ void luksaddkey::cbVolumeType( int e )
 		/*
 		 * LUKS volume
 		 */
-		m_ui->lineEditPIM->setEnabled( true ) ;
-		m_ui->label_4->setEnabled( true ) ;
-		m_ui->lineEditPIM->setEnabled( true ) ;
+		m_ui->lineEditPIM->setEnabled( false ) ;
+		m_ui->label_4->setEnabled( false ) ;
+		m_ui->lineEditPIM->setEnabled( false ) ;
 		m_ui->lineEditPIM->setEchoMode( QLineEdit::Normal ) ;
-
-		m_ui->label_4->setText( tr( "Key Slot Number To Add Key In" ) ) ;
+		m_ui->pushButtonLuks2AdvancedOptions->setEnabled( true ) ;
 
 	}else if( e == 1 ){
 		/*
@@ -203,6 +243,7 @@ void luksaddkey::cbVolumeType( int e )
 		m_ui->lineEditPIM->setEnabled( false ) ;
 		m_ui->label_4->setEnabled( false ) ;
 		m_ui->lineEditPIM->setEnabled( false ) ;
+		m_ui->pushButtonLuks2AdvancedOptions->setEnabled( false ) ;
 	}else{
 		/*
 		 * VeraCrypt
@@ -212,6 +253,7 @@ void luksaddkey::cbVolumeType( int e )
 		m_ui->lineEditPIM->setEnabled( true ) ;
 		m_ui->lineEditPIM->setEchoMode( QLineEdit::Password ) ;
 		m_ui->label_4->setText( tr( "PIM" ) ) ;
+		m_ui->pushButtonLuks2AdvancedOptions->setEnabled( false ) ;
 	}
 }
 
@@ -539,12 +581,41 @@ void luksaddkey::pbAdd( void )
 
 	}else if( m_ui->cbVolumeType->currentIndex() == 0 ){
 
-		auto e = m_ui->lineEditPIM->text() ;
+		auto forcedIterations = m_ui->lineEditLuks2ForcedIteration->text() ;
+		auto unlockingTime    = m_ui->lineEditLuks2UnlockingTime->text() ;
+		auto maxThreads       = m_ui->lineEditLuks2ParallelThreads->text() ;
+		auto maxMemory        = m_ui->lineEditLuks2MaxMemory->text() ;
+		auto keyslot          = m_ui->lineEditLuks2KeySlot->text() ;
+		auto pbkdf            = m_ui->cbLuks2Pbkdf->currentText() ;
 
-		if( !e.isEmpty() ){
+		if( unlockingTime.isEmpty() ){
 
-			exe += " -g " + e ;
+			unlockingTime = "-1" ;
 		}
+
+		if( forcedIterations.isEmpty() ){
+
+			forcedIterations = "-1" ;
+		}
+
+		if( maxThreads.isEmpty() ){
+
+			maxThreads = "-1" ;
+		}
+
+		if( maxMemory.isEmpty() ){
+
+			maxMemory = "-1" ;
+		}
+
+		if( keyslot.isEmpty() ){
+
+			keyslot = "-1" ;
+		}
+
+		QString opts = "%1.%2.%3.%4.%5.%6" ;
+
+		exe += " -g " + opts.arg( unlockingTime,forcedIterations,pbkdf,maxMemory,maxThreads,keyslot) ;
 	}
 
 	m_isWindowClosable = false ;
@@ -685,6 +756,20 @@ void luksaddkey::enableAll()
 
 	m_ui->label->setEnabled( true ) ;
 	m_ui->label_2->setEnabled( true ) ;
+}
+
+void luksaddkey::luks2Cancel()
+{
+	m_showingLuks2AdvanceOptions = false ;
+	m_ui->groupBoxLUKS2Options->setVisible( false ) ;
+	m_ui->labelAdvanceLuks2Options->setVisible( false ) ;
+
+	m_ui->lineEditLuks2ForcedIteration->clear() ;
+	m_ui->lineEditLuks2UnlockingTime->clear() ;
+	m_ui->lineEditLuks2ParallelThreads->clear() ;
+	m_ui->lineEditLuks2MaxMemory->clear() ;
+	m_ui->lineEditLuks2KeySlot->clear() ;
+	m_ui->cbLuks2Pbkdf->setCurrentIndex( 0 ) ;
 }
 
 void luksaddkey::pbCancel( void )

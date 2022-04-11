@@ -71,6 +71,7 @@ private:
 	void keyAdded( void ) ;
 	void disableAll( void ) ;
 	void enableAll( void ) ;
+	void luks2Cancel() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::luksaddkey * m_ui ;
@@ -78,6 +79,7 @@ private:
 	bool m_isWindowClosable ;
 	bool m_yubikeyExistingKey ;
 	bool m_yubekeyNewKey ;
+	bool m_showingLuks2AdvanceOptions = false ;
 	keystrength m_keystrength ;
 	utility::veraCryptWarning m_veraCryptWarning ;
 	utility::label m_label ;

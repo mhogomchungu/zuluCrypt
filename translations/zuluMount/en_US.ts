@@ -206,12 +206,12 @@ only root user or members of group zulucrypt-write can do that</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="269"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="275"/>
         <source>zuluCrypt: Failed To Establish Connection With zuluPolkit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="615"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="621"/>
         <source>
 options:
 	-d   path to where a volume to be auto unlocked/mounted is located
@@ -221,35 +221,35 @@ options:
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1024"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1030"/>
         <source>If the option is checked,a primary private mount point will be created in &quot;%1&quot;
 and a secondary publicly accessible &quot;mirror&quot; mount point will be created in &quot;%2&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1035"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1041"/>
         <source>public mount point: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1668"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1695"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1674"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1701"/>
         <source>Manage Favorites</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1670"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1699"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1676"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1705"/>
         <source>Mount All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1733"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1739"/>
         <source>about zuluCrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1932"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1938"/>
         <source>hmac plugin.
 
 This plugin generates a key using below formular:
@@ -258,7 +258,7 @@ key = hmac(sha256,passphrase,keyfile contents)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1937"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1943"/>
         <source>keykeyfile plugin.
 
 This plugin generates a key using below formular:
@@ -267,14 +267,14 @@ key = passphrase + keyfile contents</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1942"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1948"/>
         <source>gpg plugin.
 
 This plugin retrives a key locked in a gpg file with a symmetric key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="2665"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="2663"/>
         <source>Failed To Start Helper Application.
 
 &quot;org.zulucrypt.zulupolkit.policy&quot; polkit file is misconfigured,
@@ -283,26 +283,26 @@ zuluPolkit executable could not be found
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="394"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1167"/>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1960"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="400"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1173"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1966"/>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="911"/>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="927"/>
         <source>ERROR</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="395"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="401"/>
         <source>Failed to locate pkexec executable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1166"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1172"/>
         <source>&quot;%1&quot; and &quot;%2&quot; Folders Must Be Writable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="1960"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="1966"/>
         <source>Could not find &quot;gpg&quot; executable in &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; and &quot;/usr/sbin&quot;</source>
         <translation type="unfinished"></translation>
     </message>

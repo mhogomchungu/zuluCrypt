@@ -179,11 +179,18 @@ static void _get_slot_property( string_t q,int j,const char * type,struct crypt_
 					break ;
 			}
 
-			StringMultipleAppend( q,"Time cost: ",_to_string( pbkdf.iterations ),"\n",NULL ) ;
+			if( StringsAreEqual( pbkdf.type,"pbkdf2" ) ){
 
-			StringMultipleAppend( q,"Memory: ",_to_string( pbkdf.max_memory_kb ),"\n",NULL ) ;
+				StringMultipleAppend( q,"Hash: ",pbkdf.hash,"\n",NULL ) ;
 
-			StringMultipleAppend( q,"Threads: ",_to_string( pbkdf.parallel_threads ),NULL ) ;
+				StringMultipleAppend( q,"Iterations: ",_to_string( pbkdf.iterations ),"\n",NULL ) ;
+			}else{
+				StringMultipleAppend( q,"Time Cost: ",_to_string( pbkdf.iterations ),"\n",NULL ) ;
+
+				StringMultipleAppend( q,"Memory: ",_to_string( pbkdf.max_memory_kb ),"\n",NULL ) ;
+
+				StringMultipleAppend( q,"Threads: ",_to_string( pbkdf.parallel_threads ),NULL ) ;
+			}
 		}
 
 		StringAppend( q,"\n\n" ) ;
