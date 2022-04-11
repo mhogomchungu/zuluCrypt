@@ -85,6 +85,25 @@ int zuluCryptSecurityGainElevatedPrivileges( void )
 
 int zuluCryptSecurityConvertUID( uid_t uid,const char * u_id )
 {
+	extern char ** environ ;
+
+	const char * sudo_uid  = NULL ;
+
+	char ** e = environ ;
+
+	const char * s ;
+
+	for( ; *e != NULL ; e++ ){
+
+		s = *e ;
+
+		if( StringPrefixMatch( s,"SUDO_UID=",9 ) ){
+
+			sudo_uid = s + 9 ;
+			break ;
+		}
+	}
+
 	if( u_id != NULL ){
 
 		if( uid == 0 ){
@@ -93,6 +112,16 @@ int zuluCryptSecurityConvertUID( uid_t uid,const char * u_id )
 		}else{
 			return -1 ;
 		}
+
+	}else if( sudo_uid != NULL ){
+
+		if( uid == 0 ){
+
+			return (int)StringConvertToInt( sudo_uid ) ;
+		}else{
+			return -1 ;
+		}
+
 	}else{
 		return (int)uid ;
 	}
