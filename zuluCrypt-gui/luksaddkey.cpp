@@ -710,12 +710,14 @@ void luksaddkey::disableAll()
 	m_ui->label_2->setEnabled( false ) ;
 	m_ui->cbNewKey->setEnabled( false ) ;
 	m_ui->cbExistingKey->setEnabled( false ) ;
+	m_ui->pushButtonLuks2AdvancedOptions->setEnabled( false ) ;
 }
 
 void luksaddkey::enableAll()
 {
 	auto index = m_ui->cbVolumeType->currentIndex() ;
 
+	m_ui->pushButtonLuks2AdvancedOptions->setEnabled( index == 0 ) ;
 	m_ui->label_4->setEnabled( index == 2 ) ;
 	m_ui->lineEditPIM->setEnabled( index == 2 ) ;
 	m_ui->cbVolumeType->setEnabled( true ) ;
