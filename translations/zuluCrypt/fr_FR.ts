@@ -966,7 +966,7 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="226"/>
         <source>Advanced LUKS2 Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options avancées LUKS2</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="262"/>
@@ -1037,7 +1037,7 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="612"/>
         <source>Advanced Luks2 Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options avancées LUKS2</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="631"/>
@@ -1047,58 +1047,59 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="644"/>
         <source>Label</source>
-        <translation type="unfinished"></translation>
+        <translation>Etiquette</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="660"/>
         <source>Sub System</source>
-        <translation type="unfinished"></translation>
+        <translation>Sous système</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="676"/>
         <source>Pbkdf Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Type Pbkdf</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="693"/>
         <source>argon2id</source>
-        <translation type="unfinished"></translation>
+        <translation>argon2id</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="698"/>
         <source>argon2i</source>
-        <translation type="unfinished"></translation>
+        <translation>argon2i</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="703"/>
         <source>pbkdf2</source>
-        <translation type="unfinished"></translation>
+        <translation>pbkdf2</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="717"/>
         <source>Max Memory (KB)</source>
-        <translation type="unfinished"></translation>
+        <translation>Mémoire maximale (Ko)</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="733"/>
         <source>Parallel Threads</source>
-        <translation type="unfinished"></translation>
+        <translation>Threads parallèles</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="792"/>
         <source>Unlocking Time Cost(Milliseconds)</source>
-        <translation type="unfinished"></translation>
+        <translation>Coût temps de déverrouillage (millisecondes)</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="834"/>
         <source>Allow Discard(TRIM)</source>
-        <translation type="unfinished"></translation>
+        <translation>Autoriser TRIM continu</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="853"/>
         <source>Forced Iterations
 (Dangerous And Could Lead To Extremely Long Unlocking Time)</source>
-        <translation type="unfinished"></translation>
+        <translation>Forcer des itérations
+(dangereux et peut mener à des temps de déverrouillage extrêmement long)</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.ui" line="883"/>
@@ -1153,7 +1154,7 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="227"/>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="232"/>
         <source>YubiKey Challenge/Response</source>
-        <translation type="unfinished">YubiKey Challenge/Réponse</translation>
+        <translation>YubiKey Challenge/Réponse</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="146"/>
@@ -1369,13 +1370,13 @@ Si vous savez ce que vous faites, arrêter si vous souhaitez, en cas de doute, m
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="1081"/>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="1270"/>
         <source>ERROR</source>
-        <translation type="unfinished">ERREUR</translation>
+        <translation>ERREUR</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="1081"/>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="1270"/>
         <source>Failed To Locate Or Run Yubikey&apos;s &quot;ykchalresp&quot; Program.</source>
-        <translation type="unfinished">Echec pour trouver ou exécuter le programme Yubikey&apos;s &quot;ykchalresp&quot;.</translation>
+        <translation>Echec pour trouver ou exécuter le programme Yubikey&apos;s &quot;ykchalresp&quot;.</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="1309"/>
@@ -2431,7 +2432,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Copyright (c) 2015-2017 Francis Banyikwa, mhogomchungu@gmail.com&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/help.ui" line="389"/>
@@ -2518,7 +2519,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="324"/>
         <source>Advanced LUKS2 Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options avancées LUKS2</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="374"/>
@@ -2559,7 +2560,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="512"/>
         <source>Advanced Luks2 Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options avancées LUKS2</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="531"/>
@@ -2569,43 +2570,44 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="560"/>
         <source>Pbkdf Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Type Pbkdf</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="577"/>
         <source>argon2id</source>
-        <translation type="unfinished"></translation>
+        <translation>argon2id</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="582"/>
         <source>argon2i</source>
-        <translation type="unfinished"></translation>
+        <translation>argon2i</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="587"/>
         <source>pbkdf2</source>
-        <translation type="unfinished"></translation>
+        <translation>pbkdf2</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="601"/>
         <source>Max Memory (KB)</source>
-        <translation type="unfinished"></translation>
+        <translation>Mémoire maximale (Ko)</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="617"/>
         <source>Parallel Threads</source>
-        <translation type="unfinished"></translation>
+        <translation>Threads parallèles</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="666"/>
         <source>Unlocking Time Cost(Milliseconds)</source>
-        <translation type="unfinished"></translation>
+        <translation>Coût temps de déverrouillage (millisecondes)</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="695"/>
         <source>Forced Iterations
 (Dangerous And Could Lead To Extremely Long Unlocking Time)</source>
-        <translation type="unfinished"></translation>
+        <translation>Forcer des itérations
+(dangereux et peut mener à des temps de déverrouillage extrêmement long)</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="725"/>
