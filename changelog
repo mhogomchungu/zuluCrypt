@@ -328,3 +328,7 @@ version 6.0.0
 -- Fix a bug that caused zuluCrypt to not set user specified digest hash when creating LUKS2 volumes.
 -- Default to creating LUKS2 volumes if installed version of cryptsetup supports it.
 -- Make it buildable again on some systems.
+
+version 6.1.0
+-- Add a GUI way to set advanced LUKS2 options when creating a LUKS2 volume.
+-- Add a GUI way to set advanced LUKS2 options when adding a key to a LUKS2 volume.
