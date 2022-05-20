@@ -754,7 +754,6 @@ ssize_t SocketGetData( socket_t s,char ** e )
 				d = __expandBuffer( f,total + (size_t)result,&buff_size ) ;
 
 				if( d == NULL ){
-					free( f ) ;
 					_SocketError() ;
 					return -1 ;
 				}else{
@@ -824,7 +823,6 @@ ssize_t SocketGetData_1( socket_t s,char ** e,size_t len )
 				d = __expandBuffer( f,total + (size_t)result,&buff_size ) ;
 
 				if( d == NULL ){
-					free( f ) ;
 					_SocketError() ;
 					return -1 ;
 				}else{
