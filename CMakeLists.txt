@@ -10,6 +10,7 @@ INCLUDE(GNUInstallDirs)
 set( PGR_VERSION "6.1.0" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
+set( COPYRIGHT_YEARS "2011-2022" )
 
 #add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all -D_FORTIFY_SOURCE=2 --param ssp-buffer-size=4 )
 add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all --param ssp-buffer-size=4 )
@@ -90,7 +91,7 @@ file( WRITE ${PROJECT_BINARY_DIR}/version_1.h "
 file( WRITE ${PROJECT_BINARY_DIR}/version.h "
 #ifndef ZULUCRYPT_VERSION
 #define ZULUCRYPT_VERSION
-#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: 2011-2021 Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
+#define VERSION_STRING \"Version  : ${PGR_VERSION}\\nCopyright: ${COPYRIGHT_YEARS} Francis Banyikwa,mhogomchungu@gmail.com\\nLicense  : GPLv2+\"
 #endif
 \n" )
 
