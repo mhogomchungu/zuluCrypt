@@ -128,7 +128,7 @@ secrets::wallet::walletKey secrets::wallet::getKey( const QString& keyID,QWidget
 	}else{
 		_open( true ) ;
 
-		w.opened = m_wallet->open( "default",applicationName ) ;
+		w.opened = m_wallet->open( this->walletInfo().walletName,applicationName ) ;
 
 		if( w.opened ){
 
@@ -141,7 +141,12 @@ secrets::wallet::walletKey secrets::wallet::getKey( const QString& keyID,QWidget
 
 secrets::wallet::info secrets::wallet::walletInfo()
 {
-	return { "kdewallet",utility::applicationName() } ;
+	if( m_wallet->backEnd() == LXQt::Wallet::BackEnd::kwallet ){
+
+		return { "default",utility::applicationName() } ;
+	}else{
+		return { utility::walletName(),utility::applicationName() } ;
+	}
 }
 
 secrets::backends::backends( QWidget * w ) : m_parent( w )

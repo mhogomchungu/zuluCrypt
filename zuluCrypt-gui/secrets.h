@@ -70,7 +70,7 @@ public:
 
 				return function() ;
 			}else{
-				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+				m_wallet->setImage( QIcon( ":/zuluCrypt" ) ) ;
 
 				m_wallet->log( []( QString e ){
 
@@ -116,7 +116,7 @@ public:
 
 				auto s = this->walletInfo() ;
 
-				m_wallet->setImage( QIcon( ":/sirikali" ) ) ;
+				m_wallet->setImage( QIcon( ":/zuluCrypt" ) ) ;
 
 				m_wallet->log( []( QString e ){
 

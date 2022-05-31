@@ -29,12 +29,28 @@
 
 #define COMMENT "-zuluCrypt_Comment_ID"
 
+static QString _path_to_UUID( const QString& path )
+{
+	if( path.startsWith( "UUID=" ) ){
+
+		return path ;
+	}else{
+		auto z = utility::getUUIDFromPath( path ).await() ;
+
+		if( z.isEmpty() ){
+
+			return utility::getVolumeID( path ) ;
+		}else{
+			return z ;
+		}
+	}
+}
+
 Task::future< void >& favorites2::deleteKey( secrets::wallet& wallet,const QString& id )
 {
 	return Task::run( [ &wallet,id ](){
 
 		wallet->deleteKey( id ) ;
-		wallet->deleteKey( id + COMMENT ) ;
 	} ) ;
 }
 
@@ -144,15 +160,25 @@ favorites2::favorites2( QWidget * parent,
 	m_ui->pbFile->setIcon( QIcon( ":/file.png" ) ) ;
 	m_ui->pbPartition->setIcon( QIcon( ":/partition.png" ) ) ;
 
+	connect( m_ui->pbVolumePathFromFileSystem,&QPushButton::clicked,[ this ](){
+
+		auto e = this->getExistingFile( tr( "Path To An Encrypted Volume" ) ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditVolumePath->setText( _path_to_UUID( e ) ) ;
+		}
+	} ) ;
+
 	connect( m_ui->pbFile,&QPushButton::clicked,[ this ](){
 
 		auto e = this->getExistingFile( tr( "Path To An Encrypted Volume" ) ) ;
 
 		if( !e.isEmpty() ){
 
-			m_ui->lineEditVolumeID->setText( e ) ;
+			m_ui->lineEditVolumeID->setText( _path_to_UUID( e ) ) ;
 
-			auto a = utility::split( m_ui->lineEditVolumeID->text(),'/' ).last() ;
+			auto a = utility::split( e,'/' ).last() ;
 
 			m_ui->lineEditMountPath->setText( a ) ;
 		}
@@ -468,7 +494,7 @@ QStringList favorites2::readAllKeys()
 
 	for( const auto& it : s ){
 
-		if( !it.endsWith( "-SiriKali_Comment_ID" ) ){
+		if( !it.endsWith( COMMENT ) ){
 
 			a.append( it ) ;
 		}
@@ -629,7 +655,9 @@ void favorites2::tabChanged( int index )
 
 			connect( m,&QMenu::triggered,[ this ]( QAction * ac ){
 
-				m_ui->lineEditVolumePath->setText( ac->objectName() ) ;
+				auto m = ac->objectName() ;
+
+				m_ui->lineEditVolumePath->setText( _path_to_UUID( m ) ) ;
 			} ) ;
 
 			m_ui->pbVolumePathFromFavorites->setMenu( m ) ;
