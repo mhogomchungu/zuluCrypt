@@ -240,6 +240,7 @@ private:
 
 			if( !f.open( QIODevice::ReadOnly ) ){
 
+				m_passed = false ;
 				m_log( QString( "Error, Failed To Open File For Reading: %1" ).arg( m_fileName ) ) ;
 
 				return ;
@@ -257,8 +258,6 @@ private:
 
 			if( m_doc.isObject() ){
 
-				m_passed = true ;
-
 				m_json = m_doc.object() ;
 			}else{
 				m_passed = false ;
@@ -271,7 +270,7 @@ private:
 	}
 
 	QString m_fileName ;
-	bool m_passed ;
+	bool m_passed = true ;
 	std::function< void( const QString& ) > m_log = []( const QString& e ){ Q_UNUSED( e ) } ;
 	const char * m_key ;
 	QJsonObject m_json ;

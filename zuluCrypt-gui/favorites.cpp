@@ -152,10 +152,10 @@ static void _update_favorites( favorites * f )
 			 e.volumePath = s.at( 0 ) ;
 			 e.mountPointPath = s.at( 1 ) ;
 
-			f->add( e ) ;
+			 f->add( e ) ;
 		 }
 
-		 settings.remove( "Favotites" ) ;
+		settings.remove( "Favotites" ) ;
 	}
 }
 
