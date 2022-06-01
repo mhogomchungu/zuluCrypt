@@ -126,7 +126,7 @@ static utility2::result< favorites::entry > _favorites( const QString& path )
 	}
 }
 
-static void _update_favorites( favorites * f )
+favorites::favorites()
 {
 	auto& settings = utility::settingsObject() ;
 
@@ -136,32 +136,27 @@ static void _update_favorites( favorites * f )
 
 		 for( const auto& it : settings.value( "Favotites" ).toStringList() ){
 
-			 favorites::entry e ;
+			favorites::entry e ;
 
-			 auto s = [ & ](){
+			auto s = [ & ](){
 
-				 if( it.startsWith( "/dev/disk/by-id" ) ){
+				if( it.startsWith( "/dev/disk/by-id" ) ){
 
 					auto a = utility::deviceIDToPartitionID( it ) ;
 					return utility::split( a,'\t' ) ;
 				}else{
 					return utility::split( it,'\t' ) ;
 				}
-			 }() ;
+			}() ;
 
-			 e.volumePath = s.at( 0 ) ;
-			 e.mountPointPath = s.at( 1 ) ;
+			e.volumePath = s.at( 0 ) ;
+			e.mountPointPath = s.at( 1 ) ;
 
-			 f->add( e ) ;
+			this->add( e ) ;
 		 }
 
 		settings.remove( "Favotites" ) ;
 	}
-}
-
-favorites::favorites()
-{
-	_update_favorites( this ) ;
 
 	this->reload() ;
 }

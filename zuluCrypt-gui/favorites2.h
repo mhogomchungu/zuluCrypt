@@ -189,6 +189,7 @@ public:
 		    std::function< void() > function ) ;
 	~favorites2() ;
 private :
+	void nobackendSet() ;
 	void showContextMenu( QTableWidgetItem * item,bool itemClicked ) ;
 	void addkeyToWallet() ;
 	void deleteKeyFromWallet( const QString& ) ;

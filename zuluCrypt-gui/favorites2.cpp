@@ -282,12 +282,8 @@ favorites2::favorites2( QWidget * parent,
 
 		m_ui->rbKWallet->setChecked( true ) ;
 	}else{
-		m_ui->label_22->setEnabled( false ) ;
-		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
-
-		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
-
 		m_ui->rbNone->setChecked( true ) ;
+		this->nobackendSet() ;
 	}
 
 	connect( m_ui->rbInternalWallet,&QRadioButton::toggled,[ this ]( bool e ){
@@ -335,13 +331,12 @@ favorites2::favorites2( QWidget * parent,
 		}
 	} ) ;
 
-	connect( m_ui->rbNone,&QRadioButton::toggled,[ this ](){
+	connect( m_ui->rbNone,&QRadioButton::toggled,[ this ]( bool e ){
 
-		m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
-		m_ui->label_22->setEnabled( false ) ;
-		m_ui->pbChangeWalletPassword->setEnabled( false ) ;
-		this->setControlsAvailability( false,true ) ;
-		m_settings.autoMountBackEnd( settings::walletBackEnd() ) ;
+		if( e ){
+
+			this->nobackendSet() ;
+		}
 	} ) ;
 
 	connect( m_ui->pbClose,&QPushButton::clicked,[ this ](){
@@ -431,6 +426,15 @@ favorites2::favorites2( QWidget * parent,
 favorites2::~favorites2()
 {
 	delete m_ui ;
+}
+
+void favorites2::nobackendSet()
+{
+	m_ui->label_22->setText( tr( "Not Applicable" ) ) ;
+	m_ui->label_22->setEnabled( false ) ;
+	m_ui->pbChangeWalletPassword->setEnabled( false ) ;
+	this->setControlsAvailability( false,true ) ;
+	m_settings.autoMountBackEnd( settings::walletBackEnd() ) ;
 }
 
 void favorites2::setCommand( QLineEdit * lineEdit )
@@ -624,6 +628,7 @@ void favorites2::setControlsAvailability( bool e,bool m )
 	m_ui->lineEditPassword->setEnabled( e ) ;
 	m_ui->pbVolumePathFromFavorites->setEnabled( e ) ;
 	m_ui->cbShowPassword->setEnabled( e ) ;
+	m_ui->pbVolumePathFromFileSystem->setEnabled( e ) ;
 }
 
 void favorites2::tabChanged( int index )
