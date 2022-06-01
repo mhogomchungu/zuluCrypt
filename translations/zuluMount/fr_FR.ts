@@ -297,7 +297,7 @@ This plugin retrives a key locked in a gpg file with a symmetric key</source>
 Ce plugin récupère une clé de verrouillage dans un fichier gpg avec une clé symétrique</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="2663"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="2673"/>
         <source>Failed To Start Helper Application.
 
 &quot;org.zulucrypt.zulupolkit.policy&quot; polkit file is misconfigured,
@@ -390,37 +390,6 @@ le zuluPolkit exécutable ne peut être trouvé
         <location filename="../../zuluMount-gui/veracryptpimdialog.cpp" line="85"/>
         <source>Failed to convert the value to digits only </source>
         <translation>Echec de la conversion de la valeur en chiffres uniquement </translation>
-    </message>
-</context>
-<context>
-    <name>deviceOffset</name>
-    <message>
-        <source>location could be in sectors if the entry is made up of only digits
-or in bytes if the entry ends with &quot;b&quot;
-or in kilobytes if the entry ends with &quot;k&quot;
-or in megabytes if the entry ends with &quot;m&quot;
-or in terabytes if the entry ends with &quot;t&quot;</source>
-        <translation type="vanished">l&apos;emplacement pourrait être en &quot;secteurs&quot; si la définition se compose de chiffres uniquement
-ou en octets si l&apos;entrée se termine par &quot;b&quot;
-ou en kilo-octets si l&apos;entrée se termine par &quot;k&quot;
-ou en mégaoctets si l&apos;entrée se termine par &quot;m&quot;
-ou en téraoctets si l&apos;entrée se termine par &quot;t&quot;</translation>
-    </message>
-    <message>
-        <source>Enter Below The Offset Location Of The Volume About To Be Opened.</source>
-        <translation type="vanished">Entrer ci après l&apos;offset d&apos;emplacement du volume à ouvrir.</translation>
-    </message>
-    <message>
-        <source>Enter The Password Below To A Volume At The Above Offset.</source>
-        <translation type="vanished">Entrer ci après le mot de passe du volume au dessus de l&apos;offset. </translation>
-    </message>
-    <message>
-        <source>&amp;Ok</source>
-        <translation type="vanished">&amp;Ok</translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
-        <translation type="vanished">&amp;Annuler</translation>
     </message>
 </context>
 <context>
@@ -518,18 +487,6 @@ ou en téraoctets si l&apos;entrée se termine par &quot;t&quot;</translation>
         <translation>Cocher cette case pour rendre le mot de passe visible</translation>
     </message>
     <message>
-        <source>Set File System Options</source>
-        <translation type="vanished">Régler les options du système de fichiers</translation>
-    </message>
-    <message>
-        <source>Set Volume Offset</source>
-        <translation type="vanished">Régler Offset du volume</translation>
-    </message>
-    <message>
-        <source>Set VeraCrypt PIM value</source>
-        <translation type="vanished">Régler la valeur PIM VeraCrypt</translation>
-    </message>
-    <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="176"/>
         <source>KeyFile</source>
         <translation>Fichier de clé</translation>
@@ -555,10 +512,6 @@ ou en téraoctets si l&apos;entrée se termine par &quot;t&quot;</translation>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="187"/>
         <source>YubiKey Challenge/Response</source>
         <translation>YubiKey Challenge/Réponse</translation>
-    </message>
-    <message>
-        <source>Set Volume As VeraCrypt Volume</source>
-        <translation type="vanished">Définir le volume comme un volume VeraCrypt</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="221"/>
@@ -866,25 +819,6 @@ Les raisons possibles pour corriger l&apos;erreur sont les suivantes:
     </message>
 </context>
 <context>
-    <name>mountOptions</name>
-    <message>
-        <source>file system options</source>
-        <translation type="vanished">Options du système de fichiers</translation>
-    </message>
-    <message>
-        <source>&amp;Ok</source>
-        <translation type="vanished">&amp;Ok</translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
-        <translation type="vanished">&amp;Annuler</translation>
-    </message>
-    <message>
-        <source>Enter Comma Separated Volume&apos;s File System Options Below</source>
-        <translation type="vanished">Entrer un fichier d&apos;options système de volume en séparation à virgules</translation>
-    </message>
-</context>
-<context>
     <name>mountPartition</name>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="14"/>
@@ -960,14 +894,6 @@ Les raisons possibles pour corriger l&apos;erreur sont les suivantes:
         <location filename="../../zuluMount-gui/mountpartition.ui" line="173"/>
         <source>Set File System Options</source>
         <translation>Régler les options du système de fichiers</translation>
-    </message>
-    <message>
-        <source>Set Volume Offset</source>
-        <translation type="vanished">Régler Offset du volume</translation>
-    </message>
-    <message>
-        <source>ERROR!</source>
-        <translation type="vanished">ERREUR!</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="156"/>
@@ -1082,22 +1008,22 @@ Les droits nécessaires peuvent être obtenus par :
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="876"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="877"/>
         <source>Elapsed time: 0 seconds</source>
         <translation>Temps écoulé: 0 secondes</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="884"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="885"/>
         <source>Elapsed time: %0 minutes</source>
         <translation>Temps écoulé: %0 minutes</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="886"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="887"/>
         <source>Elapsed time: %0 seconds</source>
         <translation>Temps écoulé: %0 secondes</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="897"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="898"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>
@@ -1207,10 +1133,6 @@ Les droits nécessaires peuvent être obtenus par :
         <location filename="../../zuluMount-gui/zulumount.cpp" line="332"/>
         <source>Select Icons</source>
         <translation>Choisir le type d&apos;icônes</translation>
-    </message>
-    <message>
-        <source>Check For Update</source>
-        <translation type="vanished">Tester si la version du logiciel est à jour</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="350"/>

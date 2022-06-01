@@ -274,7 +274,7 @@ This plugin retrives a key locked in a gpg file with a symmetric key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="2663"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="2673"/>
         <source>Failed To Start Helper Application.
 
 &quot;org.zulucrypt.zulupolkit.policy&quot; polkit file is misconfigured,
@@ -964,22 +964,22 @@ necessary privileges can be acquired by:
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="876"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="877"/>
         <source>Elapsed time: 0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="884"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="885"/>
         <source>Elapsed time: %0 minutes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="886"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="887"/>
         <source>Elapsed time: %0 seconds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="897"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="898"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>

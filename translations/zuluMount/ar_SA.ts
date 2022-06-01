@@ -316,7 +316,7 @@ This plugin retrives a key locked in a gpg file with a symmetric key</source>
         <translation>لم يمكن تعيين ملف pgp التنفيذي في  &quot;/usr/local/bin&quot;,&quot;/usr/bin&quot; and &quot;/usr/sbin&quot;</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="2663"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="2673"/>
         <source>Failed To Start Helper Application.
 
 &quot;org.zulucrypt.zulupolkit.policy&quot; polkit file is misconfigured,
@@ -381,38 +381,6 @@ zuluPolkit executable could not be found
         <location filename="../../zuluMount-gui/veracryptpimdialog.cpp" line="85"/>
         <source>Failed to convert the value to digits only </source>
         <translation>فشل في تحويل القيمة لأرقام فقط</translation>
-    </message>
-</context>
-<context>
-    <name>deviceOffset</name>
-    <message>
-        <source>location could be in sectors if the entry is made up of only digits
-or in bytes if the entry ends with &quot;b&quot;
-or in kilobytes if the entry ends with &quot;k&quot;
-or in megabytes if the entry ends with &quot;m&quot;
-or in terabytes if the entry ends with &quot;t&quot;</source>
-        <translation type="vanished">الموقع يمكن يكون بالسكتور إذا كانت القيمة المدخلة أرقام فقط
-أو بالبايت إذا انتهت ب &quot;b&quot;
-أو بالكيلو بايت إذا انتهت ب &quot;k&quot;
-أو بالميجا بايت إذا انتهت ب &quot;m&quot;
-أو بالتيرا بايت إذا انتهت ب &quot;t&quot;
-</translation>
-    </message>
-    <message>
-        <source>Enter Below The Offset Location Of The Volume About To Be Opened.</source>
-        <translation type="vanished">أدخل الإزاحة بالأسفل للمجلد المستهدف فتحه</translation>
-    </message>
-    <message>
-        <source>Enter The Password Below To A Volume At The Above Offset.</source>
-        <translation type="vanished">أدخل كلمة السر للمجلد عند الإزاحة المحددة بالأعلى</translation>
-    </message>
-    <message>
-        <source>&amp;Ok</source>
-        <translation type="vanished">نعم</translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
-        <translation type="vanished">ألغ</translation>
     </message>
 </context>
 <context>
@@ -510,18 +478,6 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <translation>اختر هذا الخيار كي تظهر كلمة السر</translation>
     </message>
     <message>
-        <source>Set File System Options</source>
-        <translation type="vanished">اختر خيارات نظام الملفات</translation>
-    </message>
-    <message>
-        <source>Set Volume Offset</source>
-        <translation type="vanished">حدد إزاحة المجلد</translation>
-    </message>
-    <message>
-        <source>Set VeraCrypt PIM value</source>
-        <translation type="vanished">حدد قيمة PIM لفيراكربت</translation>
-    </message>
-    <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="176"/>
         <source>KeyFile</source>
         <translation>ملف المفتاح</translation>
@@ -547,10 +503,6 @@ or in terabytes if the entry ends with &quot;t&quot;</source>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="187"/>
         <source>YubiKey Challenge/Response</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Set Volume As VeraCrypt Volume</source>
-        <translation type="vanished">حدد المجلد كمجلد فيراكربت</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/keydialog.cpp" line="221"/>
@@ -846,25 +798,6 @@ Possible reasons for getting the error are:
     </message>
 </context>
 <context>
-    <name>mountOptions</name>
-    <message>
-        <source>file system options</source>
-        <translation type="vanished">خيارات نظام الملفات</translation>
-    </message>
-    <message>
-        <source>&amp;Ok</source>
-        <translation type="vanished">نعم</translation>
-    </message>
-    <message>
-        <source>&amp;Cancel</source>
-        <translation type="vanished">ألغ</translation>
-    </message>
-    <message>
-        <source>Enter Comma Separated Volume&apos;s File System Options Below</source>
-        <translation type="vanished">أدخل خيارات نظام التشغيل بالأسفل وافصل بينها بفاصلة</translation>
-    </message>
-</context>
-<context>
     <name>mountPartition</name>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.ui" line="14"/>
@@ -940,14 +873,6 @@ Possible reasons for getting the error are:
         <location filename="../../zuluMount-gui/mountpartition.ui" line="173"/>
         <source>Set File System Options</source>
         <translation>حدد خيارات نظام الملفات</translation>
-    </message>
-    <message>
-        <source>Set Volume Offset</source>
-        <translation type="vanished">حدد إزاحة المجلد</translation>
-    </message>
-    <message>
-        <source>ERROR!</source>
-        <translation type="vanished">خطأ!</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/mountpartition.cpp" line="156"/>
@@ -1061,22 +986,22 @@ necessary privileges can be acquired by:
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="876"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="877"/>
         <source>Elapsed time: 0 seconds</source>
         <translation>الوقت المستغرق: 0 ثوان</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="884"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="885"/>
         <source>Elapsed time: %0 minutes</source>
         <translation>الوقت المستغرق: 0% دقيقة</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="886"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="887"/>
         <source>Elapsed time: %0 seconds</source>
         <translation>الوقت المستغرق: 0% ثانية</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="897"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="898"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>
@@ -1184,10 +1109,6 @@ necessary privileges can be acquired by:
         <location filename="../../zuluMount-gui/zulumount.cpp" line="332"/>
         <source>Select Icons</source>
         <translation>اختر الأيقونات</translation>
-    </message>
-    <message>
-        <source>Check For Update</source>
-        <translation type="vanished">تأكد من التحديثات</translation>
     </message>
     <message>
         <location filename="../../zuluMount-gui/zulumount.cpp" line="350"/>
