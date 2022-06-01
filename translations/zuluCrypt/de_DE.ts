@@ -426,7 +426,7 @@ This plugin retrives a key locked in a gpg file with a symmetric key</source>
 Diese Erweiterung stellt einen Schlüssel wieder her, der in einer gpg-Datei mit einem symmetrischen Schlüssel gesperrt ist</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.cpp" line="2663"/>
+        <location filename="../../zuluCrypt-gui/utility.cpp" line="2673"/>
         <source>Failed To Start Helper Application.
 
 &quot;org.zulucrypt.zulupolkit.policy&quot; polkit file is misconfigured,
@@ -1047,58 +1047,58 @@ Da Sie jetzt wissen, was Sie tun, brechen Sie den Vorgang ab, wenn es sein muss.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="660"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="663"/>
         <source>Sub System</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="676"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="682"/>
         <source>Pbkdf Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="693"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="699"/>
         <source>argon2id</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="698"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="704"/>
         <source>argon2i</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="703"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="709"/>
         <source>pbkdf2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="717"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="723"/>
         <source>Max Memory (KB)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="733"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="742"/>
         <source>Parallel Threads</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="792"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="801"/>
         <source>Unlocking Time Cost(Milliseconds)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="834"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="843"/>
         <source>Allow Discard(TRIM)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="853"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="862"/>
         <source>Forced Iterations
 (Dangerous And Could Lead To Extremely Long Unlocking Time)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/createvolume.ui" line="883"/>
+        <location filename="../../zuluCrypt-gui/createvolume.ui" line="892"/>
         <source>Cancel</source>
         <translation type="unfinished">Abbrechen</translation>
     </message>
@@ -2566,48 +2566,48 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="560"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="563"/>
         <source>Pbkdf Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="577"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="580"/>
         <source>argon2id</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="582"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="585"/>
         <source>argon2i</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="587"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="590"/>
         <source>pbkdf2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="601"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="604"/>
         <source>Max Memory (KB)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="617"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="623"/>
         <source>Parallel Threads</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="666"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="672"/>
         <source>Unlocking Time Cost(Milliseconds)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="695"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="701"/>
         <source>Forced Iterations
 (Dangerous And Could Lead To Extremely Long Unlocking Time)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="725"/>
+        <location filename="../../zuluCrypt-gui/luksaddkey.ui" line="731"/>
         <source>Cancel</source>
         <translation type="unfinished">Abbrechen</translation>
     </message>
@@ -4035,22 +4035,22 @@ Ein Volume, das mit einem hier erzeugten Schlüssel erstellt wurde, sollte mit d
 <context>
     <name>utility::veraCryptWarning</name>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="876"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="877"/>
         <source>Elapsed time: 0 seconds</source>
         <translation>Vergangene Zeit: 0 Sekunden</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="884"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="885"/>
         <source>Elapsed time: %0 minutes</source>
         <translation>Vergangene Zeit: %0 Minuten</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="886"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="887"/>
         <source>Elapsed time: %0 seconds</source>
         <translation>Vergangene Zeit: %0Sekunden</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/utility.h" line="897"/>
+        <location filename="../../zuluCrypt-gui/utility.h" line="898"/>
         <source>Please be patient as unlocking a VeraCrypt volume may take a very long time.
 
 </source>

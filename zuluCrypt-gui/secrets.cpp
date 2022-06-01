@@ -96,8 +96,7 @@ secrets::wallet::walletKey secrets::wallet::getKey( const QString& keyID,QWidget
 
 	auto s = m_wallet->backEnd() ;
 
-	QString walletName = utility::walletName() ;
-	QString applicationName = utility::applicationName() ;
+	auto walletInfo = this->walletInfo() ;
 
 	auto _open = [ & ]( bool s ){
 
@@ -120,7 +119,7 @@ secrets::wallet::walletKey secrets::wallet::getKey( const QString& keyID,QWidget
 
 	if( s == LXQt::Wallet::BackEnd::internal ){
 
-		_open( LXQt::Wallet::walletExists( s,walletName,applicationName ) ) ;
+		_open( LXQt::Wallet::walletExists( s,walletInfo.appName,walletInfo.appName ) ) ;
 
 	}else if( s == LXQt::Wallet::BackEnd::windows_dpapi ){
 
@@ -128,7 +127,7 @@ secrets::wallet::walletKey secrets::wallet::getKey( const QString& keyID,QWidget
 	}else{
 		_open( true ) ;
 
-		w.opened = m_wallet->open( this->walletInfo().walletName,applicationName ) ;
+		w.opened = m_wallet->open( walletInfo.appName,walletInfo.appName ) ;
 
 		if( w.opened ){
 
@@ -143,7 +142,7 @@ secrets::wallet::info secrets::wallet::walletInfo()
 {
 	if( m_wallet->backEnd() == LXQt::Wallet::BackEnd::kwallet ){
 
-		return { "default",utility::applicationName() } ;
+		return { utility::KWalletDefaultName(),utility::applicationName() } ;
 	}else{
 		return { utility::walletName(),utility::applicationName() } ;
 	}

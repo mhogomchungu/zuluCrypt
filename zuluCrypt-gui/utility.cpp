@@ -2408,6 +2408,16 @@ QStringList utility::plainDmCryptOptions()
 	}
 }
 
+QString utility::KWalletDefaultName()
+{
+	if( !_settings->contains( "KWalletDefaultName" ) ){
+
+		_settings->setValue( "KWalletDefaultName","default" ) ;
+	}
+
+	return _settings->value( "KWalletDefaultName" ).toString() ;
+}
+
 QStringList utility::supportedFileSystems()
 {
 	if( _settings->contains( "SupportedFileSystems" ) ){

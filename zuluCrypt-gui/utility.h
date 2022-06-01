@@ -436,6 +436,7 @@ namespace utility
 	QStringList directoryList( const QString& ) ;
 	QStringList plainDmCryptOptions( void ) ;
 	QStringList supportedFileSystems( void ) ;
+	QString KWalletDefaultName( void ) ;
 	bool userHasGoodVersionOfWhirlpool( void ) ;
 	void licenseInfo( QWidget * ) ;
 	void showTrayIcon( QAction *,QSystemTrayIcon&,bool = true ) ;
