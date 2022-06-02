@@ -332,3 +332,10 @@ version 6.0.0
 version 6.1.0
 -- Add a GUI way to set advanced LUKS2 options when creating a LUKS2 volume.
 -- Add a GUI way to set advanced LUKS2 options when adding a key to a LUKS2 volume.
+
+version 6.2.0
+-- Update French translations.
+-- Fix a bug that caused favorite entries to accidentally be deleted.
+-- Fix a bug that caused saved passwords in libsecret to not be visible.
+-- Version 6.1.0 modernized favorites functionality and moved saved password UI to the
+   favorites window and changes in both places introduced above bugs.
