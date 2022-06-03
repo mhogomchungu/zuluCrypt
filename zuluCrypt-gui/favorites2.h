@@ -212,6 +212,7 @@ private :
 	void HideUI( void ) ;
 	QStringList readAllKeys() ;
 	QString getExistingFile( const QString& ) ;
+	QString getExistingFolder( const QString& ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::favorites2 * m_ui ;

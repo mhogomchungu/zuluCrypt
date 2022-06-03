@@ -688,51 +688,31 @@ void utility::keySend( const QString& keyPath,const QString& key )
 	utility::keySend( keyPath,key.toLatin1() ) ;
 }
 
-void utility::createPlugInMenu( QMenu * menu,const QString& a,const QString& b,const QString& c,bool addPlugIns )
+void utility::addPluginsToMenu( QMenu& menu )
 {
-	QStringList l ;
 	QStringList e ;
 
-	l.append( a ) ;
+	QDir dir( ZULUCRYPTpluginPath ) ;
 
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::libsecret ) ){
+	if( dir.exists() ){
 
-		l.append( b ) ;
-	}
-	if( LXQt::Wallet::backEndIsSupported( LXQt::Wallet::BackEnd::kwallet ) ){
+		e = dir.entryList() ;
 
-		l.append( c ) ;
-	}
-
-	if( addPlugIns ){
-
-		QDir dir( ZULUCRYPTpluginPath ) ;
-
-		if( dir.exists() ){
-
-			e = dir.entryList() ;
-
-			e.removeOne( "zuluCrypt-testKey" ) ;
-			e.removeOne( "." ) ;
-			e.removeOne( ".." ) ;
-			e.removeOne( "keyring" ) ;
-			e.removeOne( "kwallet" ) ;
-		}
-
-		//e.append( "network" ) ;
+		e.removeOne( "zuluCrypt-testKey" ) ;
+		e.removeOne( "." ) ;
+		e.removeOne( ".." ) ;
+		e.removeOne( "keyring" ) ;
+		e.removeOne( "kwallet" ) ;
 	}
 
-	menu->clear() ;
-
-	auto _add_actions = [ menu ]( const QStringList& r ){
+	auto _add_actions = [ &menu ]( const QStringList& r ){
 
 		for( const auto& it : r ){
 
-			menu->addAction( it ) ;
+			menu.addAction( it )->setObjectName( it ) ;
 		}
 	} ;
 
-	_add_actions( l ) ;
 	_add_actions( e ) ;
 }
 
@@ -2299,6 +2279,31 @@ bool utility::autoOpenFolderOnMount( const QString& app )
 	}
 }
 
+QString utility::defaultPlugin()
+{
+	if( !_settings->contains( "DefaultPlugin" ) ){
+
+		QMenu m ;
+		utility::addPluginsToMenu( m ) ;
+		auto s = m.actions() ;
+
+		if( s.size() ){
+
+			_settings->setValue( "DefaultPlugin",s.at( 0 )->text() ) ;
+		}
+	}
+
+	return _settings->value( "DefaultPlugin" ).toString() ;
+}
+
+void utility::setDefaultPlugin( const QString& e )
+{
+	if( !e.isEmpty() ){
+
+		_settings->setValue( "DefaultPlugin",e ) ;
+	}
+}
+
 QString utility::powerOffCommand()
 {
 	if( _settings->contains( "PowerOffCommand" ) ){
@@ -3037,20 +3042,20 @@ void utility::progress::update_progress( quint64 size,quint64 offset )
 
 		m_progress = i ;
 
-		double currentTime = m_time.currentMSecsSinceEpoch() ;
+		double currentTime = static_cast< double >( m_time.currentMSecsSinceEpoch() ) ;
 
 		double time_diff = ( currentTime - m_previousTime ) / 1000 ;
-		double offset_diff = offset - m_offset_last ;
+		double offset_diff = static_cast< double >( offset - m_offset_last ) ;
 
 		m_total_time = m_total_time + time_diff ;
 
 		QString current_speed = this->speed( offset_diff,time_diff ) ;
 
-		QString average_speed = this->speed( offset,m_total_time ) ;
+		QString average_speed = this->speed( static_cast< double >( offset ),m_total_time ) ;
 
-		double avg_speed = offset / m_total_time ;
+		double avg_speed = static_cast< double >( offset ) / m_total_time ;
 
-		double remaining_data = size - offset ;
+		double remaining_data = static_cast< double >( size - offset ) ;
 
 		QString eta = this->time( remaining_data / avg_speed ) ;
 
@@ -3254,4 +3259,21 @@ QString utility::fileSystemOptions( const QString& path )
 	}
 
 	return m ;
+}
+
+QString utility::pathToUUID( const QString& path )
+{
+	if( path.startsWith( "UUID=" ) ){
+
+		return path ;
+	}else{
+		auto z = utility::getUUIDFromPath( path ).await() ;
+
+		if( z.isEmpty() ){
+
+			return utility::getVolumeID( path ) ;
+		}else{
+			return z ;
+		}
+	}
 }

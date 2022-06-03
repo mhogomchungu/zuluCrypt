@@ -59,6 +59,7 @@ public slots:
 	void ShowUI( const QString& volumePath,const QString& mount_point ) ;
 	void ShowUI( QString ) ;
 private slots :
+	void openVolume( void ) ;
 	void cbVisibleKeyStateChanged( int ) ;
 	void cbVolumeType( int ) ;
 	void cbActicated( int ) ;
@@ -66,7 +67,6 @@ private slots :
 	void pbPluginEntryClicked( QAction * ) ;
 	void plainDmCryptOption( QAction * ) ;
 	void pbPlugin( void ) ;
-	void buttonOpenClicked( void ) ;
 	void mount_point( void ) ;
 	void clickedPassPhraseFromFileButton( void ) ;
 	void passphraseFromFileOption( void ) ;
@@ -79,7 +79,6 @@ private :
 	void autoSetPassword( const QString& ) ;
 	void keyAndKeyFile( void ) ;
 	void tcryptGui( void ) ;
-	void openVolume( void ) ;
 	QString getUUIDFromPath( const QString& ) ;
 	void sendKey( const QString& sockpath ) ;
 	void setDefaultOpenMode( void ) ;

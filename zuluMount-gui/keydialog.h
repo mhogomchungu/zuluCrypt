@@ -78,7 +78,7 @@ private slots:
 	void plugIn( void ) ;
 	void key( void ) ;
 	void keyFile( void ) ;
-	void pbOpen( void ) ;
+	void openVolume( void ) ;
 	void pbCancel( void ) ;
 	void Plugin( void ) ;
 	void KeyFile( void ) ;
@@ -100,7 +100,6 @@ private :
 	bool errorNotFound( int ) ;
 	void keyAndKeyFile( void ) ;
 	void tcryptGui( void ) ;
-	void openVolume( void ) ;
 	void enableAll( void ) ;
 	void disableAll( void ) ;
 	void closeEvent( QCloseEvent * ) ;

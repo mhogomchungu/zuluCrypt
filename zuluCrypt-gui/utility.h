@@ -412,6 +412,8 @@ namespace utility
 	QString shareMountPointToolTip( void ) ;
 	QString shareMountPointToolTip( const QString& ) ;
 	QString sharedMountPointPath( const QString& ) ;
+	QString defaultPlugin( void ) ;
+	void setDefaultPlugin( const QString& ) ;
 	bool pathPointsToAFile( const QString& ) ;
 	bool pathPointsToAFolder( const QString& ) ;
 	bool configDirectoriesAreNotWritable( QWidget * ) ;
@@ -447,6 +449,7 @@ namespace utility
 	void mountWithSharedMountPoint( bool ) ;
 	bool platformIsLinux( void ) ;
 	bool platformIsOSX( void ) ;
+	QString pathToUUID( const QString& path ) ;
 	QStringList executableSearchPaths( void ) ;
 	QString executableSearchPaths( const QString& ) ;
 	QString helperSocketPath( void ) ;
@@ -490,7 +493,7 @@ namespace utility
 	utility::array_t getWindowDimensions( const QString& application ) ;
 	void setWindowDimensions( const QString& application,const std::initializer_list<int>& ) ;
 
-	void createPlugInMenu( QMenu *,const QString&,const QString&,const QString&,bool ) ;
+	void addPluginsToMenu( QMenu& ) ;
 
 	int pluginKey( QWidget *,QByteArray *,const QString& ) ;
 

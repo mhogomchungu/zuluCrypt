@@ -29,23 +29,6 @@
 
 #define COMMENT "-zuluCrypt_Comment_ID"
 
-static QString _path_to_UUID( const QString& path )
-{
-	if( path.startsWith( "UUID=" ) ){
-
-		return path ;
-	}else{
-		auto z = utility::getUUIDFromPath( path ).await() ;
-
-		if( z.isEmpty() ){
-
-			return utility::getVolumeID( path ) ;
-		}else{
-			return z ;
-		}
-	}
-}
-
 Task::future< void >& favorites2::deleteKey( secrets::wallet& wallet,const QString& id )
 {
 	return Task::run( [ &wallet,id ](){
@@ -159,6 +142,7 @@ favorites2::favorites2( QWidget * parent,
 
 	m_ui->pbFile->setIcon( QIcon( ":/file.png" ) ) ;
 	m_ui->pbPartition->setIcon( QIcon( ":/partition.png" ) ) ;
+	m_ui->pbFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 
 	connect( m_ui->pbVolumePathFromFileSystem,&QPushButton::clicked,[ this ](){
 
@@ -166,7 +150,21 @@ favorites2::favorites2( QWidget * parent,
 
 		if( !e.isEmpty() ){
 
-			m_ui->lineEditVolumePath->setText( _path_to_UUID( e ) ) ;
+			m_ui->lineEditVolumePath->setText( utility::pathToUUID( e ) ) ;
+		}
+	} ) ;
+
+	connect( m_ui->pbFolder,&QPushButton::clicked,[ this ](){
+
+		auto e = this->getExistingFolder( tr( "Path To An Encrypted Volume" ) ) ;
+
+		if( !e.isEmpty() ){
+
+			m_ui->lineEditVolumeID->setText( e ) ;
+
+			auto a = utility::split( e,'/' ).last() ;
+
+			m_ui->lineEditMountPath->setText( a ) ;
 		}
 	} ) ;
 
@@ -176,7 +174,7 @@ favorites2::favorites2( QWidget * parent,
 
 		if( !e.isEmpty() ){
 
-			m_ui->lineEditVolumeID->setText( _path_to_UUID( e ) ) ;
+			m_ui->lineEditVolumeID->setText( e ) ;
 
 			auto a = utility::split( e,'/' ).last() ;
 
@@ -662,7 +660,7 @@ void favorites2::tabChanged( int index )
 
 				auto m = ac->objectName() ;
 
-				m_ui->lineEditVolumePath->setText( _path_to_UUID( m ) ) ;
+				m_ui->lineEditVolumePath->setText( utility::pathToUUID( m ) ) ;
 			} ) ;
 
 			m_ui->pbVolumePathFromFavorites->setMenu( m ) ;
@@ -768,6 +766,23 @@ void favorites2::HideUI()
 	this->hide() ;
 	m_function() ;
 	this->deleteLater() ;
+}
+
+QString favorites2::getExistingFolder( const QString& r )
+{
+	auto e = QFileDialog::getExistingDirectory( this,r,QDir::homePath() ) ;
+
+	while( true ){
+
+		if( e.endsWith( '/' ) ){
+
+			e.truncate( e.length() - 1 ) ;
+		}else{
+			break ;
+		}
+	}
+
+	return e ;
 }
 
 QString favorites2::getExistingFile( const QString& r )

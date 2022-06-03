@@ -41,10 +41,6 @@
 #include "../zuluCrypt-gui/favorites2.h"
 #include "../zuluCrypt-gui/tcrypt.h"
 
-#define KWALLET         "kde wallet"
-#define INTERNAL_WALLET "internal wallet"
-#define GNOME_WALLET    "gnome wallet"
-
 keyDialog::keyDialog( QWidget * parent,
 		      QTableWidget * table,
 		      secrets& s,
@@ -115,7 +111,7 @@ keyDialog::keyDialog( QWidget * parent,
 	}
 
 	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( pbOpen() ) ) ;
+	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( openVolume() ) ) ;
 	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),this,SLOT( pbkeyOption() ) ) ;
 	connect( m_ui->pbOpenMountPoint,SIGNAL( clicked() ),this,SLOT( pbMountPointPath() ) ) ;
 	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
@@ -340,25 +336,30 @@ void keyDialog::pbkeyOption()
 
 void keyDialog::Plugin()
 {
-	utility::createPlugInMenu( m_menu,tr( INTERNAL_WALLET ),
-				   tr( GNOME_WALLET ),tr( KWALLET ),!m_encryptedFolder || !utility::useZuluPolkit() ) ;
+	m_menu->clear() ;
+
+	utility::addPluginsToMenu( *m_menu ) ;
 
 	m_menu->setFont( this->font() ) ;
 
 	m_menu->addSeparator() ;
 
-	m_menu->addAction( tr( "Cancel" ) ) ;
+	m_menu->addAction( tr( "Cancel" ) )->setObjectName( "Cancel" ) ;
 
 	m_menu->exec( QCursor::pos() ) ;
 }
 
 void keyDialog::pbPluginEntryClicked( QAction * e )
 {
+	auto m = e->objectName() ;
+
+	utility::setDefaultPlugin( m ) ;
+
 	auto r = e->text() ;
 
 	r.remove( "&" ) ;
 
-	if( r != tr( "Cancel" ) ){
+	if( m != "Cancel" ){
 
 		m_ui->lineEditKey->setText( r ) ;
 	}
@@ -368,70 +369,6 @@ void keyDialog::closeEvent( QCloseEvent * e )
 {
 	e->ignore() ;
 	this->pbCancel() ;
-}
-
-void keyDialog::pbOpen()
-{
-	this->disableAll() ;
-
-	if( m_ui->cbKeyType->currentIndex() == keyDialog::plugin ){
-
-		utility::wallet w ;
-
-		auto wallet = m_ui->lineEditKey->text() ;
-
-		if( wallet == tr( KWALLET ) ){
-
-			auto s = m_secrets.walletBk( LXQt::Wallet::BackEnd::kwallet ) ;
-
-			w = utility::getKey( s.bk(),m_path ) ;
-
-		}else if( wallet == tr( INTERNAL_WALLET ) ){
-
-			auto s = m_secrets.walletBk( LXQt::Wallet::BackEnd::internal ) ;
-
-			w = utility::getKey( s.bk(),m_path,"zuluMount" ) ;
-
-			if( w.notConfigured ){
-
-				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal wallet is not configured" ) ) ;
-				return this->enableAll() ;
-			}
-
-		}else if( wallet == tr( GNOME_WALLET ) ){
-
-			auto s = m_secrets.walletBk( LXQt::Wallet::BackEnd::libsecret ) ;
-
-			w = utility::getKey( s.bk(),m_path ) ;
-		}else{
-			return this->openVolume() ;
-		}
-
-		if( w.opened ){
-
-			if( w.key.isEmpty() ){
-
-				DialogMsg msg( this ) ;
-
-				msg.ShowUIOK( tr( "ERROR" ),tr( "The volume does not appear to have an entry in the wallet" ) ) ;
-
-				this->enableAll() ;
-
-				if( m_ui->cbKeyType->currentIndex() != keyDialog::Key ){
-
-					m_ui->lineEditKey->setEnabled( false ) ;
-				}
-			}else{
-				m_key = w.key.toLatin1() ;
-				this->openVolume() ;
-			}
-		}else{
-			this->enableAll() ;
-		}
-	}else{
-		this->openVolume() ;
-	}
 }
 
 void keyDialog::encryptedFolderMount()
@@ -587,6 +524,8 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 
 void keyDialog::openVolume()
 {
+	this->disableAll() ;
+
 	auto keyType = m_ui->cbKeyType->currentIndex() ;
 
 	if( m_encryptedFolder ){
@@ -615,6 +554,20 @@ void keyDialog::openVolume()
 			/*
 			 * m_key is already set
 			 */
+
+		}else if( keyType + 1 == keyDialog::yubikey ){
+
+			utility::debug() << "ssss" ;
+
+			auto s = utility::yubiKey( m_ui->lineEditKey->text() ) ;
+
+			if( s.has_value() ){
+
+				m_key = s.value() ;
+			}else{
+				m_label.show( tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+				return this->enableAll() ;
+			}
 		}
 
 		return this->encryptedFolderMount() ;
@@ -904,10 +857,17 @@ void keyDialog::cbActicated( int e )
 		m_ui->pbkeyOption->setVisible( true ) ;
 	}
 
+	auto _set_yubikey = [ this ](){
+
+		this->plugIn() ;
+		m_ui->pbkeyOption->setEnabled( !m_encryptedFolder ) ;
+		m_ui->lineEditKey->setText( tr( "YubiKey Challenge/Response" ) ) ;
+	} ;
+
 	switch( e ){
 
 		case keyDialog::Key        : return this->key() ;
-		case keyDialog::yubikey    : return this->key() ;
+		case keyDialog::yubikey    : return _set_yubikey() ;
 		case keyDialog::keyfile    : return this->keyFile() ;
 		case keyDialog::keyKeyFile : return this->keyAndKeyFile() ;
 		case keyDialog::plugin     : return this->plugIn() ;
@@ -930,9 +890,17 @@ void keyDialog::plugIn()
 	m_ui->pbkeyOption->setIcon( QIcon( ":/module.png" ) ) ;
 	m_ui->lineEditKey->setEchoMode( QLineEdit::Normal ) ;
 	m_ui->label->setText( tr( "Plugin name" ) ) ;
-	m_ui->pbkeyOption->setEnabled( true ) ;
+	m_ui->pbkeyOption->setEnabled( !m_encryptedFolder ) ;
 	m_ui->lineEditKey->setEnabled( false ) ;
-	m_ui->lineEditKey->setText( INTERNAL_WALLET ) ;
+
+	if( m_encryptedFolder ){
+
+		m_ui->pbkeyOption->setEnabled( false ) ;
+		m_ui->lineEditKey->clear() ;
+	}else{
+		m_ui->pbkeyOption->setEnabled( true ) ;
+		m_ui->lineEditKey->setText( utility::defaultPlugin() ) ;
+	}
 }
 
 void keyDialog::key()
@@ -981,7 +949,9 @@ void keyDialog::ShowUI()
 
 	if( m.isValid() ){
 
-		auto secret = m_secrets.walletBk( m.bk() ).getKey( m_path ) ;
+		auto e = utility::pathToUUID( m_path ) ;
+
+		auto secret = m_secrets.walletBk( m.bk() ).getKey( e ) ;
 
 		if( secret.notConfigured ){
 

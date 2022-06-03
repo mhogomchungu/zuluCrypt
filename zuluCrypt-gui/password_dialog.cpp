@@ -53,10 +53,6 @@
 #include "favorites2.h"
 #include "utility.h"
 
-#define KWALLET         "KDE Wallet"
-#define INTERNAL_WALLET "Internal Wallet"
-#define GNOME_WALLET    "GNOME keyring"
-
 passwordDialog::passwordDialog( QTableWidget * table,
 				QWidget * parent,
 				secrets& s,
@@ -95,7 +91,7 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	m_pluginMenu->setFont( this->font() ) ;
 
 	connect( m_ui->PushButtonCancel,SIGNAL( clicked() ),this,SLOT( HideUI() ) ) ;
-	connect( m_ui->PushButtonOpen,SIGNAL( clicked() ),this,SLOT( buttonOpenClicked() ) ) ;
+	connect( m_ui->PushButtonOpen,SIGNAL( clicked() ),this,SLOT( openVolume() ) ) ;
 	connect( m_ui->PushButtonMountPointPath,SIGNAL( clicked() ),this,SLOT( mount_point() ) ) ;
 	connect( m_ui->PushButtonVolumePath,SIGNAL( clicked() ),this,SLOT( file_path() ) ) ;
 	connect( m_ui->pushButtonPassPhraseFromFile,SIGNAL( clicked() ),this,SLOT( clickedPassPhraseFromFileButton() ) ) ;
@@ -248,15 +244,13 @@ bool passwordDialog::eventFilter( QObject * watched,QEvent * event )
 
 void passwordDialog::pbPlugin()
 {
-	//utility::createPlugInMenu( m_pluginMenu,tr( INTERNAL_WALLET ),
-	//			   tr( GNOME_WALLET ),tr( KWALLET ),!utility::useZuluPolkit() ) ;
-
-	//utility::createPlugInMenu( m_pluginMenu,tr( INTERNAL_WALLET ),
-	//			   tr( GNOME_WALLET ),tr( KWALLET ),true ) ;
+	m_pluginMenu->clear() ;
 
 	m_pluginMenu->addSeparator() ;
 
-	m_pluginMenu->addAction( tr( "Cancel" ) ) ;
+	utility::addPluginsToMenu( *m_pluginMenu ) ;
+
+	m_pluginMenu->addAction( tr( "Cancel" ) )->setObjectName( "Cancel" ) ;
 
 	connect( m_pluginMenu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
 
@@ -265,11 +259,15 @@ void passwordDialog::pbPlugin()
 
 void passwordDialog::pbPluginEntryClicked( QAction * e )
 {
+	auto m = e->objectName() ;
+
+	utility::setDefaultPlugin( m ) ;
+
 	auto text = e->text() ;
 
 	text.remove( "&" ) ;
 
-	if( text != tr( "Cancel" ) ){
+	if( m != "Cancel" ){
 
 		m_ui->PassPhraseField->setText( text ) ;
 	}
@@ -311,7 +309,9 @@ void passwordDialog::cbStateChanged( int state )
 
 void passwordDialog::autoSetPassword( const QString& keyID )
 {
-	auto m = favorites2::settings().autoMountBackEnd() ;
+	QSettings s( "zuluCrypt","zuluCrypt" ) ;
+
+	auto m = favorites2::settings( s ).autoMountBackEnd() ;
 
 	if( m.isInvalid() ){
 
@@ -325,6 +325,11 @@ void passwordDialog::autoSetPassword( const QString& keyID )
 		DialogMsg msg( this ) ;
 		msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal wallet is not configured" ) ) ;
 	}else{
+		if( secret.key.isEmpty() ){
+
+			secret = m_secrets.walletBk( m.bk() ).getKey( utility::pathToUUID( keyID ) ) ;
+		}
+
 		m_ui->PassPhraseField->setText( secret.key ) ;
 	}
 }
@@ -469,7 +474,8 @@ void passwordDialog::pluginOption()
 	m_ui->pbKeyOption->setIcon( QIcon( ":/module.png" ) ) ;
 	m_ui->pbKeyOption->setEnabled( true ) ;
 	m_ui->PassPhraseField->setEnabled( false ) ;
-	m_ui->PassPhraseField->setText( INTERNAL_WALLET ) ;
+
+	m_ui->PassPhraseField->setText( utility::defaultPlugin() ) ;
 }
 
 void passwordDialog::passphraseOption()
@@ -573,84 +579,6 @@ void passwordDialog::HideUI()
 	}
 }
 
-void passwordDialog::buttonOpenClicked( void )
-{
-	this->disableAll() ;
-
-	if( m_ui->cbKeyType->currentIndex() == passwordDialog::plugin ){
-
-		auto wallet = m_ui->PassPhraseField->text() ;
-		auto keyID = m_ui->OpenVolumePath->text() ;
-
-		using wbe = LXQt::Wallet::BackEnd ;
-
-		utility::wallet w ;
-
-		if( wallet == tr( KWALLET ) ){
-
-			auto s = m_secrets.walletBk( wbe::kwallet ) ;
-
-			w = utility::getKey( s.bk(),keyID ) ;
-
-		}else if( wallet == tr( INTERNAL_WALLET ) ){
-
-			auto s = m_secrets.walletBk( wbe::internal ) ;
-
-			w = utility::getKey( s.bk(),keyID,"zuluCrypt" ) ;
-
-			if( w.notConfigured ){
-
-				DialogMsg msg( this ) ;
-				msg.ShowUIOK( tr( "ERROR!" ),tr( "Internal wallet is not configured" ) ) ;
-				return this->enableAll() ;
-			}
-
-		}else if( wallet == tr( GNOME_WALLET ) ){
-
-			auto s = m_secrets.walletBk( wbe::libsecret ) ;
-
-			w = utility::getKey( s.bk(),keyID ) ;
-		}else{
-			m_key = m_ui->PassPhraseField->text().toLatin1() ;
-			return this->openVolume() ;
-		}
-
-		if( w.opened ){
-
-			if( w.key.isEmpty() ){
-
-				DialogMsg msg( this ) ;
-
-				msg.ShowUIOK( tr( "ERROR!" ),tr( "The volume does not appear to have an entry in the wallet" ) ) ;
-
-				this->enableAll() ;
-			}else{
-				m_key = w.key.toLatin1() ;
-				this->openVolume() ;
-			}
-		}else{
-			this->enableAll() ;
-		}
-	}else{
-		if( m_ui->cbKeyType->currentIndex() == passwordDialog::yubikey ){
-
-			auto m = utility::yubiKey( m_ui->PassPhraseField->text() ) ;
-
-			if( m.has_value() ){
-
-				m_key = m.value() ;
-			}else{
-				DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
-				return this->enableAll() ;
-			}
-		}else{
-			m_key = m_ui->PassPhraseField->text().toLatin1() ;
-		}
-
-		this->openVolume() ;
-	}
-}
-
 void passwordDialog::sendKey( const QString& sockpath )
 {
 	utility::keySend( sockpath,m_key ) ;
@@ -738,6 +666,9 @@ void passwordDialog::enableAll()
 
 void passwordDialog::openVolume()
 {
+	this->disableAll() ;
+	m_key = m_ui->PassPhraseField->text().toLatin1() ;
+
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
 	m_point = m_ui->MountPointPath->text() ;
@@ -773,7 +704,19 @@ void passwordDialog::openVolume()
 
 	int keySource = m_ui->cbKeyType->currentIndex() ;
 
-	if( keySource == passwordDialog::keyfile ){
+	if( keySource == passwordDialog::yubikey ){
+
+		auto m = utility::yubiKey( m_ui->PassPhraseField->text() ) ;
+
+		if( m.has_value() ){
+
+			m_key = m.value() ;
+		}else{
+			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
+			return this->enableAll() ;
+		}
+
+	}else if( keySource == passwordDialog::keyfile ){
 
 		if( m_key.isEmpty() ){
 
@@ -785,8 +728,7 @@ void passwordDialog::openVolume()
 			keyPath = utility::resolvePath( m_key ).replace( "\"","\"\"\"" ) ;
 		}
 	}else if( keySource == passwordDialog::key ||
-		  keySource == passwordDialog::keyKeyFile ||
-		  keySource == passwordDialog::yubikey ){
+		  keySource == passwordDialog::keyKeyFile ){
 
 		passtype = "-f" ;
 		keyPath = utility::keyPath() ;
@@ -803,14 +745,7 @@ void passwordDialog::openVolume()
 		}else{
 			auto r = m_ui->PassPhraseField->text() ;
 
-			if( utility::equalsAtleastOne( r,tr( KWALLET ),tr( INTERNAL_WALLET ),tr( GNOME_WALLET ) ) ){
-
-				passtype = "-f" ;
-				keyPath = utility::keyPath() ;
-
-				this->sendKey( keyPath ) ;
-
-			}else if( utility::equalsAtleastOne( r,"hmac","gpg","keykeyfile" ) ){
+			if( utility::equalsAtleastOne( r,"hmac","gpg","keykeyfile" ) ){
 
 				if( utility::pluginKey( m_secrets.parent(),&m_key,r ) ){
 

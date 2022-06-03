@@ -200,6 +200,19 @@
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="pbFolder">
+     <property name="geometry">
+      <rect>
+       <x>690</x>
+       <y>300</y>
+       <width>41</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="ManageVolumeKeys">
     <attribute name="title">
