@@ -309,9 +309,7 @@ void passwordDialog::cbStateChanged( int state )
 
 void passwordDialog::autoSetPassword( const QString& keyID )
 {
-	QSettings s( "zuluCrypt","zuluCrypt" ) ;
-
-	auto m = favorites2::settings( s ).autoMountBackEnd() ;
+	auto m = favorites2::settings().autoMountBackEnd() ;
 
 	if( m.isInvalid() ){
 

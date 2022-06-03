@@ -943,9 +943,7 @@ void keyDialog::pbCancel()
 
 void keyDialog::ShowUI()
 {
-	QSettings s( "zuluCrypt","zuluCrypt" ) ;
-
-	auto m = favorites2::settings( s ).autoMountBackEnd() ;
+	auto m = favorites2::settings().autoMountBackEnd() ;
 
 	if( m.isValid() ){
 
