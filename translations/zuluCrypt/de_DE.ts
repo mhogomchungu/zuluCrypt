@@ -2143,17 +2143,17 @@ Sind Sie sicher, dass Sie fortfahren möchten? </translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="271"/>
-        <source>&amp;Libsecret</source>
+        <source>Libsecret</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="284"/>
-        <source>&amp;KWallet</source>
+        <source>KWallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="297"/>
-        <source>&amp;None</source>
+        <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

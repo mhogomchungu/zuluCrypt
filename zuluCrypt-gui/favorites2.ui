@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="FavoritesList">
     <attribute name="title">
@@ -268,7 +268,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>&amp;Libsecret</string>
+        <string>Libsecret</string>
        </property>
       </widget>
       <widget class="QRadioButton" name="rbKWallet">
@@ -281,7 +281,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>&amp;KWallet</string>
+        <string>KWallet</string>
        </property>
       </widget>
       <widget class="QRadioButton" name="rbNone">
@@ -294,7 +294,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>&amp;None</string>
+        <string>None</string>
        </property>
       </widget>
      </widget>
