@@ -522,12 +522,12 @@ zuluPolkit executable could not be found
         <translation>ألغ</translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="959"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="957"/>
         <source>ERROR!</source>
         <translation>خطأ!</translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="959"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="957"/>
         <source>Internal wallet is not configured</source>
         <translation>لم يتم تهيئة خزنة داخلية</translation>
     </message>

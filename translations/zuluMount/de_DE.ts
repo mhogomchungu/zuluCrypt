@@ -531,12 +531,12 @@ ausführbare Datei zuluPolkit konnte nicht gefunden werden
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="959"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="957"/>
         <source>ERROR!</source>
         <translation>FEHLER!</translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="959"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="957"/>
         <source>Internal wallet is not configured</source>
         <translation>Interne Brieftasche ist nicht konfiguriert</translation>
     </message>

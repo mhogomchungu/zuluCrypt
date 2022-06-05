@@ -108,7 +108,7 @@ HEADERS  += zulucrypt.h \
     crypttask.h \
     walletconfig.h \
     walletconfiginput.h \
-    favorites.h \
+    favorites2.h \
     managevolumeheader.h \
     tcrypt.h \
     readonlywarning.h \
@@ -139,7 +139,7 @@ FORMS    += zulucrypt.ui password.ui \
     lxqt_wallet/frontend/changepassworddialog.ui \
     walletconfig.ui \
     walletconfiginput.ui \
-    favorites.ui \
+    favorites2.ui \
     managevolumeheader.ui \
     tcrypt.ui \
     readonlywarning.ui \

@@ -531,12 +531,12 @@ le zuluPolkit exécutable ne peut être trouvé
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="959"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="957"/>
         <source>ERROR!</source>
         <translation>ERREUR!</translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="959"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="957"/>
         <source>Internal wallet is not configured</source>
         <translation>Trousseau Interne non configuré</translation>
     </message>

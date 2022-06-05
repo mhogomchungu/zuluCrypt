@@ -2047,6 +2047,116 @@ Are you sure you want to continue? </source>
     </message>
 </context>
 <context>
+    <name>favorites2</name>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="14"/>
+        <source>Favorites</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="30"/>
+        <source>Favorite List</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="58"/>
+        <source>Volume ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="66"/>
+        <source>Mount Point</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="83"/>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="393"/>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="106"/>
+        <source>Add A volume</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="158"/>
+        <source>Mount Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="174"/>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="464"/>
+        <source>&amp;Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="197"/>
+        <source>Mount Options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="219"/>
+        <source>Manage Keys In Wallets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="246"/>
+        <source>Set Default Wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="258"/>
+        <source>Internal Wallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="271"/>
+        <source>&amp;Libsecret</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="284"/>
+        <source>&amp;KWallet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="297"/>
+        <source>&amp;None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="318"/>
+        <source>Volume Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="335"/>
+        <source>Enter Volume Path Below</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="364"/>
+        <source>Enter Password Below</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="419"/>
+        <source>Change Internal Wallet Password</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="480"/>
+        <source>TextLabel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../zuluCrypt-gui/favorites2.ui" line="502"/>
+        <source>Ok</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>fileManager</name>
     <message>
         <location filename="../../zuluCrypt-gui/filemanager.ui" line="14"/>
@@ -3570,37 +3680,37 @@ And In Terabytes If The Entry Ends With &quot;t&quot;</source>
         <translation>ألغ</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="352"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="350"/>
         <source>Mount &quot;%1&quot;</source>
         <translation>حمل &quot;1%&quot;</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="468"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="466"/>
         <source>Choose A Module From The File System</source>
         <translation>اختر وحدة من نظام الملفات</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="469"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="467"/>
         <source>Enter A Module Name To Use To Get Passphrase</source>
         <translation>أدخل اسم الوحدة المستهدفة للحصول على كلمة السر</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="472"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="470"/>
         <source>Plugin Name</source>
         <translation>اسم الإضافة</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="487"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="485"/>
         <source>Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="518"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="516"/>
         <source>Select A Key Module</source>
         <translation>اختر مفتاح الوحدة</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="483"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="481"/>
         <source>Enter A Key</source>
         <translation>اختر مفتاح</translation>
     </message>
@@ -3615,189 +3725,189 @@ And In Terabytes If The Entry Ends With &quot;t&quot;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="497"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="495"/>
         <source>Choose A KeyFile From The File System</source>
         <translation>اختر ملف مفتاح من نظام الملفات</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="498"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="496"/>
         <source>Enter A Path To A Keyfile Location</source>
         <translation>أدخل مسار ملف المفتاح</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="503"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="501"/>
         <source>KeyFile Path</source>
         <translation>مسار ملف المفتاح</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="516"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="514"/>
         <source>Select A KeyFile</source>
         <translation>اختر ملف مفتاح</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="531"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="529"/>
         <source>Select Path To Mount Point Folder</source>
         <translation>اختر ماسرا لنقطة تحميل المجلد</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="562"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="560"/>
         <source>Select Encrypted volume</source>
         <translation>اختر مجلدا مشفرا</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="326"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="324"/>
         <source>ERROR!</source>
         <translation>خطأ</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="326"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="324"/>
         <source>Internal wallet is not configured</source>
         <translation>الخزانة الداخلية غير مهيأة</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="715"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="713"/>
         <source>ERROR</source>
         <translation type="unfinished">خطأ</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="715"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="713"/>
         <source>Failed To Locate Or Run Yubikey&apos;s &quot;ykchalresp&quot; Program.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="678"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="723"/>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="742"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="676"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="721"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="740"/>
         <source>Atleast one required field is empty</source>
         <translation>حقل واحد فارغ على الأقل</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="685"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="683"/>
         <source>&quot;/&quot; character is not allowed in mount name field</source>
         <translation>الرمز &quot;/&quot; غير مسموح به في حقل اسم التحميل</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="771"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="769"/>
         <source>Volume is not a LUKS volume</source>
         <translation>المجلد ليس مجلد لوكس</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="790"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="788"/>
         <source>Failed to get a key from the network</source>
         <translation>فشل في الحصول على مفتاح من الشبكة</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="805"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="803"/>
         <source>Failed to get a key from a plugin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="947"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="945"/>
         <source>Failed to mount ntfs/exfat file system using ntfs-3g,is ntfs-3g/exfat package installed?</source>
         <translation>فشل في تحميل نظام ملفات ntfs/exfat باستخدام ntfs-3g المثبتة؟</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="948"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="946"/>
         <source>There seem to be an open volume accociated with given address</source>
         <translation>يبدو أن مجلدا مقترنا بالعنوان المعطى مفتوح</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="949"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="947"/>
         <source>No file or device exist on given path</source>
         <translation>لا يوجد ملف أو قرص في المسار المعطى</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="950"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="948"/>
         <source>Volume could not be opened with the presented key</source>
         <translation>لم يمكن فتح المجلد بالمفتاح المعطى</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="951"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="949"/>
         <source>Insufficient privilege to mount the device with given options</source>
         <translation>صلاحيات غير كافية لتحميل القرص بالخيارات المحددة</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="952"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="950"/>
         <source>Insufficient privilege to open device in read write mode or device does not exist</source>
         <translation>صلاحيات غير كافية لفتح القرص للقراءة والكتابة أو أن القرص غير موجود</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="953"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="951"/>
         <source>Only root user can perform this operation</source>
         <translation>فقط مستخدم مدير يمكنه تنفيذ هذه العملية</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="954"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="952"/>
         <source>-O and -m options can not be used together</source>
         <translation>خيارا O- و m- لا يمكن استخدامهما معا في آن واحد</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="955"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="953"/>
         <source>Could not create mount point, invalid path or path already taken</source>
         <translation>لم يمكن إنشاء نقطة التحميل. مسار خاطئ أو المسار قد سبق تعيينه</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="956"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="954"/>
         <source>Shared mount point path already taken</source>
         <translation>نقطة تحميل مشتركة سبق تعيينها</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="957"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="955"/>
         <source>There seem to be an opened mapper associated with the device</source>
         <translation>يبدو وجود مخطط مفتوح مقترن بهذا القرص</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="958"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="956"/>
         <source>Could not get a passphrase from the module</source>
         <translation>لم يمكن استرجاع كلمة السر من الوحدة</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="959"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="957"/>
         <source>Could not get passphrase in silent mode</source>
         <translation>لم يمكن استرجاع كلمة السر ف يالطور الصامت</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="960"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="958"/>
         <source>Insufficient memory to hold passphrase</source>
         <translation>ذاكرة غير كافية لاستيعاب كلمة السر</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="961"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="959"/>
         <source>One or more required argument(s) for this operation is missing</source>
         <translation>معطى مطلوب أو أكثر لهذه العملية غير متوفر</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="962"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="960"/>
         <source>Invalid path to key file</source>
         <translation>مسار خاطئ لملف المفتاح</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="963"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="961"/>
         <source>Could not get enought memory to hold the key file</source>
         <translation>لم يمكن الحصول على ذاكرة كافية لاسيتعاب ملف المفتاح</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="964"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="962"/>
         <source>Insufficient privilege to open key file for reading</source>
         <translation>صلاحيات غير كافية لفتح ملف المفتاح للقراءة</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="965"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="963"/>
         <source>Could not get a passphrase through a local socket</source>
         <translation>لم يمكن الحصول على كلمة السر من خلال منفذ محلي</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="966"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="964"/>
         <source>Failed to mount a filesystem:invalid/unsupported mount option or unsupported file system encountered</source>
         <translation>فشل في تحميل نظام الملفات: نقطة تحميل غير مدعومة أو نظام ملفات غير مدعوم</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="967"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="965"/>
         <source>Could not create a lock on /etc/mtab</source>
         <translation>لم يمكن إنشاء قفل في /etc/mtab</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="968"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="966"/>
         <source>Insufficient privilege to open a system volume.
 
 Consult menu-&gt;help-&gt;permission for more informaion
@@ -3807,7 +3917,7 @@ Consult menu-&gt;help-&gt;permission for more informaion
 راجع قائمة المساعدة ثم الأذونات لمزيد من المعلومات</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="969"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="967"/>
         <source>A non supported device encountered,device is missing or permission denied
 Possible reasons for getting the error are:
 1.Device path is invalid.
@@ -3818,7 +3928,7 @@ Possible reasons for getting the error are:
 2- القرص له توقيع LVM أو MDRAID</translation>
     </message>
     <message>
-        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="971"/>
+        <location filename="../../zuluCrypt-gui/password_dialog.cpp" line="969"/>
         <source>Error Code: %1
 --
 StdOut: %2

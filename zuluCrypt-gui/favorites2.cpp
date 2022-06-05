@@ -83,23 +83,6 @@ favorites2::favorites2( QWidget * parent,
 
 	m_ui->tableWidget->setColumnWidth( 0,400 ) ;
 
-	connect( m_ui->cbAutoMountAtStartUp,&QCheckBox::toggled,[ this ]( bool e ){
-
-		m_settings.autoMountFavoritesOnStartUp( e ) ;
-	} ) ;
-
-	connect( m_ui->cbAllowExternalToolsToReadPasswords,&QCheckBox::toggled,[]( bool ){
-
-	} ) ;
-
-	connect( m_ui->cbAutoMountWhenAvailable,&QCheckBox::toggled,[]( bool ){
-
-	} ) ;
-
-	connect( m_ui->cbShowMountDialogWhenAutoMounting,&QCheckBox::toggled,[]( bool ){
-
-	} ) ;
-
 	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
 
 		Q_UNUSED( s )
@@ -451,6 +434,10 @@ void favorites2::addkeyToWallet()
 	auto b = m_ui->lineEditPassword->text() ;
 
 	if( a.isEmpty() || b.isEmpty() ){
+
+		m_ui->labelPassword->setText( tr( "Atleast One Required Field Is Empty" ) ) ;
+		m_ui->labelPassword->setVisible( true ) ;
+		m_ui->pbVisiblePassword->setVisible( true ) ;
 
 		return ;
 	}
@@ -804,19 +791,9 @@ QString favorites2::getExistingFile( const QString& r )
 
 void favorites2::ShowUI()
 {
-	//m_ui->lineEditMountPath->setText( m_settings.mountPath() ) ;
-
 	m_ui->tabWidget->setCurrentIndex( 0 ) ;
 
 	m_ui->tableWidget->setFocus() ;
-
-	//m_ui->cbAllowExternalToolsToReadPasswords->setChecked( m_settings.allowExternalToolsToReadPasswords() ) ;
-
-	//m_ui->cbAutoMountAtStartUp->setChecked( m_settings.autoMountFavoritesOnStartUp() ) ;
-
-	//m_ui->cbShowMountDialogWhenAutoMounting->setChecked( m_settings.showMountDialogWhenAutoMounting() ) ;
-
-	//m_ui->cbShowFavoriteListOnContextMenu->setChecked( m_settings.showFavoritesInContextMenu() ) ;
 
 	this->show() ;
 	this->raise() ;

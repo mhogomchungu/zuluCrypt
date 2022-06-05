@@ -504,12 +504,12 @@ zuluPolkit executable could not be found
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="959"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="957"/>
         <source>ERROR!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../zuluMount-gui/keydialog.cpp" line="959"/>
+        <location filename="../../zuluMount-gui/keydialog.cpp" line="957"/>
         <source>Internal wallet is not configured</source>
         <translation type="unfinished"></translation>
     </message>
