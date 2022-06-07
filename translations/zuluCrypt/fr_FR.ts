@@ -2078,109 +2078,109 @@ Are you sure you want to continue? </source>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="14"/>
         <source>Favorites</source>
-        <translation type="unfinished"></translation>
+        <translation>Favoris</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="30"/>
         <source>Favorite List</source>
-        <translation type="unfinished"></translation>
+        <translation>Liste des favoris</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="58"/>
         <source>Volume ID</source>
-        <translation type="unfinished"></translation>
+        <translation>Étiquette du volume</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="66"/>
         <source>Mount Point</source>
-        <translation type="unfinished"></translation>
+        <translation>Point de montage</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="83"/>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="393"/>
         <source>Add</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="106"/>
         <source>Add A volume</source>
-        <translation type="unfinished"></translation>
+        <translation>Ajouter un volume</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="158"/>
         <source>Mount Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Chemin du montage</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="174"/>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="464"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Fermer</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="197"/>
         <source>Mount Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Options de montage</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="219"/>
         <source>Manage Keys In Wallets</source>
-        <translation type="unfinished"></translation>
+        <translation>Gérer les clés dans des trousseaux</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="246"/>
         <source>Set Default Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>Définir le trousseau par défaut</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="258"/>
         <source>Internal Wallet</source>
-        <translation type="unfinished"></translation>
+        <translation>Trousseau interne</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="271"/>
         <source>Libsecret</source>
-        <translation type="unfinished"></translation>
+        <translation>Libsecret</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="284"/>
         <source>KWallet</source>
-        <translation type="unfinished"></translation>
+        <translation>KWallet</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="297"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Aucun</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="318"/>
         <source>Volume Path</source>
-        <translation type="unfinished"></translation>
+        <translation>Chemin du volume</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="335"/>
         <source>Enter Volume Path Below</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrer le chemin du volume ci dessous</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="364"/>
         <source>Enter Password Below</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrer le moit de passe ci dessous</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="419"/>
         <source>Change Internal Wallet Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifier le mot de passe du trousseau interne</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="480"/>
         <source>TextLabel</source>
-        <translation type="unfinished"></translation>
+        <translation>Etiquette texte</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/favorites2.ui" line="502"/>
         <source>Ok</source>
-        <translation type="unfinished"></translation>
+        <translation>OK</translation>
     </message>
 </context>
 <context>
