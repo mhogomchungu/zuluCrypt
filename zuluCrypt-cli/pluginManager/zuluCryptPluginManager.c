@@ -42,6 +42,8 @@
  */
 #include "plugin_path.h"
 
+#define zuluDEBUG 0
+
 static void _debug_0( process_t p,ProcessIO std_io )
 {
 	char * e = NULL ;
@@ -67,8 +69,11 @@ static void _debug_0( process_t p,ProcessIO std_io )
 
 static void _debug( process_t p )
 {
-	_debug_0( p,ProcessStdOut ) ;
-	_debug_0( p,ProcessStdError ) ;
+	if( zuluDEBUG ){
+
+		_debug_0( p,ProcessStdOut ) ;
+		_debug_0( p,ProcessStdError ) ;
+	}
 }
 
 void zuluCryptGetKeyFromSocket( const char * sockpath,string_t * key,uid_t uid )
@@ -229,9 +234,9 @@ string_t zuluCryptPluginManagerGetKeyFromModule( const char * device,const char 
 
 		zuluCryptGetKeyFromSocket( sockpath,&key,uid ) ;
 
-		*r = ProcessWaitUntilFinished( &p ) ;
-
 		_debug( p ) ;
+
+		*r = ProcessWaitUntilFinished( &p ) ;
 	}else{
 		*r = 1 ;
 	}
