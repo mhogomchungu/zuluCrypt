@@ -335,7 +335,7 @@ version 6.1.0
 
 version 6.2.0
 -- Update French translations.
--- Fix a bug that caused favorite entries to accidentally be deleted.
+-- Fix a bug that caused existing favorite entries to accidentally be deleted and new ones to not get saved.
 -- Fix a bug that caused saved passwords in libsecret to not be visible.
 -- Version 6.1.0 modernized favorites functionality and moved saved password UI to the
    favorites window and changes in both places introduced above bugs.
