@@ -45,9 +45,9 @@ Screenshots are at the end of this page.
 
 ## zuluCrypt download page
 
-Latest released version is 6.1.0 and it can be downloaded by clicking below link.
+Latest released version is 6.2.0 and it can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0.tar.xz">zuluCrypt-6.1.0.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0.tar.xz">zuluCrypt-6.2.0.tar.xz</a>
 
 ## Binary packages
 
@@ -79,44 +79,44 @@ the generated context menu should have an option to extract it. Extract it and
 read the README file for further instructions.
 ```
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-debian-9-Stretch.tar.xz">zuluCrypt-6.1.0-debian-9-Stretch.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-debian-9-Stretch.tar.xz">zuluCrypt-6.2.0-debian-9-Stretch.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-debian-10-Buster.tar.xz">zuluCrypt-6.1.0-debian-10-Buster.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-debian-10-Buster.tar.xz">zuluCrypt-6.2.0-debian-10-Buster.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-debian-11-Bullseye.tar.xz">zuluCrypt-6.1.0-debian-11-Bullseye.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-debian-11-Bullseye.tar.xz">zuluCrypt-6.2.0-debian-11-Bullseye.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-6.1.0-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-16.04-Xenial_Xerus.tar.xz">zuluCrypt-6.2.0-ubuntu-16.04-Xenial_Xerus.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-6.1.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-16.10-Yakkety_Yak.tar.xz">zuluCrypt-6.2.0-ubuntu-16.10-Yakkety_Yak.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-6.1.0-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-17.04-Zesty_Zapus.tar.xz">zuluCrypt-6.2.0-ubuntu-17.04-Zesty_Zapus.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-6.1.0-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-17.10-Artful_Aardvark.tar.xz">zuluCrypt-6.2.0-ubuntu-17.10-Artful_Aardvark.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-18.04-Bionic_Beaver.tar.xz">zuluCrypt-6.1.0-ubuntu-18.04-Bionic_Beaver.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-18.04-Bionic_Beaver.tar.xz">zuluCrypt-6.2.0-ubuntu-18.04-Bionic_Beaver.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz">zuluCrypt-6.1.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz">zuluCrypt-6.2.0-ubuntu-18.10-Cosmic_Cuttlefish.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-19.04-Disco_Dingo.tar.xz">zuluCrypt-6.1.0-ubuntu-19.04-Disco_Dingo.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-19.04-Disco_Dingo.tar.xz">zuluCrypt-6.2.0-ubuntu-19.04-Disco_Dingo.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-19.10-Eoan_Ermine.tar.xz">zuluCrypt-6.1.0-ubuntu-19.10-Eoan_Ermine.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-19.10-Eoan_Ermine.tar.xz">zuluCrypt-6.2.0-ubuntu-19.10-Eoan_Ermine.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-20.04-Focal_Fossa.tar.xz">zuluCrypt-6.1.0-ubuntu-20.04-Focal_Fossa.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-20.04-Focal_Fossa.tar.xz">zuluCrypt-6.2.0-ubuntu-20.04-Focal_Fossa.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-20.10-Groovy_Gorilla.tar.xz">zuluCrypt-6.1.0-ubuntu-20.10-Groovy_Gorilla.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-20.10-Groovy_Gorilla.tar.xz">zuluCrypt-6.2.0-ubuntu-20.10-Groovy_Gorilla.tar.xz</a>
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-21.04-Hirsute_Hippo.tar.xz">zuluCrypt-6.1.0-ubuntu-21.04-Hirsute_Hippo.tar.xz</a>
-
-
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-21.10-Impish_Indri.tar.xz">zuluCrypt-6.1.0-ubuntu-21.10-Impish_Indri.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-21.04-Hirsute_Hippo.tar.xz">zuluCrypt-6.2.0-ubuntu-21.04-Hirsute_Hippo.tar.xz</a>
 
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.1.0/zuluCrypt-6.1.0-ubuntu-22.04-Jammy_Jellyfish.tar.xz">zuluCrypt-6.1.0-ubuntu-22.04-Jammy_Jellyfish.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-21.10-Impish_Indri.tar.xz">zuluCrypt-6.2.0-ubuntu-21.10-Impish_Indri.tar.xz</a>
+
+
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/6.2.0/zuluCrypt-6.2.0-ubuntu-22.04-Jammy_Jellyfish.tar.xz">zuluCrypt-6.2.0-ubuntu-22.04-Jammy_Jellyfish.tar.xz</a>
 
 These archives contains binaries for both 32 bit and 64 bit systems.
 
 
-Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/6.1.0">here</a>.
+Archive signatures can be downloaded from <a href="https://github.com/mhogomchungu/zuluCrypt/releases/tag/6.2.0">here</a>.
 
 Development versions of binary packages together with other generated package files can be obtained from <a href="http://download.opensuse.org/repositories/home:/mhogomchungu/">here</a>.
 
@@ -139,7 +139,7 @@ Older versions can be downloaded from <a href="https://github.com/mhogomchungu/z
 
 ## BitLocker
 
-BitLocker is a full volume encryption feature included with Microsoft Windows versions starting with Windows Vista.<a href="https://github.com/Aorimn/dislocker"> Disclocker</a> backend is required for zuluCrypt to gain support for bitlocker volumes.
+BitLocker is a full volume encryption feature included with Microsoft Windows versions starting with Windows Vista.
 
 ## Where did the name come from?
 
@@ -237,4 +237,4 @@ cv9jY9bZAbVaMUjF7dw/bsqgJ2HCJ33cf16GybRtozOE36YDB2omg58ngIrlmlea
 
 ```
 
-last update: Sun May 22 12:18:07 PM EAT 2022
+last update: Mon Jun 20 10:52:51 AM EAT 2022
