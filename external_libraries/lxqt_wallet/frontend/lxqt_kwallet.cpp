@@ -143,7 +143,7 @@ QByteArray LXQt::Wallet::kwallet::readValue(const QString &key)
 
     m_kwallet->readPassword(key, value);
 
-    return value.toLatin1();
+    return value.toUtf8();
 }
 
 QVector<std::pair<QString, QByteArray>> LXQt::Wallet::kwallet::readAllKeyValues(void)
@@ -162,7 +162,7 @@ QVector<std::pair<QString, QByteArray>> LXQt::Wallet::kwallet::readAllKeyValues(
 
         m_kwallet->readPassword(e, value);
 
-	p.append({ e, value.toLatin1() });
+	p.append({ e, value.toUtf8() });
     }
 
     return p;
