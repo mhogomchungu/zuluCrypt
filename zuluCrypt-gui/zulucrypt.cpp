@@ -363,6 +363,8 @@ void zuluCrypt::setupConnections()
 
 	m_ui->tableWidget->setContextMenuPolicy( Qt::CustomContextMenu ) ;
 
+	m_ui->tableWidget->horizontalHeader()->setStretchLastSection( true ) ;
+
 	connect( m_ui->tableWidget,&QTableWidget::customContextMenuRequested,[ this ]( QPoint s ){
 
 		Q_UNUSED( s )

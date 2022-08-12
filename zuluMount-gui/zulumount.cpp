@@ -124,6 +124,8 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 #else
 	m_ui->tableWidget->verticalHeader()->setSectionResizeMode( QHeaderView::ResizeToContents ) ;
 #endif
+	m_ui->tableWidget->horizontalHeader()->setStretchLastSection( true ) ;
+
 	m_ui->tableWidget->verticalHeader()->setMinimumSectionSize( 30 ) ;
 
 	m_ui->tableWidget->setMouseTracking( true ) ;
