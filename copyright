@@ -30,10 +30,6 @@ Files: zuluCrypt-gui/lxqt_wallet/*
 Copyright: 2013-2015 Francis Banyikwa <mhogomchungu@gmail.com>
 License: BSD-2-clause
 
-Files: zuluCrypt-gui/md5/md5*
-Copyright: 2001 Alexander Peslyak
-License: public-domain
-
 Files: external_libraries/tc-play/*
 Copyright: 2011 Alex Hornung <alex@alexhornung.com>
 License: BSD-2-clause

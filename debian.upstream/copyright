@@ -10,10 +10,6 @@ Files: zuluCrypt-cli/lib/canonicalize/canonicalize.c
 Copyright: 1993 Rick Sladkey <jrs@world.std.com>
 License: GPL-2+
 
-Files: zuluCrypt-gui/md5/md5.?
-Copyright: 2001 Alexander Peslyak <solar@openwall.com>
-License: public-domain
-
 License: public-domain
  This software was written by Alexander Peslyak in 2001.  No copyright is
  claimed, and the software is hereby placed in the public domain.
