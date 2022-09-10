@@ -19,6 +19,7 @@
 
 #include "includes.h"
 #include <libcryptsetup.h>
+#include <ctype.h>
 
 /*
  * This function is responsible for creating a mapper name,the mapper name will show up at "/dev/mapper" if the volume
@@ -86,6 +87,16 @@ string_t zuluCryptCreateMapperName( const char * device,const char * mapping_nam
 	StringAppendInt( p,z ) ;
 
 	StringReplaceCharString( p,'_',BASH_SPECIAL_CHARS ) ;
+
+	e = ( char * ) StringContent( p ) ;
+
+	for( ; *e != '\0' ; e++ ){
+
+		if( isascii( *e ) == 0 ){
+
+			*e = '_' ;
+		}
+	}
 
 	return p ;
 }
