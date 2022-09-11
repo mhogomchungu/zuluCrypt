@@ -4242,7 +4242,7 @@ Anweisungen zum Entsperren des Volumes lauten wie folgt:
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="221"/>
         <source>Encrypted &amp;Container In A Hard Drive</source>
-        <translation>&amp;Verschlüsselter container auf einer Ferstplatte</translation>
+        <translation>&amp;Verschlüsselter Container auf einer Festplatte</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/zulucrypt.ui" line="224"/>
