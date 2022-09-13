@@ -281,7 +281,7 @@ void passwordDialog::tcryptGui()
 
 	tcrypt::instance( this,false,[ this ]( const QString& key,const QStringList& keyFiles ) {
 
-		m_key = key.toLatin1() ;
+		m_key = key.toUtf8() ;
 		m_keyFiles = keyFiles ;
 
 		this->openVolume() ;
@@ -665,7 +665,7 @@ void passwordDialog::enableAll()
 void passwordDialog::openVolume()
 {
 	this->disableAll() ;
-	m_key = m_ui->PassPhraseField->text().toLatin1() ;
+	m_key = m_ui->PassPhraseField->text().toUtf8() ;
 
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
