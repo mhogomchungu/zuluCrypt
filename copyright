@@ -18,33 +18,33 @@ Files: plugins/network_key/crypt_buffer.*
 Copyright: 2014-2015 Francis Banyikwa <mhogomchungu@gmail.com>
 License: BSD-2-clause
 
-Files: zuluCrypt-gui/networkAccessManager.hpp
-Copyright: 2016 Francis Banyikwa <mhogomchungu@gmail.com>
-License: BSD-2-clause
-
-Files: zuluCrypt-cli/lib/canonicalize/canonicalize.c
-Copyright: 1993 Rick Sladkey <jrs@world.std.com>
-License: LGPL-2+
-
-Files: zuluCrypt-gui/lxqt_wallet/*
+Files: zuluSafe/zuluwallet.*
 Copyright: 2013-2015 Francis Banyikwa <mhogomchungu@gmail.com>
 License: BSD-2-clause
 
-Files: external_libraries/tc-play/*
+Files: external_libraries/lxqt_wallet/*
+Copyright: 2013-2015 Francis Banyikwa <mhogomchungu@gmail.com>
+License: BSD-2-clause
+
+Files: external_libraries/tasks/*
+Copyright: 2014-2018 Francis Banyikwa <mhogomchungu@gmail.com>
+License: BSD-2-clause
+
+Files: external_libraries/tcplay/*
 Copyright: 2011 Alex Hornung <alex@alexhornung.com>
 License: BSD-2-clause
 
-Files: external_libraries/tc-play/tcplay.3
-       external_libraries/tc-play/tcplay.8
+Files: external_libraries/tcplay/tcplay.3
+       external_libraries/tcplay/tcplay.8
 Copyright: 2011 DragonFly Project
 License: BSD-3-clause
 
-Files: external_libraries/tc-play/generic_xts*
+Files: external_libraries/tcplay/generic_xts*
 Copyright: 2008 Damien Miller
            2011 Alex Hornung <alex@alexhornung.com>
 License: special
 
-Files: external_libraries/tc-play/crc32.c
+Files: external_libraries/tcplay/crc32.c
 Copyright: 1986 Gary S. Brown
 License: special2
 
