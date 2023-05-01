@@ -1221,7 +1221,7 @@ Da Sie jetzt wissen, was Sie tun, brechen Sie den Vorgang ab, wenn es sein muss.
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="152"/>
         <source>LUKS2+External Header</source>
-        <translation>LUKS1 + Externer Header</translation>
+        <translation>LUKS2+Externe Kopfdaten</translation>
     </message>
     <message>
         <location filename="../../zuluCrypt-gui/createvolume.cpp" line="154"/>
