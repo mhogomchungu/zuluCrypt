@@ -128,7 +128,7 @@ static inline int allowed_udf( stringList_t stl )
 
 static inline int allowed_btrfs( stringList_t stl )
 {
-	const char * f[] = { "subvol=","subvolid=",NULL } ;
+	const char * f[] = { "subvol=","subvolid=","nodiscard","compress=","compress-force=",NULL } ;
 	return _check_options( f,stl ) ;
 }
 
