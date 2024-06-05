@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.0.2)
+if(${CMAKE_VERSION} VERSION_GREATER "3.26")
+    cmake_minimum_required(VERSION 3.5.0)
+else()
+    cmake_minimum_required(VERSION 3.0.2)
+endif()
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/ )
 

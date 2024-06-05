@@ -1,5 +1,8 @@
-
-cmake_minimum_required(VERSION 3.0.2)
+if(${CMAKE_VERSION} VERSION_GREATER "3.26")
+    cmake_minimum_required(VERSION 3.5.0)
+else()
+    cmake_minimum_required(VERSION 3.0.2)
+endif()
 
 set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS ON)
 
@@ -383,8 +386,8 @@ if( NOT NOGUI )
 	endif()
 
 	if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0)
-		set( CMAKE_CXX_STANDARD 20 )
-		MESSAGE( STATUS "Setting C++ version to C++20" )
+		set( CMAKE_CXX_STANDARD 14 )
+		MESSAGE( STATUS "Setting C++ version to C++14" )
 	else()
 		set( CMAKE_CXX_STANDARD 14 )
 		MESSAGE( STATUS "Setting C++ version to C++14" )

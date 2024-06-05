@@ -1,4 +1,8 @@
-cmake_minimum_required( VERSION 3.0 )
+if(${CMAKE_VERSION} VERSION_GREATER "3.26")
+    cmake_minimum_required(VERSION 3.5.0)
+else()
+    cmake_minimum_required(VERSION 3.0.2)
+endif()
 
 project( tasks )
 
@@ -8,8 +12,8 @@ set( SO_VERSION "1.0.0" )
 add_definitions( -Wextra -Wall -pedantic )
 
 if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0)
-	set( CMAKE_CXX_STANDARD 20 )
-	MESSAGE( STATUS "Setting C++ version to C++20" )
+	set( CMAKE_CXX_STANDARD 14 )
+	MESSAGE( STATUS "Setting C++ version to C++14" )
 else()
 	set( CMAKE_CXX_STANDARD 14 )
 	MESSAGE( STATUS "Setting C++ version to C++14" )

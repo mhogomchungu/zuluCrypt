@@ -1,4 +1,8 @@
- cmake_minimum_required(VERSION 3.0.2)
+if(${CMAKE_VERSION} VERSION_GREATER "3.26")
+    cmake_minimum_required(VERSION 3.5.0)
+else()
+    cmake_minimum_required(VERSION 3.0.2)
+endif()
 
  file(WRITE  ${PROJECT_BINARY_DIR}/bin_path.h "\n#define ZULUCRYPTzuluCrypt      \"${CMAKE_INSTALL_FULL_BINDIR}/zuluCrypt-cli\"\n")
  file(APPEND ${PROJECT_BINARY_DIR}/bin_path.h "\n#define zuluPolkitPath	         \"${CMAKE_INSTALL_FULL_BINDIR}/zuluPolkit\"\n")
