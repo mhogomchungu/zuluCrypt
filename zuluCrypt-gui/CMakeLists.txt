@@ -32,7 +32,7 @@ set( UI_FILES createfile.ui
 		showluksslots.ui
 )
 
-set( MOC_FILES
+set( zuluCryptMOC_FILES
 		cryptoinfo.h
 		about.h
 		dialogok.h
@@ -87,7 +87,7 @@ set( SRC
 
 if(BUILD_WITH_QT6)
 
-	add_executable( zuluCrypt-gui ${MOC_FILES} ${UI_FILES} ${SRC} icon.qrc  )
+        add_executable( zuluCrypt-gui ${zuluCryptMOC_FILES} ${UI_FILES} ${SRC} icon.qrc  )
 
 	set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 
@@ -102,7 +102,7 @@ else()
         INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 	Qt5_WRAP_UI( UI ${UI_FILES} )
-	Qt5_WRAP_CPP( MOC ${MOC_FILES} )
+	Qt5_WRAP_CPP( MOC ${zuluCryptMOC_FILES} )
 	Qt5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
 
 	add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )

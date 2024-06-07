@@ -18,7 +18,7 @@ set (UI_FILES 	zulumount.ui
 		../zuluCrypt-gui/openvolume.ui
 )
 
-set(MOC_FILES 	zulumount.h
+set(zMOC_FILES 	zulumount.h
 		keydialog.h
 		mountpartition.h
 		oneinstance.h
@@ -58,7 +58,7 @@ if(BUILD_WITH_QT6)
 
 	add_definitions( ${Qt6Widgets_DEFINITIONS} )
 
-	add_executable( zuluMount-gui ${MOC_FILES} ${UI_FILES} ${SRC} icon.qrc )
+	add_executable( zuluMount-gui ${zMOC_FILES} ${UI_FILES} ${SRC} icon.qrc )
 
 	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqt-wallet  ${Qt6Widgets_LIBRARIES} ${Qt6Core_LIBRARIES} ${Qt6Widgets_LIBRARIES} ${Qt6Network_LIBRARIES} ${blkid} zuluCryptPluginManager )
 else()
@@ -68,7 +68,7 @@ else()
 
 	add_definitions( ${Qt5Widgets_DEFINITIONS} )
 	QT5_WRAP_UI( UI ${UI_FILES} )
-	QT5_WRAP_CPP(MOC ${MOC_FILES} )
+	QT5_WRAP_CPP(MOC ${zMOC_FILES} )
 	QT5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
 
 	add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
