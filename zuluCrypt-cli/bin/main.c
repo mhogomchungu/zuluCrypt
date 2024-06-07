@@ -32,12 +32,18 @@
 
 static void _seteuid( uid_t uid )
 {
-	if( seteuid( uid ) ){;}
+	if( seteuid( uid ) != 0 ){
+
+		perror( "seteuid" ) ;
+	}
 }
 
 static void _setuid( uid_t uid )
 {
-	if( setuid( uid ) ){;}
+	if( setuid( uid ) != 0 ){
+
+		perror( "setuid" ) ;
+	}
 }
 
 static int zuluCryptEXEGetDevice( const char * device )

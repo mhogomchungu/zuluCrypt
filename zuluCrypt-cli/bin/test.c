@@ -381,17 +381,55 @@ static int _loop_device_module_is_not_present( void )
 
 int zuluCryptRunTest( void )
 {
+	unsetenv( "SUDO_UID" ) ;
+
 	uid_t uid  = getuid() ;
 	struct stat st ;
 
 	int r = seteuid( 0 ) ;
 
+	if( r != 0 ){
+
+		perror( "seteuid" ) ;
+
+		return 1 ;
+	}
+
 	r = setgid( uid ) ;
+
+	if( r != 0 ){
+
+		perror( "setgid" ) ;
+
+		return 1 ;
+	}
+
 	r = setgroups( 1,&uid ) ;
+
+	if( r != 0 ){
+
+		perror( "setgroups" ) ;
+
+		return 1 ;
+	}
+
 	r = setegid( uid ) ;
+
+	if( r != 0 ){
+
+		perror( "setegid" ) ;
+
+		return 1 ;
+	}
+
 	r = setuid( uid ) ;
 
-	if( r ){}
+	if( r != 0 ){
+
+		perror( "setuid" ) ;
+
+		return 1 ;
+	}
 
 	if( _loop_device_module_is_not_present() ){
 		printf( "\nWARNING: \"loop\" kernel module does not appear to be loaded,\n" ) ;
