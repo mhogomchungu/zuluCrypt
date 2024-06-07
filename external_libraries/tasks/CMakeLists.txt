@@ -40,6 +40,8 @@ if(BUILD_WITH_QT6)
 		add_library( mhogomchungu_task STATIC task.hpp )
 	endif()
 
+	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
+
 	target_link_libraries( mhogomchungu_task ${Qt6Core_LIBRARIES} )
 
 	if( DEBUG )
@@ -61,6 +63,8 @@ else()
 		add_library( mhogomchungu_task STATIC ${MOC_LIBRARY} )
 	endif()
 
+	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
+
 	target_link_libraries( mhogomchungu_task ${Qt5Core_LIBRARIES} )
 
 	if( DEBUG )
@@ -68,12 +72,6 @@ else()
 		add_executable( example example.cpp main.cpp ${MOC_EXE} )
 		target_link_libraries( example mhogomchungu_task )
 	endif()
-endif()
-
-if( WIN32 )
-	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic " )
-else()
-	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
 endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/mhogomchungu_task.pc
