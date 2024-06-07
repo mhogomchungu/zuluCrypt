@@ -32,11 +32,11 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 if(BUILD_WITH_QT6)
         add_executable( zuluPolkit ${MOC_FILES} ${SRC} )
-         target_link_libraries( zuluPolkit ${Qt6Core_LIBRARIES} ${Qt6Network_LIBRARIES} mhogomchungu_task )
+	target_link_libraries( zuluPolkit ${Qt6Core_LIBRARIES} ${Qt6Network_LIBRARIES} mhogomchungu_task )
 else()
         Qt5_WRAP_CPP( MOC ${MOC_FILES} )
         add_executable( zuluPolkit ${MOC} ${SRC} )
-         target_link_libraries( zuluPolkit ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} mhogomchungu_task )
+	target_link_libraries( zuluPolkit ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} mhogomchungu_task )
 endif()
 
 set_target_properties( zuluPolkit PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )

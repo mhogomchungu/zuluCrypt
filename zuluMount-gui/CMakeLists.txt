@@ -58,12 +58,12 @@ if(BUILD_WITH_QT6)
 
 	add_definitions( ${Qt6Widgets_DEFINITIONS} )
 
-	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
-
 	add_executable( zuluMount-gui ${MOC_FILES} ${UI_FILES} ${SRC} icon.qrc )
 
 	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqt-wallet  ${Qt6Widgets_LIBRARIES} ${Qt6Core_LIBRARIES} ${Qt6Widgets_LIBRARIES} ${Qt6Network_LIBRARIES} ${blkid} zuluCryptPluginManager )
 else()
+        INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+
 	include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
 
 	add_definitions( ${Qt5Widgets_DEFINITIONS} )
