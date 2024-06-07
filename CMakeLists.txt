@@ -358,6 +358,13 @@ if( NOT NOGUI )
 	endif()
 
 	if( BUILD_WITH_QT6 )
+
+	        set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+		set(CMAKE_AUTOMOC ON)
+		set(CMAKE_AUTORCC ON)
+		set(CMAKE_AUTOUIC ON)
+
 		message( STATUS "Found Qt5Widgets, version  ${Qt6Widgets_VERSION}" )
 		message( STATUS "Found Qt5Core, version  ${Qt6Core_VERSION}" )
 		message( STATUS "Found Qt5Network, version  ${Qt6Network_VERSION}" )

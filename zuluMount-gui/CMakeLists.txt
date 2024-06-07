@@ -54,11 +54,6 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 if(BUILD_WITH_QT6)
 
-	set(CMAKE_INCLUDE_CURRENT_DIR ON)
-	set(CMAKE_AUTOMOC ON)
-	set(CMAKE_AUTORCC ON)
-	set(CMAKE_AUTOUIC ON)
-
 	include_directories( ${Qt6Widgets_INCLUDE_DIRS} )
 
 	add_definitions( ${Qt6Widgets_DEFINITIONS} )

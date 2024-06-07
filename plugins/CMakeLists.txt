@@ -25,11 +25,6 @@ set( CMAKE_CXX_EXTENSIONS OFF)
 
 if(BUILD_WITH_QT6)
 
-	set(CMAKE_INCLUDE_CURRENT_DIR ON)
-	set(CMAKE_AUTOMOC ON)
-	set(CMAKE_AUTORCC ON)
-	set(CMAKE_AUTOUIC ON)
-
 	add_library( plugin STATIC mainwindow.h mainwindow.ui mainwindow.cpp )
 else()
 	QT5_WRAP_UI( UI mainwindow.ui )

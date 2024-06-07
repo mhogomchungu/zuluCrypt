@@ -57,11 +57,6 @@ add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINA
 
 if(BUILD_WITH_QT6)
 
-	set(CMAKE_INCLUDE_CURRENT_DIR ON)
-	set(CMAKE_AUTOMOC ON)
-	set(CMAKE_AUTORCC ON)
-	set(CMAKE_AUTOUIC ON)
-
 	add_library( sharedObject STATIC ${MOC_FILES} ${SRC} ${UI_FILES} icon.qrc )
 
 	if( BUILDKWALLET )

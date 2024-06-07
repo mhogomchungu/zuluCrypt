@@ -89,11 +89,6 @@ INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
 if(BUILD_WITH_QT6)
 
-	set(CMAKE_INCLUDE_CURRENT_DIR ON)
-	set(CMAKE_AUTOMOC ON)
-	set(CMAKE_AUTORCC ON)
-	set(CMAKE_AUTOUIC ON)
-
 	add_executable( zuluCrypt-gui ${MOC_FILES} ${UI_FILES} ${SRC} icon.qrc  )
 
 	set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
