@@ -13,22 +13,13 @@ set (UI_FILES 	zulumount.ui
                 keydialog.ui
 		mountpartition.ui
 		veracryptpimdialog.ui
-		../zuluCrypt-gui/tcrypt.ui
-		../zuluCrypt-gui/favorites2.ui
-		../zuluCrypt-gui/openvolume.ui
 )
 
 set(zMOC_FILES 	zulumount.h
                 keydialog.h
 		mountpartition.h
-		oneinstance.h
 		events.h
-		monitor_mountinfo.h
 		veracryptpimdialog.h
-		../zuluCrypt-gui/tcrypt.h
-		../zuluCrypt-gui/utility.h
-		../zuluCrypt-gui/favorites2.h
-		../zuluCrypt-gui/openvolume.h
  )
 
 set(SRC 	main.cpp
@@ -37,14 +28,9 @@ set(SRC 	main.cpp
 		keydialog.cpp
 		zulumounttask.cpp
 		mountpartition.cpp
-		oneinstance.cpp
-		monitor_mountinfo.cpp
 		siritask.cpp
 		volumeproperty.cpp
-		../zuluCrypt-gui/tcrypt.cpp
 		veracryptpimdialog.cpp
-		../zuluCrypt-gui/favorites2.cpp
-		../zuluCrypt-gui/openvolume.cpp
 		../zuluCrypt-gui/secrets.cpp
 )
 
