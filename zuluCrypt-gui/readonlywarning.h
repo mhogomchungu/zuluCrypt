@@ -56,7 +56,6 @@ private:
 	Ui::readOnlyWarning * m_ui ;
 	bool m_checked ;
 	QString m_app ;
-	QString m_configPathReadOnly ;
 	QString m_configPathShowUI ;
 };
 

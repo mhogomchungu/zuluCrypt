@@ -46,8 +46,6 @@ readOnlyWarning::readOnlyWarning( QWidget * parent,bool checked,const QString& a
 
 	this->installEventFilter( this ) ;
 
-	m_configPathReadOnly = utility::readOnlyOption() ;
-
 	this->setReadOnlyOption( m_checked ) ;
 }
 

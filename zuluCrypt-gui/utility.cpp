@@ -2062,7 +2062,12 @@ public:
 
 			e = new QTranslator() ;
 
-			e->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
+			auto mm = e->load( r.constData(),utility::localizationLanguagePath( app ) ) ;
+
+			if( !mm ){
+
+				//??
+			}
 
 			*( f + s ) = e ;
 
@@ -2499,8 +2504,10 @@ void utility::setHDPI( const QString& e )
 
 #if QT_VERSION >= 0x050600
 
-	QApplication::setAttribute( Qt::AA_EnableHighDpiScaling ) ;
+	#if QT_VERSION < QT_VERSION_CHECK( 6,0,0 )
 
+		QApplication::setAttribute( Qt::AA_EnableHighDpiScaling ) ;
+	#endif
 	if( !_settings->contains( "ScaleFactor" ) ){
 
 		_settings->setValue( "ScaleFactor","1" ) ;
