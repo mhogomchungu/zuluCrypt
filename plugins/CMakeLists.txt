@@ -30,7 +30,7 @@ if(BUILD_WITH_QT6)
 	set(CMAKE_AUTORCC ON)
 	set(CMAKE_AUTOUIC ON)
 
-	add_library( plugin STATIC mainwindow.h UI mainwindow.ui mainwindow.cpp )
+	add_library( plugin STATIC mainwindow.h mainwindow.ui mainwindow.cpp )
 else()
 	QT5_WRAP_UI( UI mainwindow.ui )
 	QT5_WRAP_CPP( MOC mainwindow.h )
