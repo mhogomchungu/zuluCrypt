@@ -21,7 +21,8 @@ jobs:
     -
       name: Install packages
       run: | 
-        sudo sudo apt-get -f install tar xz-utils libpwquality-dev libblkid-dev libcryptsetup-dev libgcrypt11-dev libsecret-1-dev libdevmapper-dev uuid-dev libudev-dev
+        sudo apt-get update
+        sudo apt-get -f install tar xz-utils libpwquality-dev libblkid-dev libcryptsetup-dev libgcrypt20-dev libsecret-1-dev libdevmapper-dev uuid-dev libudev-dev
     - 
       name: Install Qt6
       uses: jurplel/install-qt-action@v3
