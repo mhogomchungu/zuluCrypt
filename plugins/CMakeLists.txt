@@ -23,10 +23,20 @@ endif()
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF)
 
-QT5_WRAP_UI( UI mainwindow.ui )
-QT5_WRAP_CPP( MOC mainwindow.h )
+if(BUILD_WITH_QT6)
 
-add_library( plugin STATIC ${MOC} ${UI} mainwindow.cpp )
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+	set(CMAKE_AUTOMOC ON)
+	set(CMAKE_AUTORCC ON)
+	set(CMAKE_AUTOUIC ON)
+
+	add_library( plugin STATIC mainwindow.h UI mainwindow.ui mainwindow.cpp )
+else()
+	QT5_WRAP_UI( UI mainwindow.ui )
+	QT5_WRAP_CPP( MOC mainwindow.h )
+
+	add_library( plugin STATIC ${MOC} ${UI} mainwindow.cpp )
+endif()
 
 set_target_properties( plugin PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pthread  -pedantic " )
 
