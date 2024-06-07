@@ -6,11 +6,10 @@ endif()
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/plugins/gpg -I${PROJECT_BINARY_DIR} )
 
-if( QT5 )
-	QT5_ADD_RESOURCES( ICON ../icon.qrc )
-	add_executable( gpg ${ICON} main.cpp )
+if(BUILD_WITH_QT6)
+	add_executable( gpg ../icon.qrc main.cpp )
 else()
-	QT4_ADD_RESOURCES( ICON ../icon.qrc )
+	QT5_ADD_RESOURCES( ICON ../icon.qrc )
 	add_executable( gpg ${ICON} main.cpp )
 endif()
 

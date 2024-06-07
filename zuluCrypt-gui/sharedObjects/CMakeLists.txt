@@ -55,16 +55,32 @@ set( UI_FILES
 
 add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINARY_DIR}/zuluCrypt-gui/sharedObjects -I${PROJECT_BINARY_DIR})
 
-Qt5_WRAP_UI( UI ${UI_FILES} )
-Qt5_WRAP_CPP( MOC ${MOC_FILES} )
-Qt5_ADD_RESOURCES( ICON icon.qrc )
+if(BUILD_WITH_QT6)
 
-add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} ${ICON} )
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+	set(CMAKE_AUTOMOC ON)
+	set(CMAKE_AUTORCC ON)
+	set(CMAKE_AUTOUIC ON)
 
-if( BUILDKWALLET )
-        target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
+	add_library( sharedObject STATIC ${MOC_FILES} ${SRC} ${UI_FILES} icon.qrc )
+
+	if( BUILDKWALLET )
+		target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt6Network_LIBRARIES} mhogomchungu_task )
+	else()
+		target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${Qt6Network_LIBRARIES} mhogomchungu_task )
+	endif()
 else()
-        target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
+	Qt5_WRAP_UI( UI ${UI_FILES} )
+	Qt5_WRAP_CPP( MOC ${MOC_FILES} )
+	Qt5_ADD_RESOURCES( ICON icon.qrc )
+
+	add_library( sharedObject STATIC ${MOC} ${SRC} ${UI_FILES} ${ICON} )
+
+	if( BUILDKWALLET )
+		target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
+	else()
+		target_link_libraries( sharedObject -lgcrypt lxqt-wallet -lblkid ${Qt5Network_LIBRARIES} mhogomchungu_task )
+	endif()
 endif()
 
 set_target_properties( sharedObject PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIC -pthread -pedantic" )

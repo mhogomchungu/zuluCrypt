@@ -1,0 +1,35 @@
+name: Build Qt6 Git
+
+on:
+  repository_dispatch:
+    types: [Qt6Git]
+
+env:
+  QT6_VERSION: "6.6.2"
+jobs:
+  buildLinuxQt6Git:
+    runs-on: ubuntu-latest
+    steps:
+    -
+      uses: actions/checkout@v4
+      with:
+         repository: mhogomchungu/media-downloader
+         path: Linux
+    -
+      name: Install Qt6
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: ${{ env.QT6_VERSION }}
+        arch: 'gcc_64'
+        dir: "${{github.workspace}}/qt6"
+        install-deps: "true"
+        host: 'linux'
+        target: 'desktop'
+    -
+      name: Configure CMake
+      env:
+        CMAKE_PREFIX_PATH: "${{github.workspace}}/qt6/Qt/${{ env.QT6_VERSION }}"
+      run: cmake -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/zC -DBUILD_WITH_QT6=true -DCMAKE_VERBOSE_MAKEFILE=FALSE -DCMAKE_BUILD_TYPE=RELEASE -S ${{github.workspace}}/Linux/ -B ${{github.workspace}}/Linux/build6
+    -
+      name: Build
+      run: cmake --build ${{github.workspace}}/Linux/build6

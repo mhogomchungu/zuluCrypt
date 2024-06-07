@@ -48,22 +48,38 @@ set(SRC 	main.cpp
 		../zuluCrypt-gui/secrets.cpp
 )
 
-find_package( Qt5Widgets REQUIRED )
-find_package( Qt5Core REQUIRED )
-
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
-include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
-
-add_definitions( ${Qt5Widgets_DEFINITIONS} )
-QT5_WRAP_UI( UI ${UI_FILES} )
-QT5_WRAP_CPP(MOC ${MOC_FILES} )
-QT5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
 
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
-add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+if(BUILD_WITH_QT6)
 
-TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqt-wallet  ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} zuluCryptPluginManager )
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+	set(CMAKE_AUTOMOC ON)
+	set(CMAKE_AUTORCC ON)
+	set(CMAKE_AUTOUIC ON)
+
+	include_directories( ${Qt6Widgets_INCLUDE_DIRS} )
+
+	add_definitions( ${Qt6Widgets_DEFINITIONS} )
+
+	INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
+
+	add_executable( zuluMount-gui ${MOC_FILES} ${UI_FILES} ${SRC} icon.qrc )
+
+	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqt-wallet  ${Qt6Widgets_LIBRARIES} ${Qt6Core_LIBRARIES} ${Qt6Widgets_LIBRARIES} ${Qt6Network_LIBRARIES} ${blkid} zuluCryptPluginManager )
+else()
+	include_directories( ${Qt5Widgets_INCLUDE_DIRS} )
+
+	add_definitions( ${Qt5Widgets_DEFINITIONS} )
+	QT5_WRAP_UI( UI ${UI_FILES} )
+	QT5_WRAP_CPP(MOC ${MOC_FILES} )
+	QT5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
+
+	add_executable( zuluMount-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS} )
+
+	TARGET_LINK_LIBRARIES( zuluMount-gui sharedObject lxqt-wallet  ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Widgets_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} zuluCryptPluginManager )
+endif()
 
 set_target_properties( zuluMount-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 

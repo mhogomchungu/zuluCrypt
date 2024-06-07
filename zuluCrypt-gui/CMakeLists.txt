@@ -85,23 +85,43 @@ set( SRC
 	showluksslots.cpp
 )
 
-Qt5_WRAP_UI( UI ${UI_FILES} )
-Qt5_WRAP_CPP( MOC ${MOC_FILES} )
-Qt5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
-
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
-add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )
+if(BUILD_WITH_QT6)
 
-set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+	set(CMAKE_INCLUDE_CURRENT_DIR ON)
+	set(CMAKE_AUTOMOC ON)
+	set(CMAKE_AUTORCC ON)
+	set(CMAKE_AUTOUIC ON)
 
-set_target_properties( zuluCrypt-gui PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
+	add_executable( zuluCrypt-gui ${MOC_FILES} ${UI_FILES} ${SRC} icon.qrc  )
 
-if( WITH_PWQUALITY AND library_pwquality )
-	TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${library_pwquality} )
-else( WITH_PWQUALITY AND library_pwquality )
-	TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${kwallet_library} )
-endif( WITH_PWQUALITY AND library_pwquality )
+	set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+
+	set_target_properties( zuluCrypt-gui PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
+
+	if( WITH_PWQUALITY AND library_pwquality )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt6Widgets_LIBRARIES} ${Qt6Core_LIBRARIES} ${Qt6Network_LIBRARIES} ${blkid} ${library_pwquality} )
+	else( WITH_PWQUALITY AND library_pwquality )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt6Widgets_LIBRARIES} ${Qt6Core_LIBRARIES} ${Qt6Network_LIBRARIES} ${blkid} ${kwallet_library} )
+	endif( WITH_PWQUALITY AND library_pwquality )
+else()
+	Qt5_WRAP_UI( UI ${UI_FILES} )
+	Qt5_WRAP_CPP( MOC ${MOC_FILES} )
+	Qt5_ADD_RESOURCES( TRAY_RC_SRCS icon.qrc )
+
+	add_executable( zuluCrypt-gui ${MOC} ${UI} ${SRC} ${TRAY_RC_SRCS}  )
+
+	set_target_properties( zuluCrypt-gui PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+
+	set_target_properties( zuluCrypt-gui PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
+
+	if( WITH_PWQUALITY AND library_pwquality )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${library_pwquality} )
+	else( WITH_PWQUALITY AND library_pwquality )
+		TARGET_LINK_LIBRARIES( zuluCrypt-gui lxqt-wallet ${Qt5Widgets_LIBRARIES} ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} ${blkid} ${kwallet_library} )
+	endif( WITH_PWQUALITY AND library_pwquality )
+endif()
 
 target_link_libraries( zuluCrypt-gui sharedObject zuluCryptPluginManager )
 

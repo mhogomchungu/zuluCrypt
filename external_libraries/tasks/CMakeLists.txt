@@ -26,32 +26,54 @@ INCLUDE( GNUInstallDirs )
 
 INCLUDE( CMakeDependentOption )
 
-find_package( Qt5Core REQUIRED )
+if(BUILD_WITH_QT6)
 
-QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
+	find_package( Qt6Core REQUIRED )
 
-include_directories( ${Qt5Core_INCLUDE_DIRS} )
+	include_directories( ${Qt6Core_INCLUDE_DIRS} )
 
-if( MCHUNGU_TASK_INSTALL )
+	if( MCHUNGU_TASK_INSTALL )
 
-	add_library( mhogomchungu_task SHARED ${MOC_LIBRARY} )
-	set_target_properties(mhogomchungu_task PROPERTIES SOVERSION "${SO_VERSION}")
+		add_library( mhogomchungu_task SHARED task.hpp )
+		set_target_properties(mhogomchungu_task PROPERTIES SOVERSION "${SO_VERSION}")
+	else()
+		add_library( mhogomchungu_task STATIC task.hpp )
+	endif()
+
+	target_link_libraries( mhogomchungu_task ${Qt6Core_LIBRARIES} )
+
+	if( DEBUG )
+		add_executable( example example.cpp main.cpp example.h )
+		target_link_libraries( example mhogomchungu_task )
+	endif()
 else()
-	add_library( mhogomchungu_task STATIC ${MOC_LIBRARY} )
-endif()
+	find_package( Qt5Core REQUIRED )
 
-target_link_libraries( mhogomchungu_task ${Qt5Core_LIBRARIES} )
+	QT5_WRAP_CPP( MOC_LIBRARY task.hpp )
+
+	include_directories( ${Qt5Core_INCLUDE_DIRS} )
+
+	if( MCHUNGU_TASK_INSTALL )
+
+		add_library( mhogomchungu_task SHARED ${MOC_LIBRARY} )
+		set_target_properties(mhogomchungu_task PROPERTIES SOVERSION "${SO_VERSION}")
+	else()
+		add_library( mhogomchungu_task STATIC ${MOC_LIBRARY} )
+	endif()
+
+	target_link_libraries( mhogomchungu_task ${Qt5Core_LIBRARIES} )
+
+	if( DEBUG )
+		QT5_WRAP_CPP( MOC_EXE example.h )
+		add_executable( example example.cpp main.cpp ${MOC_EXE} )
+		target_link_libraries( example mhogomchungu_task )
+	endif()
+endif()
 
 if( WIN32 )
 	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -pedantic " )
 else()
 	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
-endif()
-
-if( DEBUG )
-	QT5_WRAP_CPP( MOC_EXE example.h )
-	add_executable( example example.cpp main.cpp ${MOC_EXE} )
-	target_link_libraries( example mhogomchungu_task )
 endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/mhogomchungu_task.pc
