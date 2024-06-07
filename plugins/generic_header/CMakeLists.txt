@@ -4,7 +4,7 @@ else()
     cmake_minimum_required(VERSION 3.0.2)
 endif()
 
-add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++11 -I${PROJECT_BINARY_DIR}/plugins/luks -I${PROJECT_BINARY_DIR} )
+add_definitions( -D_FILE_OFFSET_BITS=64 -Wall -pedantic -std=c++17 -I${PROJECT_BINARY_DIR}/plugins/luks -I${PROJECT_BINARY_DIR} )
 
 if( QT5 )
 	QT5_ADD_RESOURCES( ICON ../icon.qrc )
