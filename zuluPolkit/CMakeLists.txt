@@ -28,21 +28,20 @@ set( SRC
 	../zuluCrypt-gui/executablesearchpaths.cpp
 )
 
-Qt5_WRAP_CPP( MOC ${MOC_FILES} )
-
 INCLUDE_DIRECTORIES( ${CMAKE_BINARY_DIR} )
 
-add_executable( zuluPolkit ${MOC} ${SRC} )
+if(BUILD_WITH_QT6)
+        add_executable( zuluPolkit ${MOC_FILES} ${SRC} )
+         target_link_libraries( zuluPolkit ${Qt6Core_LIBRARIES} ${Qt6Network_LIBRARIES} mhogomchungu_task )
+else()
+        Qt5_WRAP_CPP( MOC ${MOC_FILES} )
+        add_executable( zuluPolkit ${MOC} ${SRC} )
+         target_link_libraries( zuluPolkit ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} mhogomchungu_task )
+endif()
 
 set_target_properties( zuluPolkit PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 
 set_target_properties( zuluPolkit PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wextra -Wall -s -fPIC -pedantic" )
-
-if( QT5 )
-        target_link_libraries( zuluPolkit ${Qt5Core_LIBRARIES} ${Qt5Network_LIBRARIES} mhogomchungu_task )
-else()
-        target_link_libraries( zuluPolkit ${QT_LIBRARIES} mhogomchungu_task )
-endif()
 
 file( WRITE ${PROJECT_BINARY_DIR}/org.zulucrypt.zulupolkit.policy
 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
