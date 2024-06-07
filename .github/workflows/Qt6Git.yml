@@ -16,7 +16,7 @@ jobs:
     -
       uses: actions/checkout@v4
       with:
-         repository: mhogomchungu/media-downloader
+         repository: mhogomchungu/zuluCrypt
          path: Linux
     -
       name: Install Qt6
