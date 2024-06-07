@@ -40,6 +40,8 @@ if(BUILD_WITH_QT6)
 		add_library( mhogomchungu_task STATIC task.hpp )
 	endif()
 
+	set_target_properties( mhogomchungu_task PROPERTIES LINKER_LANGUAGE CXX )
+
 	set_target_properties( mhogomchungu_task PROPERTIES COMPILE_FLAGS "-Wextra -Wall -s -fPIC -pedantic " )
 
 	target_link_libraries( mhogomchungu_task ${Qt6Core_LIBRARIES} )
