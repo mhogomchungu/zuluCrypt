@@ -1,8 +1,11 @@
 name: Build Qt6 Git
 
 on:
-  repository_dispatch:
-    types: [Qt6Git]
+  push:
+    branches:
+    - master
+    tags-ignore:
+    - '*'
 
 env:
   QT6_VERSION: "6.6.2"
