@@ -27,7 +27,6 @@ set( UI_FILES createfile.ui
 		managesystemvolumes.ui
 		erasedevice.ui
 		help.ui
-		dialogok.ui
 		filemanager.ui
 		showluksslots.ui
 )
@@ -35,8 +34,6 @@ set( UI_FILES createfile.ui
 set( zuluCryptMOC_FILES
 		cryptoinfo.h
 		about.h
-		dialogok.h
-		utility.h
 		createfile.h
 		luksaddkey.h
 		createkeyfile.h
@@ -60,7 +57,6 @@ set( zuluCryptMOC_FILES
 
 set( SRC
 	about.cpp
-	dialogok.cpp
 	secrets.cpp
 	createfile.cpp
 	createvolume.cpp

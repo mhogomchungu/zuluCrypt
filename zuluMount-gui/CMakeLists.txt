@@ -10,7 +10,7 @@ include_directories( ${PROJECT_BINARY_DIR}/zuluMount-gui/ )
 
 
 set (UI_FILES 	zulumount.ui
-		keydialog.ui
+                keydialog.ui
 		mountpartition.ui
 		veracryptpimdialog.ui
 		../zuluCrypt-gui/tcrypt.ui
@@ -19,7 +19,7 @@ set (UI_FILES 	zulumount.ui
 )
 
 set(zMOC_FILES 	zulumount.h
-		keydialog.h
+                keydialog.h
 		mountpartition.h
 		oneinstance.h
 		events.h
