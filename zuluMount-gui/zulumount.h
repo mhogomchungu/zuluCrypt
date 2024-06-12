@@ -48,23 +48,23 @@ class zuluMount : public QWidget
 	Q_OBJECT
 public:
 	explicit zuluMount( QWidget * parent = 0 ) ;
+	void Show() ;
 	~zuluMount() ;
 signals:
 	void result( int,QString ) ;
 	void unlistVolume( QString ) ;
-private slots:
+private:
 	void showTrayIcon( bool ) ;
-	void polkitFailedWarning( void ) ;
+	void polkitFailedWarning() ;
 	void helperStarted( bool,const QString& ) ;
-	void Show( void ) ;
 	void raiseWindow( const QString& = QString() ) ;
-	void showTrayGUI( void ) ;
-	void cryfsVolumeProperties( void ) ;
-	void closeApplication( void ) ;
+	void showTrayGUI() ;
+	void cryfsVolumeProperties() ;
+	void closeApplication() ;
 	void closeApplication( int ) ;
-	void unlockCryptFs( void ) ;
-	void showVisibleVolumeList( void ) ;
-	void showHiddenVolumeList( void ) ;
+	void unlockCryptFs() ;
+	void showVisibleVolumeList() ;
+	void showHiddenVolumeList() ;
 	void removeVolumeFromHiddenVolumeList( QAction * ) ;
 	void removeVolumeFromVisibleVolumeList( QAction * ) ;
 	void volumeMiniProperties( bool,volumeProperty * ) ;
@@ -74,23 +74,23 @@ private slots:
 	void showMoungDialog( const QString&,const QString& = QString() ) ;
 	void autoMountVolume( volumeProperty * ) ;
 	void mount( const volumeProperty& ) ;
-	void defaultButton( void ) ;
-	void volumeProperties( void ) ;
+	void defaultButton() ;
+	void volumeProperties() ;
 	void itemClicked( QTableWidgetItem * ) ;
-	void pbUpdate( void ) ;
-	void pbMount( void ) ;
-	void slotMount( void ) ;
-	void unMountAll( void ) ;
-	void emergencyQuitApplication( void ) ;
-	void pbUmount( void ) ;
-	void pbUmount_powerDown( void ) ;
+	void pbUpdate() ;
+	void pbMount() ;
+	void slotMount() ;
+	void unMountAll() ;
+	void emergencyQuitApplication() ;
+	void pbUmount() ;
+	void pbUmount_powerDown() ;
 	void unmount( const QString& = QString() ) ;
 	void slotTrayClicked( QSystemTrayIcon::ActivationReason ) ;
 	void slotCurrentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ;
-	void enableAll( void ) ;
-	void enableAll_1( void ) ;
-	void slotOpenFolder( void ) ;
-	void slotOpenSharedFolder( void ) ;
+	void enableAll() ;
+	void enableAll_1() ;
+	void slotOpenFolder() ;
+	void slotOpenSharedFolder() ;
 	void itemEntered( QTableWidgetItem * ) ;
 	void volumeRemoved( QString ) ;
 	void removeVolume( QString ) ;
@@ -99,39 +99,39 @@ private slots:
 	void autoMountToggled( bool ) ;
 	void autoOpenFolderOnMount( bool ) ;
 	void removeEntryFromTable( QString ) ;
-	void showFavorites( void ) ;
+	void showFavorites() ;
 	void favoriteClicked( QAction * ) ;
 	void openMountPointPath( QString ) ;
-	void licenseInfo( void ) ;
+	void licenseInfo() ;
 	void languageMenu( QAction * ac ) ;
-	void encfsProperties( void ) ;
-	void securefsProperties( void ) ;
-	void gocryptfsProperties( void ) ;
-	void ecryptfsProperties( void ) ;
+	void encfsProperties() ;
+	void securefsProperties() ;
+	void gocryptfsProperties() ;
+	void ecryptfsProperties() ;
 private:
-	void setIcons( void ) ;
+	void setIcons() ;
 	bool errorNotFound( int ) ;
 	QString resolveFavoriteMountPoint( const QString& ) ;
 	void updateVolumeList( const QVector< volumeProperty >& ) ;
 	void openMountPoint( const QString& ) ;
-	QFont getSystemVolumeFont( void ) ;
+	QFont getSystemVolumeFont() ;
 	void setLocalizationLanguage( bool ) ;
-	bool autoOpenFolderOnMount( void ) ;
+	bool autoOpenFolderOnMount() ;
 	void dragEnterEvent( QDragEnterEvent * ) ;
 	void removeDisappearedEntries( const QVector< volumeProperty >& ) ;
 	void dropEvent( QDropEvent * ) ;
 	void showContextMenu( QTableWidgetItem *,bool ) ;
-	void startAutoMonitor( void ) ;
-	bool autoMount( void ) ;
+	void startAutoMonitor() ;
+	bool autoMount() ;
 	void updateList( const volumeProperty& ) ;
 
 	Ui::zuluMount * m_ui = nullptr ;
 	QString m_folderOpener ;
 
-	void disableAll( void ) ;
+	void disableAll() ;
 	void closeEvent( QCloseEvent * e ) ;
-	void setUpFont( void ) ;
-	void setUpShortCuts( void ) ;
+	void setUpFont() ;
+	void setUpShortCuts() ;
 	void setUpApp( const QString& ) ;
 
 	QAction * m_autoMountAction = nullptr ;

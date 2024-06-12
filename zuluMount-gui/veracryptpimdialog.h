@@ -45,10 +45,9 @@ public:
 	}
 	explicit VeraCryptPIMDialog( QWidget * parent,std::function< void( int ) > ) ;
 	~VeraCryptPIMDialog() ;
-private slots:
+private:
 	void pbSet() ;
 	void pbCancel() ;
-private:
 	void Show() ;
 	void Hide() ;
 	void closeEvent( QCloseEvent * ) ;

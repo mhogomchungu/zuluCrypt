@@ -50,7 +50,7 @@ namespace zuluMountTask
 	};
 
 	Task::future< QString >& volumeProperties( const QString& volume,const QString& volumeType ) ;
-	Task::future< QVector< volumeProperty > >& updateVolumeList( void ) ;
+	Task::future< QVector< volumeProperty > >& updateVolumeList() ;
 	Task::future< volumeProperty >& getVolumeProperties( const QString& e ) ;
 	Task::future< utility::Task >& unmountVolume( const QString& volumePath,
 						      const QString& volumeType,
@@ -65,8 +65,8 @@ namespace zuluMountTask
 	volumeStatus volumeMiniProperties( const QString& volume ) ;
 	volumeStatus deviceProperties( const zuluMountTask::event& ) ;
 
-	QStringList mountedVolumeList( void ) ;
-	QStringList hiddenVolumeList( void ) ;
+	QStringList mountedVolumeList() ;
+	QStringList hiddenVolumeList() ;
 
 	void addVolumeToHiddenVolumeList( const QString& ) ;
 	void removeVolumeFromHiddenVolumeList( const QString& ) ;

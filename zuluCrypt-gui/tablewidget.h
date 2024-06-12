@@ -35,6 +35,8 @@ namespace tablewidget
 	void selectRow( QTableWidget *,const QString&,int column = 0 ) ;
 	void selectLastRow( QTableWidget * ) ;
 
+	void addOrUpdateRows( QTableWidget *,const QVector< QStringList >&,const QFont& = QFont() ) ;
+
 	void addRow( QTableWidget *,const QStringList&,const QFont& = QFont() ) ;
 	int  addRow( QTableWidget * ) ;
 

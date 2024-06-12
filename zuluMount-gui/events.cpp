@@ -71,11 +71,6 @@ void events::start()
 
 void events::run()
 {
-	connect( this,SIGNAL( volumeMiniProperties( volumeProperty * ) ),
-		 m_parent,SLOT( autoMountVolume( volumeProperty * ) ) ) ;
-	connect( this,SIGNAL( volumeRemoved( QString ) ),
-		 m_parent,SLOT( volumeRemoved( QString ) ) ) ;
-
 	utility::fileHandle f( inotify_init() ) ;
 
 	int fd = f.handle() ;

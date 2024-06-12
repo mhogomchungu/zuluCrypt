@@ -378,8 +378,8 @@ static bool _enable_polkit_support( const QString& m )
 	return !s ;
 }
 
-void utility::startHelperExecutable( QObject * obj,const QString& arg,const QString& exe,
-				     const char * slot,const char * slot1 )
+void utility::startHelper( QObject * obj,const QString& arg,const QString& exe,
+				     utility::startHelperStatus status )
 {
 	if( _enable_polkit_support( exe ) ){
 
@@ -391,19 +391,19 @@ void utility::startHelperExecutable( QObject * obj,const QString& arg,const QStr
 
 				_run_through_polkit = e.success() ;
 
-				QMetaObject::invokeMethod( obj,
-							   slot,
-							   Q_ARG( bool,e.success() ),
-							   Q_ARG( QString,arg ) ) ;
+				utility::invokeMethod( obj,[ s = e.success(),arg,status ](){
+
+					status.success( s,arg ) ;
+				} ) ;
 			} ) ;
 		}else{
 			DialogMsg().ShowUIOK( QObject::tr( "ERROR" ),
 					      QObject::tr( "Failed to locate pkexec executable" ) ) ;
 
-			QMetaObject::invokeMethod( obj,slot1 ) ;
+			utility::invokeMethod( obj,[ = ]{ status.error() ; } ) ;
 		}
 	}else{
-		QMetaObject::invokeMethod( obj,slot,Q_ARG( bool,true ),Q_ARG( QString,arg ) ) ;
+		utility::invokeMethod( obj,[ = ](){ status.success( true,arg ) ; } ) ;
 	}
 }
 
@@ -650,11 +650,6 @@ int utility::startApplication( const char * appName,std::function<int()> start )
 	}else{
 		return start() ;
 	}
-}
-
-void utility::startApplication( QObject * s,const char * e )
-{
-	QMetaObject::invokeMethod( s,e,Qt::QueuedConnection ) ;
 }
 
 void utility::keySend( const QString& path,const QByteArray& key )

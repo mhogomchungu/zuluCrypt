@@ -38,8 +38,8 @@ cryptoinfo::cryptoinfo( QWidget * parent,QString path,QString msg ) :
 
 	m_ui->checkBox->setChecked( false ) ;
 
-	connect( m_ui->pbOK,SIGNAL( clicked() ),this,SLOT( pbOK() ) ) ;
-	connect( m_ui->checkBox,SIGNAL( clicked( bool ) ),this,SLOT( checkBoxChecked( bool ) ) ) ;
+	connect( m_ui->pbOK,&QPushButton::clicked,this,&cryptoinfo::pbOK ) ;
+	connect( m_ui->checkBox,&QCheckBox::clicked,this,&cryptoinfo::checkBoxChecked ) ;
 
 	this->installEventFilter( this ) ;
 

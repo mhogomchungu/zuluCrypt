@@ -33,8 +33,8 @@ createVolumeDialog::createVolumeDialog( const QString& path,QWidget * parent,std
 
 	m_ui->pbNo->setFocus() ;
 
-	connect( m_ui->pbYes,SIGNAL( clicked() ),this,SLOT( pbYes() ) ) ;
-	connect( m_ui->pbNo,SIGNAL( clicked() ),this,SLOT( pbNo() ) ) ;
+	connect( m_ui->pbYes,&QPushButton::clicked,this,&createVolumeDialog::pbYes ) ;
+	connect( m_ui->pbNo,&QPushButton::clicked,this,&createVolumeDialog::pbNo ) ;
 
 	this->ShowUI() ;
 }

@@ -43,8 +43,8 @@ public:
 	explicit help( QWidget * parent,const QString& ) ;
 	~help() ;
 private slots:
-	void pbClose( void ) ;
-	void pbOpenPDF( void ) ;
+	void pbClose() ;
+	void pbOpenPDF() ;
 private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;

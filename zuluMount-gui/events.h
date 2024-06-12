@@ -34,8 +34,8 @@ class events : public QObject
 public:
 	explicit events( QObject * parent,std::function< void() > ) ;
 	~events() ;
-	void stop( void ) ;
-	void start( void ) ;
+	void stop() ;
+	void start() ;
 signals:
 	void volumeRemoved( QString ) ;
 	void volumeMiniProperties( volumeProperty * ) ;

@@ -127,33 +127,11 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 	}
 	if( StringHasComponent( mode,"noatime" ) ){
 
-		if( _user_has_no_access( uid ) ){
-
-			return 1 ;
-		}
 		flg |= MS_NOATIME ;
 	}
 	if( StringHasComponent( mode,"strictatime" ) ){
 
-		if( _user_has_no_access( uid ) ){
-
-			return 1 ;
-		}
 		flg |= MS_STRICTATIME ;
-	}
-	if( flg & MS_NOATIME ){
-		/*
-		 * MS_NOATIME flag is set by user,use it instead of MS_RELATIME
-		 */		
-	}else if( flg & MS_STRICTATIME ){
-		/*
-		 *  MS_STRICTATIME flag is set by user,use it instead of MS_RELATIME
-		 */		
-	}else{
-		/*
-		 * MS_NOATIME flag not set,autoset MS_RELATIME flag as the default flag
-		 */
-		flg |= MS_RELATIME ;
 	}
 #if 0
 	/*
@@ -170,10 +148,6 @@ int zuluCryptMountFlagsAreNotCorrect( const char * mode,uid_t uid,unsigned long 
 #endif
 	if( StringHasComponent( mode,"nodiratime" ) ){
 
-		if( _user_has_no_access( uid ) ){
-
-			return 1 ;
-		}
 		flg |= MS_NODIRATIME ;
 	}
 	if( StringHasComponent( mode,"remount" ) ){

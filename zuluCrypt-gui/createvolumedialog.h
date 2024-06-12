@@ -39,12 +39,11 @@ public:
 	}
 	explicit createVolumeDialog( const QString& path,QWidget * parent,std::function< void( int ) > ) ;
 	~createVolumeDialog() ;
-private slots:
-	void pbYes( void ) ;
-	void pbNo( void ) ;
 private:
+	void pbYes() ;
+	void pbNo() ;
 	void closeEvent( QCloseEvent * ) ;
-	void ShowUI( void ) ;
+	void ShowUI() ;
 	Ui::createVolumeDialog * m_ui ;
 	int m_opt ;
 	int m_opt_count ;

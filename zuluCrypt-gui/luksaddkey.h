@@ -47,30 +47,30 @@ public:
 	~luksaddkey() ;
 signals :
 	void clickedpbAdd( QString PathToVolume,bool keyfile,QString ExistingKey,bool newkeyfile,QString NewKey ) ;
-	void pbOpenPartitionClicked( void ) ;
+	void pbOpenPartitionClicked() ;
 public slots:
 	void ShowUI( const QString& ) ;
 	void ShowUI( const QString&,const QString&,std::function< void() > ) ;
-	void ShowUI( void ) ;
-	void HideUI( void ) ;
+	void ShowUI() ;
+	void HideUI() ;
 private slots:
 	void cbVolumeType( int ) ;
 	void cbExistingKey( int ) ;
 	void cbNewKey( int ) ;
 	void keyChanged_0( QString ) ;
 	void keyChanged_1( QString ) ;
-	void pbOpenExisitingKeyFile( void ) ;
-	void pbOpenNewKeyFile( void ) ;
-	void pbOpenFile( void ) ;
-	void pbOpenPartition( void ) ;
-	void pbAdd( void ) ;
-	void pbCancel( void ) ;
+	void pbOpenExisitingKeyFile() ;
+	void pbOpenNewKeyFile() ;
+	void pbOpenFile() ;
+	void pbOpenPartition() ;
+	void pbAdd() ;
+	void pbCancel() ;
 	void taskFinished( const utility::Task& ) ;
-	void setFieldFocus( void ) ;
+	void setFieldFocus() ;
 private:
-	void keyAdded( void ) ;
-	void disableAll( void ) ;
-	void enableAll( void ) ;
+	void keyAdded() ;
+	void disableAll() ;
+	void enableAll() ;
 	void luks2Cancel() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;

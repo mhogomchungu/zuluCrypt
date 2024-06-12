@@ -44,15 +44,14 @@ public:
 	cryptoinfo( QWidget * parent,QString path,QString msg ) ;
 	~cryptoinfo() ;
 signals:
-	void closeUISignal( void ) ;
-private slots:
-	void pbOK( void ) ;
-	void checkBoxChecked( bool ) ;
+	void closeUISignal() ;
 private:
-	void Show( void ) ;
+	void pbOK() ;
+	void checkBoxChecked( bool ) ;
+	void Show() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void HideUI( void ) ;
+	void HideUI() ;
 	Ui::cryptoinfo * m_ui ;
 	QString m_path ;
 	QString m_msg ;

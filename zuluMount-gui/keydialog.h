@@ -64,27 +64,26 @@ public:
 		   std::function< void() >,
 		   std::function< void( const QString& ) > ) ;
 	~keyDialog() ;
-	void ShowUI( void ) ;
-	void HideUI( void ) ;
+	void ShowUI() ;
+	void HideUI() ;
 signals:
 	void mounted( QString ) ;
 	void cryptoOpen( QString ) ;
-private slots:
+private:
 	void cbVisibleKeyStateChanged( int ) ;
 	void cbActicated( int ) ;
-	void pbkeyOption( void ) ;
-	void pbMountPointPath( void ) ;
+	void pbkeyOption() ;
+	void pbMountPointPath() ;
 	void pbPluginEntryClicked( QAction * ) ;
-	void plugIn( void ) ;
-	void key( void ) ;
-	void keyFile( void ) ;
-	void openVolume( void ) ;
-	void pbCancel( void ) ;
-	void Plugin( void ) ;
-	void KeyFile( void ) ;
+	void plugIn() ;
+	void key() ;
+	void keyFile() ;
+	void openVolume() ;
+	void pbCancel() ;
+	void Plugin() ;
+	void KeyFile() ;
 	void cbMountReadOnlyStateChanged( int ) ;
-	void encryptedFolderMount( void ) ;
-private :
+	void encryptedFolderMount() ;
 	class veraCryptVolumeType{
 	public:
 		void setValues( QCheckBox * vc,QCheckBox * sys,const QString& opt ) ;
@@ -98,10 +97,10 @@ private :
 	} m_veraCryptVolumeType ;
 
 	bool errorNotFound( int ) ;
-	void keyAndKeyFile( void ) ;
-	void tcryptGui( void ) ;
-	void enableAll( void ) ;
-	void disableAll( void ) ;
+	void keyAndKeyFile() ;
+	void tcryptGui() ;
+	void enableAll() ;
+	void disableAll() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::keyDialog * m_ui ;

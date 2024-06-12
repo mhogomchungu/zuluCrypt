@@ -90,17 +90,19 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	m_pluginMenu = new QMenu( this ) ;
 	m_pluginMenu->setFont( this->font() ) ;
 
-	connect( m_ui->PushButtonCancel,SIGNAL( clicked() ),this,SLOT( HideUI() ) ) ;
-	connect( m_ui->PushButtonOpen,SIGNAL( clicked() ),this,SLOT( openVolume() ) ) ;
-	connect( m_ui->PushButtonMountPointPath,SIGNAL( clicked() ),this,SLOT( mount_point() ) ) ;
-	connect( m_ui->PushButtonVolumePath,SIGNAL( clicked() ),this,SLOT( file_path() ) ) ;
-	connect( m_ui->pushButtonPassPhraseFromFile,SIGNAL( clicked() ),this,SLOT( clickedPassPhraseFromFileButton() ) ) ;
-	connect( m_ui->OpenVolumePath,SIGNAL( textChanged( QString ) ),this,SLOT( mountPointPath( QString ) ) ) ;
-	connect( m_ui->checkBoxReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbStateChanged( int ) ) ) ;
-	connect( m_ui->pbKeyOption,SIGNAL( clicked() ),this,SLOT( pbKeyOption() ) ) ;
-	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
-	connect( m_ui->cbVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbVolumeType( int ) ) ) ;
-	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
+	auto cc = static_cast< void( QComboBox::* )( int )>( &QComboBox::currentIndexChanged ) ;
+
+	connect( m_ui->PushButtonCancel,&QPushButton::clicked,this,&passwordDialog::HideUI ) ;
+	connect( m_ui->PushButtonOpen,&QPushButton::clicked,this,&passwordDialog::openVolume ) ;
+	connect( m_ui->PushButtonMountPointPath,&QPushButton::clicked,this,&passwordDialog::mount_point ) ;
+	connect( m_ui->PushButtonVolumePath,&QPushButton::clicked,this,&passwordDialog::file_path ) ;
+	connect( m_ui->pushButtonPassPhraseFromFile,&QPushButton::clicked,this,&passwordDialog::clickedPassPhraseFromFileButton ) ;
+	connect( m_ui->OpenVolumePath,&QLineEdit::textChanged,this,&passwordDialog::mountPointPath ) ;
+	connect( m_ui->checkBoxReadOnly,&QCheckBox::stateChanged,this,&passwordDialog::cbStateChanged ) ;
+	connect( m_ui->pbKeyOption,&QPushButton::clicked,this,&passwordDialog::pbKeyOption ) ;
+	connect( m_ui->cbKeyType,cc,this,&passwordDialog::cbActicated ) ;
+	connect( m_ui->cbVolumeType,cc,this,&passwordDialog::cbVolumeType ) ;
+	connect( m_ui->checkBoxVisibleKey,&QCheckBox::stateChanged,this,&passwordDialog::cbVisibleKeyStateChanged ) ;
 
 	connect( m_ui->cbShareMountPoint,&QCheckBox::stateChanged,[]( int s ){
 
@@ -145,8 +147,7 @@ passwordDialog::passwordDialog( QTableWidget * table,
 
 		auto m = new QMenu( this ) ;
 
-		connect( m,SIGNAL( triggered( QAction * ) ),
-			 this,SLOT( plainDmCryptOption( QAction * ) ) ) ;
+		connect( m,&QMenu::triggered,this,&passwordDialog::plainDmCryptOption ) ;
 
 		auto s = utility::plainDmCryptOptions() ;
 

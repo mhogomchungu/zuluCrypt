@@ -35,7 +35,7 @@ int main( int argc,char * argv[] )
 
 		zuluMount e ;
 
-		utility::startApplication( &e,"Show" ) ;
+		utility::invokeMethod( &e,&zuluMount::Show ) ;
 
 		return a.exec() ;
 	} ) ;

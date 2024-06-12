@@ -51,13 +51,15 @@ luksdeletekey::luksdeletekey( QWidget * parent ) : QDialog( parent ),m_ui( new U
 
 	m_ui->lineEditVolumePath->clear() ;
 
-	connect( m_ui->pushButtonDelete,SIGNAL( clicked() ),this,SLOT( pbDelete() ) ) ;
-	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->pushButtonOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) ) ;
-	connect( m_ui->pushButtonOpenVolume,SIGNAL( clicked() ),this,SLOT( pbOpenVolume() ) ) ;
-	connect( m_ui->pushButtonOpenPartition,SIGNAL( clicked() ),this,SLOT( pbOpenPartition() ) ) ;
+	connect( m_ui->pushButtonDelete,&QPushButton::clicked,this,&luksdeletekey::pbDelete ) ;
+	connect( m_ui->pushButtonCancel,&QPushButton::clicked,this,&luksdeletekey::pbCancel ) ;
+	connect( m_ui->pushButtonOpenKeyFile,&QPushButton::clicked,this,&luksdeletekey::pbOpenKeyFile ) ;
+	connect( m_ui->pushButtonOpenVolume,&QPushButton::clicked,this,&luksdeletekey::pbOpenVolume ) ;
+	connect( m_ui->pushButtonOpenPartition,&QPushButton::clicked,this,&luksdeletekey::pbOpenPartition ) ;
 
-	connect( m_ui->cbKey,SIGNAL( activated( int ) ),this,SLOT( Key( int ) ) ) ;
+	auto act = static_cast< void( QComboBox::* )( int )>( &QComboBox::activated ) ;
+
+	connect( m_ui->cbKey,act,this,&luksdeletekey::Key ) ;
 
 	this->Key( 0 ) ;
 

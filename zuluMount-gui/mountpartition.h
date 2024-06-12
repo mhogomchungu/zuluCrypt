@@ -55,22 +55,21 @@ public:
 			std::function< void() >,
 			std::function< void( const QString& ) > ) ;
 	void ShowUI( const volumeProperty& ) ;
-	void HideUI( void ) ;
+	void HideUI() ;
 	void AutoMount( const volumeProperty& ) ;
 	~mountPartition() ;
 signals:
-	void cancel( void ) ;
+	void cancel() ;
 	void openMountPoint( QString ) ;
-private slots:
-	void stateChanged( int ) ;
-	void pbMount( void ) ;
-	void pbCancel( void ) ;
-	void pbOpenMountPath( void ) ;
-	void checkBoxReadOnlyStateChanged( int ) ;
 private:
+	void stateChanged( int ) ;
+	void pbMount() ;
+	void pbCancel() ;
+	void pbOpenMountPath() ;
+	void checkBoxReadOnlyStateChanged( int ) ;
 	void reportError( utility::Task& ) ;
-	void enableAll( void ) ;
-	void disableAll( void ) ;
+	void enableAll() ;
+	void disableAll() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::mountPartition * m_ui ;

@@ -32,8 +32,8 @@ VeraCryptPIMDialog::VeraCryptPIMDialog( QWidget * parent,std::function< void( in
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
 	this->setFont( parent->font() ) ;
 
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->pbSet,SIGNAL( clicked() ),this,SLOT( pbSet() ) ) ;
+	connect( m_ui->pbCancel,&QPushButton::clicked,this,&VeraCryptPIMDialog::pbCancel ) ;
+	connect( m_ui->pbSet,&QPushButton::clicked,this,&VeraCryptPIMDialog::pbSet ) ;
 
 	m_ui->label->setText( tr( "Set VeraCrypt dynamic mode magic number below." ) ) ;
 

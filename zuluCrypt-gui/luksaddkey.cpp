@@ -101,23 +101,25 @@ luksaddkey::luksaddkey( QWidget * parent ) : QDialog( parent )
 		}
 	} ) ;
 
-	connect( m_ui->cbVolumeType,SIGNAL( activated( int ) ),this,SLOT( cbVolumeType( int ) ) ) ;
-	connect( m_ui->pushButtonOpenFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;
-	connect( m_ui->pushButtonOpenExistingKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenExisitingKeyFile() ) ) ;
-	connect( m_ui->pushButtonOpenNewKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenNewKeyFile() ) ) ;
-	connect( m_ui->pushButtonOpenPartition,SIGNAL( clicked() ),this,SLOT( pbOpenPartition( void ) ) ) ;
-	connect( m_ui->pushButtonAdd,SIGNAL( clicked() ),this,SLOT( pbAdd() ) ) ;
-	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
+	auto act = static_cast< void( QComboBox::* )( int )>( &QComboBox::activated ) ;
+
+	connect( m_ui->cbVolumeType,act,this,&luksaddkey::cbVolumeType ) ;
+	connect( m_ui->pushButtonOpenFile,&QPushButton::clicked,this,&luksaddkey::pbOpenFile ) ;
+	connect( m_ui->pushButtonOpenExistingKeyFile,&QPushButton::clicked,this,&luksaddkey::pbOpenExisitingKeyFile ) ;
+	connect( m_ui->pushButtonOpenNewKeyFile,&QPushButton::clicked,this,&luksaddkey::pbOpenNewKeyFile ) ;
+	connect( m_ui->pushButtonOpenPartition,&QPushButton::clicked,this,&luksaddkey::pbOpenPartition ) ;
+	connect( m_ui->pushButtonAdd,&QPushButton::clicked,this,&luksaddkey::pbAdd ) ;
+	connect( m_ui->pushButtonCancel,&QPushButton::clicked,this,&luksaddkey::pbCancel ) ;
 
 	if( m_ui->cbNewKey->currentIndex() == 0 && m_keystrength.canCheckQuality() ){
 
-		connect( m_ui->textEditPassphraseToAdd,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged_0( QString ) ) ) ;
+		connect( m_ui->textEditPassphraseToAdd,&QLineEdit::textChanged,this,&luksaddkey::keyChanged_0 ) ;
 	}else{
-		connect( m_ui->textEditPassphraseToAdd,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged_1( QString ) ) ) ;
+		connect( m_ui->textEditPassphraseToAdd,&QLineEdit::textChanged,this,&luksaddkey::keyChanged_1 ) ;
 	}
 
-	connect( m_ui->cbExistingKey,SIGNAL( activated( int ) ),this,SLOT( cbExistingKey( int ) ) ) ;
-	connect( m_ui->cbNewKey,SIGNAL( activated( int ) ),this,SLOT( cbNewKey( int ) ) ) ;
+	connect( m_ui->cbExistingKey,act,this,&luksaddkey::cbExistingKey ) ;
+	connect( m_ui->cbNewKey,act,this,&luksaddkey::cbNewKey ) ;
 
 	m_ui->lineEditReEnterPassphrase->setEchoMode( QLineEdit::Password ) ;
 

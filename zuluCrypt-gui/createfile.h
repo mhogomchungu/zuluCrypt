@@ -46,20 +46,18 @@ public:
 	~createfile() ;
 signals :
 	void sendProgress( QString,QString,QString,QString,int ) ;
-public slots:
+private:
 	void warnAboutRandomData( int ) ;
-	void HideUI( void ) ;
-	void showUI( void ) ;
-	void pbOpenFolder( void ) ;
-	void pbCancel( void ) ;
-	void pbCreate( void ) ;
-private slots:
+	void HideUI() ;
+	void showUI() ;
+	void pbOpenFolder() ;
+	void pbCancel() ;
+	void pbCreate() ;
 	void setProgress( QString,QString,QString,QString,int ) ;
 	void fileTextChange( QString ) ;
-private:
 	void createFile( const QString&,qint64 ) ;
-	void enableAll( void ) ;
-	void disableAll( void ) ;
+	void enableAll() ;
+	void disableAll() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::createfile * m_ui ;

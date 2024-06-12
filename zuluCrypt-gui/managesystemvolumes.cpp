@@ -46,13 +46,14 @@ manageSystemVolumes::manageSystemVolumes( QWidget * parent,const char * s ) :
 	this->setFont( parent->font() ) ;
 	this->setFixedSize( this->size() ) ;
 
-	connect( m_ui->pbDone,SIGNAL( clicked() ),this,SLOT( pbDone() ) ) ;
-	connect( m_ui->pbFile,SIGNAL( clicked() ),this,SLOT( pbFile() ) ) ;
-	connect( m_ui->pbPartition,SIGNAL( clicked() ),this,SLOT( pbPartition() ) ) ;
-	connect( m_ui->tableWidget,SIGNAL( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ),this,
-		SLOT( currentItemChanged( QTableWidgetItem *,QTableWidgetItem * ) ) ) ;
-	connect( m_ui->tableWidget,SIGNAL( itemClicked( QTableWidgetItem * ) ),this,
-		SLOT( itemClicked( QTableWidgetItem * ) ) ) ;
+	connect( m_ui->pbDone,&QPushButton::clicked,this,&manageSystemVolumes::pbDone ) ;
+	connect( m_ui->pbFile,&QPushButton::clicked,this,&manageSystemVolumes::pbFile ) ;
+	connect( m_ui->pbPartition,&QPushButton::clicked,this,&manageSystemVolumes::pbPartition ) ;
+	connect( m_ui->tableWidget,&QTableWidget::currentItemChanged,this,
+		&manageSystemVolumes::currentItemChanged ) ;
+	connect( m_ui->tableWidget,&QTableWidget::itemClicked,
+		 this,
+		 static_cast< void( manageSystemVolumes::* )( QTableWidgetItem * ) >( &manageSystemVolumes::itemClicked ) ) ;
 
 	this->addAction( [ this ](){
 

@@ -64,20 +64,19 @@ public:
 	explicit cryptfiles( QWidget * parent = 0 ) ;
 	~cryptfiles() ;
 signals:
-	void HideUISignal( void ) ;
+	void HideUISignal() ;
 	void progressUpdate( int ) ;
-public slots:
-	void encrypt( void ) ;
-	void decrypt( void ) ;
+public:
+	void encrypt() ;
+	void decrypt() ;
 	void decrypt( const QString& ) ;
-	void enableCancel( void ) ;
-	void disableCancel( void ) ;
-private slots:
-	void pbCancel( void ) ;
-	void pbCreate( void ) ;
-	void pbOpenFile( void ) ;
-	void pbKeyFile( void ) ;
-	void pbOpenFolder( void ) ;
+	void enableCancel() ;
+	void disableCancel() ;
+	void pbCancel() ;
+	void pbCreate() ;
+	void pbOpenFile() ;
+	void pbKeyFile() ;
+	void pbOpenFolder() ;
 	void cbChanged( int ) ;
 	void sourceTextChanged( QString ) ;
 	void taskFinished( int ) ;
@@ -85,12 +84,12 @@ private slots:
 	void titleUpdate( QString ) ;
 private:
 	void cryptFile( const char *,const char *,const char *,unsigned long,bool ) ;
-	void HideUI( void ) ;
-	void headerBackUp( void ) ;
+	void HideUI() ;
+	void headerBackUp() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void disableAll( void ) ;
-	void enableAll( void ) ;
+	void disableAll() ;
+	void enableAll() ;
 	QString destinationPath( const QString& e = QString() ) ;
 	Ui::cryptfiles * m_ui ;
 

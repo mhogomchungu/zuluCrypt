@@ -35,7 +35,7 @@ int main( int argc,char * argv[] )
 
 		zuluCrypt e ;
 
-		utility::startApplication( &e,"start" ) ;
+		utility::invokeMethod( &e,&zuluCrypt::start ) ;
 
 		return a.exec() ;
 	} ) ;

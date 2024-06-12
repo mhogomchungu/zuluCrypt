@@ -75,6 +75,12 @@
 
 namespace utility
 {
+	template< typename Sender,typename Signal,typename Receiver,typename Slot>
+	void connect( Sender sender,Signal signal,Receiver receiver,Slot slot )
+	{
+		QObject::connect( sender,signal,receiver,slot,Qt::QueuedConnection ) ;
+	}
+
 	class label
 	{
 	public:
@@ -328,7 +334,66 @@ namespace utility
 
 	bool libCryptSetupLibraryNotFound() ;
 	int startApplication( const char * appName,std::function<int()> ) ;
-	void startApplication( QObject *,const char * ) ;
+
+	class invokeMethodImp : public QObject
+	{
+		Q_OBJECT
+	public:
+		void run()
+		{
+			emit start() ;
+
+			this->deleteLater() ;
+		}
+	signals:
+		void start() ;
+	} ;
+
+	class invokeMethodImp1 : public QObject
+	{
+		Q_OBJECT
+	public:
+		template< typename Function >
+		invokeMethodImp1( Function f ) : m_function( std::move( f ) )
+		{
+			auto m = Qt::QueuedConnection ;
+			connect( this,&invokeMethodImp1::start,this,&invokeMethodImp1::run,m ) ;
+			emit start() ;
+		}
+		void run()
+		{
+			m_function() ;
+			this->deleteLater() ;
+		}
+	signals:
+		void start() ;
+	private:
+		std::function< void() > m_function ;
+	} ;
+
+	template< typename ReceiverObject,
+		  typename Method,
+		  typename std::enable_if< std::is_member_function_pointer< Method >::value,int >::type = 0 >
+	void invokeMethod( ReceiverObject obj,Method method )
+	{
+		auto m = new invokeMethodImp() ;
+
+		QObject::connect( m,&invokeMethodImp::start,obj,method,Qt::QueuedConnection ) ;
+
+		m->run() ;
+
+		//QTimer::singleShot( 0,obj,method ) ;
+	}
+
+	template< typename ReceiverObject,
+		  typename Function,
+		  typename std::enable_if< !std::is_member_function_pointer< Function >::value,int >::type = 0 >
+	void invokeMethod( ReceiverObject obj,Function function )
+	{
+		Q_UNUSED( obj )
+		new invokeMethodImp1( std::move( function ) ) ;
+		//QTimer::singleShot( 0,obj,std::move( function ) ) ;
+	}
 
 	wallet getKey( LXQt::Wallet::Wallet&,const QString& keyID,
 		       const QString& app = QString() ) ;
@@ -388,7 +453,13 @@ namespace utility
 	bool pathExists( const QString& ) ;
 	bool canCreateFile( const QString& ) ;
 	bool useZuluPolkit( void ) ;
-	void startHelperExecutable( QObject *,const QString&,const QString&,const char *,const char * ) ;
+	struct startHelperStatus
+	{
+		std::function< void( bool,QString ) > success ;
+		std::function< void() > error ;
+	};
+
+	void startHelper( QObject *,const QString&,const QString&,startHelperStatus ) ;
 	void setDebugWindow( debugWindow * w ) ;
 	QString deviceIDToPartitionID( const QString& ) ;
 	QString fileManager( void ) ;

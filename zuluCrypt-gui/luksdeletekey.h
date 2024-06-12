@@ -44,24 +44,24 @@ public:
 	~luksdeletekey() ;
 signals:
 	void pbDeleteClicked( QString volumePath,bool passPhraseIsFile,QString passPhrase ) ;
-	void pbOpenPartitionClicked( void ) ;
-	void HideUISignal( void ) ;
-public slots:
-	void ShowUI( void ) ;
+	void pbOpenPartitionClicked() ;
+	void HideUISignal() ;
+public:
+	void ShowUI() ;
 	void ShowUI( const QString& ) ;
 	void ShowUI( const QString&,const QString&,std::function< void() > ) ;
-	void HideUI( void ) ;
+	void HideUI() ;
 private slots:
 	void Key( int ) ;
-	void pbOpenPartition( void ) ;
-	void pbDelete( void ) ;
-	void pbCancel( void ) ;
-	void pbOpenKeyFile( void ) ;
-	void pbOpenVolume( void ) ;
+	void pbOpenPartition() ;
+	void pbDelete() ;
+	void pbCancel() ;
+	void pbOpenKeyFile() ;
+	void pbOpenVolume() ;
 	void deleteKey( const QStringList& ) ;
 private:
-	void disableAll( void ) ;
-	void enableAll( void ) ;
+	void disableAll() ;
+	void enableAll() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::luksdeletekey * m_ui ;

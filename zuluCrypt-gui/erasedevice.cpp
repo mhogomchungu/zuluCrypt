@@ -44,13 +44,11 @@ erasedevice::erasedevice( QWidget * parent ) : QDialog( parent ),m_ui( new Ui::e
 
 	this->setWindowTitle( tr( "Write Random Data Over Existing Data" ) ) ;
 
-	connect( m_ui->pushButtonFile,SIGNAL( clicked() ),this,SLOT( pbFile() ) ) ;
-	connect( m_ui->pushButtonPartition,SIGNAL( clicked() ),this,SLOT( pbPartition() ) ) ;
-	connect( m_ui->pushButtonStart,SIGNAL( clicked() ),this,SLOT( pbStart() ) ) ;
-	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-
-	connect( this,SIGNAL( sendProgress( QString,QString,QString,QString,int ) ),
-		 this,SLOT( setProgress( QString,QString,QString,QString,int ) ) ) ;
+	connect( m_ui->pushButtonFile,&QPushButton::clicked,this,&erasedevice::pbFile ) ;
+	connect( m_ui->pushButtonPartition,&QPushButton::clicked,this,&erasedevice::pbPartition ) ;
+	connect( m_ui->pushButtonStart,&QPushButton::clicked,this,&erasedevice::pbStart ) ;
+	connect( m_ui->pushButtonCancel,&QPushButton::clicked,this,&erasedevice::pbCancel ) ;
+	connect( this,&erasedevice::sendProgress,this,&erasedevice::setProgress ) ;
 
 	m_ui->pushButtonFile->setIcon( QIcon( ":/file.png" ) ) ;
 	m_ui->pushButtonPartition->setIcon( QIcon( ":/partition.png" ) ) ;

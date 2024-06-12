@@ -48,14 +48,13 @@ createfile::createfile( QWidget * parent,std::function< void( const QString& ) >
 
 	m_ui->pbOpenFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 
-	connect( m_ui->checkBoxNoRandomData,SIGNAL( stateChanged( int ) ),this,SLOT( warnAboutRandomData( int ) ) ) ;
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) )  ;
-	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT(pbOpenFolder() ) ) ;
-	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
-	connect( m_ui->lineEditFileName,SIGNAL( textChanged( QString ) ),this,SLOT(fileTextChange( QString ) ) ) ;
+	connect( m_ui->checkBoxNoRandomData,&QCheckBox::stateChanged,this,&createfile::warnAboutRandomData ) ;
+	connect( m_ui->pbCancel,&QPushButton::clicked,this,&createfile::pbCancel )  ;
+	connect( m_ui->pbOpenFolder,&QPushButton::clicked,this,&createfile::pbOpenFolder ) ;
+	connect( m_ui->pbCreate,&QPushButton::clicked,this,&createfile::pbCreate ) ;
+	connect( m_ui->lineEditFileName,&QLineEdit::textChanged,this,&createfile::fileTextChange ) ;
 
-	connect( this,SIGNAL( sendProgress( QString,QString,QString,QString,int ) ),
-		 this,SLOT( setProgress( QString,QString,QString,QString,int ) ) ) ;
+	connect( this,&createfile::sendProgress,this,&createfile::setProgress ) ;
 
 	this->installEventFilter( this ) ;
 
@@ -128,7 +127,6 @@ void createfile::disableAll()
 	m_ui->label_5->setEnabled( false ) ;
 	m_ui->checkBoxNoRandomData->setEnabled( false ) ;
 }
-
 
 void createfile::showUI()
 {

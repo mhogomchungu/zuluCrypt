@@ -85,7 +85,7 @@ keyDialog::keyDialog( QWidget * parent,
 
 	m_menu = new QMenu( this ) ;
 
-	connect( m_menu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
+	connect( m_menu,&QMenu::triggered,this,&keyDialog::pbPluginEntryClicked ) ;
 
 	this->setFixedSize( this->size() ) ;
 	this->setWindowFlags( Qt::Window | Qt::Dialog ) ;
@@ -110,13 +110,15 @@ keyDialog::keyDialog( QWidget * parent,
 		m_ui->labelVeraCryptPIM->setEnabled( false ) ;
 	}
 
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->pbOpen,SIGNAL( clicked() ),this,SLOT( openVolume() ) ) ;
-	connect( m_ui->pbkeyOption,SIGNAL( clicked() ),this,SLOT( pbkeyOption() ) ) ;
-	connect( m_ui->pbOpenMountPoint,SIGNAL( clicked() ),this,SLOT( pbMountPointPath() ) ) ;
-	connect( m_ui->checkBoxOpenReadOnly,SIGNAL( stateChanged( int ) ),this,SLOT( cbMountReadOnlyStateChanged( int ) ) ) ;
-	connect( m_ui->cbKeyType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( cbActicated( int ) ) ) ;
-	connect( m_ui->checkBoxVisibleKey,SIGNAL( stateChanged( int ) ),this,SLOT( cbVisibleKeyStateChanged( int ) ) ) ;
+	auto cc = static_cast< void( QComboBox::* )( int )>( &QComboBox::currentIndexChanged ) ;
+
+	connect( m_ui->pbCancel,&QPushButton::clicked,this,&keyDialog::pbCancel ) ;
+	connect( m_ui->pbOpen,&QPushButton::clicked,this,&keyDialog::openVolume ) ;
+	connect( m_ui->pbkeyOption,&QPushButton::clicked,this,&keyDialog::pbkeyOption ) ;
+	connect( m_ui->pbOpenMountPoint,&QPushButton::clicked,this,&keyDialog::pbMountPointPath ) ;
+	connect( m_ui->checkBoxOpenReadOnly,&QCheckBox::stateChanged,this,&keyDialog::cbMountReadOnlyStateChanged ) ;
+	connect( m_ui->cbKeyType,cc,this,&keyDialog::cbActicated ) ;
+	connect( m_ui->checkBoxVisibleKey,&QCheckBox::stateChanged,this,&keyDialog::cbVisibleKeyStateChanged ) ;
 
 	m_ui->pbOpenMountPoint->setVisible( false ) ;
 

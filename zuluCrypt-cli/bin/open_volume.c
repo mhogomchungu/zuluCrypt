@@ -326,7 +326,10 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	/*
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
-	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ){
+
+	zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ;
+
+	if( zuluCryptMountFlagsAreNotCorrect( fs_opts,uid,&m_flags ) ){
 
 		return zuluExit( 5,device,mount_point,&stl ) ;
 	}

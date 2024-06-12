@@ -43,23 +43,22 @@ public:
 	}
 	explicit erasedevice( QWidget * parent = 0 ) ;
 	~erasedevice() ;
-	void ShowUI( void ) ;
+	void ShowUI() ;
 	void ShowUI( const QString& ) ;
-	void HideUI( void ) ;
+	void HideUI() ;
 signals:
 	void complete( QString ) ;
 	void sendProgress( QString,QString,QString,QString,int ) ;
-private slots:
-	void enableAll( void ) ;
-	void disableAll( void ) ;
-	void pbStart( void ) ;
-	void pbCancel( void ) ;
-	void pbFile( void ) ;
-	void pbPartition( void ) ;
+private:
+	void enableAll() ;
+	void disableAll() ;
+	void pbStart() ;
+	void pbCancel() ;
+	void pbFile() ;
+	void pbPartition() ;
 	void setProgress( QString,QString,QString,QString,int ) ;
 	void setPath( QString ) ;
 	void taskResult( int ) ;
-private:
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	Ui::erasedevice * m_ui ;

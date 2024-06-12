@@ -42,7 +42,7 @@ public:
 	void start( void ) ;
 	~monitor_mountinfo() ;
 signals:
-	void gotEvent( void ) ;
+	void gotEvent() ;
 	void volumeRemoved( QString ) ;
 	void volumeMiniProperties( volumeProperty * ) ;
 	void volumeMiniProperties_0( volumeProperty * ) ;

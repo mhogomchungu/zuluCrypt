@@ -44,21 +44,20 @@ public:
 	explicit createkeyfile( QWidget * parent = 0 ) ;
 	~createkeyfile() ;
 signals:
-	void HideUISignal( void ) ;
+	void HideUISignal() ;
 public slots:
-	void ShowUI( void ) ;
-	void HideUI( void ) ;
+	void ShowUI() ;
+	void HideUI() ;
 
-private slots:
-	void pbCancel( void ) ;
-	void pbCreate( void ) ;
-	void pbOpenFolder( void ) ;
-	void keyTextChange( QString ) ;
 private:
+	void pbCancel() ;
+	void pbCreate() ;
+	void pbOpenFolder() ;
+	void keyTextChange( QString ) ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
-	void disableAll( void ) ;
-	void enableAll( void ) ;
+	void disableAll() ;
+	void enableAll() ;
 	Ui::createkeyfile * m_ui ;
 	bool m_running ;
 	bool m_stop ;

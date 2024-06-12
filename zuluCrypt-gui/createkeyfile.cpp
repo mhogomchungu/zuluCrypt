@@ -50,10 +50,10 @@ createkeyfile::createkeyfile( QWidget * parent ) : QDialog( parent ),m_ui( new U
 
 	m_ui->pbOpenFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 
-	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
-	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT( pbOpenFolder() ) ) ;
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->lineEditFileName,SIGNAL( textChanged( QString ) ),this,SLOT( keyTextChange( QString ) ) ) ;
+	connect( m_ui->pbCreate,&QPushButton::clicked,this,&createkeyfile::pbCreate ) ;
+	connect( m_ui->pbOpenFolder,&QPushButton::clicked,this,&createkeyfile::pbOpenFolder ) ;
+	connect( m_ui->pbCancel,&QPushButton::clicked,this,&createkeyfile::pbCancel ) ;
+	connect( m_ui->lineEditFileName,&QLineEdit::textChanged,this,&createkeyfile::keyTextChange ) ;
 
 	this->installEventFilter( this ) ;
 

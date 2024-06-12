@@ -66,31 +66,30 @@ public:
 	~createvolume() ;
 signals:
 	void CreateVolume( QString fileSystem,QString containterType,QString volumePath,QString passphrase,bool passphraseFromFile ) ;
-	void HideUISignal( void ) ;
-public slots:
+	void HideUISignal() ;
+public:
 	void ShowPartition( QString volume ) ;
 	void ShowFile( QString volume ) ;
-	void HideUI( void ) ;
-private slots:
+	void HideUI() ;
+private:
 	void keyChanged_0( QString ) ;
 	void keyChanged_1( QString ) ;
-	void pbCreateClicked( void ) ;
-	void pbCancelClicked( void ) ;
+	void pbCreateClicked() ;
+	void pbCancelClicked() ;
 	void cbNormalVolume( int ) ;
 	void cbHiddenVolume( int ) ;
-	void pbOpenKeyFile( void ) ;
-	void pbOpenHiddenKeyFile( void ) ;
+	void pbOpenKeyFile() ;
+	void pbOpenHiddenKeyFile() ;
 	void volumeType( int ) ;
 	void setOptions( int ) ;
 	void tcryptGui( bool ) ;
-private:
 	void luks2Cancel() ;
 	void taskFinished( const utility::Task& ) ;
 	void taskFinished_1( const utility::Task& ) ;
 	void keyChanged( bool,const QString& ) ;
-	void eraseDataPartition( void ) ;
-	void enableAll( void ) ;
-	void disableAll( void ) ;
+	void eraseDataPartition() ;
+	void enableAll() ;
+	void disableAll() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void ShowUI( const QString&,const QString& ) ;

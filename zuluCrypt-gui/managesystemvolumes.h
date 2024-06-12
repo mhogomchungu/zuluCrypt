@@ -45,22 +45,21 @@ public:
 
 	explicit manageSystemVolumes( QWidget * parent,const char * s ) ;
 	~manageSystemVolumes() ;
-	void HideUI( void ) ;
+	void HideUI() ;
 signals:
-	void HideUISignal( void ) ;
-private slots:
-	void defaultButton( void ) ;
-	void pbDone( void ) ;
-	void pbFile( void ) ;
-	void pbPartition( void ) ;
+	void HideUISignal() ;
+private:
+	void defaultButton() ;
+	void pbDone() ;
+	void pbFile() ;
+	void pbPartition() ;
 	void currentItemChanged( QTableWidgetItem * current,QTableWidgetItem * previous ) ;
 	void itemClicked( QTableWidgetItem * current,bool ) ;
 	void itemClicked( QTableWidgetItem * current ) ;
-	void removeCurrentRow( void ) ;
-	void contextMenu( void ) ;
-private:
-	void readSystemPartitions( void ) ;
-	void writeSystemPartitions( void ) ;
+	void removeCurrentRow() ;
+	void contextMenu() ;
+	void readSystemPartitions() ;
+	void writeSystemPartitions() ;
 
 	void addItemsToTable( const QStringList& ) ;
 	void closeEvent( QCloseEvent * ) ;

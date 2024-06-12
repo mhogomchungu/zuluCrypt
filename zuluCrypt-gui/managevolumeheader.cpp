@@ -50,16 +50,18 @@ managevolumeheader::managevolumeheader( QWidget * parent ) : QDialog( parent ),m
 
 	this->cbVolumeHeader( 0 ) ;
 
-	connect( m_ui->cbVolumeType,SIGNAL( activated( int ) ),this,SLOT( cbVolumeType( int ) ) );
-	connect( m_ui->cbVolumeHeader,SIGNAL( activated( int ) ),this,SLOT( cbVolumeHeader( int ) ) );
-	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
-	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT( pbOpenLuksHeaderBackUp() ) ) ;
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->pushButtonFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;
-	connect( m_ui->pushButtonPartition,SIGNAL( clicked() ),this,SLOT( pbOpenPartition() ) ) ;
-	connect( m_ui->lineEditDevicePath,SIGNAL( textChanged( QString ) ),this,SLOT( backUpHeaderNameChange( QString ) ) ) ;
-	connect( m_ui->cbKeySource,SIGNAL( activated( int ) ),this,SLOT( cbKeyType( int ) ) ) ;
-	connect( m_ui->pBKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
+	auto act = static_cast< void( QComboBox::* )( int )>( &QComboBox::activated ) ;
+
+	connect( m_ui->cbVolumeType,act,this,&managevolumeheader::cbVolumeType ) ;
+	connect( m_ui->cbVolumeHeader,act,this,&managevolumeheader::cbVolumeHeader ) ;
+	connect( m_ui->pbCreate,&QPushButton::clicked,this,&managevolumeheader::pbCreate ) ;
+	connect( m_ui->pbOpenFolder,&QPushButton::clicked,this,&managevolumeheader::pbOpenLuksHeaderBackUp ) ;
+	connect( m_ui->pbCancel,&QPushButton::clicked,this,&managevolumeheader::pbCancel ) ;
+	connect( m_ui->pushButtonFile,&QPushButton::clicked,this,&managevolumeheader::pbOpenFile ) ;
+	connect( m_ui->pushButtonPartition,&QPushButton::clicked,this,&managevolumeheader::pbOpenPartition ) ;
+	connect( m_ui->lineEditDevicePath,&QLineEdit::textChanged,this,&managevolumeheader::backUpHeaderNameChange ) ;
+	connect( m_ui->cbKeySource,act,this,&managevolumeheader::cbKeyType ) ;
+	connect( m_ui->pBKeyFile,&QPushButton::clicked,this,&managevolumeheader::pbKeyFile ) ;
 
 	m_OperationInProgress = false ;
 

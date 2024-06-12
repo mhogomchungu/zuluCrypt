@@ -55,18 +55,6 @@ void monitor_mountinfo::start()
 
 void monitor_mountinfo::run()
 {
-	if( m_announceChanges ){
-
-		connect( this,SIGNAL( volumeMiniProperties( volumeProperty * ) ),
-			 m_parent,SLOT( volumeMiniProperties( volumeProperty * ) ) ) ;
-
-		connect( this,SIGNAL( volumeMiniProperties_0( volumeProperty * ) ),
-			 m_parent,SLOT( volumeMiniProperties_0( volumeProperty * ) ) ) ;
-
-		connect( this,SIGNAL( volumeRemoved( QString ) ),
-			 m_parent,SLOT( volumeRemoved( QString ) ) ) ;
-	}
-
 	auto _unmountProperty = [ & ]( const QString& volume ){
 
 		Task::exec( [ &,volume ](){
@@ -96,11 +84,11 @@ void monitor_mountinfo::run()
 
 			return zuluMountTask::mountedVolumeList() ;
 		}else{
-			return decltype( zuluMountTask::mountedVolumeList() )() ;
+			return QStringList() ;
 		}
 	}() ;
 
-	decltype( oldMountList ) newMountList ;
+	QStringList newMountList ;
 
 	auto _volumeWasUnMounted = [ & ](){ return oldMountList.size() > newMountList.size() ; } ;
 

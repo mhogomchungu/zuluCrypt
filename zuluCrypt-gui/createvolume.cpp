@@ -101,16 +101,19 @@ createvolume::createvolume( QWidget * parent ) : QDialog( parent ),m_ui( new Ui:
 #else
 	m_ui->cbLuks2AllowDiscard->setEnabled( false ) ;
 #endif
-	connect( m_ui->pbOpenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenKeyFile() ) ) ;
-	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreateClicked() ) ) ;
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancelClicked() ) ) ;
-	connect( m_ui->cbNormalVolume,SIGNAL( activated( int ) ),this,SLOT( cbNormalVolume( int ) ) ) ;
-	connect( m_ui->cbHiddenVolume,SIGNAL( activated( int ) ),this,SLOT( cbHiddenVolume( int ) ) ) ;
-	connect( m_ui->comboBoxVolumeType,SIGNAL( currentIndexChanged( int ) ),this,SLOT( volumeType( int ) ) ) ;
-	connect( m_ui->lineEditPassphrase1,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged_0( QString ) ) ) ;
-	connect( m_ui->lineEditHiddenKey,SIGNAL( textChanged( QString ) ),this,SLOT( keyChanged_1( QString ) ) ) ;
-	connect( m_ui->pbHiddenKeyFile,SIGNAL( clicked() ),this,SLOT( pbOpenHiddenKeyFile() ) ) ;
-	connect( m_ui->comboBoxVolumeType,SIGNAL( activated( int ) ),this,SLOT( setOptions( int ) ) ) ;
+	auto act = static_cast< void( QComboBox::* )( int )>( &QComboBox::activated ) ;
+	auto aaa = static_cast< void( QComboBox::* )( int )>( &QComboBox::currentIndexChanged ) ;
+
+	connect( m_ui->pbOpenKeyFile,&QPushButton::clicked,this,&createvolume::pbOpenKeyFile ) ;
+	connect( m_ui->pbCreate,&QPushButton::clicked,this,&createvolume::pbCreateClicked ) ;
+	connect( m_ui->pbCancel,&QPushButton::clicked,this,&createvolume::pbCancelClicked ) ;
+	connect( m_ui->cbNormalVolume,act,this,&createvolume::cbNormalVolume ) ;
+	connect( m_ui->cbHiddenVolume,act,this,&createvolume::cbHiddenVolume ) ;
+	connect( m_ui->comboBoxVolumeType,aaa,this,&createvolume::volumeType ) ;
+	connect( m_ui->lineEditPassphrase1,&QLineEdit::textChanged,this,&createvolume::keyChanged_0 ) ;
+	connect( m_ui->lineEditHiddenKey,&QLineEdit::textChanged,this,&createvolume::keyChanged_1 ) ;
+	connect( m_ui->pbHiddenKeyFile,&QPushButton::clicked,this,&createvolume::pbOpenHiddenKeyFile ) ;
+	connect( m_ui->comboBoxVolumeType,act,this,&createvolume::setOptions ) ;
 
         this->installEventFilter( this ) ;
 

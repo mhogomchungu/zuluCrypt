@@ -230,7 +230,7 @@ void tablewidget::clearTable( QTableWidget * table )
 {
 	auto j = table->rowCount() ;
 
-	for( decltype( j ) i = 0 ; i < j ; i++ ){
+	for( int i = 0 ; i < j ; i++ ){
 
 		table->removeRow( 0 ) ;
 	}
@@ -242,4 +242,65 @@ void tablewidget::setRowToolTip( QTableWidget * table,int row,const QString& too
 
 		table->item( row,col )->setToolTip( tooltip ) ;
 	} ) ;
+}
+
+void tablewidget::addOrUpdateRows( QTableWidget * table,const QVector< QStringList >& s,const QFont& font )
+{
+	tablewidget::clearTable( table ) ;
+
+	for( int i = 0 ; i < s.size() ; i++ ){
+
+		qDebug() << "1111111: " << s[ i ] ;
+		tablewidget::addRow( table,s[ i ],font ) ;
+	}
+
+	return ;
+
+	if( s.size() == 0 ){
+
+		qDebug() << "1111111" ;
+
+		tablewidget::clearTable( table ) ;
+
+	}else if( table->rowCount() == s.size() ){
+
+		qDebug() << "222222" ;
+
+		for( int i = 0 ; i < s.size() ; i++ ){
+
+			tablewidget::updateRow( table,s[ i ],i,font ) ;
+		}
+
+	}else if( table->rowCount() < s.size() ){
+
+		qDebug() << "33333" ;
+
+		int m = s.size() - table->rowCount() ;
+
+		int i = 0 ;
+
+		for( ; i < m ; i++ ){
+
+			tablewidget::updateRow( table,s[ i ],i,font ) ;
+		}
+
+		for( ; i < s.size() ; i++ ){
+
+			tablewidget::addRow( table,s[ i ],font ) ;
+		}
+	}else{
+		qDebug() << "444444" ;
+
+		for( int i = 0 ; i < s.size() ; i++ ){
+
+			tablewidget::updateRow( table,s[ i ],i,font ) ;
+		}
+
+		int m = table->rowCount() - s.size() - 1 ;
+
+		for( ; m > s.size() ; m-- ){
+
+			table->removeRow( m ) ;
+		}
+	}
 }

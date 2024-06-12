@@ -54,40 +54,39 @@ public:
 signals :
 	void addItemToTable( QString,QString,QString ) ;
 public slots:
-	void HideUI( void ) ;
-	void ShowUI( void ) ;
+	void HideUI() ;
+	void ShowUI() ;
 	void ShowUI( const QString& volumePath,const QString& mount_point ) ;
 	void ShowUI( QString ) ;
-private slots :
-	void openVolume( void ) ;
+private:
+	void openVolume() ;
 	void cbVisibleKeyStateChanged( int ) ;
 	void cbVolumeType( int ) ;
 	void cbActicated( int ) ;
-	void pbKeyOption( void ) ;
+	void pbKeyOption() ;
 	void pbPluginEntryClicked( QAction * ) ;
 	void plainDmCryptOption( QAction * ) ;
-	void pbPlugin( void ) ;
-	void mount_point( void ) ;
-	void clickedPassPhraseFromFileButton( void ) ;
-	void passphraseFromFileOption( void ) ;
-	void passphraseOption( void ) ;
-	void pluginOption( void ) ;
+	void pbPlugin() ;
+	void mount_point() ;
+	void clickedPassPhraseFromFileButton() ;
+	void passphraseFromFileOption() ;
+	void passphraseOption() ;
+	void pluginOption() ;
 	void file_path( void  ) ;
 	void mountPointPath( QString ) ;
 	void cbStateChanged( int ) ;
-private :
 	void autoSetPassword( const QString& ) ;
-	void keyAndKeyFile( void ) ;
-	void tcryptGui( void ) ;
+	void keyAndKeyFile() ;
+	void tcryptGui() ;
 	QString getUUIDFromPath( const QString& ) ;
 	void sendKey( const QString& sockpath ) ;
-	void setDefaultOpenMode( void ) ;
-	void disableAll( void ) ;
-	void enableAll( void ) ;
+	void setDefaultOpenMode() ;
+	void disableAll() ;
+	void enableAll() ;
 	void closeEvent( QCloseEvent * ) ;
 	bool eventFilter( QObject * watched,QEvent * event ) ;
 	void failed( const utility::Task& ) ;
-	void failed( void ) ;
+	void failed() ;
 	Ui::PasswordDialog * m_ui ;
 	QTableWidget * m_table ;
 	secrets& m_secrets ;

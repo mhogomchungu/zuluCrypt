@@ -59,11 +59,11 @@ mountPartition::mountPartition( QWidget * parent,QTableWidget * table,std::funct
 
 	m_ui->checkBoxMountReadOnly->setChecked( utility::getOpenVolumeReadOnlyOption( "zuluMount-gui" ) ) ;
 
-	connect( m_ui->pbMount,SIGNAL( clicked() ),this,SLOT( pbMount() ) ) ;
-	connect( m_ui->pbMountFolder,SIGNAL( clicked() ),this,SLOT( pbOpenMountPath() ) ) ;
-	connect( m_ui->pbCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
-	connect( m_ui->checkBox,SIGNAL( stateChanged( int ) ),this,SLOT( stateChanged( int ) ) ) ;
-	connect( m_ui->checkBoxMountReadOnly,SIGNAL( stateChanged(int) ),this,SLOT( checkBoxReadOnlyStateChanged( int ) ) ) ;
+	connect( m_ui->pbMount,&QPushButton::clicked,this,&mountPartition::pbMount ) ;
+	connect( m_ui->pbMountFolder,&QPushButton::clicked,this,&mountPartition::pbOpenMountPath ) ;
+	connect( m_ui->pbCancel,&QPushButton::clicked,this,&mountPartition::pbCancel ) ;
+	connect( m_ui->checkBox,&QCheckBox::stateChanged,this,&mountPartition::stateChanged ) ;
+	connect( m_ui->checkBoxMountReadOnly,&QCheckBox::stateChanged,this,&mountPartition::checkBoxReadOnlyStateChanged ) ;
 
 	m_ui->pbMountFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 

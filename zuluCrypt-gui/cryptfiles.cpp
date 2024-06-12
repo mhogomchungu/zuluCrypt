@@ -55,15 +55,17 @@ cryptfiles::cryptfiles( QWidget * parent ) :QDialog( parent ),m_ui( new Ui::cryp
 	m_ui->pbOpenFolder->setIcon( QIcon( ":/folder.png" ) ) ;
 	m_ui->pushButtonFile->setIcon( QIcon( ":/file.png" ) ) ;
 
-	connect( m_ui->pbCreate,SIGNAL( clicked() ),this,SLOT( pbCreate() ) ) ;
-	connect( m_ui->pushButtonFile,SIGNAL( clicked() ),this,SLOT( pbOpenFile() ) ) ;
-	connect( m_ui->pbOpenFolder,SIGNAL( clicked() ),this,SLOT( pbOpenFolder() ) ) ;
-	connect( m_ui->comboBox,SIGNAL( activated( int ) ),this,SLOT( cbChanged( int ) ) ) ;
-	connect( m_ui->lineEditSourcePath,SIGNAL( textChanged( QString ) ),this,SLOT( sourceTextChanged( QString ) ) ) ;
-	connect( m_ui->pushButtonKeyFile,SIGNAL( clicked() ),this,SLOT( pbKeyFile() ) ) ;
-	connect( m_ui->pushButtonCancel,SIGNAL( clicked() ),this,SLOT( pbCancel() ) ) ;
+	auto act = static_cast< void( QComboBox::* )( int )>( &QComboBox::activated ) ;
 
-	connect( this,SIGNAL( progressUpdate( int ) ),this,SLOT( progressBarUpdate( int ) ) ) ;
+	connect( m_ui->pbCreate,&QPushButton::clicked,this,&cryptfiles::pbCreate ) ;
+	connect( m_ui->pushButtonFile,&QPushButton::clicked,this,&cryptfiles::pbOpenFile ) ;
+	connect( m_ui->pbOpenFolder,&QPushButton::clicked,this,&cryptfiles::pbOpenFolder ) ;
+	connect( m_ui->comboBox,act,this,&cryptfiles::cbChanged ) ;
+	connect( m_ui->lineEditSourcePath,&QLineEdit::textChanged,this,&cryptfiles::sourceTextChanged ) ;
+	connect( m_ui->pushButtonKeyFile,&QPushButton::clicked,this,&cryptfiles::pbKeyFile) ;
+	connect( m_ui->pushButtonCancel,&QPushButton::clicked,this,&cryptfiles::pbCancel ) ;
+
+	connect( this,&cryptfiles::progressUpdate,this,&cryptfiles::progressBarUpdate ) ;
 
 	this->cbChanged( 0 ) ;
 
