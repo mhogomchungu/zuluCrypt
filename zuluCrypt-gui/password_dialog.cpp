@@ -93,7 +93,6 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	auto cc = static_cast< void( QComboBox::* )( int )>( &QComboBox::currentIndexChanged ) ;
 
 	connect( m_ui->PushButtonCancel,&QPushButton::clicked,this,&passwordDialog::HideUI ) ;
-	connect( m_ui->PushButtonOpen,&QPushButton::clicked,this,&passwordDialog::openVolume ) ;
 	connect( m_ui->PushButtonMountPointPath,&QPushButton::clicked,this,&passwordDialog::mount_point ) ;
 	connect( m_ui->PushButtonVolumePath,&QPushButton::clicked,this,&passwordDialog::file_path ) ;
 	connect( m_ui->pushButtonPassPhraseFromFile,&QPushButton::clicked,this,&passwordDialog::clickedPassPhraseFromFileButton ) ;
@@ -107,6 +106,11 @@ passwordDialog::passwordDialog( QTableWidget * table,
 	connect( m_ui->cbShareMountPoint,&QCheckBox::stateChanged,[]( int s ){
 
 		utility::mountWithSharedMountPoint( s == Qt::Checked ) ;
+	} ) ;
+
+	connect( m_ui->PushButtonOpen,&QPushButton::clicked,[ this ](){
+
+		this->openVolume( m_ui->PassPhraseField->text() ) ;
 	} ) ;
 
 	m_ui->cbVolumeType->setCurrentIndex( utility::defaultUnlockingVolumeType() ) ;
@@ -253,7 +257,7 @@ void passwordDialog::pbPlugin()
 
 	m_pluginMenu->addAction( tr( "Cancel" ) )->setObjectName( "Cancel" ) ;
 
-	connect( m_pluginMenu,SIGNAL( triggered( QAction * ) ),this,SLOT( pbPluginEntryClicked( QAction * ) ) ) ;
+	connect( m_pluginMenu,&QMenu::triggered,this,&passwordDialog::pbPluginEntryClicked ) ;
 
 	m_pluginMenu->exec( QCursor::pos() ) ;
 }
@@ -282,10 +286,9 @@ void passwordDialog::tcryptGui()
 
 	tcrypt::instance( this,false,[ this ]( const QString& key,const QStringList& keyFiles ) {
 
-		m_key = key.toUtf8() ;
 		m_keyFiles = keyFiles ;
 
-		this->openVolume() ;
+		this->openVolume( key ) ;
 
 		m_ui->cbKeyType->setCurrentIndex( passwordDialog::key ) ;
 		m_ui->PassPhraseField->setText( QString() ) ;
@@ -663,10 +666,11 @@ void passwordDialog::enableAll()
 	}
 }
 
-void passwordDialog::openVolume()
+void passwordDialog::openVolume( const QString& key )
 {
 	this->disableAll() ;
-	m_key = m_ui->PassPhraseField->text().toUtf8() ;
+
+	m_key = key.toUtf8() ;
 
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 

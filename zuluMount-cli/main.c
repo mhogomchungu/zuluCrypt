@@ -284,7 +284,7 @@ static int _checkUnmount( const char * device,uid_t uid )
 		 */
 		r = zuluCryptBindUnmountVolume( stx,device,uid ) ;
 
-		if( r != 3 || r != 4 ){
+		if( !( r == 3 || r == 4 ) ){
 
 			st = StringListStringAtSecondPlace( stl ) ;
 			/*
@@ -407,7 +407,7 @@ static int _zuluMountExe( ARGS * args )
 	return _zuluExit_1( 200,StringListVoid,NULL,gettext( "ERROR: unrecognized argument encountered" ) ) ;
 }
 
-static int _mount_help()
+static int _mount_help( void )
 {
 	const char * doc6 ;
 	const char * doc5 ;

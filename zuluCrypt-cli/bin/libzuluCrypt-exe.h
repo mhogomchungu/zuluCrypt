@@ -77,7 +77,7 @@ void zuluCryptExeSetOriginalUID( uid_t s ) ;
 /*
  * this function is defined in security.c
  */
-int zuluCryptExeOriginalUserIsNotRoot() ;
+int zuluCryptExeOriginalUserIsNotRoot( void ) ;
 
 /*
  * get command line arguments and in struct_opts structure to be used in various calls *

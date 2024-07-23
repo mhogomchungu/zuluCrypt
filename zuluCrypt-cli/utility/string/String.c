@@ -289,7 +289,7 @@ string_t StringCopy( string_t st )
 	}
 }
 
-string_t StringEmpty()
+string_t StringEmpty( void )
 {
 	return StringBuffer( 8 ) ;
 }

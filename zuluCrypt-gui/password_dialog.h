@@ -59,7 +59,7 @@ public slots:
 	void ShowUI( const QString& volumePath,const QString& mount_point ) ;
 	void ShowUI( QString ) ;
 private:
-	void openVolume() ;
+	void openVolume( const QString& ) ;
 	void cbVisibleKeyStateChanged( int ) ;
 	void cbVolumeType( int ) ;
 	void cbActicated( int ) ;

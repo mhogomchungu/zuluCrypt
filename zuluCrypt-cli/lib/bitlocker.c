@@ -33,7 +33,7 @@ static int zuluExit( int st,struct crypt_device * cd )
 	return st ;
 }
 
-const char * zuluCryptBitLockerType()
+const char * zuluCryptBitLockerType( void )
 {
 	return "crypto_BitLocker" ;
 }
@@ -43,7 +43,7 @@ const char * zuluCryptBitLockerFolderPrefix( void )
 	return "cryptoBitlocker" ;
 }
 
-const char * zuluCryptCryptsetupBitLockerType()
+const char * zuluCryptCryptsetupBitLockerType( void )
 {
 #ifdef CRYPT_BITLK
 	return CRYPT_BITLK ;
@@ -264,7 +264,7 @@ int zuluCryptBitLockerlock( string_t mapperPath,char ** mount_point )
 	}
 }
 
-static const char * _dislocker_fuse_path()
+static const char * _dislocker_fuse_path( void )
 {
 	struct stat st ;
 	const char * e ;

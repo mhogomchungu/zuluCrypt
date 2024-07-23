@@ -20,6 +20,10 @@ add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all --param ssp-buffer-size
 
 include_directories( ${PROJECT_BINARY_DIR} )
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_definitions(-Qunused-arguments)
+endif()
+
 if( LIB_SUFFIX )
 	set( CMAKE_INSTALL_LIBDIR "${LIB_SUFFIX}" )
 	set( CMAKE_INSTALL_FULL_LIBDIR "${CMAKE_INSTALL_PREFIX}/${LIB_SUFFIX}" )

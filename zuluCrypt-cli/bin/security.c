@@ -51,7 +51,7 @@ static const char * _run_time_path ;
  */
 static void ( *zuluCryptSecurityPrivilegeElevationError )( const char * ) = NULL ;
 
-const char * zuluCryptRunTimePath()
+const char * zuluCryptRunTimePath( void )
 {
 	return _run_time_path ;
 }
@@ -61,7 +61,7 @@ void zuluCryptExeSetOriginalUID( uid_t s )
 	_original_UID = s ;
 }
 
-int zuluCryptExeOriginalUserIsNotRoot()
+int zuluCryptExeOriginalUserIsNotRoot( void )
 {
 	return _original_UID != 0 ;
 }

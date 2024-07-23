@@ -46,7 +46,7 @@ static void _close( int x )
 	if( close( x ) ){}
 }
 
-const char * zuluCryptCryptsetupTCRYPTType()
+const char * zuluCryptCryptsetupTCRYPTType( void )
 {
 #ifdef CRYPT_TCRYPT
 	return CRYPT_TCRYPT ;
