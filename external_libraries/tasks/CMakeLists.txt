@@ -13,10 +13,8 @@ add_definitions( -Wextra -Wall -pedantic )
 
 if( CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 10.0.0)
 	set( CMAKE_CXX_STANDARD 14 )
-	MESSAGE( STATUS "Setting C++ version to C++14" )
 else()
 	set( CMAKE_CXX_STANDARD 14 )
-	MESSAGE( STATUS "Setting C++ version to C++14" )
 endif()
 
 set( CMAKE_CXX_STANDARD_REQUIRED ON )

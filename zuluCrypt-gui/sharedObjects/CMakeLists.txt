@@ -57,7 +57,7 @@ add_definitions( -D_FILE_OFFSET_BITS=64 -Wextra -Wall -pedantic -I${PROJECT_BINA
 
 if(BUILD_WITH_QT6)
 
-        add_library( sharedObject STATIC ${SHARED_OBJ_MOC_FILES} ${SRC} ${UI_FILES} icon.qrc )
+	add_library( sharedObject STATIC ${SHARED_OBJ_MOC_FILES} ${SRC} ${UI_FILES} icon.qrc )
 
 	if( BUILDKWALLET )
 		target_link_libraries( sharedObject -lgcrypt lxqt-wallet ${kwallet_library} -lblkid ${Qt6Network_LIBRARIES} mhogomchungu_task )

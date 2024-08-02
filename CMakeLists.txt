@@ -281,6 +281,22 @@ if( NOT NOGUI )
 	if(BUILD_WITH_QT6)
 		find_package(Qt6 COMPONENTS Core Widgets Network REQUIRED )
 		message("-- Building With Qt6")
+		set(BUILD_WITH_QT6 ON)
+
+		set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+		set(CMAKE_AUTOMOC ON)
+		set(CMAKE_AUTORCC ON)
+		set(CMAKE_AUTOUIC ON)
+
+		message( STATUS "Found Qt6Widgets, version  ${Qt6Widgets_VERSION}" )
+		message( STATUS "Found Qt6Core, version  ${Qt6Core_VERSION}" )
+		message( STATUS "Found Qt6Network, version  ${Qt6Network_VERSION}" )
+
+		set( CMAKE_INCLUDE_CURRENT_DIR ON )
+		include_directories( ${Qt6Widgets_INCLUDE_DIRS} ${Qt6Network_INCLUDE_DIRS} ${Qt6Core_INCLUDE_DIRS} )
+
+		add_definitions( ${Qt6Widgets_DEFINITIONS} )
 	else()
 		find_package(Qt5 COMPONENTS Core QUIET)
 		if(Qt5_FOUND)
