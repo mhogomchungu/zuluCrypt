@@ -42,10 +42,6 @@ if( NOT CMAKE_INSTALL_DATADIR )
 	set( CMAKE_INSTALL_DATADIR "share" )
 endif()
 
-if( NOT DEFINED QT5 )
-    set( QT5 "true" )
-endif()
-
 # uninstall target
 configure_file(
 	"${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
@@ -157,10 +153,6 @@ else( NOT CRYPTSETUP_FOUND )
 	if( NOT cryptsetup_lib )
 		message( FATAL_ERROR "ERROR: could not find libcryptsetup.so" )
 	endif( NOT cryptsetup_lib )
-
-	get_filename_component(libcrypsetupFullPath ${cryptsetup_lib} REALPATH)
-	MESSAGE( STATUS "commiting to cryptsetup library path of: ${libcrypsetupFullPath}" )
-	file( WRITE ${PROJECT_BINARY_DIR}/cryptsetup_library_path.h "\n#define CRYPTSETUP_LIBRARY_PATH \"${libcrypsetupFullPath}\"" )
 
 endif( NOT CRYPTSETUP_FOUND )
 
@@ -284,6 +276,54 @@ add_subdirectory( zuluSafe )
 
 if( NOT NOGUI )
 
+	option(BUILD_WITH_QT6 "Build with Qt 6" OFF)
+
+	if(BUILD_WITH_QT6)
+		find_package(Qt6 COMPONENTS Core Widgets Network REQUIRED )
+		message("-- Building With Qt6")
+	else()
+		find_package(Qt5 COMPONENTS Core QUIET)
+		if(Qt5_FOUND)
+			message("-- Building With Qt5")
+			set(BUILD_WITH_QT6 OFF)
+			find_package(Qt5 COMPONENTS Core Widgets Network REQUIRED)
+
+			message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
+			message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
+			message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
+
+			set( CMAKE_INCLUDE_CURRENT_DIR ON )
+			include_directories( ${Qt5Widgets_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5Core_INCLUDE_DIRS} )
+
+			add_definitions( ${Qt5Widgets_DEFINITIONS} )
+		else()
+			find_package(Qt6 COMPONENTS Core QUIET)
+
+			if(Qt6_FOUND)
+				message("-- Building With Qt6")
+				set(BUILD_WITH_QT6 ON)
+				find_package(Qt6 COMPONENTS Core Widgets Network REQUIRED)
+
+				set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+				set(CMAKE_AUTOMOC ON)
+				set(CMAKE_AUTORCC ON)
+				set(CMAKE_AUTOUIC ON)
+
+				message( STATUS "Found Qt6Widgets, version  ${Qt6Widgets_VERSION}" )
+				message( STATUS "Found Qt6Core, version  ${Qt6Core_VERSION}" )
+				message( STATUS "Found Qt6Network, version  ${Qt6Network_VERSION}" )
+
+				set( CMAKE_INCLUDE_CURRENT_DIR ON )
+				include_directories( ${Qt6Widgets_INCLUDE_DIRS} ${Qt6Network_INCLUDE_DIRS} ${Qt6Core_INCLUDE_DIRS} )
+
+				add_definitions( ${Qt6Widgets_DEFINITIONS} )
+			else()
+			        message( FATAL_ERROR "-- Failed to find Qt5 or Qt6")
+			endif()
+		endif()
+	endif()
+
 	if( INTERNAL_LXQT_WALLET )
 
 		message( STATUS "---------------------------------------------------------------------------" )
@@ -351,43 +391,6 @@ if( NOT NOGUI )
 		file( WRITE ${PROJECT_BINARY_DIR}/can_build_pwquality.h "#define BUILD_PWQUALITY 0\n" )
 	endif( WITH_PWQUALITY AND PWQUALITY_FOUND )
 
-	option(BUILD_WITH_QT6 "Build with Qt 6" OFF)
-
-	if(BUILD_WITH_QT6)
-		find_package(Qt6 COMPONENTS Core Widgets Network REQUIRED)
-		message("-- Building With Qt6")
-	else()
-		find_package(Qt5 COMPONENTS Core Widgets Network REQUIRED)
-		message("-- Building With Qt5")
-	endif()
-
-	if( BUILD_WITH_QT6 )
-
-	        set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-		set(CMAKE_AUTOMOC ON)
-		set(CMAKE_AUTORCC ON)
-		set(CMAKE_AUTOUIC ON)
-
-		message( STATUS "Found Qt5Widgets, version  ${Qt6Widgets_VERSION}" )
-		message( STATUS "Found Qt5Core, version  ${Qt6Core_VERSION}" )
-		message( STATUS "Found Qt5Network, version  ${Qt6Network_VERSION}" )
-
-		set( CMAKE_INCLUDE_CURRENT_DIR ON )
-		include_directories( ${Qt6Widgets_INCLUDE_DIRS} ${Qt6Network_INCLUDE_DIRS} ${Qt6Core_INCLUDE_DIRS} )
-
-		add_definitions( ${Qt6Widgets_DEFINITIONS} )
-	else()
-		message( STATUS "Found Qt5Widgets, version  ${Qt5Widgets_VERSION}" )
-		message( STATUS "Found Qt5Core, version  ${Qt5Core_VERSION}" )
-		message( STATUS "Found Qt5Network, version  ${Qt5Network_VERSION}" )
-
-		set( CMAKE_INCLUDE_CURRENT_DIR ON )
-		include_directories( ${Qt5Widgets_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5Core_INCLUDE_DIRS} )
-
-		add_definitions( ${Qt5Widgets_DEFINITIONS} )
-	endif()
-
 	if( MCHUNGU_TASK_FOUND )
 
 		message( STATUS "---------------------------------------------------------------------------" )
@@ -420,21 +423,16 @@ if( NOT NOGUI )
 	ADD_SUBDIRECTORY( plugins )
 	ADD_SUBDIRECTORY( zuluMount-gui )
 
-        file( WRITE ${PROJECT_BINARY_DIR}/zuluPolkit.h "#define POLKIT_SUPPORT 1" )
+	file( WRITE ${PROJECT_BINARY_DIR}/zuluPolkit.h "#define POLKIT_SUPPORT 1" )
 
-        if( USE_POLKIT )
+	if( USE_POLKIT )
 
-                file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 1" )
-        else()
-                file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 0" )
-        endif()
-
-        ADD_SUBDIRECTORY( zuluPolkit )
-
-else( NOT NOGUI )
-	if( QT5 )
-	#adding this one just to silence a warning
+		file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 1" )
+	else()
+		file( APPEND ${PROJECT_BINARY_DIR}/zuluPolkit.h "\n#define AUTO_ENABLE_POLKIT_SUPPORT 0" )
 	endif()
+
+	ADD_SUBDIRECTORY( zuluPolkit )
 endif( NOT NOGUI )
 
 file( WRITE ${PROJECT_BINARY_DIR}/locale_path.h "\n#define TRANSLATION_PATH \"${CMAKE_INSTALL_FULL_DATADIR}/zuluCrypt/translations/\"\n")

@@ -70,7 +70,6 @@
 #include "executablesearchpaths.h"
 #include "zuluPolkit.h"
 #include "luks_slot_status.h"
-#include "cryptsetup_library_path.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
