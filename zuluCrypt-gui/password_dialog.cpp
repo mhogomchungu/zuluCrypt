@@ -714,6 +714,11 @@ void passwordDialog::openVolume( const QString& key )
 		if( m.has_value() ){
 
 			m_key = m.value() ;
+
+			passtype = "-f" ;
+			keyPath = utility::keyPath() ;
+
+			this->sendKey( keyPath ) ;
 		}else{
 			DialogMsg( this ).ShowUIOK( tr( "ERROR" ),tr( "Failed To Locate Or Run Yubikey's \"ykchalresp\" Program." ) ) ;
 			return this->enableAll() ;
