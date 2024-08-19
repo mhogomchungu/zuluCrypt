@@ -292,7 +292,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	stringList_t stz ;
 	tvcrypt v_info ;
 
-	unsigned long m_flags ;
+	unsigned long m_flags = 0 ;
 
 	int tcrypt_keyfile  = 0 ;
 
@@ -327,9 +327,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
 
-	zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ;
-
-	if( zuluCryptMountFlagsAreNotCorrect( fs_opts,uid,&m_flags ) ){
+	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ){
 
 		return zuluExit( 5,device,mount_point,&stl ) ;
 	}

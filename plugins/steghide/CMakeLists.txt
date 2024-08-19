@@ -13,7 +13,7 @@ else()
 	add_executable( steghide ${ICON} main.cpp )
 endif()
 
-set_target_properties( steghide PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+#set_target_properties( steghide PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 set_target_properties( steghide PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 TARGET_LINK_LIBRARIES( steghide plugin )

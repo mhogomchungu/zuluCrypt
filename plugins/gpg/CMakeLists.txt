@@ -13,7 +13,7 @@ else()
 	add_executable( gpg ${ICON} main.cpp )
 endif()
 
-set_target_properties( gpg PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+#set_target_properties( gpg PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 set_target_properties( gpg PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 TARGET_LINK_LIBRARIES( gpg plugin )

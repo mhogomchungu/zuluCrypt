@@ -340,6 +340,7 @@ version 6.2.0
 -- Version 6.1.0 modernized favorites functionality and moved saved password UI to the
    favorites window and changes in both places introduced above bugs.
 
-version 6.3.0
+version 7.0.0
 -- Make the project builable with Qt6, default is still Qt5.
 -- Fix a bug that caused a VeraCrypt password to not be used when unlocking using keyfiles.
+-- Fix a bug that prevented using a YubiKey.

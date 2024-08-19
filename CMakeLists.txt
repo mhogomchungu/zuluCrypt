@@ -13,7 +13,7 @@ INCLUDE(GNUInstallDirs)
 set( PGR_VERSION "6.2.0" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
-set( COPYRIGHT_YEARS "2011-2022" )
+set( COPYRIGHT_YEARS "2011-2024" )
 
 #add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all -D_FORTIFY_SOURCE=2 --param ssp-buffer-size=4 )
 add_definitions( -D_DEFAULT_SOURCE -fstack-protector-all --param ssp-buffer-size=4 )

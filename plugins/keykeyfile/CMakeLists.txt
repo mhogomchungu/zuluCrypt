@@ -13,7 +13,7 @@ else()
 	add_executable( keykeyfile ${ICON} main.cpp )
 endif()
 
-set_target_properties( keykeyfile PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+#set_target_properties( keykeyfile PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 set_target_properties( keykeyfile PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread -pedantic " )
 
 TARGET_LINK_LIBRARIES( keykeyfile plugin )

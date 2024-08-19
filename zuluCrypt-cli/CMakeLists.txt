@@ -155,8 +155,8 @@ endif()
 
  TARGET_LINK_LIBRARIES( zuluCrypt-cli zuluCrypt-exe zuluCrypt )
 
- set_target_properties( zuluCrypt-cli PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
- set_target_properties( zuluMount-cli PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+ #set_target_properties( zuluCrypt-cli PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+ #set_target_properties( zuluMount-cli PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 
  #zuluCryptKeyServer not used
  #add_executable( zuluCryptKeyServer ../plugins/network_key/server.c )
@@ -173,7 +173,7 @@ endif()
 		set_target_properties( keyring PROPERTIES COMPILE_FLAGS "-D_FILE_OFFSET_BITS=64 -Wall -s -fPIE -pthread  -pedantic" )
 		set_target_properties( keyring PROPERTIES LINK_FLAGS "-pie" )
 		TARGET_LINK_LIBRARIES( keyring zuluCryptPluginManager ${keyring_library} ${blkid} ${LIBSECRET_LIBRARIES} )
-		set_target_properties( keyring PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+		#set_target_properties( keyring PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 		install( TARGETS keyring RUNTIME DESTINATION "${PLUGINPATH}" )
 	endif()
  endif()
@@ -200,7 +200,7 @@ endif()
  set_target_properties( zuluCrypt-testKey PROPERTIES LINK_FLAGS "-pie" )
 
  TARGET_LINK_LIBRARIES( zuluCrypt-testKey zuluCryptPluginManager ${blkid} )
- set_target_properties( zuluCrypt-testKey PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
+ #set_target_properties( zuluCrypt-testKey PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
  #set_target_properties( zuluCrypt-test PROPERTIES INSTALL_RPATH "${CMAKE_INSTALL_FULL_LIBDIR}" )
 
  file( WRITE ${PROJECT_BINARY_DIR}/libzuluCrypt.pc
