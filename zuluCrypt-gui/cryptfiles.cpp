@@ -38,7 +38,12 @@
 #include "utility.h"
 #include "openvolume.h"
 #include "dialogmsg.h"
+
+#ifdef LXQT_WALLET_HYPHEN_HEADER
+#include "lxqt-wallet.h"
+#else
 #include "lxqtwallet.h"
+#endif
 
 #include "plugin.h"
 

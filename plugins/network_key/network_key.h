@@ -37,7 +37,12 @@
 
 #include "../../zuluCrypt-cli/pluginManager/libzuluCryptPluginManager.h"
 #include "../../zuluCrypt-cli/utility/socket/socket.h"
+
+#ifdef LXQT_WALLET_HYPHEN_HEADER
+#include "lxqt-wallet.h"
+#else
 #include "lxqtwallet.h"
+#endif
 
 #define BUFFER_SIZE 1024
 

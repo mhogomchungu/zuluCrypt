@@ -380,6 +380,12 @@ if( NOT NOGUI )
 				include_directories( ${LXQT_WALLET_INCLUDEDIR} )
 				link_directories( ${LXQT_WALLET_LIBDIR} )
 
+				# lxqt-wallet 4.0.0 renamed a header from "lxqtwallet.h" to "lxqt-wallet.h",
+				# so this is needed to choose the right header to include when compiling.
+				if( LXQT_WALLET_VERSION VERSION_GREATER "4.0.0" )
+					add_compile_definitions( LXQT_WALLET_HYPHEN_HEADER )
+				endif()
+
 				message( STATUS "---------------------------------------------------------------------------" )
 				message( STATUS "lxqt wallet support will be provided by an external libary" )
 				message( STATUS "---------------------------------------------------------------------------" )
