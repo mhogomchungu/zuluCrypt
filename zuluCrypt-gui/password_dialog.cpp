@@ -670,7 +670,7 @@ void passwordDialog::openVolume( const QString& key )
 {
 	this->disableAll() ;
 
-	m_key = key.toUtf8() ;
+	m_key = key.toLatin1() ;
 
 	m_device = utility::resolvePath( m_ui->OpenVolumePath->text() ) ;
 
