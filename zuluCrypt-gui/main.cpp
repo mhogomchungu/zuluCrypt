@@ -31,6 +31,10 @@ int main( int argc,char * argv[] )
 
 	QApplication a( argc,argv ) ;
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5,7,0 )
+
+	a.setDesktopFileName( "zuluCrypt" ) ;
+#endif
 	return utility::startApplication( "zuluCrypt",[ & ](){
 
 		zuluCrypt e ;

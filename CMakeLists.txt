@@ -276,7 +276,7 @@ add_subdirectory( zuluSafe )
 
 if( NOT NOGUI )
 
-	option(BUILD_WITH_QT6 "Build with Qt 6" OFF)
+	option(BUILD_WITH_QT6 "Build with Qt 6" ON)
 
 	if(BUILD_WITH_QT6)
 		find_package(Qt6 COMPONENTS Core Widgets Network REQUIRED )
