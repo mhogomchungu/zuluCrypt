@@ -592,6 +592,8 @@ int main( int argc,char * argv[] )
 	uid_t uid = getuid() ;
 	gid_t gid = getgid() ;
 
+	uid_t user_id ;
+
 	/*
 	 * ARGS structure is declared in ./includes.h
 	 */
@@ -651,15 +653,13 @@ int main( int argc,char * argv[] )
 		return _mount_help() ;
 	}
 
-	i = zuluCryptSecurityConvertUID( uid,args.u_id ) ;
-
-	if( i == -1 ){
+	if( zuluCryptSecurityConvertUID( uid,args.u_id,&user_id ) ){
 
 		puts( gettext( "ERROR: user is not root privileged" ) ) ;
 		return 255 ;
-	}else{
-		args.uid = uid = (uid_t)i ;
 	}
+
+	args.uid = uid ;
 
 	/*
 	 * Run with higher priority to speed things up
@@ -687,7 +687,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptSetUserUIDForPrivilegeManagement() is defined in ../zuluCrypt-bin/security.c
 	 */
-	zuluCryptSetUserUIDForPrivilegeManagement( uid ) ;
+	zuluCryptSetUserUIDForPrivilegeManagement( user_id ) ;
 	/*
 	 * zuluCryptSecurityDropElevatedPrivileges() is defined in ../zuluCrypt-cli/bin/security.c
 	 */

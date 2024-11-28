@@ -406,6 +406,8 @@ int main( int argc,char * argv[] )
 	uid_t uid = getuid() ;
 	gid_t gid = uid ;
 
+	uid_t user_id ;
+
 	struct sigaction sa ;
 	memset( &sa,'\0',sizeof( struct sigaction ) ) ;
 	sa.sa_handler = _forceTerminateOnSeriousError ;
@@ -482,14 +484,11 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptSecurityConvertUID() is defined in security.c
 	 */
-	st = zuluCryptSecurityConvertUID( uid,clargs.uid ) ;
 
-	if( st == -1 ){
+	if( zuluCryptSecurityConvertUID( uid,clargs.uid,&user_id ) ){
 
 		printf( gettext( "User is not root\n" ) ) ;
 		return 114 ;
-	}else{
-		uid = (uid_t)st ;
 	}
 
 	/*
@@ -503,7 +502,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptSetUserUIDForPrivilegeManagement() is defined in ./security.c
 	 */
-	zuluCryptSetUserUIDForPrivilegeManagement( uid ) ;
+	zuluCryptSetUserUIDForPrivilegeManagement( user_id ) ;
 
 	/*
 	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ./security.c

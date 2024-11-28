@@ -65,7 +65,7 @@ void zuluCryptTrueCryptVeraCryptVolumeInfo( const char * type,tvcrypt * e ) ;
 /*
  * this function is defined in security.c
  */
-int zuluCryptSecurityConvertUID( uid_t uid,const char * u_id ) ;
+int zuluCryptSecurityConvertUID( uid_t uid,const char * u_id,uid_t * ) ;
 
 /*
  * this function is defined in volumes.c
