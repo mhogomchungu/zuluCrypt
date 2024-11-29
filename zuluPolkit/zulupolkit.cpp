@@ -262,7 +262,7 @@ void zuluPolkit::gotConnection()
 
 QString zuluPolkit::readStdin()
 {
-	std::cout << "Token: " << std::flush ;
+	//std::cout << "Token: " << std::flush ;
 
 	struct termios old ;
 	struct termios current ;
@@ -288,7 +288,7 @@ QString zuluPolkit::readStdin()
 
 	tcsetattr( 1,TCSAFLUSH,&old ) ;
 
-	std::cout << std::endl ;
+	//std::cout << std::endl ;
 
 	return s ;
 }
