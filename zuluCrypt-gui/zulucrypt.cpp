@@ -469,13 +469,8 @@ void zuluCrypt::setupConnections()
 
 	m_ui->actionView_LUKS_Key_Slots->setEnabled( utility::canShowKeySlotProperties() ) ;
 
-	using wbe = LXQt::Wallet::BackEnd ;
-
-	auto a = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
-	auto b = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
-
-	m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( a ) ;
-	m_ui->actionManage_volumes_in_kde_wallet->setEnabled( b ) ;
+	m_ui->actionManage_volumes_in_gnome_wallet->setEnabled( false ) ;
+	m_ui->actionManage_volumes_in_kde_wallet->setEnabled( false ) ;
 
 	utility::connect( m_ui->menuOptions,&QMenu::aboutToShow,this,&zuluCrypt::optionMenuAboutToShow ) ;
 
@@ -784,10 +779,10 @@ void zuluCrypt::closeApplication0()
 	m_mountInfo.stop()() ;
 }
 
-void zuluCrypt::closeApplication( int s )
+void zuluCrypt::closeApplication( int )
 {
 	m_secrets.close() ;
-	Q_UNUSED( s )
+	utility::quitHelper() ;
 	m_mountInfo.stop()() ;
 }
 

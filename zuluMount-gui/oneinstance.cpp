@@ -39,9 +39,20 @@ oneinstance::oneinstance( QObject * parent,
 {
 	if( QFile::exists( m_serverPath ) ){
 
-		connect( &m_localSocket,SIGNAL( connected() ),this,SLOT( connected() ) ) ;
-		connect( &m_localSocket,SIGNAL( error( QLocalSocket::LocalSocketError ) ),
-			 this,SLOT( errorOnConnect( QLocalSocket::LocalSocketError ) ) ) ;
+		connect( &m_localSocket,&QLocalSocket::connected,this,&oneinstance::connected ) ;
+
+		#if QT_VERSION < QT_VERSION_CHECK( 5,15,0 )
+			using cs = void( QLocalSocket::* )( QLocalSocket::LocalSocketError ) ;
+			QObject::connect( &m_localSocket,
+					  static_cast< cs >( &QLocalSocket::error ),
+					  this,
+					  &oneinstance::errorOnConnect ) ;
+		#else
+			QObject::connect( &m_localSocket,
+					  &QLocalSocket::errorOccurred,
+					  this,
+					  &oneinstance::errorOnConnect ) ;
+		#endif
 
 		m_localSocket.connectToServer( m_serverPath ) ;
 	}else{
@@ -53,7 +64,7 @@ void oneinstance::start()
 {
 	m_start( m_argument ) ;
 
-	connect( &m_localServer,SIGNAL( newConnection() ),this,SLOT( gotConnection() ) ) ;
+	connect( &m_localServer,&QLocalServer::newConnection,this,&oneinstance::gotConnection ) ;
 
 	m_localServer.listen( m_serverPath ) ;
 }

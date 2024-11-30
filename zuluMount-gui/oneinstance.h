@@ -48,11 +48,10 @@ public:
 		     std::function< void( int ) >,
 		     std::function< void( const QString& ) > ) ;
 	~oneinstance() ;
-private slots:
+private:
 	void connected( void ) ;
 	void gotConnection( void ) ;
 	void errorOnConnect( QLocalSocket::LocalSocketError ) ;
-private:
 	void start( void ) ;
 	QLocalServer m_localServer ;
 	QLocalSocket m_localSocket ;

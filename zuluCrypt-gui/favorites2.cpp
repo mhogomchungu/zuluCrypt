@@ -219,15 +219,35 @@ favorites2::favorites2( QWidget * parent,
 	using bk = LXQt::Wallet::BackEnd ;
 
 	m_ui->rbNone->setEnabled( true ) ;
+	m_ui->rbInternalWallet->setEnabled( LXQt::Wallet::backEndIsSupported( bk::internal ) ) ;
+	m_ui->rbKWallet->setEnabled( false ) ;
+	m_ui->rbLibSecret->setEnabled( false ) ;
 
-	auto _set_supported = []( QRadioButton * rb,LXQt::Wallet::BackEnd e ){
-
-		rb->setEnabled( LXQt::Wallet::backEndIsSupported( e ) ) ;
+	struct walletOpts
+	{
+		bool gnomeWallet ;
+		bool kdeWallet ;
 	} ;
 
-	_set_supported( m_ui->rbInternalWallet,bk::internal ) ;
-	_set_supported( m_ui->rbKWallet,bk::kwallet ) ;
-	_set_supported( m_ui->rbLibSecret,bk::libsecret ) ;
+	Task::run( [ & ](){
+
+		using wbe = LXQt::Wallet::BackEnd ;
+
+		walletOpts m ;
+
+		static bool a = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
+		static bool b = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
+
+		m.gnomeWallet = a ;
+		m.kdeWallet   = b ;
+
+		return m ;
+
+	} ).then( [ & ]( const walletOpts& m ){
+
+		m_ui->rbKWallet->setEnabled( m.kdeWallet ) ;
+		m_ui->rbLibSecret->setEnabled( m.gnomeWallet ) ;
+	} ) ;
 
 	auto walletBk = m_settings.autoMountBackEnd() ;
 
