@@ -334,7 +334,7 @@ static int _zuluMountExe( ARGS * args )
 	const char * action = args->action ;
 	const char * uuid   = args->uuid   ;
 	const char * offset = args->offset ;
-	uid_t        uid    = args->uid    ;
+	uid_t        user_id = args->user_id ;
 
 	string_t st ;
 
@@ -342,7 +342,7 @@ static int _zuluMountExe( ARGS * args )
 
 	if( StringsAreEqual( action,"-L" ) ){
 
-		return zuluMountPrintDeviceProperties( device,uuid,uid ) ;
+		return zuluMountPrintDeviceProperties( device,uuid,user_id ) ;
 	}
 
 	if( StringsAreEqual( action,"-s" ) ){
@@ -351,20 +351,20 @@ static int _zuluMountExe( ARGS * args )
 
 		zuluCryptSecurityGainElevatedPrivileges() ;
 
-		r = zuluCryptDeviceManagedByDislocker( device,uid ) ;
+		r = zuluCryptDeviceManagedByDislocker( device,user_id ) ;
 
 		zuluCryptSecurityDropElevatedPrivileges() ;
 
 		if( StringContains( st,zuluCryptBitLockerType() ) && r ){
 
-			r = zuluMountPrintBitLockerProperties( device,uid ) ;
+			r = zuluMountPrintBitLockerProperties( device,user_id ) ;
 
 		}else if( offset != NULL ||
 			  st == StringVoid ||
 			  StringsAreEqual_2( st,"Nil" ) ||
 			  StringStartsWith( st,"crypto_" ) ){
 
-			r = zuluMountVolumeStatus( device,uuid,uid ) ;
+			r = zuluMountVolumeStatus( device,uuid,user_id ) ;
 		}else{
 			r = zuluMountUnEncryptedVolumeStatus( device,NULL,NULL ) ;
 		}
@@ -659,7 +659,9 @@ int main( int argc,char * argv[] )
 		return 255 ;
 	}
 
-	args.uid = uid ;
+	args.uid     = uid ;
+	args.user_id = user_id ;
+
 
 	/*
 	 * Run with higher priority to speed things up
@@ -676,7 +678,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptClearDeadMappers() is defined in ../zuluCrypt-cli/bin/clear_dead_mapper.c
 	 */
-	zuluCryptClearDeadMappers( uid,0 ) ;
+	zuluCryptClearDeadMappers( user_id,0 ) ;
 
 	/*
 	 * zuluCryptSecuritySetPrivilegeElevationErrorFunction() is defined in ../zuluCrypt-cli/bin/security.c
@@ -702,7 +704,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ../zuluCrypt-cli/bin/security.c
 	 */
-	zuluCryptSecuritySanitizeTheEnvironment( global_variable_user_uid,&stx ) ;
+	zuluCryptSecuritySanitizeTheEnvironment( user_id,&stx ) ;
 
 	#define _hide( z ) strncpy( ( char * )z,"x",StringLength( *k ) )
 
@@ -746,15 +748,15 @@ int main( int argc,char * argv[] )
 	}
 	if( StringsAreEqual( args.action,"-E" ) ){
 
-		return _zuluExit_2(  zuluMountprintAListOfMountedVolumes( uid ),stl,stx,NULL ) ;
+		return _zuluExit_2(  zuluMountprintAListOfMountedVolumes( user_id ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-c" ) ){
 
-		return _zuluExit_2( _checkUnmount( args.device,uid ),stl,stx,NULL ) ;
+		return _zuluExit_2( _checkUnmount( args.device,user_id ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-l" ) ){
 
-		return _zuluExit_2( _zuluMountMountedList( uid ),stl,stx,NULL ) ;
+		return _zuluExit_2( _zuluMountMountedList( user_id ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-P" ) || StringsAreEqual( args.action,"-A" ) ){
 
@@ -762,18 +764,18 @@ int main( int argc,char * argv[] )
 	}
 	if( StringsAreEqual( args.action,"-S" ) ){
 
-		return _zuluExit_2( _zuluMountSystemDeviceList( uid ),stl,stx,NULL ) ;
+		return _zuluExit_2( _zuluMountSystemDeviceList( user_id ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-N" ) ){
-		return _zuluExit_2( _zuluMountNonSystemDeviceList( uid ),stl,stx,NULL ) ;
+		return _zuluExit_2( _zuluMountNonSystemDeviceList( user_id ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-B" ) ){
 
-		return _zuluExit_2( _create_mount_point( args.m_point,args.m_opts,args.uid ),stl,stx,NULL ) ;
+		return _zuluExit_2( _create_mount_point( args.m_point,args.m_opts,args.user_id ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-b" ) ){
 
-		return _zuluExit_2( _delete_mount_point( args.m_point,args.uid ),stl,stx,NULL ) ;
+		return _zuluExit_2( _delete_mount_point( args.m_point,args.user_id ),stl,stx,NULL ) ;
 	}
 	if( StringsAreEqual( args.action,"-h" ) ){
 

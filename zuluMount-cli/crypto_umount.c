@@ -20,9 +20,9 @@
 
 int zuluMountCryptoUMount( ARGS * args )
 {
-	const char * device    = args->device ;
-	const char * UUID      = args->uuid   ;
-	uid_t        uid       = args->uid    ;
+	const char * device    = args->device  ;
+	const char * UUID      = args->uuid    ;
+	uid_t        uid       = args->user_id ;
 
 	const char * mapping_name ;
 	char * path = NULL ;

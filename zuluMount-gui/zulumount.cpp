@@ -625,10 +625,10 @@ void zuluMount::closeApplication()
 	m_events.stop() ;
 }
 
-void zuluMount::closeApplication( int s )
+void zuluMount::closeApplication( int )
 {
 	m_secrets.close() ;
-	Q_UNUSED( s )
+	utility::quitHelper() ;
 	m_events.stop() ;
 }
 
@@ -1254,26 +1254,28 @@ void zuluMount::volumeProperties()
 
 void zuluMount::setUpShortCuts()
 {
-	auto _addAction = [ this ]( std::initializer_list<QKeySequence> s,const char * slot ){
+	using slot = void( zuluMount::* )() ;
+
+	auto _addAction = [ this ]( std::initializer_list<QKeySequence> s,slot e ){
 
 		auto ac = new QAction( this ) ;
 
 		ac->setShortcuts( s ) ;
 
-		connect( ac,SIGNAL( triggered() ),this,slot ) ;
+		connect( ac,&QAction::triggered,this,e ) ;
 
 		return ac ;
 	} ;
 
-	this->addAction( _addAction( { Qt::Key_Enter,Qt::Key_Return },SLOT( defaultButton() ) ) ) ;
+	this->addAction( _addAction( { Qt::Key_Enter,Qt::Key_Return },&zuluMount::defaultButton ) ) ;
 
-	this->addAction( _addAction( { Qt::Key_M },SLOT( pbMount() ) ) ) ;
+	this->addAction( _addAction( { Qt::Key_M },&zuluMount::pbMount ) ) ;
 
-	this->addAction( _addAction( { Qt::Key_U },SLOT( pbUmount() ) ) ) ;
+	this->addAction( _addAction( { Qt::Key_U },&zuluMount::pbUmount ) ) ;
 
-	this->addAction( _addAction( { Qt::Key_R },SLOT( pbUpdate() ) ) ) ;
+	this->addAction( _addAction( { Qt::Key_R },&zuluMount::pbUpdate ) ) ;
 
-	this->addAction( _addAction( { Qt::Key_C },SLOT( closeApplication() ) ) ) ;
+	this->addAction( _addAction( { Qt::Key_C },&zuluMount::closeApplication ) ) ;
 }
 
 void zuluMount::setUpFont()
@@ -1281,10 +1283,8 @@ void zuluMount::setUpFont()
 	this->setFont( utility::getFont( this ) ) ;
 }
 
-void zuluMount::closeEvent( QCloseEvent * e )
+void zuluMount::closeEvent( QCloseEvent * )
 {
-	e->ignore() ;
-
 	this->hide() ;
 
 	if( utility::doNotMinimizeToTray() ){

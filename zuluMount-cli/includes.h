@@ -40,6 +40,7 @@ typedef struct{
 	stringList_t env        ;
 	int          mpo        ;
 	uid_t        uid        ;
+	uid_t        user_id    ;
 	int          share      ;
 }ARGS;
 

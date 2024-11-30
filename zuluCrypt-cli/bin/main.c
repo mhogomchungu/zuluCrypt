@@ -269,7 +269,7 @@ static int zuluCryptEXEHeaderMatchBackUpHeader( const char * device,const char *
 	}
 }
 
-static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t uid )
+static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t uid,uid_t user_id )
 {
 	switch( clargs->action ){
 
@@ -284,10 +284,10 @@ static int zuluCryptEXE( struct_opts * clargs,const char * mapping_name,uid_t ui
 		case '2' : return zuluCryptEXEPrintSlotStatus( clargs->device ) ;
 		case 'i' : return zuluCryptEXECheckIfLuks( clargs->device ) ;
 		case 'P' : return zuluCryptEXEGetDevice( clargs->device ) ;
-		case 's' : return zuluCryptEXEVolumeInfo( mapping_name,clargs->device,uid ) ;
-		case 'q' : return zuluCryptEXECloseVolume( clargs->device,mapping_name,uid ) ;
-		case 'o' : return zuluCryptEXEOpenVolume( clargs,mapping_name,uid ) ;
-		case 'O' : return zuluCryptEXEOpenVolume( clargs,mapping_name,uid ) ;
+		case 's' : return zuluCryptEXEVolumeInfo( mapping_name,clargs->device,user_id ) ;
+		case 'q' : return zuluCryptEXECloseVolume( clargs->device,mapping_name,user_id ) ;
+		case 'o' : return zuluCryptEXEOpenVolume( clargs,mapping_name,uid,user_id ) ;
+		case 'O' : return zuluCryptEXEOpenVolume( clargs,mapping_name,uid,user_id ) ;
 		case 'c' : return zuluCryptEXECreateVolume( clargs,mapping_name,uid ) ;
 		case 'a' : return zuluCryptEXEAddKey( clargs,uid ) ;
 		case 'r' : return zuluCryptEXERemoveKey( clargs,uid );
@@ -434,11 +434,6 @@ int main( int argc,char * argv[] )
 
 			return 0 ;
 		}
-		if( StringsAreEqual( ac,"--clear-dead-mount-points" ) ){
-
-			zuluCryptClearDeadMappers( uid,1 ) ;
-			return 0 ;
-		}
 	}
 
 	zuluCryptExeSetOriginalUID( uid ) ;
@@ -490,7 +485,16 @@ int main( int argc,char * argv[] )
 		printf( gettext( "User is not root\n" ) ) ;
 		return 114 ;
 	}
+	if( argc == 2 ){
 
+		ac = argv[ 1 ] ;
+
+		if( StringsAreEqual( ac,"--clear-dead-mount-points" ) ){
+
+			zuluCryptClearDeadMappers( user_id,1 ) ;
+			return 0 ;
+		}
+	}
 	/*
 	 * Run with higher priority to speed things up
 	 */
@@ -529,7 +533,7 @@ int main( int argc,char * argv[] )
 	/*
 	 * zuluCryptSecuritySanitizeTheEnvironment() is defined in ./security.c
 	 */
-	zuluCryptSecuritySanitizeTheEnvironment( uid,&stx ) ;
+	zuluCryptSecuritySanitizeTheEnvironment( user_id,&stx ) ;
 
 	/*
 	 * clargs.env contains a copy of the inherited environment because the above function clears it because we dont need it.
@@ -619,9 +623,9 @@ int main( int argc,char * argv[] )
 
 	if( action == 'C' ){
 
-		return zuluExit( _clear_dead_mappers( uid ),stl,stx,env,NULL ) ;
+		return zuluExit( _clear_dead_mappers( user_id ),stl,stx,env,NULL ) ;
 	}else{
-		_clear_dead_mappers( uid ) ;
+		_clear_dead_mappers( user_id ) ;
 	}
 
 	/*
@@ -634,9 +638,9 @@ int main( int argc,char * argv[] )
 
 		case 'A':
 		case 'N':
-		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type,uid ) ;
+		case 'S': st = zuluCryptPrintPartitions( clargs.partition_number,clargs.print_partition_type,user_id ) ;
 			  return zuluExit( st,stl,stx,env,NULL ) ;
-		case 'L': st = _printOpenedVolumes( uid ) ;
+		case 'L': st = _printOpenedVolumes( user_id ) ;
 			  return zuluExit( st,stl,stx,env,NULL ) ;
 	}
 
@@ -669,7 +673,7 @@ int main( int argc,char * argv[] )
 		if( ac != NULL ) {
 
 			clargs.device = ac ;
-			st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
+			st = zuluCryptEXE( &clargs,mapping_name,uid,user_id ) ;
 			StringFree( ac ) ;
 			StringDelete( &q ) ;
 			return zuluExit( st,stl,stx,env,NULL ) ;
@@ -681,7 +685,7 @@ int main( int argc,char * argv[] )
 		/*
 		 * this function is defined in ../zuluCrypt-lib/file_path_security.c
 		 */
-		switch( zuluCryptGetDeviceFileProperties( device,&fd,&fd1,&dev,uid ) ){
+		switch( zuluCryptGetDeviceFileProperties( device,&fd,&fd1,&dev,user_id ) ){
 
 			case 0 : break ;
 			case 1 : return zuluExit( 111,stl,stx,env,gettext( "ERROR: Devices in /dev/shm/ path is not suppored" ) ) ;
@@ -706,7 +710,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 		}else{
 			q = String( "/dev/mapper/zuluCrypt-" ) ;
 
-			StringAppendInt( q,uid ) ;
+			StringAppendInt( q,user_id ) ;
 			StringAppend( q,"-" ) ;
 
 			st = StringPrefixMatch( dev,StringContent( q ),StringLength( q ) ) ;
@@ -721,7 +725,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 			/*
 			 * zuluCryptDeviceIsSupported() is defined in partitions.c
 			 */
-			if( zuluCryptDeviceIsSupported( dev,uid ) ){
+			if( zuluCryptDeviceIsSupported( dev,user_id ) ){
 
 				clargs.device = dev ;
 
@@ -741,7 +745,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 						mapping_name =  dev  ;
 					}
 
-					st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
+					st = zuluCryptEXE( &clargs,mapping_name,uid,user_id ) ;
 					StringFree( ac_1 ) ;
 				}else{
 					i = StringLastIndexOfChar_1( dev,'/' ) ;
@@ -753,7 +757,7 @@ Possible reasons for getting the error are:\n1.Device path is invalid.\n2.The de
 						mapping_name =  dev  ;
 					}
 
-					st = zuluCryptEXE( &clargs,mapping_name,uid ) ;
+					st = zuluCryptEXE( &clargs,mapping_name,uid,user_id ) ;
 				}
 			}else{
 				st = 113 ;

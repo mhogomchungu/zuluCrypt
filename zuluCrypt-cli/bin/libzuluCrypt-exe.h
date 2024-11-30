@@ -107,7 +107,7 @@ int zuluCryptEXECloseVolume( const char * device,const char * mapping_name,uid_t
  * this function is responsibe for opening volumes.
  * It is defined in open_volume.c *
  */
-int zuluCryptEXEOpenVolume( const struct_opts *,const char * mapping_name,uid_t uid ) ;
+int zuluCryptEXEOpenVolume( const struct_opts *,const char * mapping_name,uid_t uid,uid_t user_id ) ;
 
 /*
  * this function is responsibe for creating volumes.

@@ -26,6 +26,7 @@ int zuluMountCryptoMount( ARGS * args )
 	const char * UUID       = args->uuid       ;
 	const char * mode       = args->m_opts     ;
 	uid_t        uid        = args->uid        ;
+	uid_t        user_id    = args->user_id    ;
 	const char * key        = args->key        ;
 	const char * key_source = args->key_source ;
 	const char * m_point    = args->m_point    ;
@@ -94,7 +95,7 @@ int zuluMountCryptoMount( ARGS * args )
 	/*
 	 * zuluCryptEXEOpenVolume() is defined in ../zuluCrypt-cli/bin/open_volume.c
 	 */
-	st = zuluCryptEXEOpenVolume( &opts,mapping_name,uid ) ;
+	st = zuluCryptEXEOpenVolume( &opts,mapping_name,uid,user_id ) ;
 
 	StringDelete( &str ) ;
 

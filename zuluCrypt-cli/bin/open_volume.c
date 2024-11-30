@@ -251,7 +251,7 @@ void zuluCryptTrueCryptVeraCryptVolumeInfo( const char * type,tvcrypt * e )
 	StringListDelete( &stl ) ;
 }
 
-int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid )
+int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,uid_t uid,uid_t user_id )
 {
 	int share                = opts->share ;
 	int open_mount           = opts->open_mount ;
@@ -314,7 +314,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		 * check permissions only if volume is explicity mentioned as system.
 		 * This is an exception to avoid some udev bad behaviors on udev enabled build
 		 */
-		if( !zuluCryptUserIsAMemberOfAGroup( uid,"zulucrypt" ) ){
+		if( !zuluCryptUserIsAMemberOfAGroup( user_id,"zulucrypt" ) ){
 			return zuluExit( 22,device,mount_point,stl ) ;
 		}
 	}
@@ -327,7 +327,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	 * zuluCryptMountFlagsAreNotCorrect() is defined in ./mount_flags.c
 	 */
 
-	if( zuluCryptMountFlagsAreNotCorrect( m_opts,uid,&m_flags ) ){
+	if( zuluCryptMountFlagsAreNotCorrect( m_opts,user_id,&m_flags ) ){
 
 		return zuluExit( 5,device,mount_point,&stl ) ;
 	}
@@ -335,12 +335,12 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * zuluCryptSecurityDeviceIsWritable() is defined in path_access.c
 		 */
-		st = zuluCryptCanOpenPathForWriting( device,uid ) ;
+		st = zuluCryptCanOpenPathForWriting( device,user_id ) ;
 	}else{
 		/*
 		 * zuluCryptSecurityDeviceIsReadable() is defined in path_access.c
 		 */
-		st = zuluCryptCanOpenPathForReading( device,uid ) ;
+		st = zuluCryptCanOpenPathForReading( device,user_id ) ;
 	}
 
 	/*
@@ -363,7 +363,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		* zuluCryptCreateMountPoint() is defined in create_mount_point.c
 		*/
-		*m_point = zuluCryptCreateMountPoint( device,mount_point,m_opts,uid ) ;
+		*m_point = zuluCryptCreateMountPoint( device,mount_point,m_opts,user_id ) ;
 
 		mount_point = StringContent( *m_point ) ;
 
@@ -400,7 +400,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 	if( bitlockerVolume && zuluCryptUseDislockerBitLocker( opts->use_cryptsetup_for_bitlocker ) ){
 
-		*mapper_path = zuluCryptBitLockerMapperPath( uid ) ;
+		*mapper_path = zuluCryptBitLockerMapperPath( user_id ) ;
 
 		zuluCryptSecurityGainElevatedPrivileges() ;
 
@@ -409,14 +409,14 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		mapper_name = StringContent( *m_name ) ;
 		path_mapper = StringContent( *mapper_path ) ;
 
-		zuluCryptCreateMountPointPrefix( uid ) ;
+		zuluCryptCreateMountPointPrefix( user_id ) ;
 
 		zuluCryptSecurityDropElevatedPrivileges() ;
 	}else{
 		/*
 		 * zuluCryptCreateMapperName() is defined in ../lib/create_mapper_name.c
 		 */
-		*m_name = zuluCryptCreateMapperName( device,mapping_name,uid,ZULUCRYPTshortMapperPath ) ;
+		*m_name = zuluCryptCreateMapperName( device,mapping_name,user_id,ZULUCRYPTshortMapperPath ) ;
 
 		*mapper = StringCopy( *m_name ) ;
 		mapper_name = StringContent( *m_name ) ;
@@ -436,7 +436,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		/*
 		 * zuluCryptPrepareSocketPath() is defined in path_access.c
 		 */
-		zuluCryptPrepareSocketPath( uid ) ;
+		zuluCryptPrepareSocketPath( user_id ) ;
 
 		/*
 		 * zuluCryptUUIDFromPath() is defined in path_access.c
@@ -450,7 +450,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 		*passphrase = zuluCryptPluginManagerGetKeyFromModule( device_path,
 								      plugin_path,
 								      uuid,
-								      uid,
+								      user_id,
 								      opts,
 								      zuluCryptRunTimePath(),
 								      &st ) ;
@@ -507,7 +507,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 			/*
 			 * function is defined at "path_access.c"
 			 */
-			switch( zuluCryptGetPassFromFile( NULL,pass,uid,data ) ){
+			switch( zuluCryptGetPassFromFile( NULL,pass,user_id,data ) ){
 
 				case 1 : return zuluExit_1( 16,opts,device,mount_point,&stl ) ;
 				case 2 : return zuluExit_1( 17,opts,device,mount_point,&stl ) ;
@@ -543,7 +543,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 	volume.mapper_path = path_mapper ;
 	volume.m_point     = mount_point ;
 	volume.fs_opts     = fs_opts ;
-	volume.uid         = uid ;
+	volume.uid         = user_id ;
 	volume.m_opts      = m_opts ;
 	volume.m_flags     = m_flags ;
 	volume.bitlocker_volume = bitlockerVolume ;
@@ -654,7 +654,7 @@ int zuluCryptEXEOpenVolume( const struct_opts * opts,const char * mapping_name,u
 
 			device = StringMultiplePrepend( *mapper,"/",zuluCryptMapperPrefix(),NULL ) ;
 		}else{
-			*bitlk = zuluCryptBitLockerFullMapperPath( uid,device ) ;
+			*bitlk = zuluCryptBitLockerFullMapperPath( user_id,device ) ;
 
 			device = StringContent( *bitlk ) ;
 		}
