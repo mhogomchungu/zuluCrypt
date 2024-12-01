@@ -39,7 +39,26 @@ class favorites2 : public QDialog
 {
 	Q_OBJECT
 public:
-	class settings{
+	class walletOpts
+	{
+	public:
+		walletOpts() ;
+		void setActive( favorites2 * ) ;
+		void setInactive() ;
+	private:
+		void setOptions() ;
+		void getOptions() ;
+		bool m_gnomeWallet = false ;
+		bool m_kdeWallet = false ;
+		std::atomic_bool m_active = false ;
+		bool m_set = false ;
+		favorites2 * m_parent ;
+	} ;
+
+	static walletOpts m_walletOpts ;
+
+	class settings
+	{
 	public:
 		class walletBackEnd
 		{
@@ -229,8 +248,8 @@ private :
 	std::function< void() > m_function ;
 	QString m_cipherPath ;
 
-	class wallet{
-
+	class wallet
+	{
 	public:
 		void operator=( secrets::wallet s )
 		{

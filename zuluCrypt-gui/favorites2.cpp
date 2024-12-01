@@ -29,6 +29,8 @@
 
 #define COMMENT "-zuluCrypt_Comment_ID"
 
+favorites2::walletOpts favorites2::m_walletOpts ;
+
 Task::future< void >& favorites2::deleteKey( secrets::wallet& wallet,const QString& id )
 {
 	return Task::run( [ &wallet,id ](){
@@ -223,32 +225,6 @@ favorites2::favorites2( QWidget * parent,
 	m_ui->rbKWallet->setEnabled( false ) ;
 	m_ui->rbLibSecret->setEnabled( false ) ;
 
-	struct walletOpts
-	{
-		bool gnomeWallet ;
-		bool kdeWallet ;
-	} ;
-
-	Task::run( [ & ](){
-
-		using wbe = LXQt::Wallet::BackEnd ;
-
-		walletOpts m ;
-
-		static bool a = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
-		static bool b = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
-
-		m.gnomeWallet = a ;
-		m.kdeWallet   = b ;
-
-		return m ;
-
-	} ).then( [ & ]( const walletOpts& m ){
-
-		m_ui->rbKWallet->setEnabled( m.kdeWallet ) ;
-		m_ui->rbLibSecret->setEnabled( m.gnomeWallet ) ;
-	} ) ;
-
 	auto walletBk = m_settings.autoMountBackEnd() ;
 
 	if( walletBk == bk::internal ){
@@ -421,11 +397,15 @@ favorites2::favorites2( QWidget * parent,
 		return ac ;
 	}() ) ;
 
+	m_walletOpts.setActive( this ) ;
+
 	this->ShowUI() ;
 }
 
 favorites2::~favorites2()
 {
+	m_walletOpts.setInactive() ;
+
 	delete m_ui ;
 }
 
@@ -823,4 +803,52 @@ void favorites2::ShowUI()
 bool favorites2::eventFilter( QObject * watched,QEvent * event )
 {
 	return utility::eventFilter( this,watched,event,[ this ](){ this->HideUI() ; } ) ;
+}
+
+favorites2::walletOpts::walletOpts()
+{
+}
+
+void favorites2::walletOpts::setActive( favorites2 * m )
+{
+	m_parent = m ;
+	m_active = true ;
+
+	if( m_set ){
+
+		this->setOptions() ;
+	}else{
+		this->getOptions() ;
+	}
+}
+
+void favorites2::walletOpts::setInactive()
+{
+	m_active = false ;
+}
+
+void favorites2::walletOpts::setOptions()
+{
+	if( m_active ){
+
+		m_parent->m_ui->rbKWallet->setEnabled( m_kdeWallet ) ;
+		m_parent->m_ui->rbLibSecret->setEnabled( m_gnomeWallet ) ;
+	}
+}
+
+void favorites2::walletOpts::getOptions()
+{
+	Task::run( [ & ](){
+
+		using wbe = LXQt::Wallet::BackEnd ;
+
+		m_gnomeWallet = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
+		m_kdeWallet   = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
+
+		m_set = true ;
+
+	} ).then( [ & ](){
+
+		this->setOptions() ;
+	} ) ;
 }
