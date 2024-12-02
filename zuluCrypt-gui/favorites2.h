@@ -30,6 +30,7 @@
 
 #include <functional>
 #include <memory>
+#include <atomic>
 
 namespace Ui {
 class favorites2;
@@ -50,7 +51,7 @@ public:
 		void getOptions() ;
 		bool m_gnomeWallet = false ;
 		bool m_kdeWallet = false ;
-		std::atomic_bool m_active = false ;
+		std::atomic_bool m_active{ false } ;
 		bool m_set = false ;
 		favorites2 * m_parent ;
 	} ;

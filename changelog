@@ -344,3 +344,8 @@ version 7.0.0
 -- Make the project builable with Qt6, default is still Qt5.
 -- Fix a bug that caused a VeraCrypt password to not be used when unlocking using keyfiles.
 -- Fix a bug that prevented using a YubiKey.
+
+version 7.1.0
+-- Fix a regression that prevented a password with non ascii character to no longer work.
+-- Fix a bug that prevented some operations when zuluCrypt-cli was invoked with sudo.
+-- Fix a zuluPolkit crash when it is invoked with a newer version of polkit.

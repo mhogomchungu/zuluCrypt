@@ -10,7 +10,7 @@ project(zuluCrypt)
 
 INCLUDE(GNUInstallDirs)
 
-set( PGR_VERSION "7.0.0" )
+set( PGR_VERSION "7.1.0" )
 set( LIB_VERSION "1.2.0" )
 set( LIB_PLUGIN_VERSION "1.0.0" )
 set( COPYRIGHT_YEARS "2011-2024" )
@@ -276,7 +276,7 @@ add_subdirectory( zuluSafe )
 
 if( NOT NOGUI )
 
-	option(BUILD_WITH_QT6 "Build with Qt 6" ON)
+	option(BUILD_WITH_QT6 "Build with Qt 6" OFF)
 
 	if(BUILD_WITH_QT6)
 		find_package(Qt6 COMPONENTS Core Widgets Network REQUIRED )
