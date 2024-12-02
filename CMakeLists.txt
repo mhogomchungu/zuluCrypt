@@ -1,5 +1,5 @@
 if(${CMAKE_VERSION} VERSION_GREATER "3.26")
-    cmake_minimum_required(VERSION 3.5.0)
+    cmake_minimum_required(VERSION 3.26.0)
 else()
     cmake_minimum_required(VERSION 3.0.2)
 endif()
@@ -375,22 +375,62 @@ if( NOT NOGUI )
 
 			add_subdirectory( external_libraries/lxqt_wallet )
 		else()
-			if( LXQT_WALLET_VERSION VERSION_GREATER "3.1.0"  )
+			if( BUILD_WITH_QT6 )
 
-				include_directories( ${LXQT_WALLET_INCLUDEDIR} )
-				link_directories( ${LXQT_WALLET_LIBDIR} )
+				if( LXQT_WALLET_VERSION VERSION_LESS "4.0.2" )
 
-				# lxqt-wallet 4.0.0 renamed a header from "lxqtwallet.h" to "lxqt-wallet.h",
-				# so this is needed to choose the right header to include when compiling.
-				if( LXQT_WALLET_VERSION VERSION_GREATER "4.0.0" )
-					add_compile_definitions( LXQT_WALLET_HYPHEN_HEADER )
+					include_directories( external_libraries/lxqt_wallet )
+					include_directories( external_libraries/lxqt_wallet/frontend )
+					include_directories( external_libraries/lxqt_wallet/backend )
+
+					include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet )
+					include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet/frontend )
+					include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet/backend )
+
+					add_subdirectory( external_libraries/lxqt_wallet )
+
+					message( STATUS "---------------------------------------------------------------------------" )
+					message( STATUS "WARNING: Qt6 build requires lxqt-wallet >= 4.0.2, switching to bundled version" )
+					message( STATUS "---------------------------------------------------------------------------" )
+				else()
+				        # lxqt-wallet 4.0.0 renamed a header from "lxqtwallet.h" to "lxqt-wallet.h",
+					# so this is needed to choose the right header to include when compiling.
+
+					if( LXQT_WALLET_VERSION VERSION_GREATER "4.0.0" )
+					        add_compile_definitions( LXQT_WALLET_HYPHEN_HEADER )
+					endif()
+
+					include_directories( ${LXQT_WALLET_INCLUDEDIR} )
+					link_directories( ${LXQT_WALLET_LIBDIR} )
+
+					message( STATUS "---------------------------------------------------------------------------" )
+					message( STATUS "lxqt wallet support will be provided by an external libary" )
+					message( STATUS "---------------------------------------------------------------------------" )
 				endif()
-
-				message( STATUS "---------------------------------------------------------------------------" )
-				message( STATUS "lxqt wallet support will be provided by an external libary" )
-				message( STATUS "---------------------------------------------------------------------------" )
 			else()
-				message( FATAL_ERROR "---------------------------------------------------------------------------\nInstalled version of lxqt_wallet is too old(<3.2.0)\nPlease install a more receant version from: https://github.com/lxqt/lxqt_wallet\n---------------------------------------------------------------------------" )
+				if( LXQT_WALLET_VERSION VERSION_GREATER "3.1.0"  )
+
+					include_directories( ${LXQT_WALLET_INCLUDEDIR} )
+					link_directories( ${LXQT_WALLET_LIBDIR} )
+
+					message( STATUS "---------------------------------------------------------------------------" )
+					message( STATUS "lxqt wallet support will be provided by an external libary" )
+					message( STATUS "---------------------------------------------------------------------------" )
+				else()
+					include_directories( external_libraries/lxqt_wallet )
+					include_directories( external_libraries/lxqt_wallet/frontend )
+					include_directories( external_libraries/lxqt_wallet/backend )
+
+					include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet )
+					include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet/frontend )
+					include_directories( ${PROJECT_BINARY_DIR}/external_libraries/lxqt_wallet/lxqt_wallet/backend )
+
+					add_subdirectory( external_libraries/lxqt_wallet )
+
+					message( STATUS "---------------------------------------------------------------------------" )
+					message( STATUS "lxqt wallet support will be provided by an internal libary" )
+					message( STATUS "---------------------------------------------------------------------------" )
+				endif()
 			endif()
 		endif()
 	endif()
