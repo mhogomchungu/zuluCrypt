@@ -436,6 +436,8 @@ void zuluMount::helperStarted( bool start,const QString& volume )
 
 		m_debugWindow.Show() ;
 	} ) ;
+
+	favorites2::checkAvailableWallets() ;
 }
 
 void zuluMount::showTrayIcon( bool e )

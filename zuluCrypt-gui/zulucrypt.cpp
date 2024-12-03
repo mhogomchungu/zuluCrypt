@@ -134,6 +134,8 @@ void zuluCrypt::helperStarted( bool e,const QString& volume )
 			this->raise() ;
 			this->setWindowState( Qt::WindowActive ) ;
 		}
+
+		favorites2::checkAvailableWallets() ;
 	}else{
 		DialogMsg( this ).ShowUIOK( tr( "ERROR" ),utility::failedToStartzuluPolkit() ) ;
 

@@ -30,7 +30,6 @@
 
 #include <functional>
 #include <memory>
-#include <atomic>
 
 namespace Ui {
 class favorites2;
@@ -46,17 +45,23 @@ public:
 		walletOpts() ;
 		void setActive( favorites2 * ) ;
 		void setInactive() ;
+		void checkAvaibale() ;
 	private:
-		void setOptions() ;
-		void getOptions() ;
-		bool m_gnomeWallet = false ;
-		bool m_kdeWallet = false ;
-		std::atomic_bool m_active{ false } ;
+		struct status
+		{
+			status() = default ;
+			status( int ) ;
+			bool m_gnomeWallet ;
+			bool m_kdeWallet ;
+		} ;
+		void setStatus( const status& ) ;
+		void getStatus() ;
 		bool m_set = false ;
+		status m_status ;
 		favorites2 * m_parent ;
 	} ;
 
-	static walletOpts m_walletOpts ;
+	static void checkAvailableWallets() ;
 
 	class settings
 	{
@@ -248,6 +253,8 @@ private :
 	settings m_settings ;
 	std::function< void() > m_function ;
 	QString m_cipherPath ;
+
+	static walletOpts m_walletOpts ;
 
 	class wallet
 	{
