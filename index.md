@@ -29,9 +29,9 @@ Screenshots are at the end of this page.
 
 ## zuluCrypt download page
 
-Latest released version is 7.0.0 and it can be downloaded by clicking below link.
+Latest released version is 7.1.0 and it can be downloaded by clicking below link.
 
-<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/7.0.0/zuluCrypt-7.0.0.tar.xz">zuluCrypt-7.0.0.tar.xz</a>
+<a href="https://github.com/mhogomchungu/zuluCrypt/releases/download/7.1.0/zuluCrypt-7.1.0.tar.xz">zuluCrypt-7.1.0.tar.xz</a>
 
 ## Binary packages
 
@@ -104,4 +104,4 @@ The list of most frequently asked questions can be found <a href="https://github
 <a href="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122108.png" target="_blank"><img src="https://github.com/mhogomchungu/zuluCrypt/raw/master/images/Screenshot_20190912_122108.png"></a>
 ## Contact info:
 
-last update: Mon Aug 19 05:18:45 PM EAT 2024
+last update: Tue Dec  3 09:23:35 AM EAT 2024
