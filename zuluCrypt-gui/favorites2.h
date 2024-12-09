@@ -46,20 +46,30 @@ public:
 		void setActive( favorites2 * ) ;
 		void setInactive() ;
 		void checkAvaibale() ;
+		template< typename Function >
+		void getAvailableWallets( const Function& function )
+		{
+			function( m_status.m_kdeWallet,m_status.m_gnomeWallet ) ;
+		}
 	private:
 		struct status
 		{
-			status() = default ;
-			status( int ) ;
+			status() ;
 			bool m_gnomeWallet ;
 			bool m_kdeWallet ;
 		} ;
-		void setStatus( const status& ) ;
+		void setStatus() ;
 		void getStatus() ;
 		bool m_set = false ;
-		status m_status ;
+		favorites2::walletOpts::status m_status ;
 		favorites2 * m_parent ;
 	} ;
+
+	template< typename Function >
+	static void getAvailableWallets( const Function& function )
+	{
+		m_walletOpts.getAvailableWallets( function ) ;
+	}
 
 	static void checkAvailableWallets() ;
 

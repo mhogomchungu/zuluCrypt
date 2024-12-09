@@ -818,10 +818,10 @@ void favorites2::walletOpts::setActive( favorites2 * m )
 {
 	m_parent = m ;
 
-	if( m_set ){
+	this->setStatus() ;
 
-		this->setStatus( m_status ) ;
-	}else{
+	if( !m_set ){
+
 		this->getStatus() ;
 	}
 }
@@ -836,10 +836,8 @@ void favorites2::walletOpts::checkAvaibale()
 	this->setActive( nullptr ) ;
 }
 
-void favorites2::walletOpts::setStatus( const favorites2::walletOpts::status& s )
+void favorites2::walletOpts::setStatus()
 {
-	m_status = s ;
-
 	if( m_parent ){
 
 		m_parent->m_ui->rbKWallet->setEnabled( m_status.m_kdeWallet ) ;
@@ -851,20 +849,24 @@ void favorites2::walletOpts::getStatus()
 {
 	Task::run( [ & ](){
 
-		return favorites2::walletOpts::status( 0 ) ;
+		using wbe = LXQt::Wallet::BackEnd ;
 
-	} ).then( [ & ]( const favorites2::walletOpts::status& s ){
+		return LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
+
+	} ).then( [ & ]( bool s ){
 
 		m_set = true ;
 
-		this->setStatus( s ) ;
+		m_status.m_kdeWallet = s ;
+
+		this->setStatus() ;
 	} ) ;
 }
 
-favorites2::walletOpts::status::status( int )
+favorites2::walletOpts::status::status()
 {
 	using wbe = LXQt::Wallet::BackEnd ;
 
 	m_gnomeWallet = LXQt::Wallet::backEndIsSupported( wbe::libsecret ) ;
-	m_kdeWallet   = LXQt::Wallet::backEndIsSupported( wbe::kwallet ) ;
+	m_kdeWallet   = false ;
 }
